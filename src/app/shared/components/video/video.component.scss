@@ -1,0 +1,29 @@
+.public-video-player {
+  position: relative;
+  overflow: hidden;
+  // border-top-left-radius: 5px;
+  // border-top-right-radius: 5px;
+  .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .btn-container {
+    position: absolute;
+    top: 22%;
+    left: 32%;
+
+    .btn-toggle {
+      .mat-icon {
+        color: #fcd980;
+        height: 150px;
+        width: 150px;
+        font-size: 150px;
+      }
+    }
+  }
+
+  video {
+    background-color: black;
+  }
+}

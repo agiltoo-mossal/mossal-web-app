@@ -1,0 +1,13 @@
+<nav *ngIf="totalPages > 1" fxLayout="column" fxLayoutAlign="start start">
+  <div class="pagination" fxFill fxLayout="row" fxLayoutAlign="start start">
+    <div (click)="onPageChange(currentPage - 1)" fxLayout="row" fxLayoutAlign="center center" class="page nav-direction">
+      <mat-icon class="material-icons">keyboard_arrow_left</mat-icon>
+    </div>
+    <div (click)="onPageChange(page)" fxLayout="row" fxLayoutAlign="center center" class="page" *ngFor="let page of toArr(totalPages)" [class.active]="currentPage === page">
+      <span>{{ page }}</span>
+    </div>
+    <div (click)="onPageChange(currentPage + 1)" fxLayout="row" fxLayoutAlign="center center" class="page nav-direction">
+      <mat-icon class="material-icons">keyboard_arrow_right</mat-icon>
+    </div>
+  </div>
+</nav>

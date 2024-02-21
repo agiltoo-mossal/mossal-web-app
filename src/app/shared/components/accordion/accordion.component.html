@@ -1,0 +1,51 @@
+<div
+  class="accordion {{ isOpen ? 'accordion-active' : ''}}"
+  fxFlex="100%"
+  fxLayout="row wrap"
+  fxLayoutAlign="start start"
+>
+  <div
+    class="accordion-header {{ isOpen ? 'accordion-header-active' : ''}}"
+    (click)="isOpen = !isOpen"
+    fxFlex="100%"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+  >
+    <div>
+      <span class="accordion-title">{{ headerText }}</span>
+      <span *ngIf="subtitle" class="accordion-subtitle"></span>
+    </div>
+    <div  fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="35px">
+      <div class="dropdown" appDropdown="accordion-dropdown--{{headerTextJoined}}">
+        <mat-icon class="more-actions" *ngIf="actions" class="material-icons material-icons-outlined">more_horiz</mat-icon>
+        <div class="dropdown-content" id="accordion-dropdown--{{headerTextJoined}}" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+          <div (click)="triggerAction(action)" *ngFor="let action of actions" class="dropdown-option {{action.classList}}" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="17px">
+            <mat-icon class="material-icons material-icons-outlined {{action.classList}}">{{ action.icon }}</mat-icon>
+            <span>{{ action.label }}</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column"
+      fxLayoutAlign="start end" fxLayoutGap="2px">
+        <mat-icon class="icon-action" *ngIf="isOpen">keyboard_arrow_up</mat-icon>
+        <mat-icon class="icon-action" *ngIf="!isOpen">keyboard_arrow_down</mat-icon>
+        <div *ngIf="subtitle" class="accordion-subtitle" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="6px">
+          <mat-icon class="material-icons material-icons-outlined" fontSet="material-icons-outlined">{{subtitleIcon}}</mat-icon>
+          <span>{{ subtitle }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="isOpen">
+    <div
+      class="accordion-body"
+      fxFlex="100%"
+      fxLayout="row wrap"
+      fxLayoutAlign="start start"
+      [class.open]="isOpen"
+      [class.closed]="!isOpen"
+    >
+      <ng-content></ng-content>
+    </div>
+  </ng-container>
+</div>

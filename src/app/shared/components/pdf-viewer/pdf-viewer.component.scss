@@ -1,0 +1,44 @@
+.container {
+  height: fit-content;
+  position: relative;
+
+  &:hover {
+    .prev-next-container,
+    .progresse-container {
+      z-index: 2;
+      opacity: 1;
+    }
+  }
+
+  .prev-btn {
+    position: absolute;
+    left: 5%;
+    top: 45%;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    border: 1px solid lightgray;
+    cursor: pointer;
+  }
+
+  .next-btn {
+    position: absolute;
+    right: 5%;
+    top: 45%;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    border: 1px solid lightgray;
+    cursor: pointer;
+  }
+}
+.next-btn,
+.prev-btn {
+  display: none;
+}
+.container:hover {
+  .next-btn,
+  .prev-btn {
+    display: block;
+  }
+}

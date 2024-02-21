@@ -1,0 +1,77 @@
+<div  fxLayout="row" >
+  <div fxFlex="30">
+  </div>
+  <mat-card fxFlex="40" class="card-global">
+    <mat-card-content >
+      <div>
+        <a routerLink="" class="logo" fxLayoutAlign="center">
+          <img src="../../../../assets/img/image-header.svg" alt="" />
+        </a>
+      </div>
+      <div class="form-container">
+        <form #form="ngForm">
+          <mat-stepper headerPosition="bottom" #stepper>
+            <mat-step [stepControl]="firstFormGroup">
+              <form [formGroup]="firstFormGroup">
+                <ng-template matStepLabel></ng-template>
+                <div class="form-group">
+                  <input placeholder="Last name, First name" formControlName="firstCtrl" required>
+                </div>
+
+                <div class="form-group mt">
+                  <input  placeholder="Last name, First name" formControlName="firstCtrl" required>
+                </div>
+                <div class="form form-group mt">
+                  <button class="btn-submit" matStepperNext>Suivant</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup" optional>
+              <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel></ng-template>
+                <div class="form-group">
+                  <input  placeholder="Address" formControlName="secondCtrl" required>
+                </div>
+                <div fxLayout="row"
+                fxLayoutAlign="space-between center"
+                fxLayoutGap="8px" class="mt">
+                  <button class="btn-submit"  style="width: 200px;" matStepperPrevious>Back</button>
+                  <button class="btn-submit"  style="width: 200px;" matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup" optional>
+              <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel></ng-template>
+                <div class="form-group">
+                  <input  placeholder="Address" formControlName="secondCtrl" required>
+                </div>
+                <div fxLayout="row"
+                fxLayoutAlign="space-between center"
+                fxLayoutGap="8px" class="mt">
+                  <button class="btn-submit" style="width: 200px;" matStepperPrevious>Back</button>
+                  <button class="btn-submit"  style="width: 200px;" matStepperNext>Next</button>
+                </div>
+              </form>
+            </mat-step>
+            <mat-step>
+              <ng-template matStepLabel>Done</ng-template>
+              You are now done.
+              <div fxLayout="row"
+              fxLayoutAlign="space-between center"
+              fxLayoutGap="8px" class="mt" >
+                <button class="btn-submit" style="width: 200px;" matStepperPrevious>Back</button>
+                <button class="btn-submit" style="width: 200px;" (click)="stepper.reset()">Reset</button>
+              </div>
+            </mat-step>
+          </mat-stepper>
+          
+        </form>
+    </div>
+    </mat-card-content>
+  </mat-card>
+  
+
+  <div fxFlex="30">
+  </div>
+</div>

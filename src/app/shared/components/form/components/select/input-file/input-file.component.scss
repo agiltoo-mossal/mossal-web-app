@@ -1,0 +1,43 @@
+
+
+.file-container {
+  box-sizing: border-box;
+  height: 150px;
+  border-radius: 10px;
+  border: 2px dashed #D5A007;
+
+  .help-text {
+    font-family: 'Proxima Nova';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: #9D9B9B;
+  }
+
+  input[type='file'] {
+    display: none;
+  }
+
+  img,
+  iframe,
+  object {
+    &.preview {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+  iframe,
+  img,
+  video {
+    pointer-events: none;
+  }
+}
+.file-name {
+  font-family: 'Proxima Nova';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  width: 100%;
+}

@@ -1,0 +1,21 @@
+<div fxFlex class="public-video-player">
+  <video
+    class="video"
+    #videoPlayer
+    (click)="togglePlay()"
+    width="100%"
+    height="100%"
+    [src]="src"
+  ></video>
+  <div
+    (click)="togglePlay()"
+    *ngIf="!isPlaying"
+    class="btn-container"
+    fxLayout="row"
+    fxLayoutAlign="center center"
+  >
+    <div class="btn-toggle" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon>play_arrow</mat-icon>
+    </div>
+  </div>
+</div>

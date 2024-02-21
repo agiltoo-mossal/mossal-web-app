@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="page-wrapper" fxLayout="column" fxLayoutGap="80px">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title-with-arrow" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
+                <span>Hubs de vie</span>
+                <img src="./assets/img/arrow-right.svg" alt="arrow right">
+            </span>
+        </div>
+        <div class="partners">
+            <div class="partners-wrapper" fxLayout="row" fxLayoutGap="24px">
+                <div class="partner" *ngFor="let part of partnerList" [ngStyle]="{'background-image':'url('+part+')'}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

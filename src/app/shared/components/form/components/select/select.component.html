@@ -1,0 +1,13 @@
+<form class="select-container {{ controlClass }}" [formGroup]="form" fxLayout="row" fxLayoutAlign="start center">
+  <!-- <div (click)="toggleOptions()" fxFlex="100" class="input-container custom-input icon-right">
+    <input fxFlex="100" [disabled]="true" class="form-control" formControlName="{{name}}">
+    <mat-icon class="icon">keyboard_arrow_down</mat-icon>
+  </div> -->
+  <div class="custom-input" (click)="toggleOptions()" fxFlex="100" fxLayout="row" fxLayoutAlign="space-between center">
+    <span>{{ getLabelForValue(value) }}</span>
+    <mat-icon>keyboard_arrow_down</mat-icon>
+  </div>
+  <div *ngIf="isOpen" class="custom-options" fxFlex="100" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="19px">
+    <div fxFill *ngFor="let option of options" (click)="selectOption(option)">{{ option.label }}</div>
+  </div>
+</form>

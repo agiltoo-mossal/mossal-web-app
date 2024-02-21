@@ -1,0 +1,69 @@
+.form-group {
+  font-family: Inter;
+  height: 52px;
+  width: 410px;
+  padding: 4px 6px 4px 14px;
+
+  flex: auto;
+  display: flex;
+  align-items: center;
+
+  border-radius: 16px;
+  border: 1px solid #d0d5dd;
+  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+  label {
+    height: 100%;
+    flex: auto;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    input {
+      flex: auto;
+      height: 100%;
+      display: block;
+
+      background: transparent;
+
+      border: none;
+      outline: none;
+      color: #030405;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    mat-icon {
+      color: #d4a009;
+    }
+  }
+
+  input::placeholder {
+    color: #667085;
+  }
+
+  button {
+    border-radius: 13px;
+    background: #d4a009;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: #fff;
+  }
+
+  @media only screen and (max-width: 600px) {
+    input {
+      flex: none;
+      width: 100%;
+    }
+  }
+}

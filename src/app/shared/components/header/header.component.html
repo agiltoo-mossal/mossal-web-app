@@ -1,0 +1,32 @@
+<div class="container" [ngClass]="headerPosition">
+  <div class="page-wrapper">
+    <div class="header" fxLayout="row" fxLayoutAlign="space-between none">
+      <div class="logo">
+        <img src="./assets/img/logo-senum.svg" alt="logo-senum">
+      </div>
+      <!-- ######################################################################## -->
+      <nav fxLayout="row" fxLayoutAlign="start none" fxLayoutGap="0px">
+        <div class="nav-item" fxLayoutAlign="start center" *ngFor="let link of navLinks" [routerLink]="link.url"
+          routerLinkActive="active">
+          {{link.label}} </div>
+      </nav>
+      <!-- ######################################################################## -->
+      <div class="search-and-profil" fxLayout="row" fxLayoutAlign="start center">
+        <span class="icon-search"><mat-icon fxLayoutAlign="end center">search</mat-icon></span>
+        <div class="separator"></div>
+        <span fxHide class="login-btn" fxLayoutAlign="center center">Se connecter</span>
+        <div class="user-profil dropdown" [appDropdown]="'dropdown-menu-user'">
+          <div fxLayoutAlign="start end">
+            <span class="user-image"><img src="./assets/img/user-pp.png" alt="image user"></span>
+            <mat-icon>arrow_drop_down</mat-icon>
+          </div>
+          <div class="dropdown-content" id="dropdown-menu-user" fxLayout="column" fxLayoutGap="8px">
+            <div class="dropdown-option">Profile</div>
+            <div class="dropdown-option">Dashboard</div>
+            <div class="dropdown-option">Déconnexion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

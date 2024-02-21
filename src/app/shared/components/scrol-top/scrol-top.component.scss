@@ -1,0 +1,25 @@
+.scroll-top-button {
+  width: 40px;
+  height: 40px;
+
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+
+  border-radius: 4px;
+  background-color: #d4a00970;
+  opacity: 1;
+  cursor: pointer;
+  z-index: 2;
+
+  transition: opacity 0.5s, background 0.3s;
+
+  mat-icon {
+    color: #fff;
+  }
+
+  &.hidden {
+    pointer-events: none;
+    opacity: 0;
+  }
+}

@@ -1,0 +1,19 @@
+<div class="container" fxFlex>
+  <div>{{page}} / {{ totalPages }}</div>
+  <ngx-extended-pdf-viewer
+  [src]="pdfUrl"
+  [useBrowserLocale]="true"
+  (pagesLoaded)="pdfLoaded($event)"
+  [(page)]="page"
+  [pageViewMode]="'single'"
+  [showHandToolButton]="false"
+  [showToolbar]="false"
+  [sidebarVisible]="false"
+  [spread]="'no spread'"
+  [height]="'100%'"
+  >
+  </ngx-extended-pdf-viewer>
+  <button class="prev-btn" (click)="prevPage()"><mat-icon>keyboard_arrow_left</mat-icon></button>
+  <button class="next-btn" (click)="nextPage()"><mat-icon>keyboard_arrow_right</mat-icon></button>
+
+</div>

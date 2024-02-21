@@ -1,0 +1,11 @@
+<div class="form-container" fxLayout="row">
+  <div class="form-control" fxLayout="row" fxLayoutAlign="start center" fxFlex="100">{{ text }}</div>
+  <div class="icons" fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="22px">
+    <div class="edit icon-container" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon class="material-icons material-icons-outlined" (click)="editLine()">edit</mat-icon>
+    </div>
+    <div class="delete icon-container" fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon class="material-icons material-icons-outlined" (click)="deleteLine()">delete</mat-icon>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+.container {
+    padding: 114px 5% 143px;
+
+    background-image: url('../../../../assets/img/background-partenaries.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.partners {
+    width: 100%;
+    overflow: hidden;
+
+    .partners-wrapper {
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            display: none;
+        }
+    }
+
+    .partner {
+        min-width: 250px;
+        height: 112px;
+        padding: 32px 65px 32px 64px;
+
+        border-radius: 10px;
+        background: #FFF;
+
+        background-size: auto;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}

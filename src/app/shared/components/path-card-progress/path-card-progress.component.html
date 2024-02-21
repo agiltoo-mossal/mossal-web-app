@@ -1,0 +1,49 @@
+<div
+  class="path-card"
+  fxLayout="column"
+  fxLayoutGap="30px"
+  fxLayoutAlign.lg="start space-between"
+>
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+    <div
+      class="icon-container"
+      fxLayoutAlign="center center"
+      [style.background-color]="data.colorContainerIcon"
+    >
+      <mat-icon fxLayoutAlign="start center" [style.color]="data.colorIcon">{{
+        data.icon
+      }}</mat-icon>
+    </div>
+    <h3 class="card-title">{{ data.title }}</h3>
+  </div>
+  <div class="card-content" fxFlex="100" fxLayout="column" fxLayoutGap="22px">
+    <div
+      class="points"
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxLayoutGap="12.95px"
+    >
+      <mat-icon fxLayoutAlign="start center" class="materials-icon"
+        >star</mat-icon
+      >
+      <span>{{ data?.totalEarnedPoints }} / {{ data?.totalPoints }} Points</span>
+    </div>
+    <div
+      fxFill
+      fxLayout="column"
+      fxLayoutAlign="start start"
+      fxLayoutGap="4px"
+      style="margin-top: auto"
+    >
+      <mat-progress-bar
+        *ngIf="true"
+        mode="determinate"
+        value="{{ 66 }}"
+        color="primary"
+      ></mat-progress-bar>
+      <div fxFill fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="8px">
+        <span class="progress-details">Lesson {{ data?.totalFinished }} of {{ data?.totalLessons }}</span>
+      </div>
+    </div>
+  </div>
+</div>

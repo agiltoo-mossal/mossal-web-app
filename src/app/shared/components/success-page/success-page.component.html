@@ -1,0 +1,16 @@
+<div class="container" fxFlex="100" fxLayout="row wrap" fxLayoutAlign="center center">
+  <div fxFlex="100%" fxLayout="row wrap" fxLayoutAlign="center center">
+    <div fxFlex="57.5%" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="66px">
+      <img src="./assets/img/icons/checked.png">
+      <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
+        <span class="page-title">
+          {{ message || 'Félicitations ! Vous avez rejoint le programme' }}
+        </span>
+        <span class="page-description" *ngIf="!hideSubMessage">
+          Un mail vous a été envoyé à l’adresse genieouzog@gmail.com
+        </span>
+      </div>
+      <button *ngIf="true" class="go-to-dashboard" routerLink="{{ link ? link : '/talent/courses' }}">{{ buttonText || 'Allez au Dashboard' }}</button>
+    </div>
+  </div>
+</div>

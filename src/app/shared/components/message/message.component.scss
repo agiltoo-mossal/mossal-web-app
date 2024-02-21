@@ -1,0 +1,112 @@
+.message {
+  &-vote {
+    box-sizing: border-box;
+    width: 54.301px;
+    height: 125.142px;
+    border-radius: 13.483px;
+    background: var(--very-light-gray, #F5F6FA);
+    font-family: Poppins Medium;
+    padding: 7px 0;
+    &-icon {
+      cursor: pointer;
+      font-size: 21px;
+      color: #0E1032;
+      opacity: 0.5;
+    }
+    &-value {
+      color: #0E1032;
+      text-align: center;
+
+      font-size: 21.573px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+  }
+  &-avatar {
+    width: 43.441px;
+    height: 40.045px;
+    border-radius: 43.441px;
+  }
+  &-username {
+    color: #0E1032;
+    font-size: 20px;
+    font-family: Poppins Medium;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+  &-date {
+    color: var(--grayish-blue, #67727E);
+    font-size: 21.573px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 32.359px;
+  }
+  &-reply-link {
+    cursor: pointer;
+    color: #D5A007;
+    font-family: Poppins Medium;
+    font-size: 21.573px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32.359px;
+  }
+  &-content {
+    color: var(--dark-blue, #282938);
+    font-family: Poppins;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 170%;
+  }
+}
+
+.replies {
+  box-sizing: border-box;
+  margin-left: 27px;
+  padding: 81px 77px;
+  padding-right: 32px;
+  border-left: 2px solid var(--light-gray, #E9EBF0);
+}
+
+.reply-form {
+  box-sizing: border-box;
+  margin-left: 27px;
+  padding: 60px 75px;
+  padding-right: 32px;
+  &-avatar {
+    width: 43.441px;
+    height: 40.045px;
+    border-radius: 43.441px;
+  }
+
+  textarea {
+    box-sizing: border-box;
+    height: 133.333px;
+    border-radius: 11.111px;
+    border: 1.389px solid #D5A007;
+    background: var(--white, #FFF);
+    padding: 17px 29px;
+    color: var(--dark-blue, #334253);
+    font-family: Poppins;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 33.333px;
+  }
+  .reply-btn {
+    cursor: pointer;
+    width: 141.18px;
+    height: 65.16px;
+    border-radius: 11.111px;
+    background: #D5A007;
+    color: var(--white, #FFF);
+    font-family: Poppins Medium;
+    font-size: 22.222px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 33.333px;
+    border: none;
+  }
+}

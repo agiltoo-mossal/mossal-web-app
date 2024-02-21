@@ -1,0 +1,28 @@
+<div class="container">
+    <div class="page-wrapper" fxLayout="column" fxLayoutGap="80px">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title-with-arrow" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
+                <span>Hubs de vie</span>
+                <img src="./assets/img/arrow-right.svg" alt="arrow right">
+            </span>
+            <span class="btn-see-more">En savoir +</span>
+        </div>
+        <div class="actualities-wrapper" fxLayout="row" fxLayoutGap="50px">
+            <div class="big-actu" fxFlex="40" fxLayoutAlign="start end"
+                [ngStyle]="{'background-image':'url('+'./assets/img/img-big-actu.png'+')'}">
+                <div class="actu-text" fxLayout="column" fxLayoutGap="16px">
+                    <span class="actu-title">Opérationnalisation de la plateforme de l’investissement de la zone
+                        sud.</span>
+                    <span class="actu-date">Publié le 22/06/2022 à 12:48:49</span>
+                    <span class="actu-description">APIX SA et ses partenaires organisent un Guichet Mobile de Promotion
+                        et de Services aux Entreprises du 17 au 20 mai 2022 à Kolda</span>
+                </div>
+            </div>
+            <div class="actu-list" fxFlex="60">
+                <div class="card-wrapper" *ngFor="let actu of actuList">
+                    <app-actulity-card></app-actulity-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

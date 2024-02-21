@@ -1,0 +1,62 @@
+
+<div fxFill fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+  <div fxFill class="message" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="32px">
+    <div fxFlex="54.301px" class="message-vote" fxLayout="column" fxLayoutAlign="space-between center">
+      <span class="message-vote-icon">+</span>
+      <span class="message-vote-value">{{ message.votes }}</span>
+      <span class="message-vote-icon">-</span>
+    </div>
+    <div fxFlex="auto" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="18px">
+      <div fxFill fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="66px">
+        <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="22px">
+          <img class="message-avatar" [src]="message.user.avatar">
+          <span class="message-username">{{message.user.firstName}}</span>
+        </div>
+        <div class="message-date">{{ message.date }}</div>
+        <div fxFlex="auto" class="message-reply-link" (click)="triggerReplyForm(true)" fxLayout="row wrap" fxLayoutAlign="end start">
+          <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="4px">
+            <mat-icon class="materials-icon">reply</mat-icon>
+            <span>Reply</span>
+          </div>
+        </div>
+      </div>
+      <div class="content">{{ message.content }}</div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="message.replies.length">
+    <div class="replies" fxFill fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
+      <div class="message" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="32px" *ngFor="let reply of message.replies" fxFill >
+        <div fxFlex="54.301px" class="message-vote" fxLayout="column" fxLayoutAlign="space-between center">
+          <span class="message-vote-icon">+</span>
+          <span class="message-vote-value">{{reply.votes}}</span>
+          <span class="message-vote-icon">-</span>
+        </div>
+        <div fxFlex="auto" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="18px">
+          <div fxFill fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="66px">
+            <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="22px">
+              <img class="message-avatar" [src]="reply.user.avatar">
+              <span class="message-username">{{reply.user.firstName}}</span>
+            </div>
+            <div class="message-date">{{ reply.date }}</div>
+            <div fxFlex="auto" class="message-reply-link" (click)="triggerReplyForm(true)" fxLayout="row wrap" fxLayoutAlign="end start">
+              <div fxLayout="row wrap" fxLayoutAlign="start start" fxLayoutGap="4px">
+                <mat-icon class="materials-icon">reply</mat-icon>
+                <span>Reply</span>
+              </div>
+            </div>
+          </div>
+          <div class="content">{{ reply.content }}</div>
+        </div>
+    </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="showReplyForm">
+    <div fxFill class="reply-form" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="19px">
+      <img [src]="currentUser.avatar" class="reply-form-avatar">
+      <textarea #replyControl fxFlex="auto">Great work! You’ve done an excellent job!</textarea>
+      <button class="reply-btn">REPLY</button>
+    </div>
+  </ng-container>
+
+</div>

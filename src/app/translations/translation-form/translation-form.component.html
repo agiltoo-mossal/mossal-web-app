@@ -1,0 +1,28 @@
+<div class="form-container" fxLayout="row" fxLayoutAlign="center start">
+  <form fxFlex="50%" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="24px" *ngIf="true" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <h2>Translations</h2>
+    <div fxFill class="form-group" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+      <label>{{ 'key' | translate | titlecase }}</label>
+      <input formControlName="key" class="form-control">
+    </div>
+    <div formArrayName="values" fxFill fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="24px">
+      <div *ngFor="let translation of valuesArray.controls; let i = index" [formGroupName]="i">
+        <div fxFill class="form-group" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+          <label>{{ 'lang' | translate | titlecase }}</label>
+          <input formControlName="lang" class="form-control">
+        </div>
+        <div fxFill class="form-group" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+          <label>{{ 'text' | translate | titlecase }}</label>
+          <input formControlName="text" class="form-control">
+        </div>
+        <button (click)="removeTranslation(i)">{{ 'delete' | translate | titlecase }}</button>
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-form-default" type="button" (click)="addTranslation()">{{ 'add translation' | translate | titlecase }}</button>
+    </div>
+    <div>
+      <button class="btn btn-form-primary" type="submit">Ajouter</button>
+    </div>
+  </form>
+</div>

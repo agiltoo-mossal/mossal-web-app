@@ -1,0 +1,33 @@
+<div class="container">
+  <h2>REGISTER USER</h2>
+  <form [formGroup]="registerForm">
+    <div class="error-message" *ngIf="formHasError">Veuillez remplir tous les champs</div>
+    <div class="form-group">
+      <label for="firstname">FirstName</label>
+      <input [ngClass]="{ 'error': firstName.invalid && firstName.touched }" id="firstname" formControlName="firstName" type="text" name="firstname" placeholder="First Name" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="lastname">LastName</label>
+      <input id="lastname" [ngClass]="{ 'error': lastName.invalid && lastName.touched }" type="text" formControlName="lastName" name="lastname" placeholder="Last Name" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <span class="error-message" *ngIf="email.invalid && email.touched">Email est requis</span>
+      <input id="email" type="text" [ngClass]="{ 'error': email.invalid && email.touched }" name="email" formControlName="email" placeholder="email" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" [ngClass]="{ 'error': username.invalid && username.touched }" type="text" name="username" formControlName="username" placeholder="Username" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" type="password" [ngClass]="{ 'error': password.invalid && password.touched }" name="password" formControlName="password" placeholder="Mot de passe" class="form-control">
+    </div>
+
+    <button class="btn btn-success" [ngClass]="{ 'desactivated': registerForm.invalid }" [disabled]="registerForm.invalid" (click)="registerUser()">CREATE NEW USER</button>
+  </form>
+</div>

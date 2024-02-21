@@ -1,0 +1,26 @@
+.form-container {
+  position: relative;
+  .icons {
+    position: absolute;
+    top: 32%;
+    right: 17px;
+    .icon-container {
+      width: 32px;
+      height: 22px;
+      border-radius: 4px;
+    }
+    .edit {
+      color: #0E1032;
+      border: 1px solid #0E1032;
+    }
+    .delete {
+      color: #E94916;
+      border: 1px solid #E94916;
+    }
+    .mat-icon {
+      font-size: 18px;
+      line-height: 22px;
+      margin-right: -6px;
+    }
+  }
+}

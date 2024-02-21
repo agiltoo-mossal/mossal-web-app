@@ -1,0 +1,11 @@
+<div class="container" fxLayout="column" fxLayoutGap="15px">
+    <div fxLayoutAlign="end center">
+        <mat-icon> call_made</mat-icon>
+    </div>
+    <div class="title-container" fxLayout.lg="row" fxLayoutAlign.lg="start center" fxLayoutGap.lg="15px">
+        <span class="icon-hub" [ngStyle]="{'background-image':'url('+hub.icon+')'}">
+        </span>
+        <span class="title-hub">{{hub.title}}</span>
+    </div>
+    <div class="description text-on-4-line">{{hub.description}}</div>
+</div>

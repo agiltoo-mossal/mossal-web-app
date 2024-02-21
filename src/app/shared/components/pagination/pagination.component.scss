@@ -1,0 +1,23 @@
+.pagination {
+  .page {
+    cursor: pointer;
+    width: 39.429px;
+    height: 39.429px;
+    color: #000;
+    font-family: Poppins;
+    font-size: 16.898px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    &.active {
+      background: #D5A007;
+      color: #fff;
+    }
+  }
+  .nav-direction {
+    margin: 0px 12px;
+    background: rgba(213, 160, 7, 0.20);
+    color: #D5A007;
+    font-weight: bold;
+  }
+}

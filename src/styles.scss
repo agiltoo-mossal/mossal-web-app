@@ -1,0 +1,863 @@
+@use "@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$databeez-primary: (
+  50: #f9f5e0,
+  100: #f0e5b1,
+  200: #e7d57f,
+  300: #dec64d,
+  400: #d9b92a,
+  500: #00409A,
+  600: #d5a207,
+  700: #d59100,
+  800: #d48200,
+  900: #d16600,
+  // ... continues to 900
+  contrast: (50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+  ),
+);
+$databeez-accent: (
+  50: #e4e5eb,
+  100: #babecf,
+  200: #8f95ae,
+  300: #666d8f,
+  400: #49517a,
+  500: #2c3666,
+  600: #27305f,
+  700: #1f2755,
+  800: #181f49,
+  900: #0e1032,
+  // ... continues to 900
+  contrast: (50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+  ),
+);
+
+$mossal-web-app-primary: mat.define-palette($databeez-primary);
+$mossal-web-app-accent: mat.define-palette($databeez-accent);
+
+// The warn palette is optional (defaults to red).
+$mossal-web-app-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$mossal-web-app-theme: mat.define-light-theme((color: (primary: $mossal-web-app-primary,
+        accent: $mossal-web-app-accent,
+        warn: $mossal-web-app-warn,
+      ),
+    ));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($mossal-web-app-theme);
+
+/* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: "Roboto";
+  src: url(assets/fonts/Roboto/Roboto-Regular.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Roboto Bold";
+  src: url(assets/fonts/Roboto/Roboto-Bold.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Roboto Black";
+  src: url(assets/fonts/Roboto/Roboto-Black.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Roboto Light";
+  src: url(assets/fonts/Roboto/Roboto-Light.ttf) format("opentype");
+}
+
+@font-face {
+  font-family: "Roboto Medium";
+  src: url(assets/fonts/Roboto/Roboto-Medium.ttf) format("opentype");
+}
+
+html,
+body,
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  font-style: normal;
+  line-height: normal;
+  font-family: Roboto;
+  ;
+}
+
+body {
+  background: #fffefc;
+}
+
+.form-control {
+  outline: none;
+}
+
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #acacac;
+  font-size: 18px;
+  font-family: Roboto;
+  font-weight: 300;
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #acacac;
+  font-size: 18px;
+  font-family: Roboto;
+  font-weight: 300;
+}
+
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #acacac;
+  font-size: 15px;
+  font-family: Roboto;
+  font-weight: 300;
+}
+
+.search {
+  &::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #acacac;
+    font-size: 20px;
+    font-family: Roboto;
+    letter-spacing: 0.1px;
+    opacity: 0.800000011920929;
+  }
+
+  &.form-control {
+    height: 64px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(213, 160, 7, 0.6);
+  }
+}
+
+textarea {
+  outline: none;
+}
+
+input:focus {
+  border: 1px solid #00409A;
+  outline: #00409A;
+}
+
+.page-container-wrap {
+  padding: 0 5%;
+}
+
+.text-on-1-line,
+.text-on-2-line,
+.text-on-4-line,
+.text-on-3-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-on-1-line {
+  -webkit-line-clamp: 1;
+}
+
+.text-on-2-line {
+  -webkit-line-clamp: 2;
+}
+
+.text-on-3-line {
+  -webkit-line-clamp: 3;
+}
+
+.text-on-4-line {
+  -webkit-line-clamp: 4;
+}
+
+.image-cover {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.AvailableForPreview {
+  color: #fcd980;
+}
+
+.RegistrationOpen {
+  color: #3cb14f;
+}
+
+.Draft {
+  color: #b2b3cf;
+}
+
+.End {
+  color: #fb6d3a;
+}
+
+.form-container {
+  color: #0e1032;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+  label {
+    color: #0e1032;
+    font-family: "Roboto SemiBold";
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .form-control {
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 1px solid #00409A;
+    ;
+    background: rgba(217, 217, 217, 0);
+    padding: 0px 28px;
+    width: 100%;
+    height: 55px;
+    font-size: 18px;
+
+    &::placeholder {
+      color: #9d9b9b;
+      font-size: 14px;
+    }
+  }
+
+  .new-element {
+    cursor: pointer;
+    color: #d5a007;
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 15.433px;
+    /* 110.238% */
+  }
+
+  textarea {
+    &.form-control {
+      height: 160px;
+      padding-top: 16px;
+    }
+  }
+
+  .title {
+    color: #0e1032;
+    font-family: "Roboto SemiBold";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.42px;
+  }
+
+  .submit {
+    border-radius: 12px;
+    background: #d5a007;
+    border: none;
+    height: 58px;
+    width: 100%;
+    color: #fff;
+    font-family: "Roboto Medium";
+    font-size: 21px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    /* 36px */
+    letter-spacing: 0.12px;
+  }
+}
+
+.modal {
+  position: relative;
+
+  .close {
+    display: flex;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 29px;
+    background: var(--grey-medium, #e5e5e5);
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .title {
+    color: #0e1032;
+    font-family: "Roboto SemiBold";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  .cancel {
+    width: 180px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #0e1032;
+    background: var(--white, #fff);
+    color: #0e1032;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .confirm {
+    width: 180px;
+    height: 44px;
+    border-radius: 8px;
+    background: #d5a007;
+    border: none;
+    color: #fff;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.curriculum {
+  .section {
+    img {
+      border-radius: 5px;
+    }
+
+    &-title {
+      color: #282938;
+      font-size: 32px;
+      font-family: Roboto;
+      font-weight: 500;
+    }
+
+    &-description {
+      color: var(--dark-blue, #282938);
+      font-size: 16px;
+      font-family: Roboto;
+      opacity: 0.699999988079071;
+    }
+  }
+
+  .lesson {
+    border-bottom: 1px solid #d9d9d9;
+    padding: 12px 24px;
+
+    &-title {
+      color: #252641;
+      font-size: 14px;
+      font-family: Roboto;
+      font-weight: 500;
+      letter-spacing: 0.28px;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.font-sn {
+  overflow: hidden;
+  color: var(--Button-stroke, #00409A);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Manrope;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.btn {
+  border: none;
+
+  &.btn-primary {
+    border-radius: 10.289px;
+    border: 0.857px solid #fff;
+    background-color: #00409A;
+    color: #fff;
+  }
+
+  &.btn-form-primary {
+    width: 180px;
+    height: 44px;
+    border-radius: 8px;
+    background: #d5a007;
+    color: var(--grey-light, #f5f5f5);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &.btn-form-default {
+    width: 180px;
+    height: 44px;
+    border-radius: 8px;
+    background: #fff;
+    color: #0e1032;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border: 1px solid #0e1032;
+  }
+}
+
+.nav-onglet {
+  height: 83.5px;
+
+  .nav-item {
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 83.5px;
+    padding-left: 41px;
+    border-bottom: 2px solid #f2f1f0;
+
+    &.active {
+      padding-right: 41px;
+      border-bottom: 2px solid #fff;
+      border-top: 2px solid #f2f1f0;
+      border-right: 2px solid #f2f1f0;
+    }
+
+    &.full {
+      border-left: 2px solid #f2f1f0;
+    }
+
+    &.item-before-active {
+      padding-right: 41px;
+    }
+  }
+}
+
+.search-container {
+  .form-control {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+.dropdown {
+  position: relative;
+
+  .dropdown-content {
+    z-index: 3;
+    box-sizing: border-box;
+    position: absolute;
+    top: 100%;
+    // left: 0;
+    right: 0;
+    width: max-content;
+    padding: 18px;
+    border-radius: 8px;
+    border: 1px solid var(--stroke-light, #dee2e6);
+    background: var(--gray-white, #fff);
+    /* Shadow / Small */
+    box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.08),
+      0px 0px 2px 0px rgba(0, 0, 0, 0.12);
+    color: #0e1032;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 180%;
+    /* 25.2px */
+    letter-spacing: 0.28px;
+    display: none !important;
+
+    &.show {
+      display: block !important;
+    }
+
+    .dropdown-option {
+      cursor: pointer;
+    }
+  }
+}
+
+.input-container {
+  position: relative;
+
+  &.icon-right {
+    .icon {
+      position: absolute;
+      top: 25%;
+      right: 8px;
+    }
+
+    .mat-icon {
+      color: #7e7e7e;
+    }
+  }
+
+  &.icon-left {
+    .icon {
+      position: absolute;
+      top: 25%;
+      left: 8px;
+    }
+
+    .mat-icon {
+      color: #7e7e7e;
+    }
+  }
+}
+
+.table {
+  text-align: left;
+  color: var(--light-secondary, #6c757d);
+  font-feature-settings: "clig" off, "liga" off;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 13.754px;
+  /* 114.618% */
+
+  .large-col {
+    width: 30%;
+  }
+
+  td {
+    height: 44px;
+    border-bottom: 1px solid #eaeaea !important;
+  }
+
+  th {
+    border-bottom: 1.25px solid #dfdfdf;
+    color: var(--light-dark, #343a40);
+    font-feature-settings: "clig" off, "liga" off;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 13.754px;
+    /* 137.541% */
+  }
+}
+
+.badge {
+  box-sizing: border-box;
+  text-align: center;
+  padding: 1.25px 6.252px;
+  border-radius: 15.63px;
+  color: var(--light-white, #fff);
+  font-feature-settings: "clig" off, "liga" off;
+  font-family: "Roboto Medium";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 13.754px;
+
+  /* 157.143% */
+  &.badge-success,
+  &.joined {
+    background: #49bbbd;
+  }
+
+  &.badge-warning,
+  &.pending {
+    background: #fdb022;
+  }
+
+  &.badge-danger,
+  &.blocked {
+    background: var(--danger, #dc3545);
+  }
+}
+
+.color-danger {
+  color: #e94916;
+
+  .mat-icon {
+    color: #e94916 !important;
+  }
+}
+
+.color-success {
+  color: green;
+
+  .mat-icon {
+    color: green !important;
+  }
+}
+
+.invalid {
+  border-color: #e94916 !important;
+}
+
+input,
+select,
+textarea {
+  &.ng-touched {
+    &.ng-invalid {
+      border-color: #e94916;
+    }
+  }
+}
+
+.page-title {
+  color: #282938;
+  font-size: 32px;
+  font-family: "Roboto SemiBold";
+  font-weight: 500;
+}
+
+.profile-container {
+  padding: 68px 5% 175px;
+
+  .section-title {
+    color: #0e1032;
+    font-family: Inter;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 32px;
+
+    padding: 0 23px;
+
+    .btn-add-champ {
+      cursor: pointer;
+    }
+  }
+
+  .section {
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0px 10px 40px 0px rgba(0, 0, 0, 0.05);
+    padding: 0 52px;
+
+    .champ {
+      width: 100%;
+      padding: 20px 0;
+      border-bottom: 1px solid #cbcbcb50;
+
+      &:last-of-type {
+        border: none;
+      }
+
+      .values-champ {
+        font-family: Inter;
+
+        line-height: 32px;
+        /* 200% */
+        font-weight: 400;
+
+        .text1 {
+          color: #000;
+          font-size: 20px;
+        }
+
+        .text2 {
+          color: #667085;
+          font-size: 16px;
+        }
+
+        .text3 {
+          color: #0e1032;
+          font-size: 16px;
+        }
+
+        .yellow-circle {
+          display: block;
+          height: 10px;
+          width: 10px;
+          background-color: #d4a009;
+          border-radius: 50%;
+        }
+      }
+
+      .btn {
+        cursor: pointer;
+
+        &__text {
+          padding: 0;
+          background-color: transparent;
+          color: #12102c;
+          text-align: right;
+          font-family: Inter;
+          font-size: 16px;
+          font-weight: 700;
+          line-height: 56px;
+          /* 350% */
+          text-decoration-line: underline;
+        }
+
+        &__icon {
+          width: 35px;
+          height: 23.333px;
+
+          &--edit {
+            border: 1px solid #0e1032;
+
+            mat-icon {
+              color: #0e1032;
+            }
+          }
+
+          &--delete {
+            border: 1px solid #e94916;
+
+            mat-icon {
+              color: #e94916;
+            }
+          }
+        }
+      }
+    }
+
+    &--skills {
+      box-shadow: none;
+      padding: 0 23px;
+
+      .skill {
+        border-radius: 8.442px;
+        background: #dfdfdf;
+        padding: 12px 32px;
+        margin-bottom: 25px;
+      }
+    }
+  }
+}
+
+
+
+.page-wrapper {
+  margin: 0 auto;
+
+  @media (min-width: 1440px) {
+    max-width: 1380px;
+  }
+
+  @media (min-width: 1920px) {
+    max-width: 1520px;
+  }
+}
+
+.title-with-arrow {
+  color: #00409A;
+  /* sub title */
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.title-with-curvligne {
+  /* high text */
+  display: inline-block;
+  font-size: 35px;
+  font-weight: 700;
+  line-height: 51px;
+
+  &--green {
+    color: #4BB29E;
+  }
+
+  &--black {
+    color: #303030;
+  }
+
+  &--white {
+    color: var(--light-mode, #F3F3F3);
+  }
+
+  position: relative;
+
+  &::before {
+    position: absolute;
+    content: '';
+    top: 40px;
+    left: 40px;
+    height: 12px;
+    right: 0;
+
+    background-image: url('./assets/img/yellow-curviligne.svg');
+    background-size: auto;
+    background-position: left center;
+    background-repeat: no-repeat;
+
+    @media only screen and (max-width:1267px) {}
+  }
+
+
+}
+
+// html,
+// body {
+//   height: 100%;
+
+//   // Personnalisation du scroll-bar
+//   /* Works on Firefox */
+//   * {
+//     scrollbar-width: thin;
+//     scrollbar-color: #91919f #fff;
+//   }
+
+//   /* Works on Chrome, Edge, and Safari */
+//   *::-webkit-scrollbar {
+//     width: 12px;
+//   }
+
+//   *::-webkit-scrollbar-track {
+//     background: #fff;
+//   }
+
+//   *::-webkit-scrollbar-thumb {
+//     background-color: #91919f;
+//     border-radius: 20px;
+//     border: 3px solid #fff;
+//   }
+// }
+// body {
+//   margin: 0;
+//  font-family: Roboto;
+// }

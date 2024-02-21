@@ -1,0 +1,23 @@
+<div *ngIf="form" class="form-container modal" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="16px">
+  <div class="close" (click)="cancel()">
+    <mat-icon>close</mat-icon>
+  </div>
+    <span class="title">Add link</span>
+    <form [formGroup]="form" fxLayout="column" fxFill fxLayoutAlign="start start" fxLayoutGap="36px">
+      <div fxFill fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="30px">
+        <div fxFill class="form-group" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+          <label>Name</label>
+          <input formControlName="name" name="name" class="form-control" placeholder="Enter the ressource name">
+        </div>
+
+        <div fxFill class="form-group" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="10px">
+          <label>Url</label>
+          <input formControlName="url" name="url" class="form-control" placeholder="Enter the url">
+        </div>
+      </div>
+      <div fxFill fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="20px">
+        <button class="btn btn-form-default" (click)="cancel()">No, cancel</button>
+        <button class="btn btn-form-primary" (click)="addLink()">Add Link</button>
+      </div>
+    </form>
+</div>

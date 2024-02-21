@@ -1,0 +1,24 @@
+.container-wrap {
+  margin-top: 170px;
+  width: 100%;
+  // overflow-x: hidden;
+
+  &.auth-app-context {
+    margin-top: 0;
+  }
+
+  &.admin-app-context,
+  &.classroom-app-context {
+    height: calc(100vh - 170px);
+    overflow-y: auto;
+  }
+}
+
+#progress-page {
+  position: fixed;
+  z-index: 999999;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+}

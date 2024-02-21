@@ -1,0 +1,11 @@
+.form-container {
+  box-sizing: border-box;
+  width: 750px;
+  padding: 36px 40px;
+  border-radius: 8px;
+  border: 1px solid var(--stroke-light, #DEE2E6);
+  background: var(--gray-white, #FFF);
+
+  /* Shadow / Small */
+  box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.08), 0px 0px 2px 0px rgba(0, 0, 0, 0.12);
+}

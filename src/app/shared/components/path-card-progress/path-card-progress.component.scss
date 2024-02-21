@@ -1,0 +1,45 @@
+.path-card {
+  padding: 30px 40px;
+  cursor: pointer;
+
+  border-radius: 12px;
+  border: 1px solid rgba(216, 216, 216, 0.4);
+  background: #fff;
+  // box-shadow: 0px 67.11439px 109.06088px 0px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  color: #000;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 150%; /* 36px */
+  letter-spacing: 0.12px;
+}
+
+.progress-details {
+  color: rgba(0, 0, 0, 0.5);
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28px;
+}
+
+.points {
+  .mat-icon {
+    color: #d5a007;
+  }
+  span {
+    color: #000;
+
+    font-size: 10.358px;
+    font-weight: 500;
+    letter-spacing: 0.207px;
+  }
+}
+
+.icon-container {
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: 10px;
+}
