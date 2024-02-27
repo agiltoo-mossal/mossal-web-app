@@ -791,45 +791,7 @@ textarea {
   font-weight: 700;
 }
 
-.title-with-curvligne {
-  /* high text */
-  display: inline-block;
-  font-size: 35px;
-  font-weight: 700;
-  line-height: 51px;
 
-  &--green {
-    color: #4BB29E;
-  }
-
-  &--black {
-    color: #303030;
-  }
-
-  &--white {
-    color: var(--light-mode, #F3F3F3);
-  }
-
-  position: relative;
-
-  &::before {
-    position: absolute;
-    content: '';
-    top: 40px;
-    left: 40px;
-    height: 12px;
-    right: 0;
-
-    background-image: url('./assets/img/yellow-curviligne.svg');
-    background-size: auto;
-    background-position: left center;
-    background-repeat: no-repeat;
-
-    @media only screen and (max-width:1267px) {}
-  }
-
-
-}
 
 // html,
 // body {

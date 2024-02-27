@@ -14,36 +14,6 @@ export class HeaderComponent implements OnInit {
   context: APP_CONTEXT = APP_CONTEXT.Default;
   AppContext = APP_CONTEXT;
 
-  headerPosition: string = '';
-  scrollPosition: number = 0;
-
-  navLinks: any[] = [
-    {
-      label: 'Accueil',
-      url: 'home',
-    },
-    {
-      label: 'Démarches administratives',
-      url: 'administrative-procedures',
-    },
-    {
-      label: 'Nos services',
-      url: 'our-services',
-    },
-    {
-      label: 'Actualités',
-      url: 'news',
-    },
-    {
-      label: 'Qu’est ce que Sénégal Service',
-      url: 'about-us',
-    },
-    {
-      label: 'Support',
-      url: 'support',
-    },
-  ];
-
   constructor(
     private authService: AuthService,
     private appService: AppService,
@@ -73,25 +43,5 @@ export class HeaderComponent implements OnInit {
       this.user.role === UserRole.Instructor
       ? 'admin'
       : 'talent';
-  }
-
-  chooseLang(lang: string) {
-    this.translationService.chooseLangue(lang);
-  }
-
-  @HostListener('window:scroll', ['$event'])
-  onWindowScroll(event: Event) {
-    const scrollY = window.scrollY;
-    const direction = scrollY > this.scrollPosition ? 'down' : 'up';
-
-    if (direction === 'down' && scrollY > 107) {
-      this.headerPosition = 'is-hide';
-      // console.log('down');
-    } else if (direction === 'up' && scrollY > 107) {
-      this.headerPosition = 'is-fixed';
-    } else {
-      this.headerPosition = '';
-    }
-    this.scrollPosition = scrollY;
   }
 }

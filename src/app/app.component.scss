@@ -1,16 +1,24 @@
-.container-wrap {
-  margin-top: 170px;
-  width: 100%;
-  // overflow-x: hidden;
+// .container-wrap {
+//   margin-top: 170px;
+//   width: 100%;
+//   // overflow-x: hidden;
+
+//   &.auth-app-context {
+//     margin-top: 0;
+//   }
+
+//   &.admin-app-context,
+//   &.classroom-app-context {
+//     height: calc(100vh - 170px);
+//     overflow-y: auto;
+//   }
+// }
+
+.header {
+  display: block;
 
   &.auth-app-context {
-    margin-top: 0;
-  }
-
-  &.admin-app-context,
-  &.classroom-app-context {
-    height: calc(100vh - 170px);
-    overflow-y: auto;
+    display: none;
   }
 }
 

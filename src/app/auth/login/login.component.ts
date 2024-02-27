@@ -10,10 +10,9 @@ import { RequestPasswordResetComponent } from '../request-password-reset/request
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  passwordVisibility = 'password';
   email: string;
   password: string;
   hidePassword: boolean = true;
@@ -27,28 +26,30 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private snackBarService: SnackBarService,
     public dialog: MatDialog
-  ) { }
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   async login(form: NgForm) {
     try {
       const value = { ...form.value };
       delete value.checkbox;
       await this.authService.login(value);
-    } catch(error) {
-      this.snackBarService.showErrorSnackBar(4000, "Email ou mot de passe incorrecte!");
+    } catch (error) {
+      this.snackBarService.showErrorSnackBar(
+        4000,
+        'Email ou mot de passe incorrecte!'
+      );
     }
   }
 
   resetPassword() {
     const dialogRef = this.dialog.open(RequestPasswordResetComponent, {
       data: null,
-      maxHeight: "90vh"
+      maxHeight: '90vh',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Ajoutez la compétence de l'utilisateur avec le résultat.
       }

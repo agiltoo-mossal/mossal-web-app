@@ -1,32 +1,37 @@
-<div class="container" [ngClass]="headerPosition">
-  <div class="page-wrapper">
-    <div class="header" fxLayout="row" fxLayoutAlign="space-between none">
-      <div class="logo">
-        <img src="./assets/img/logo-senum.svg" alt="logo-senum">
-      </div>
-      <!-- ######################################################################## -->
-      <nav fxLayout="row" fxLayoutAlign="start none" fxLayoutGap="0px">
-        <div class="nav-item" fxLayoutAlign="start center" *ngFor="let link of navLinks" [routerLink]="link.url"
-          routerLinkActive="active">
-          {{link.label}} </div>
-      </nav>
-      <!-- ######################################################################## -->
-      <div class="search-and-profil" fxLayout="row" fxLayoutAlign="start center">
-        <span class="icon-search"><mat-icon fxLayoutAlign="end center">search</mat-icon></span>
-        <div class="separator"></div>
-        <span fxHide class="login-btn" fxLayoutAlign="center center">Se connecter</span>
-        <div class="user-profil dropdown" [appDropdown]="'dropdown-menu-user'">
-          <div fxLayoutAlign="start end">
-            <span class="user-image"><img src="./assets/img/user-pp.png" alt="image user"></span>
-            <mat-icon>arrow_drop_down</mat-icon>
-          </div>
-          <div class="dropdown-content" id="dropdown-menu-user" fxLayout="column" fxLayoutGap="8px">
-            <div class="dropdown-option">Profile</div>
-            <div class="dropdown-option">Dashboard</div>
-            <div class="dropdown-option">Déconnexion</div>
-          </div>
+<div class="container" fxFlex="100" fxLayout="row">
+    <div class="" fxFlex="100" fxLayout="row" fxLayoutGap="26px">
+        <div class="logo-container" fxLayout="row" fxLayoutAlign="start center">
+            <div class="logo-icon">
+                <img src="../../../../assets/img/logo-icon.png" alt="">
+            </div>
+            <div class="logo-text">
+                <img src="../../../../assets/img/logo-text.png" alt="">
+            </div>
         </div>
-      </div>
+        <div fxFlex="auto" fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title">Aperçu</span>
+            <div class="user-and-notif-container" fxLayout="row" fxLayoutGap="24px">
+                <div fxLayout="row">
+                    <span class="config-icon" fxLayoutAlign="center center"><mat-icon
+                            fxLayoutAlign="center center">settings</mat-icon></span>
+                    <span class="message-icon" fxLayoutAlign="center center"><mat-icon fxLayoutAlign="center center">
+                            email</mat-icon></span>
+                </div>
+                <div class="user-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="50px">
+                    <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="8px">
+                        <div class="user-img">
+                            <img src="../../../../assets/img/user-img.png" alt="">
+                        </div>
+                        <div class="user-detail" fxLayout="column" fxLayoutAlign="center start">
+                            <span class="name">Awa FALL</span>
+                            <span class="role">RRH/DG/PDG</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <span class="icon-dropdown"><mat-icon>arrow_drop_down</mat-icon></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
