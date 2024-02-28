@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { TranslationService } from 'src/app/translation.service';
 import { UserRole } from 'src/graphql/generated';
 import { APP_CONTEXT } from '../../enums/app-context.enum';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-header',
@@ -13,16 +14,22 @@ import { APP_CONTEXT } from '../../enums/app-context.enum';
 export class HeaderComponent implements OnInit {
   context: APP_CONTEXT = APP_CONTEXT.Default;
   AppContext = APP_CONTEXT;
+  isSidebarOpened!: boolean;
 
   constructor(
     private authService: AuthService,
     private appService: AppService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private sidebarService: SidebarService
   ) {}
 
   ngOnInit(): void {
     this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
+    });
+
+    this.sidebarService.isSidebarOpen().subscribe((resp) => {
+      this.isSidebarOpened = resp;
     });
   }
 

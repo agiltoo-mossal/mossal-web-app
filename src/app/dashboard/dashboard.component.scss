@@ -1,0 +1,103 @@
+.container {
+    background: #F1F7FF;
+    height: calc(100vh - 70px);
+}
+
+.sidebar {
+    height: 100%;
+    background-color: #fff;
+    box-shadow: 0px 1px 0px 0px #E7E8F2;
+
+    padding-top: 36px;
+    position: relative;
+
+    &.is-opened {
+        width: calc(300px);
+
+        .toggleSidebar {
+            transform: rotate(0deg);
+        }
+    }
+
+    &.is-closed {
+        width: auto;
+
+        .toggleSidebar {
+            transform: rotate(180deg);
+        }
+    }
+
+    .toggleSidebar {
+        position: absolute;
+        top: 8px;
+        right: -12px;
+
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+
+        background-color: #061E5C;
+        color: #fff;
+        cursor: pointer;
+
+        transition: transform .3s;
+    }
+
+    .nav-item {
+        padding: 16px;
+        transition: all .3s;
+
+        .icon {
+            color: #000;
+            height: 32px;
+            width: 32px;
+            border-radius: 50px;
+            background-color: transparent;
+        }
+
+        .label {
+            color: #061E5C60;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        cursor: pointer;
+
+        &.active {
+            background: #F1F7FF;
+            border-radius: 6px;
+            color: #061E5C;
+
+            .icon {
+                background-color: #FFC708;
+            }
+        }
+
+        &:hover {
+            border-radius: 6px;
+            background: #F1F7FF;
+        }
+    }
+
+
+    .btn-logout-container {
+        border-top: 1px solid #A7A9C020;
+
+        .btn-logout {
+            padding: 16px;
+            cursor: pointer;
+
+            color: #061E5C60;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.067px;
+        }
+    }
+
+    .btn-logout-container,
+    .nav-item-container {
+        padding-left: 40px;
+        padding-right: 16px;
+    }
+}

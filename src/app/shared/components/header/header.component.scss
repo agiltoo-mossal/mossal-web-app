@@ -1,17 +1,37 @@
 .container {
     height: 70px;
-    padding: 0 5%;
+    padding: 0 40px;
     background: #FFF;
-    box-shadow: 0px 1px 0px 0px #E7E8F2;
-
+    border-bottom: 1px solid #E7E8F2;
 }
 
 .logo-container {
-    width: 321px;
-    border-right: 2px solid #A7A9C020;
+    padding-right: 16px;
+    border-right: 1px solid #A7A9C020;
 
-    img {
-        display: block;
+    .logo-icon {
+        width: 64px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    .logo-text,
+    .logo-icon {
+        height: 64px;
+
+        img {
+            display: block;
+        }
+    }
+
+    &.is-opened {
+        width: calc(300px - 40px);
+    }
+
+    &.is-closed {
+        width: auto;
     }
 }
 
@@ -32,11 +52,11 @@
         width: 70px;
         height: 70px;
 
-        border-right: 2px solid #A7A9C020;
+        border-right: 1px solid #A7A9C020;
     }
 
     .config-icon {
-        border-left: 2px solid #A7A9C020;
+        border-left: 1px solid #A7A9C020;
     }
 
     .user-img {
