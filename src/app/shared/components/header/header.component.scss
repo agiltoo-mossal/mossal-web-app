@@ -55,6 +55,25 @@
         border-right: 1px solid #A7A9C020;
     }
 
+    .message-icon {
+        position: relative;
+
+        .nbr-message {
+            position: absolute;
+            top: 12px;
+            right: 4px;
+
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #061E5C;
+
+            color: #FFF;
+            font-size: 9px;
+            font-weight: 700;
+        }
+    }
+
     .config-icon {
         border-left: 1px solid #A7A9C020;
     }

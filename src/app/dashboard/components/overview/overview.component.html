@@ -1,3 +1,32 @@
-<div class="container">
-    <p>overview works!</p>
+<div class="page-wrapper">
+    <div class="data-first-preview" fxLayout="column" fxLayoutGap="32px">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="dashboard-title">Echéances Avance sur salaire</span>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
+                <div class="time-interval">
+                    <span class="current-time-interval" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                        <span class="value" fxLayoutAlign="start center">Du 1 jan 2022 au 31dec 2022</span>
+                        <mat-icon fxLayoutAlign="center center">arrow_drop_down</mat-icon>
+                    </span>
+                </div>
+                <span class="dashboard-title">Filtrer</span>
+            </div>
+        </div>
+        <div class="card-data-container" fxLayout="row" fxLayoutGap="32px" fxLayoutAlign="start start">
+            <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start" *ngFor="let card of cardPrevData">
+                <div fxLayout="column">
+                    <div>
+                        <span class="label">{{card.label}}</span>
+                    </div>
+                    <div fxLayout="column">
+                        <span class="devis" *ngIf="card.devis">{{card.devis}}</span>
+                        <span class="value" *ngIf="card.value">{{card.value}}</span>
+                    </div>
+                </div>
+                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':card.color}">
+                    <img [src]="card.img" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

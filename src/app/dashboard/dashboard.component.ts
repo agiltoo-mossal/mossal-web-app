@@ -11,27 +11,27 @@ export class DashboardComponent implements OnInit {
   dashboardNav = [
     {
       label: 'Tableau de bord',
-      link: '',
+      link: 'overview',
       icon: 'dashboard',
     },
     {
       label: 'Liste des demandes',
-      link: '#',
+      link: 'requests-list',
       icon: 'list_alt',
     },
     {
       label: 'Collaborateurs',
-      link: '#',
+      link: 'collaborators',
       icon: 'people',
     },
     {
       label: 'Messagerie',
-      link: '#',
+      link: 'messaging',
       icon: 'email',
     },
     {
       label: 'Paramétres',
-      link: '#',
+      link: 'settings',
       icon: 'settings',
     },
   ];

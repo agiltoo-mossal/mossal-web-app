@@ -7,9 +7,12 @@ import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
 import { SettingsComponent } from './components/settings/settings.component';
+import { MessagingComponent } from './components/messaging/messaging.component';
+import { CollaboratorsComponent } from './components/collaborators/collaborators.component';
+import { RequestsListComponent } from './components/requests-list/requests-list.component';
 
 @NgModule({
-  declarations: [DashboardComponent, OverviewComponent, SettingsComponent],
+  declarations: [DashboardComponent, OverviewComponent, SettingsComponent, MessagingComponent, CollaboratorsComponent, RequestsListComponent],
   imports: [
     CommonModule,
     DashboardRoutingModule,
