@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { APP_CONTEXT } from './shared/enums/app-context.enum';
 import { ProgressBarService } from './shared/services/progress-bar.service';
@@ -21,11 +21,19 @@ export class AppComponent {
   ) {
     this.translationService.loadTranslations('en');
   }
+
+  count = signal(0);
+  val = 0;
   ngOnInit(): void {
     this.progressBarService.showProgressBar$.subscribe((show) => {
       this.showProgressBar = show;
     });
 
     console.log(this.AppContext.Classroom);
+  }
+
+  incremente() {
+    this.val++;
+    this.count.update((val) => val + 1);
   }
 }

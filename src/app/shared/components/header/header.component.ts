@@ -5,6 +5,7 @@ import { TranslationService } from 'src/app/translation.service';
 import { UserRole } from 'src/graphql/generated';
 import { APP_CONTEXT } from '../../enums/app-context.enum';
 import { SidebarService } from '../../services/sidebar.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -16,21 +17,32 @@ export class HeaderComponent implements OnInit {
   AppContext = APP_CONTEXT;
   isSidebarOpened!: boolean;
 
+  contextSubscription: Subscription;
+  headerSubscription: Subscription;
+
   constructor(
     private authService: AuthService,
     private appService: AppService,
     private translationService: TranslationService,
     private sidebarService: SidebarService
-  ) {}
-
-  ngOnInit(): void {
-    this.appService.contextAsync.subscribe((ctx) => {
+  ) {
+    this.contextSubscription = this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
     });
 
-    this.sidebarService.isSidebarOpen().subscribe((resp) => {
-      this.isSidebarOpened = resp;
-    });
+    this.headerSubscription = this.sidebarService
+      .isSidebarOpen()
+      .subscribe((resp) => {
+        this.isSidebarOpened = resp;
+      });
+  }
+
+  ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    // Se désabonner des observables pour éviter les fuites de mémoire
+    this.contextSubscription.unsubscribe();
+    this.headerSubscription.unsubscribe();
   }
 
   get isLogedIn() {

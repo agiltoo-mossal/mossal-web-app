@@ -80,3 +80,16 @@
         }
     }
 }
+
+.titles {
+
+    .btn-show-all,
+    .btn-filter {
+        cursor: pointer;
+    }
+}
+
+.info-current-user {
+    max-width: 263px;
+    width: 100%;
+}
