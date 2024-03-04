@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+<div class="page-wrapper" fxLayout="column" fxLayoutGap="50px">
     <div class="data-first-preview" fxLayout="column" fxLayoutGap="32px">
         <div fxLayout="row" fxLayoutAlign="space-between center">
             <span class="dashboard-title">Echéances Avance sur salaire</span>
@@ -26,6 +26,30 @@
                 <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':card.color}">
                     <img [src]="card.img" alt="">
                 </div>
+            </div>
+        </div>
+        <div class="chart-container" style="outline: 1px solid red;">
+            <!-- <google-chart [data]="pieChart"></google-chart> -->
+            <google-chart [data]="chartData.dataTable">
+            </google-chart>
+        </div>
+    </div>
+    <div fxLayout.lg="column" fxLayoutGap.lg="24px">
+        <div fxLayout="row" fxLayoutGap="40px">
+            <div fxFlex="auto" class="titles" fxLayout="row" fxLayoutAlign="space-between center">
+                <span class="dashboard-title">Liste des demandes (AC ET AV)</span>
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="40px">
+                    <span class="dashboard-title btn-show-all">Tout afficher</span>
+                    <span class="dashboard-title btn-filter">Filtrer</span>
+                </div>
+            </div>
+            <div class="info-current-user">
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+            <div fxFlex="auto" class="table" style="outline: 1px solid red;"></div>
+            <div class="info-current-user">
+                <app-user-details></app-user-details>
             </div>
         </div>
     </div>
