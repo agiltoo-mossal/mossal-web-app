@@ -1,3 +1,17 @@
-<div class="container">
-  <router-outlet></router-outlet>
+<div class="container" fxLayout="row">
+  <div class="logo-container" fxFlex="29" fxLayout="column" fxLayoutAlign="space-between center">
+    <div fxLayoutAlign="center start">
+      <img src="../../../assets/img/group-logo.png" alt="">
+    </div>
+    <div class="policies" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="32px">
+      <span>2024 Mossal</span>
+      <a href="#">Privacy</a>
+      <a href="#">Legal</a>
+    </div>
+  </div>
+  <div class="form-wrapper" fxFlex="71" fxLayoutAlign="center center">
+    <div class="form-container">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </div>

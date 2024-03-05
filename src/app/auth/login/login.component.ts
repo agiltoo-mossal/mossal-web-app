@@ -13,14 +13,7 @@ import { RequestPasswordResetComponent } from '../request-password-reset/request
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  email: string;
-  password: string;
   hidePassword: boolean = true;
-  user: any = {
-    email: '',
-    password: '',
-    checkbox: false,
-  };
 
   constructor(
     private authService: AuthService,
@@ -41,22 +34,5 @@ export class LoginComponent implements OnInit {
         'Email ou mot de passe incorrecte!'
       );
     }
-  }
-
-  resetPassword() {
-    const dialogRef = this.dialog.open(RequestPasswordResetComponent, {
-      data: null,
-      maxHeight: '90vh',
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Ajoutez la compétence de l'utilisateur avec le résultat.
-      }
-    });
-  }
-
-  togglePasswordVisibility() {
-    this.hidePassword = !this.hidePassword;
   }
 }

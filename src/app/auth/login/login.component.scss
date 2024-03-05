@@ -1,63 +1,21 @@
-.container {
-  min-height: 100vh;
-  padding: 0 24px;
-}
-
-.form-wrapper {
-  max-width: 518px;
+.form-container {
   width: 100%;
-  height: auto;
+  // padding: 28px 59px 44px;
 
-  padding: 28px 59px 44px;
+  // background-color: #FFF;
+  // box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
-  background-color: #FFF;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
-  .label {
-    color: #11142D;
+  .form-ckeck-container {
+    color: #000040;
 
-    /* Headlines/Headline Bold Normal */
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 120%;
-    /* 19.2px */
-    letter-spacing: 0.08px;
-  }
-
-  input {
-    width: 100%;
-    height: 56px;
-    padding: 16px;
-
-    border-radius: 8px;
-    border: 1px solid #061E5C;
-    background: var(--Light-Fills-Color-Text-Field, #FFF);
-  }
-
-  input,
-  input::placeholder {
-    color: #11142D;
-    /* Body/Body 1 Regular */
-    font-size: 16px;
+    /* error */
+    font-family: Poppins;
+    font-size: 11px;
     font-weight: 400;
     line-height: 120%;
-    /* 19.2px */
-    letter-spacing: 0.08px;
-  }
-
-  input::placeholder {
-    color: #9A9AB0;
-  }
-
-  .pass-forgotten {
-    color: #9A9AB0;
-
-    /* Menu/Menu 1 Bold */
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 120%;
-    /* 19.2px */
-    letter-spacing: 0.08px;
+    /* 13.2px */
+    letter-spacing: 0.055px;
     cursor: pointer;
     transition: all .3s;
 
@@ -65,38 +23,11 @@
     &:hover {
       color: #061E5C;
     }
-  }
 
-  button {
-    width: 100%;
-    height: 48px;
-
-    border-radius: 8px;
-    background: #061E5C;
-    border: none;
-    cursor: pointer;
-
-    color: #FFF;
-    text-align: center;
-
-    /* Menu/Menu 1 Bold */
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 120%;
-    /* 19.2px */
-    letter-spacing: 0.08px;
-
-
-  }
-
-  .form-group--password {
-    position: relative;
-
-    .toggle-password-visibility {
-      position: absolute;
-      right: 16px;
-      color: #9A9AB0;
-      cursor: pointer;
+    .pass-forgotten {
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 

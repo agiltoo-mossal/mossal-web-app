@@ -6,20 +6,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-
+import { RouterModule } from '@angular/router';
 
 @NgModule({
-  declarations: [
-    RequestPasswordResetComponent
-  ],
+  declarations: [RequestPasswordResetComponent],
   imports: [
     CommonModule,
     MatIconModule,
     ReactiveFormsModule,
     MatDialogModule,
     FlexLayoutModule,
-    MatSnackBarModule
-  ]
+    MatSnackBarModule,
+    RouterModule,
+  ],
 })
-export class RequestPasswordResetModule { }
+export class RequestPasswordResetModule {}

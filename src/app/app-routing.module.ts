@@ -6,27 +6,21 @@ import { guestGuard } from './auth/guards/guest.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '',
+    redirectTo: 'auth',
     pathMatch: 'full',
   },
 
-  {
-    path: '',
-    loadChildren: () =>
-      import('./public/public.module').then((m) => m.PublicModule),
-    // canActivate: [guestGuard]
-  },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
     // canActivate: [guestGuard]
   },
-  {
-    path: 'admin',
-    loadChildren: () =>
-      import('./admin/admin.module').then((m) => m.AdminModule),
-    canActivate: [guestGuard],
-  },
+  // {
+  //   path: 'admin',
+  //   loadChildren: () =>
+  //     import('./admin/admin.module').then((m) => m.AdminModule),
+  //   canActivate: [guestGuard],
+  // },
   {
     path: 'translations',
     loadChildren: () =>
@@ -35,13 +29,13 @@ const routes: Routes = [
       ),
     // canActivate: [AuthGuard]
   },
-  {
-    path: 'success',
-    loadChildren: () =>
-      import('./shared/components/success-page//success-page.module').then(
-        (m) => m.SuccessPageModule
-      ),
-  },
+  // {
+  //   path: 'success',
+  //   loadChildren: () =>
+  //     import('./shared/components/success-page//success-page.module').then(
+  //       (m) => m.SuccessPageModule
+  //     ),
+  // },
   {
     path: 'dashboard',
     loadChildren: () =>

@@ -12,6 +12,7 @@ import { CollaboratorsComponent } from './components/collaborators/collaborators
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
+import { HeaderModule } from '../shared/components/header/header.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { UserDetailsModule } from '../shared/components/user-details/user-detail
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,
+    HeaderModule,
   ],
 })
 export class DashboardModule {}

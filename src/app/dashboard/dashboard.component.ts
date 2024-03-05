@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SidebarService } from '../shared/services/sidebar.service';
+import { APP_CONTEXT } from '../shared/enums/app-context.enum';
+import { AppService } from '../app.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,10 +38,18 @@ export class DashboardComponent implements OnInit {
     },
   ];
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(
+    private sidebarService: SidebarService,
+    private appService: AppService
+  ) {}
 
   ngOnInit(): void {
     this.sidebarService.toggleSidebar(this.isSidebarOpened);
+    this.appService.setContext(APP_CONTEXT.Dashboard);
+  }
+
+  ngOnDestroy(): void {
+    this.appService.setContext(APP_CONTEXT.Dashboard);
   }
 
   handleToggleSidebar() {
