@@ -13,6 +13,7 @@ import { RequestsListComponent } from './components/requests-list/requests-list.
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
 import { HeaderModule } from '../shared/components/header/header.module';
+import { DropdownModule } from '../shared/directives/dropdown/dropdown.module';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { HeaderModule } from '../shared/components/header/header.module';
     Ng2GoogleChartsModule,
     UserDetailsModule,
     HeaderModule,
+    DropdownModule,
   ],
 })
 export class DashboardModule {}

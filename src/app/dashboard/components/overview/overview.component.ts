@@ -38,6 +38,8 @@ export class OverviewComponent implements OnInit {
     },
   ];
 
+  userList = [{}, {}, {}, {}, {}, {}, {}];
+
   // pieChart: GoogleChartInterface = {
   //   chartType: GoogleChartType.PieChart, // or chartType: 'PieChart'
   //   dataTable: [

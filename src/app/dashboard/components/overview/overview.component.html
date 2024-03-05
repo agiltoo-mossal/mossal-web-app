@@ -34,23 +34,64 @@
             </google-chart>
         </div>
     </div>
-    <div fxLayout.lg="column" fxLayoutGap.lg="24px">
-        <div fxLayout="row" fxLayoutGap="40px">
-            <div fxFlex="auto" class="titles" fxLayout="row" fxLayoutAlign="space-between center">
-                <span class="dashboard-title">Liste des demandes (AC ET AV)</span>
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="40px">
-                    <span class="dashboard-title btn-show-all">Tout afficher</span>
-                    <span class="dashboard-title btn-filter">Filtrer</span>
+    <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+        <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="32px">
+            <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
+                <span class="nbr-user">Utilisateurs enregistrés (40.000)</span>
+                <div class="dropdown dropdown-filter" [appDropdown]="'dropdown-filter-user-list-saved'">
+                    <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
+                        <span class="icon" fxLayoutAlign="center center"><mat-icon
+                                fxLayoutAlign="center center">filter_list</mat-icon></span>
+                        <span class="text">Filtrer</span>
+                    </div>
+                    <div class="dropdown-content" id="dropdown-filter-user-list-saved">
+                        <div class="dropdown-option">Nouveaux utilisateurs inscrits récemment</div>
+                        <div class="dropdown-option">Utilisateurs avec les avances en cours</div>
+                    </div>
                 </div>
             </div>
-            <div class="info-current-user">
+            <div fxLayout="column" fxLayoutGap="26px">
+                <div class="titles-container" fxLayout="row">
+                    <span class="title" fxFlex="20" fxLayoutAlign="start center">Entreprise</span>
+                    <span class="title" fxFlex="20" fxLayoutAlign="center center">Collaborateur</span>
+                    <span class="title" fxFlex="20" fxLayoutAlign="center center">Solde</span>
+                    <span class="title" fxFlex="20" fxLayoutAlign="center center">Date</span>
+                    <span class="title" fxFlex="20" fxLayoutAlign="center center">Avance sur salaire</span>
+                </div>
+                <div class="users" fxLayout="column">
+                    <div class="user" fxLayout="row" *ngFor=" let user of userList;let i=index"
+                        [ngStyle]="i==userList.length-1?{'border-bottom':'none'}:{}">
+                        <div class="company" fxFlex="20" fxLayoutAlign="start center" fxLayout="row" fxLayoutGap="16px">
+                            <span class="circle" fxLayoutAlign="center center"><span class="active"></span></span>
+                            <span>Agiltoo</span>
+                        </div>
+                        <div class="name" fxFlex="20" fxLayoutAlign="center center" fxLayoutGap="8px">
+                            <div class="circle" fxLayoutAlign="center center">AC</div>
+                            <span>Laurent DIOP</span>
+                        </div>
+                        <span class="solde" fxFlex="20" fxLayoutAlign="center center">XOF 475.000</span>
+                        <span class="date" fxFlex="20" fxLayoutAlign="center center">06-06-2022</span>
+                        <span class="advance" fxFlex="20" fxLayoutAlign="center center">Xof 100 000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+                <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                    <span class="color"></span>
+                    <div class="nbr">Validé (88)</div>
+                </div>
+                <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                    <span class="color"></span>
+                    <div class="nbr">Rejeté (32)</div>
+                </div>
+                <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                    <span class="color"></span>
+                    <div class="nbr">En attente (13)</div>
+                </div>
             </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
-            <div fxFlex="auto" class="table" style="outline: 1px solid red;"></div>
-            <div class="info-current-user">
-                <app-user-details></app-user-details>
-            </div>
+        <div class="info-current-user">
+            <app-user-details></app-user-details>
         </div>
     </div>
 </div>

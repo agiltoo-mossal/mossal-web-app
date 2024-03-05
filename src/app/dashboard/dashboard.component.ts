@@ -9,7 +9,7 @@ import { AppService } from '../app.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  isSidebarOpened: boolean = true;
+  isSidebarOpened: boolean = false;
   dashboardNav = [
     {
       label: 'Tableau de bord',
