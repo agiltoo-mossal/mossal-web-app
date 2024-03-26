@@ -1,5 +1,5 @@
 <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
-    <div class="requests" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
+    <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
         <div fxLayout="column">
             <div class="filters" fxLayout="row">
                 <div class="search" fxFlex="20" fxLayout="row" fxLayoutAlign="center center">
@@ -11,7 +11,7 @@
                     appDropdown="dropdown-statut">
                     <span class="text " fxFlex="auto">Statut</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
-                    <div class="dropdown-content" id="dropdown-statut">
+                    <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
                         <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée <span
                                 class="statut statut--valid"></span>
                         </div>
@@ -71,7 +71,7 @@
                                 <mat-icon class="dropdown-icon"
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
-                            <div class="dropdown-content" id="dropdown-action">
+                            <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
                                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée
                                     <span class="statut statut--valid"></span>
                                 </div>

@@ -8,7 +8,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
 import { SettingsComponent } from './components/settings/settings.component';
 import { MessagingComponent } from './components/messaging/messaging.component';
-import { CollaboratorsComponent } from './components/collaborators/collaborators.component';
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
@@ -21,7 +20,6 @@ import { DropdownModule } from '../shared/directives/dropdown/dropdown.module';
     OverviewComponent,
     SettingsComponent,
     MessagingComponent,
-    CollaboratorsComponent,
     RequestsListComponent,
   ],
   imports: [

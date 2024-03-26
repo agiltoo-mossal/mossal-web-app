@@ -29,7 +29,10 @@ const routes: Routes = [
       },
       {
         path: 'collaborators',
-        component: CollaboratorsComponent,
+        loadChildren: () =>
+          import('./components/collaborators/collaborators.module').then(
+            (m) => m.CollaboratorsModule
+          ),
       },
       {
         path: 'messaging',

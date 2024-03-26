@@ -149,22 +149,6 @@ body {
   font-weight: 300;
 }
 
-.search {
-  &::placeholder {
-    /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: #acacac;
-    font-size: 20px;
-    font-family: Roboto;
-    letter-spacing: 0.1px;
-    opacity: 0.800000011920929;
-  }
-
-  &.form-control {
-    height: 64px;
-    border-radius: 8px;
-    border: 1.5px solid rgba(213, 160, 7, 0.6);
-  }
-}
 
 textarea {
   outline: none;
@@ -227,12 +211,12 @@ input:focus {
 }
 
 .form-container {
-  color: #0e1032;
-  font-family: Roboto;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+  // color: #0e1032;
+  // font-family: Roboto;
+  // font-size: 18px;
+  // font-style: normal;
+  // font-weight: 400;
+  // line-height: normal;
 
   .form-group {
     position: relative;
@@ -254,44 +238,11 @@ input:focus {
 
   .label {
     color: #11142D;
-
-    /* Headlines/Headline Bold Normal */
     font-size: 16px;
     font-weight: 700;
     line-height: 120%;
     /* 19.2px */
     letter-spacing: 0.08px;
-  }
-
-  .form-control {
-    width: 100%;
-    height: 56px;
-    padding: 0 48px;
-
-    border-radius: 8px;
-    border: 1px solid var(--XOF, #576E82);
-    background: var(--Blanc, #FFF);
-
-    color: #000;
-    /* h3 */
-    font-family: Poppins;
-    font-size: 16px;
-    font-weight: 400;
-
-    &::placeholder {
-      color: #9A9AB0;
-    }
-  }
-
-  .new-element {
-    cursor: pointer;
-    color: #d5a007;
-    text-align: center;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 15.433px;
-    /* 110.238% */
   }
 
   textarea {
@@ -304,8 +255,6 @@ input:focus {
   .title {
     color: #061E5C;
     text-align: center;
-
-    /* h1 */
     font-family: Poppins;
     font-size: 32px;
     font-weight: 600;
@@ -319,25 +268,45 @@ input:focus {
     width: 100%;
     background-color: #061E5C;
   }
+}
 
-  .submit {
-    width: 100%;
-    height: 48px;
+.submit {
+  width: 100%;
+  height: 48px;
 
-    border-radius: 8px;
-    background: #061E5C;
-    border: none;
-    cursor: pointer;
+  border-radius: 8px;
+  background: #061E5C;
+  border: none;
+  cursor: pointer;
 
-    color: #FFF;
-    text-align: center;
+  color: #FFF;
+  text-align: center;
 
-    /* Menu/Menu 1 Bold */
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 120%;
-    /* 19.2px */
-    letter-spacing: 0.08px;
+  /* Menu/Menu 1 Bold */
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 120%;
+  /* 19.2px */
+  letter-spacing: 0.08px;
+}
+
+.form-control {
+  width: 100%;
+  height: 56px;
+  padding: 0 24px 0 48px;
+
+  border-radius: 8px;
+  border: 1px solid var(--XOF, #576E82);
+  background: var(--Blanc, #FFF);
+
+  color: #000;
+  /* h3 */
+  font-family: Poppins;
+  font-size: 16px;
+  font-weight: 400;
+
+  &::placeholder {
+    color: #9A9AB0;
   }
 }
 
@@ -458,11 +427,21 @@ input:focus {
 
 .btn {
   border: none;
+  color: var(--Blanc, #FFF);
+  font-size: 16px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
+  height: 56px;
+  padding: 10px 24px;
 
   &.btn-primary {
-    border-radius: 10.289px;
-    border: 0.857px solid #fff;
-    background-color: #00409A;
+    border-radius: 5px;
+    background: var(--Primary, #001F60);
     color: #fff;
   }
 
@@ -520,12 +499,14 @@ input:focus {
 }
 
 .search-container {
-  .form-control {
-    width: 100%;
-    box-sizing: border-box;
-    padding-left: 40px;
-    padding-right: 40px;
+  position: relative;
+
+
+  .icon {
+    position: absolute;
+    left: 16px;
   }
+
 }
 
 .dropdown {
@@ -560,8 +541,22 @@ input:focus {
     }
 
     .dropdown-option {
-      padding: 8px 24px;
+      padding: 8px 16px;
       cursor: pointer;
+    }
+  }
+
+  .dropdown-content-filter {
+    padding: 0;
+    width: 100%;
+    margin-top: 4px;
+
+    .dropdown-option {
+      border-bottom: 1px solid #979797;
+
+      &:last-child {
+        border-bottom: none;
+      }
     }
   }
 }
@@ -592,6 +587,13 @@ input:focus {
       color: #7e7e7e;
     }
   }
+}
+
+.table-wrapper {
+  border-radius: 6px;
+  border: 1px solid #E7E8F2;
+  background: var(--Blanc, #FFF);
+  padding-bottom: 24px;
 }
 
 .table {
@@ -740,6 +742,11 @@ input:focus {
       background-color: #FFC708;
     }
   }
+}
+
+.info-current-user {
+  max-width: 263px;
+  width: 100%;
 }
 
 .badge {
