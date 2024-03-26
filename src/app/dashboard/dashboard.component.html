@@ -6,19 +6,13 @@
                 fxLayoutAlign="center center">keyboard_arrow_left</mat-icon></span>
         <div class="navigation" fxLayout="column" fxLayoutGap="2px">
             <span class="nav-item-container" *ngFor="let item of dashboardNav;let i=index">
-                <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="18px" class="nav-item"
+                <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" class="nav-item"
                     [routerLink]="item.link" routerLinkActive="active">
                     <span class="icon" fxLayoutAlign="center center"><mat-icon>{{item.icon}}</mat-icon></span>
                     <span class="label" *ngIf="isSidebarOpened">{{item.label}}</span>
                 </span>
             </span>
         </div>
-        <span class="btn-logout-container">
-            <span class="btn-logout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="18px">
-                <span><mat-icon>exit_to_app</mat-icon></span>
-                <span *ngIf="isSidebarOpened">Déconnexion</span>
-            </span>
-        </span>
     </div>
     <div fxFlex="auto" class="container-wrapper">
         <router-outlet></router-outlet>

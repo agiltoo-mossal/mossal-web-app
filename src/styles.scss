@@ -539,7 +539,7 @@ input:focus {
     // left: 0;
     right: 0;
     width: max-content;
-    padding: 18px;
+    padding: 6px 0;
     border-radius: 8px;
     border: 1px solid var(--stroke-light, #dee2e6);
     background: var(--gray-white, #fff);
@@ -560,6 +560,7 @@ input:focus {
     }
 
     .dropdown-option {
+      padding: 8px 24px;
       cursor: pointer;
     }
   }
@@ -595,33 +596,149 @@ input:focus {
 
 .table {
   text-align: left;
-  color: var(--light-secondary, #6c757d);
-  font-feature-settings: "clig" off, "liga" off;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 13.754px;
-  /* 114.618% */
+
+  tr {
+    padding: 22px 32px;
+    border-bottom: 1.25px solid #dfdfdf;
+  }
+
 
   .large-col {
     width: 30%;
   }
 
   td {
-    height: 44px;
-    border-bottom: 1px solid #eaeaea !important;
+    color: #33343D;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
   }
 
   th {
-    border-bottom: 1.25px solid #dfdfdf;
-    color: var(--light-dark, #343a40);
-    font-feature-settings: "clig" off, "liga" off;
+    color: var(--Primary, #061E5C);
     font-family: Roboto;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 13.754px;
-    /* 137.541% */
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .radio-container {
+    color: var(--Noir, #000040);
+
+    .radio {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #061E5C;
+      border-radius: 50%;
+
+      &.active {
+        position: relative;
+
+        &::before {
+          position: absolute;
+          content: '';
+
+          width: 8px;
+          height: 8px;
+
+          background-color: #061E5C;
+          border-radius: 50%;
+        }
+      }
+
+
+    }
+  }
+
+  .circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #0C1D58;
+
+    color: var(--Blanc, #FFF);
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .btn-edit-statut {
+    // max-width: 128px;
+    height: 42px;
+
+    border-radius: 4px;
+    background: #EEEFF7;
+    cursor: pointer;
+
+    .dropdown-icon {
+      display: block;
+      width: 42px;
+      height: 100%;
+      border-left: 1px solid #D2D3E0;
+    }
+  }
+
+
+}
+
+.statut {
+  width: 8px;
+  height: 8px;
+  display: block;
+  border-radius: 50%;
+
+  &--valid {
+    background: #40B139;
+  }
+
+  &--rejected {
+    background: #F41414;
+  }
+
+  &--pending {
+    background: #FFC708;
+  }
+
+  &--cancel {
+    background: #5C6D80;
+  }
+}
+
+.legends {
+  .nbr {
+    color: var(--Noir, #000);
+
+    /* error */
+    font-family: Poppins;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 120%;
+    /* 13.2px */
+    letter-spacing: 0.055px;
+  }
+
+  .color {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .valid {
+    .color {
+      background-color: #40B139;
+    }
+  }
+
+  .rejected {
+    .color {
+      background-color: #F41414;
+    }
+  }
+
+  .pending {
+    .color {
+      background-color: #FFC708;
+    }
   }
 }
 
@@ -857,3 +974,5 @@ textarea {
 //   margin: 0;
 //  font-family: Roboto;
 // }
+/* Importing Bootstrap SCSS file. */
+// @import 'bootstrap/scss/bootstrap';

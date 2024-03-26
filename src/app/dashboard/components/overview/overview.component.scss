@@ -48,7 +48,7 @@
         .data-card {
             border-radius: 8px;
             background: #FFF;
-            box-shadow: 10px 24px 54px 0px rgba(0, 0, 0, 0.06);
+            // box-shadow: 10px 24px 54px 0px rgba(0, 0, 0, 0.06);
 
             min-width: 282.038px;
             height: 177.21px;
@@ -82,14 +82,12 @@
 }
 
 .user-list-container {
-
-    padding: 40px 0 24px;
+    padding: 26px 0 24px;
     border-radius: 6px;
     border: 1px solid #E7E8F2;
     background: var(--Blanc, #FFF);
 
-    .top,
-    .titles-container {
+    .top {
         padding: 0 32px;
     }
 
@@ -145,100 +143,7 @@
         }
     }
 
-    .title {
-        color: var(--Primary, #061E5C);
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 600;
-    }
 
-    .user {
-        padding: 22px 32px;
-        border-bottom: 1px solid #E7E8F2;
-
-        .name,
-        .solde,
-        .date,
-        .advance,
-        .company {
-            color: #33343D;
-            font-family: Poppins;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        .company {
-            color: var(--Noir, #000040);
-
-            .circle {
-                width: 14px;
-                height: 14px;
-                border: 1px solid #061E5C;
-                border-radius: 50%;
-
-                .active {
-                    display: block;
-                    width: 8px;
-                    height: 8px;
-                    background-color: #061E5C;
-                    border-radius: 50%;
-                }
-            }
-        }
-
-        .name {
-            .circle {
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background: rgba(6, 30, 92, 0.50);
-
-                color: var(--Blanc, #FFF);
-                font-family: Roboto;
-                font-size: 12px;
-                font-weight: 400;
-            }
-        }
-    }
-
-    .legends {
-        .nbr {
-            color: var(--Noir, #000);
-
-            /* error */
-            font-family: Poppins;
-            font-size: 11px;
-            font-weight: 400;
-            line-height: 120%;
-            /* 13.2px */
-            letter-spacing: 0.055px;
-        }
-
-        .color {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .valid {
-            .color {
-                background-color: #40B139;
-            }
-        }
-
-        .rejected {
-            .color {
-                background-color: #F41414;
-            }
-        }
-
-        .pending {
-            .color {
-                background-color: #FFC708;
-            }
-        }
-    }
 }
 
 .info-current-user {

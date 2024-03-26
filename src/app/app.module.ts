@@ -27,6 +27,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FooterModule } from './shared/components/footer/footer.module';
 import { ScrolTopModule } from './shared/components/scrol-top/scrol-top.module';
 import { AdminModule } from './admin/admin.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
@@ -59,6 +60,7 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     ScrolTopModule,
     AdminModule,
+    NgbModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
