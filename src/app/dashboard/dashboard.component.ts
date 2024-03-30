@@ -27,14 +27,14 @@ export class DashboardComponent implements OnInit {
       icon: 'people',
     },
     {
-      label: 'Messagerie',
-      link: 'messaging',
-      icon: 'email',
+      label: 'Notifications',
+      link: 'Notifications',
+      icon: 'notifications_none',
     },
     {
-      label: 'Paramétres',
-      link: 'settings',
-      icon: 'settings',
+      label: 'Mon Compte',
+      link: 'user',
+      icon: 'person_outline',
     },
   ];
 

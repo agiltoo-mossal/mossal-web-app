@@ -1,0 +1,49 @@
+.notif-list-container {
+    border-radius: 10px;
+    border: 1px solid #33343D;
+    background: #FEFEFE;
+}
+
+.notif {
+    padding: 40px;
+    border-bottom: 1px solid #BDBDBD;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .notif-title {
+        color: var(--Primary, #001F60);
+        font-family: Poppins;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 120%;
+        letter-spacing: 0.09px;
+    }
+
+    .notif-content {
+        color: var(--XOF, #526F84);
+        font-family: Poppins;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 150%;
+        letter-spacing: 0.09px;
+    }
+
+    .date-and-destinatary {
+        color: var(--Primary, #001F60);
+        font-family: Poppins;
+        font-size: 10px;
+        font-weight: 400;
+
+        .separator {
+            width: 5px;
+            height: 5px;
+            flex-shrink: 0;
+            background-color: #FFC400;
+            border-radius: 50%;
+        }
+    }
+
+
+}

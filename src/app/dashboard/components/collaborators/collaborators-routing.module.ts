@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CollaboratorsComponent } from './collaborators.component';
 import { OverviewComponent } from './components/overview/overview.component';
 import { CreateCollobatorComponent } from './components/create-collobator/create-collobator.component';
+import { EditCollaboratorComponent } from './components/edit-collaborator/edit-collaborator.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,10 @@ const routes: Routes = [
       {
         path: 'create-collaborator',
         component: CreateCollobatorComponent,
+      },
+      {
+        path: 'edit-collaborator',
+        component: EditCollaboratorComponent,
       },
     ],
   },
