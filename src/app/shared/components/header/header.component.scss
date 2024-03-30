@@ -40,7 +40,7 @@
     }
 
     &.is-closed {
-        width: auto;
+        width: calc(16px + 56px);
     }
 }
 
