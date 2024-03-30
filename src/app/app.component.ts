@@ -28,8 +28,6 @@ export class AppComponent {
     this.progressBarService.showProgressBar$.subscribe((show) => {
       this.showProgressBar = show;
     });
-
-    console.log(this.AppContext.Classroom);
   }
 
   incremente() {

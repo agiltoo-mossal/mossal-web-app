@@ -9,6 +9,17 @@
         &:last-of-type {
             border-right: none;
         }
+
+        position: relative;
+
+        .form-control {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border: none;
+
+        }
     }
 
     .search {
@@ -65,6 +76,17 @@
     .icon-dropdown {
         min-width: 24px;
         cursor: pointer;
+    }
+
+
+
+}
+
+#filter-date-dropdown {
+    margin-top: 4px;
+
+    &.show {
+        display: flex !important;
     }
 
 }

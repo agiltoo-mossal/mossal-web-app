@@ -25,13 +25,40 @@
                         </div>
                     </div>
                 </div>
-                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
+                    appDropdown="dropdown-fourchette">
                     <span class="text text-on-1-line" fxFlex="auto">Fourchette de demande</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    <div class="dropdown-content dropdown-content-filter" id="dropdown-fourchette">
+                        <div class="dropdown-option" fxLayoutAlign="space-between center">
+                            <span>0</span>à
+                            <span>100.000</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>100.000</span> à
+                            <span>250.000</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>250.000</span> à
+                            <span>1.000.000</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>1.000.000</span> à
+                            <span>plus</span>
+                        </div>
+                    </div>
                 </div>
-                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center">
-                    <span class="text " fxFlex="auto">Date</span>
+                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
+                    appDropdown="filter-date-dropdown">
+                    <span>Date</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    <div class="dropdown-content " id="filter-date-dropdown">
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="debut">Du</label>
+                            <input type="date" id="debut">
+                        </div>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="fin">Au</label>
+                            <input type="date" id="fin">
+                        </div>
+                    </div>
                 </div>
                 <div fxFlex="20" class="btn-filter" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center">
                     <mat-icon>filter_list</mat-icon>
@@ -72,17 +99,20 @@
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
                             <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Rejetée
                                     <span class="statut statut--rejected"></span>
                                 </div>
                                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
                                     attente
                                     <span class="statut statut--pending"></span>
                                 </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Annulée
                                     <span class="statut statut--cancel"></span>
                                 </div>
                             </div>

@@ -7,12 +7,17 @@ import { CreateCollobatorComponent } from './components/create-collobator/create
 import { UserDetailsModule } from 'src/app/shared/components/user-details/user-details.module';
 import { MatIconModule } from '@angular/material/icon';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { DropdownModule } from 'src/app/shared/directives/dropdown/dropdown.module';
+import { EditCollaboratorComponent } from './components/edit-collaborator/edit-collaborator.component';
+import { FormCollaboratorComponent } from './components/form-collaborator/form-collaborator.component';
 
 @NgModule({
   declarations: [
     CollaboratorsComponent,
     OverviewComponent,
     CreateCollobatorComponent,
+    EditCollaboratorComponent,
+    FormCollaboratorComponent,
   ],
   imports: [
     CommonModule,
@@ -20,6 +25,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     UserDetailsModule,
     MatIconModule,
     FlexLayoutModule,
+    DropdownModule,
   ],
   exports: [CollaboratorsComponent],
 })

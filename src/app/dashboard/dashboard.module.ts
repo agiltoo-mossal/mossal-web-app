@@ -6,21 +6,21 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
-import { SettingsComponent } from './components/settings/settings.component';
-import { MessagingComponent } from './components/messaging/messaging.component';
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
 import { HeaderModule } from '../shared/components/header/header.module';
 import { DropdownModule } from '../shared/directives/dropdown/dropdown.module';
+import { UserComponent } from './components/user/user.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     OverviewComponent,
-    SettingsComponent,
-    MessagingComponent,
     RequestsListComponent,
+    UserComponent,
+    NotificationsComponent,
   ],
   imports: [
     CommonModule,

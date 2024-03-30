@@ -6,75 +6,76 @@
                 <input type="text" class="form-control" placeholder="Recherche">
             </div>
             <div fxLayout="row" fxLayoutGap="19px">
-                <button class="btn btn-primary">Importer un fichier</button><button class="btn btn-primary"
-                    routerLink="/dashboard/collaborators/create-collaborator">Ajouter un
-                    collaborateur</button>
-            </div>
-        </div>
-        <div class="table-wrapper" fxLayout="column" fxLayoutGap="32px">
-            <table class="table">
-                <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Collaborateur</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Telephone</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date de création</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
-                </tr>
-                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
-                    <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
-                        fxLayoutGap="16px">
-                        <span class="radio active" fxLayoutAlign="center center"></span>
-                        <span>Agiltoo</span>
-                    </td>
-                    <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
-                        <div class="circle" fxLayoutAlign="center center">AC</div>
-                        <span>LAURENT DIOP</span>
-                    </td>
-                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">76 303 03 40</td>
-                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">06-06-2022</td>
-                    <td fxFlex="16.6" fxLayoutAlign="end center">
-                        <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
-                            <span fxLayout="row" class="btn-edit-statut">
-                                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
-                                    fxLayoutAlign="center center"><span>Action</span><span
-                                        class="statut statut--valid"></span></span>
-                                <mat-icon class="dropdown-icon"
-                                    fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
-                            </span>
-                            <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée
-                                    <span class="statut statut--valid"></span>
-                                </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée
-                                    <span class="statut statut--rejected"></span>
-                                </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
-                                    attente
-                                    <span class="statut statut--pending"></span>
-                                </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée
-                                    <span class="statut statut--cancel"></span>
-                                </div>
+                <div class="dropdown" appDropdown="downlod-dropdown">
+                    <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"><mat-icon
+                            fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un
+                            fichier</span></button>
+                    <div class="dropdown-content " id="downlod-dropdown">
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
+                            <div class="icon">
+                                <img src="./assets/img/icon-upload.png" alt="">
+                            </div>
+                            <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
+                                <span class="type">Importer</span>
+                                <span class="format">Format accepté : csv</span>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </table>
-            <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
-                <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
-                    <span class="color"></span>
-                    <div class="nbr">Validé (88)</div>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
+                            <div class="icon">
+                                <img src="./assets/img/icon-download.png" alt="">
+                            </div>
+                            <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
+                                <span class="type">Télécharger le template</span>
+                                <span class="format">template.csv</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
-                    <span class="color"></span>
-                    <div class="nbr">Rejeté (32)</div>
-                </div>
-                <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
-                    <span class="color"></span>
-                    <div class="nbr">En attente (13)</div>
-                </div>
+                <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
+                    routerLink="/dashboard/collaborators/create-collaborator">
+                    <span>+</span> <span>Ajouter un collaborateur</span>
+                </button>
             </div>
         </div>
+        <table class="table table-wrapper">
+            <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
+                <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
+                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Collaborateur</th>
+                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Telephone</th>
+                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date de création</th>
+                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
+            </tr>
+            <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
+                <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
+                    fxLayoutGap="16px">
+                    <span class="radio active" fxLayoutAlign="center center"></span>
+                    <span>Agiltoo</span>
+                </td>
+                <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
+                    <div class="circle" fxLayoutAlign="center center">AC</div>
+                    <span>LAURENT DIOP</span>
+                </td>
+                <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">76 303 03 40</td>
+                <td class="date" fxFlex="16.6" fxLayoutAlign="center center">06-06-2022</td>
+                <td fxFlex="16.6" fxLayoutAlign="end center">
+                    <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
+                        <span fxLayout="row" class="btn-edit-statut">
+                            <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
+                                fxLayoutAlign="center center"><span>Action</span><span
+                                    class="statut statut--valid"></span></span>
+                            <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+                        </span>
+                        <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+                            <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                                routerLink="/dashboard/collaborators/edit-collaborator">
+                                <span><mat-icon>edit</mat-icon></span>
+                                <span>Editer</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
     <div class="info-current-user">
         <app-user-details></app-user-details>

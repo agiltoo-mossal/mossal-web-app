@@ -1,0 +1,87 @@
+<form class="form-container form-container-card" fxLayout="column" fxLayoutGap="32px">
+    <div fxLayout="row" fxLayoutGap="32px">
+        <div fxFlex="50" fxLayout="column" fxLayoutGap="38px">
+            <span class="title">Mon profil</span>
+            <div class="wrapper" fxLayout="column" fxLayoutGap="38px">
+                <div fxLayout="column" fxLayoutGap="15px">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" class="form-control" placeholder="John">
+                </div>
+                <div fxLayout="column" fxLayoutGap="15px">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" class="form-control" placeholder="Doe">
+                </div>
+                <div fxLayout="column" fxLayoutGap="15px">
+                    <label for="address">Adresse mail</label>
+                    <input type="text" id="address" class="form-control" placeholder="john@gmail.com">
+                </div>
+                <div fxLayout="column" fxLayoutGap="15px">
+                    <label for="phone">Tél</label>
+                    <input type="number" id="phone" class="form-control" placeholder="+221 77 000 00 00">
+                </div>
+                <div fxLayout="column" fxLayoutGap="15px">
+                    <label for="code-postal">Adresse postale</label>
+                    <input type="number" id="code-postal" class="form-control" placeholder="">
+                </div>
+            </div>
+        </div>
+        <div fxFlex="50" fxLayout="column" fxLayoutGap="24px">
+            <div fxLayout="column" fxLayoutGap="38px">
+                <span class="title">Mot de passe</span>
+                <div class="wrapper" fxLayout="column" fxLayoutGap="38px">
+                    <div fxLayout="column" fxLayoutGap="15px">
+                        <label for="password1">Mot de passe actuel</label>
+                        <div class="form-group" fxLayoutAlign="end center">
+                            <input class="form-control" [type]="password?'password':'text'"
+                                placeholder="entrer votre mot de passe" id="password1" name="password" ngModel
+                                required="">
+                            <span class="toggle-password-visibility"
+                                (click)="password=!password"><mat-icon>{{password?'visibility_off':'visibility'}}</mat-icon></span>
+                        </div>
+                    </div>
+                    <div fxLayout="column" fxLayoutGap="15px">
+                        <label for="password2">Nouveau mot de passe</label>
+                        <div class="form-group" fxLayoutAlign="end center">
+                            <input class="form-control" [type]="newPassword?'password':'text'"
+                                placeholder="entrer votre mot de passe" id="password2" name="password" ngModel
+                                required="">
+                            <span class="toggle-password-visibility"
+                                (click)="newPassword=!newPassword"><mat-icon>{{newPassword?'visibility_off':'visibility'}}</mat-icon></span>
+                        </div>
+                    </div>
+                    <div fxLayout="column" fxLayoutGap="15px">
+                        <label for="password3">Confirmation de votre mot de passe</label>
+                        <div class="form-group" fxLayoutAlign="end center">
+                            <input class="form-control" [type]="ConfirmPassword?'password':'text'"
+                                placeholder="entrer votre mot de passe" id="password3" name="password" ngModel
+                                required="">
+                            <span class="toggle-password-visibility"
+                                (click)="ConfirmPassword=!ConfirmPassword"><mat-icon>{{ConfirmPassword?'visibility_off':'visibility'}}</mat-icon></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div fxFlex="auto" fxLayout="column" fxLayoutGap="38px">
+                <span class="title">Mot de passe</span>
+                <div class="wrapper" fxLayout="column" fxLayoutGap="38px" fxFlex="auto">
+                    <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between start">
+                        <span class="label">Notifications par email</span>
+                        <span class="toggle-container">
+                            <span class="btn-toggle-container">
+                                <span class="btn-toggle" [ngClass]="toggleMailActivation?'actived':''"
+                                    (click)="toggleMailActivation=!toggleMailActivation"></span>
+                            </span>
+                            <span class="text-container"
+                                [fxLayoutAlign]="toggleMailActivation?'end start':'start start'"><span
+                                    *ngIf="toggleMailActivation">Activé</span><span
+                                    *ngIf="!toggleMailActivation">Desactivé</span></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start start">
+        <button class="submit" fxFlex="50">Mettre à jour</button>
+    </div>
+</form>
