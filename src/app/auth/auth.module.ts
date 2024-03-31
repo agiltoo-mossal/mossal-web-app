@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { AuthRoutingModule } from './auth-routing.module';
 import { AuthComponent } from './auth.component';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -14,22 +13,19 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackBarService } from '../shared/services/snackbar.service';
 import { AuthService } from './auth.service';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SuccessPageModule } from '../shared/components/success-page/success-page.module';
-import { RequestPasswordResetModule } from './request-password-reset/request-password-reset.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { FooterModule } from '../shared/components/footer/footer.module';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AuthComponent,
     LoginComponent,
-    RegisterComponent,
-    ResetPasswordComponent,
   ],
   imports: [
     CommonModule,
@@ -47,9 +43,9 @@ import {MatStepperModule} from '@angular/material/stepper';
     MatInputModule,
     MatFormFieldModule,
     MatStepperModule,
-    RequestPasswordResetModule,
     TranslateModule,
     FooterModule,
+    MatDialogModule
   ],
   providers: [SnackBarService, AuthService],
   exports: [],

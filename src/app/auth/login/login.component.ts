@@ -3,9 +3,7 @@ import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { LoginGQL } from 'src/graphql/generated';
 import { AuthService } from '../auth.service';
-import { RequestPasswordResetComponent } from '../request-password-reset/request-password-reset.component';
 
 @Component({
   selector: 'app-login',
