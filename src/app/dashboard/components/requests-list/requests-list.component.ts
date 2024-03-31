@@ -9,11 +9,14 @@ export class RequestsListComponent {
   requests = [{}, {}, {}, {}, {}, {}];
 
   @ViewChild('dropdownContent') dropdownContent: ElementRef;
+  @ViewChild('dropdown') dropdown: ElementRef;
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
-    if (!this.dropdownContent.nativeElement.contains(event.target)) {
-      this.dropdownContent.nativeElement.classList.toggle('show');
+    if (!this.dropdown.nativeElement.contains(event.target)) {
+      this.dropdownContent.nativeElement.classList.remove('show');
+    } else {
+      this.dropdownContent.nativeElement.classList.add('show');
     }
   }
 }
