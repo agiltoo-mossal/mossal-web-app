@@ -16,21 +16,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private snackBarService: SnackBarService,
-    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {}
 
-  async login(form: NgForm) {
-    try {
-      const value = { ...form.value };
-      delete value.checkbox;
-      await this.authService.login(value);
-    } catch (error) {
-      this.snackBarService.showErrorSnackBar(
-        4000,
-        'Email ou mot de passe incorrecte!'
-      );
-    }
-  }
 }

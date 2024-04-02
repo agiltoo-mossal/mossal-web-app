@@ -2,10 +2,11 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { TranslationService } from 'src/app/translation.service';
-import { UserRole } from 'src/graphql/generated';
 import { APP_CONTEXT } from '../../enums/app-context.enum';
 import { SidebarService } from '../../services/sidebar.service';
 import { Subscription } from 'rxjs';
+import { KeycloakService } from 'keycloak-angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -24,7 +25,9 @@ export class HeaderComponent implements OnInit {
     private authService: AuthService,
     private appService: AppService,
     private translationService: TranslationService,
-    private sidebarService: SidebarService
+    private sidebarService: SidebarService,
+    private keycloakService: KeycloakService,
+    private router: Router
   ) {
     this.contextSubscription = this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
@@ -50,17 +53,19 @@ export class HeaderComponent implements OnInit {
   }
 
   get user() {
-    return this.authService.getCurrentUser() || { role: UserRole.Talent };
+    return this.authService.getCurrentUser() || {};
   }
 
   get userRole() {
     return this.user.role.toLowerCase();
   }
 
-  get dashboardPrefix() {
-    return this.user.role === UserRole.Admin ||
-      this.user.role === UserRole.Instructor
-      ? 'admin'
-      : 'talent';
+
+  logout() {
+    this.keycloakService.logout().then(
+      result => {
+        this.router.navigate(["/"])
+      }
+    )
   }
 }

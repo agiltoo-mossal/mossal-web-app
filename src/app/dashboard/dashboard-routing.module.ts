@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { OverviewComponent } from './components/overview/overview.component';
-import { SettingsComponent } from './components/settings/settings.component';
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
-import { CollaboratorsComponent } from './components/collaborators/collaborators.component';
-import { MessagingComponent } from './components/messaging/messaging.component';
+import { UserComponent } from './components/user/user.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 const routes: Routes = [
   {
@@ -29,15 +28,18 @@ const routes: Routes = [
       },
       {
         path: 'collaborators',
-        component: CollaboratorsComponent,
+        loadChildren: () =>
+          import('./components/collaborators/collaborators.module').then(
+            (m) => m.CollaboratorsModule
+          ),
       },
       {
-        path: 'messaging',
-        component: MessagingComponent,
+        path: 'Notifications',
+        component: NotificationsComponent,
       },
       {
-        path: 'settings',
-        component: SettingsComponent,
+        path: 'user',
+        component: UserComponent,
       },
     ],
   },

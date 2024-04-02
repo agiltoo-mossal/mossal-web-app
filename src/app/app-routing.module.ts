@@ -6,7 +6,7 @@ import { guestGuard } from './auth/guards/guest.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
 

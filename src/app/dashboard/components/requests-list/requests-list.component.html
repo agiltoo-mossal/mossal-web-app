@@ -1,3 +1,141 @@
-<div class="page-wrapper">
-    <p>requests-list works!</p>
+<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+    <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
+        <div fxLayout="column">
+            <div class="filters" fxLayout="row">
+                <div class="search" fxFlex="20" fxLayout="row" fxLayoutAlign="center center">
+                    <mat-icon fxLayoutAlign="center center" class="icon-search">search</mat-icon>
+                    <input type="text" placeholder="Rechercher">
+                    <mat-icon fxLayoutAlign="center center" class="icon-delete">close</mat-icon>
+                </div>
+                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
+                    appDropdown="dropdown-statut">
+                    <span class="text " fxFlex="auto">Statut</span>
+                    <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
+                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée <span
+                                class="statut statut--valid"></span>
+                        </div>
+                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée <span
+                                class="statut statut--rejected"></span></div>
+                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En attente
+                            <span class="statut statut--pending"></span>
+                        </div>
+                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée <span
+                                class="statut statut--cancel"></span>
+                        </div>
+                    </div>
+                </div>
+                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
+                    appDropdown="dropdown-fourchette">
+                    <span class="text text-on-1-line" fxFlex="auto">Fourchette de demande</span>
+                    <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    <div class="dropdown-content dropdown-content-filter" id="dropdown-fourchette">
+                        <div class="dropdown-option" fxLayoutAlign="space-between center">
+                            <span>0</span>à
+                            <span>100</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>100</span> à
+                            <span>250</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>250</span> à
+                            <span>1.000</span>
+                        </div>
+                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>1.000</span> à
+                            <span>plus</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown" #dropdown>
+                    <span>Date</span>
+                    <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    <div class="dropdown-content " id="filter-date-dropdown" #dropdownContent>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="debut">Du</label>
+                            <input type="date" id="debut">
+                        </div>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="fin">Au</label>
+                            <input type="date" id="fin">
+                        </div>
+                    </div>
+                </div>
+                <div fxFlex="20" class="btn-filter" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center">
+                    <mat-icon>filter_list</mat-icon>
+                    <span>Filtrer</span>
+                </div>
+            </div>
+            <table class="table">
+                <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Collaborateur</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Solde</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
+                </tr>
+                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
+                    <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
+                        fxLayoutGap="16px">
+                        <span class="radio active" fxLayoutAlign="center center"></span>
+                        <span>Agiltoo</span>
+                    </td>
+                    <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
+                        <div class="circle" fxLayoutAlign="center center">AC</div>
+                        <span>LAURENT DIOP</span>
+                    </td>
+                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF 475.000</td>
+                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">06-06-2022</td>
+                    <td class="advance" fxFlex="16.6" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+                        <span class="statut statut--valid"></span><span>Xof 100000</span>
+                    </td>
+                    <td fxFlex="16.6" fxLayoutAlign="end center">
+                        <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
+                            <span fxLayout="row" class="btn-edit-statut">
+                                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
+                                    fxLayoutAlign="center center"><span>Action</span><span
+                                        class="statut statut--valid"></span></span>
+                                <mat-icon class="dropdown-icon"
+                                    fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+                            </span>
+                            <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Validée
+                                    <span class="statut statut--valid"></span>
+                                </div>
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Rejetée
+                                    <span class="statut statut--rejected"></span>
+                                </div>
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
+                                    attente
+                                    <span class="statut statut--pending"></span>
+                                </div>
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                    Annulée
+                                    <span class="statut statut--cancel"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+            <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                <span class="color"></span>
+                <div class="nbr">Validé (88)</div>
+            </div>
+            <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                <span class="color"></span>
+                <div class="nbr">Rejeté (32)</div>
+            </div>
+            <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
+                <span class="color"></span>
+                <div class="nbr">En attente (13)</div>
+            </div>
+        </div>
+    </div>
+    <div class="info-current-user">
+        <app-user-details></app-user-details>
+    </div>
 </div>

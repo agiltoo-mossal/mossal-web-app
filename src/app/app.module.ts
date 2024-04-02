@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -8,6 +8,8 @@ import {
   HttpClientModule,
   HTTP_INTERCEPTORS,
   HttpClient,
+  provideHttpClient,
+  withInterceptorsFromDi,
 } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './auth/interceptors/auth.interceptor';
@@ -27,6 +29,26 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FooterModule } from './shared/components/footer/footer.module';
 import { ScrolTopModule } from './shared/components/scrol-top/scrol-top.module';
 import { AdminModule } from './admin/admin.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { KeycloakAngularModule, KeycloakService, KeycloakBearerInterceptor } from 'keycloak-angular';
+import { environment } from 'src/environments/environment';
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: environment.KEYCLOAK_URL,
+        realm: environment.KEYCLOACK_REALM,
+        clientId: environment.KEYCLOACK_CLIENT_ID,
+
+      },
+      enableBearerInterceptor: true,
+
+      initOptions: {
+        onLoad: 'login-required'
+      },
+    });
+}
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
@@ -59,9 +81,11 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     ScrolTopModule,
     AdminModule,
+    NgbModule,
+    KeycloakAngularModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     {
       provide: HTTP_INTERCEPTORS,
@@ -69,6 +93,21 @@ export function createTranslateLoader(http: HttpClient) {
       multi: true,
     },
     AppService,
+    KeycloakService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService],
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: KeycloakBearerInterceptor,
+      multi: true,
+    },
+    provideHttpClient(
+      withInterceptorsFromDi()
+    )
   ],
   bootstrap: [AppComponent],
 })

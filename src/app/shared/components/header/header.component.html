@@ -3,10 +3,10 @@
         <div class="logo-container" fxLayout="row" fxLayoutAlign="start center"
             [ngClass]="isSidebarOpened?'is-opened':'is-closed'">
             <div class="logo-icon" fxLayoutAlign="center center">
-                <img src="../../../../assets/img/logo-icon.png" alt="">
+                <img src="./assets/img/logo-icon.png" alt="">
             </div>
             <div class="logo-text" fxLayoutAlign="center center" *ngIf="isSidebarOpened">
-                <img src="../../../../assets/img/logo-text.png" alt="">
+                <img src="./assets/img/logo-text.png" alt="">
             </div>
         </div>
         <div fxFlex="auto" fxLayout="row" fxLayoutAlign="space-between center">
@@ -16,22 +16,28 @@
                     <span class="config-icon" fxLayoutAlign="center center"><mat-icon
                             fxLayoutAlign="center center">settings</mat-icon></span>
                     <span class="message-icon" fxLayoutAlign="center center">
-                        <mat-icon fxLayoutAlign="center center">email</mat-icon>
-                        <span class="nbr-message" fxLayoutAlign="center center">2</span>
+                        <span class="icon-wrapper">
+                            <mat-icon fxLayoutAlign="center center">notifications_none</mat-icon>
+                            <span class="signal-notif"></span>
+                        </span>
                     </span>
                 </div>
                 <div class="user-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="50px">
                     <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="8px">
                         <div class="user-img">
-                            <img src="../../../../assets/img/user-img.png" alt="">
+                            <img src="./assets/img/user-img.png" alt="">
                         </div>
                         <div class="user-detail" fxLayout="column" fxLayoutAlign="center start">
                             <span class="name">Awa FALL</span>
                             <span class="role">RRH/DG/PDG</span>
                         </div>
                     </div>
-                    <div class="dropdown">
+                    <div class="dropdown" appDropdown="dropdown-header">
                         <span class="icon-dropdown"><mat-icon>arrow_drop_down</mat-icon></span>
+                        <div class="dropdown-content" id="dropdown-header">
+                            <div class="dropdown-option">Profil</div>
+                            <div class="dropdown-option" (click)="logout()">Logout</div>
+                        </div>
                     </div>
                 </div>
             </div>

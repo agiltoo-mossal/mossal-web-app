@@ -1,0 +1,18 @@
+query FetchOrganizationCollaborators {
+  fetchOrganizationCollaborators {
+		id
+		firstName
+		lastName
+		email
+		phoneNumber
+		uniqueIdentifier
+		address
+		salary
+		wizallAccountNumber
+		bankAccountNumber
+		position
+    # organization {
+    #   name
+    # }
+	}
+}

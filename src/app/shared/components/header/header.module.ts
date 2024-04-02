@@ -10,14 +10,14 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [HeaderComponent],
-  imports: [
+  imports:[
     CommonModule,
     FlexLayoutModule,
     MatIconModule,
     RouterModule,
     ApplyContextClassModule,
     DropdownModule,
-    TranslateModule,
+    TranslateModule
   ],
   exports: [HeaderComponent],
 })

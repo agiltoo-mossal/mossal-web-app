@@ -1,6 +1,6 @@
 .container {
     height: 70px;
-    padding: 0 40px;
+    padding: 0 24px 0 16px;
     background: #FFF;
     border-bottom: 1px solid #E7E8F2;
 }
@@ -10,28 +10,37 @@
     border-right: 1px solid #A7A9C020;
 
     .logo-icon {
-        width: 64px;
+        width: 40px;
 
         img {
             width: 100%;
         }
     }
 
-    .logo-text,
-    .logo-icon {
-        height: 64px;
+    .logo-text {
+        width: 90px;
 
         img {
+            width: 100%;
+        }
+    }
+
+
+
+    .logo-text,
+    .logo-icon {
+        img {
+            max-height: 100%;
             display: block;
         }
     }
 
     &.is-opened {
-        width: calc(300px - 40px);
+        width: 243px;
     }
 
     &.is-closed {
-        width: auto;
+        width: calc(16px + 56px);
     }
 }
 
@@ -51,27 +60,32 @@
     .message-icon {
         width: 70px;
         height: 70px;
-
         border-right: 1px solid #A7A9C020;
+
+        mat-icon {
+            font-size: 24px;
+        }
     }
 
-    .message-icon {
+    .icon-wrapper {
         position: relative;
 
-        .nbr-message {
+        .signal-notif {
             position: absolute;
-            top: 12px;
+            top: 4px;
             right: 4px;
 
-            width: 20px;
-            height: 20px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background-color: #061E5C;
+            background: #FFC708;
 
             color: #FFF;
             font-size: 9px;
             font-weight: 700;
         }
+
+
     }
 
     .config-icon {
