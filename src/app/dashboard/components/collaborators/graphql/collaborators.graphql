@@ -11,8 +11,8 @@ query FetchOrganizationCollaborators {
 		wizallAccountNumber
 		bankAccountNumber
 		position
-    # organization {
-    #   name
-    # }
+    organization {
+      name
+    }
 	}
 }

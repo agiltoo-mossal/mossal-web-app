@@ -294,7 +294,7 @@ export type User = {
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, organization: { __typename?: 'Organization', name: string } }> };
 
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
@@ -310,6 +310,9 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     wizallAccountNumber
     bankAccountNumber
     position
+    organization {
+      name
+    }
   }
 }
     `;
