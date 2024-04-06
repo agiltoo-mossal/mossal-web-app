@@ -44,6 +44,10 @@ export class FormCollaboratorComponent implements OnInit {
   // Méthode pour soumettre le formulaire
   submitForm() {
     console.log(this.collaboratorForm.value);
+    if(this.collaboratorForm.invalid) {
+      this.collaboratorForm.markAllAsTouched()
+      return;
+    }
     this.inviteCollaboratorGQL.mutate({ collaboratorInput: this.collaboratorForm.value }).subscribe(
       result => {
         if(result.data) {
