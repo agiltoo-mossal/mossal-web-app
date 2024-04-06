@@ -85,7 +85,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDemande: Demande;
   cancelDemande: Scalars['Boolean']['output'];
-  createOrganization: Organization2;
+  createOrganization: Organization;
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
@@ -162,15 +162,6 @@ export type Organization = {
   rootEmail: Scalars['String']['output'];
 };
 
-export type Organization2 = {
-  __typename?: 'Organization2';
-  id: Scalars['ID']['output'];
-  /** Nom de l'organisation */
-  name: Scalars['String']['output'];
-  /** Email de l'utilisateur racine ou admin */
-  rootEmail: Scalars['String']['output'];
-};
-
 export type OrganizationInput = {
   /** Nom de l'organisation */
   name: Scalars['String']['input'];
@@ -194,9 +185,9 @@ export type Query = {
   fetchMyDemande: Demande;
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
-  fetchOrganization: Organization2;
+  fetchOrganization: Organization;
   fetchOrganizationCollaborators: Array<User>;
-  fetchOrganizations: Array<Organization2>;
+  fetchOrganizations: Array<Organization>;
   loginAdmin: Session;
   loginCollaborator: Session;
   refreshCollaboratorToken: Session;
@@ -296,6 +287,13 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]
 
 export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, organization: { __typename?: 'Organization', name: string } }> };
 
+export type InviteCollaboratorMutationVariables = Exact<{
+  collaboratorInput: InviteCollaboratorInput;
+}>;
+
+
+export type InviteCollaboratorMutation = { __typename?: 'Mutation', inviteCollaborator: boolean };
+
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
   fetchOrganizationCollaborators {
@@ -322,6 +320,22 @@ export const FetchOrganizationCollaboratorsDocument = gql`
   })
   export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
     document = FetchOrganizationCollaboratorsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const InviteCollaboratorDocument = gql`
+    mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
+  inviteCollaborator(collaborator: $collaboratorInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
+    document = InviteCollaboratorDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -16,3 +16,7 @@ query FetchOrganizationCollaborators {
     }
 	}
 }
+
+mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
+  inviteCollaborator(collaborator: $collaboratorInput)
+}
