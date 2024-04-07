@@ -22,6 +22,7 @@ export type Scalars = {
 export type Demande = {
   __typename?: 'Demande';
   amount: Scalars['Float']['output'];
+  collaborator: User;
   createdAt: Scalars['DateTime']['output'];
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
@@ -91,6 +92,7 @@ export type Mutation = {
   resetAdminPassword: Scalars['Boolean']['output'];
   resetCollaboratorPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  updateCollaborator: Scalars['Boolean']['output'];
   updateDemande: Scalars['Boolean']['output'];
   updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
@@ -134,6 +136,12 @@ export type MutationResetCollaboratorPasswordArgs = {
 
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateCollaboratorArgs = {
+  collaborator: UpdateCollaboratorInput;
+  collaboratorId: Scalars['String']['input'];
 };
 
 
@@ -186,7 +194,9 @@ export type Query = {
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
   fetchOrganization: Organization;
+  fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
+  fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizations: Array<Organization>;
   loginAdmin: Session;
   loginCollaborator: Session;
@@ -213,6 +223,11 @@ export type QueryFetchMyDemandesMetricsArgs = {
 
 export type QueryFetchOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchOrganizationCollaboratorArgs = {
+  collaboratorId: Scalars['String']['input'];
 };
 
 
@@ -264,11 +279,25 @@ export type Session = {
   user?: Maybe<User>;
 };
 
+export type UpdateCollaboratorInput = {
+  address: Scalars['String']['input'];
+  bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+  position: Scalars['String']['input'];
+  salary?: InputMaybe<Scalars['Float']['input']>;
+  uniqueIdentifier: Scalars['String']['input'];
+  wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
+  authorizedAdvance: Scalars['Int']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -279,13 +308,14 @@ export type User = {
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
 
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -293,6 +323,26 @@ export type InviteCollaboratorMutationVariables = Exact<{
 
 
 export type InviteCollaboratorMutation = { __typename?: 'Mutation', inviteCollaborator: boolean };
+
+export type FetchOrganizationCollaboratorQueryVariables = Exact<{
+  collaboratorId: Scalars['String']['input'];
+}>;
+
+
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, organization: { __typename?: 'Organization', name: string } } };
+
+export type UpdateCollaboratorMutationVariables = Exact<{
+  collaboratorInput: UpdateCollaboratorInput;
+  collaboratorId: Scalars['String']['input'];
+}>;
+
+
+export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
+
+export type FetchOrganizationDemandesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
 
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
@@ -308,6 +358,9 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     wizallAccountNumber
     bankAccountNumber
     position
+    authorizedAdvance
+    createdAt
+    updatedAt
     organization {
       name
     }
@@ -336,6 +389,93 @@ export const InviteCollaboratorDocument = gql`
   })
   export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
     document = InviteCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationCollaboratorDocument = gql`
+    query FetchOrganizationCollaborator($collaboratorId: String!) {
+  fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    wizallAccountNumber
+    bankAccountNumber
+    position
+    authorizedAdvance
+    organization {
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
+    document = FetchOrganizationCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateCollaboratorDocument = gql`
+    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!) {
+  updateCollaborator(
+    collaborator: $collaboratorInput
+    collaboratorId: $collaboratorId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
+    document = UpdateCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationDemandesDocument = gql`
+    query FetchOrganizationDemandes {
+  fetchOrganizationDemandes {
+    id
+    amount
+    status
+    number
+    fees
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      salary
+      authorizedAdvance
+      bankAccountNumber
+      organization {
+        name
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
+    document = FetchOrganizationDemandesDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

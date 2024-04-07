@@ -21,7 +21,7 @@ const routes: Routes = [
         component: CreateCollobatorComponent,
       },
       {
-        path: 'edit-collaborator',
+        path: ':id',
         component: EditCollaboratorComponent,
       },
     ],

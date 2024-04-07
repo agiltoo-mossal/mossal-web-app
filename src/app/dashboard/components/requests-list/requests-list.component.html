@@ -76,17 +76,17 @@
                 <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
-                        <span class="radio active" fxLayoutAlign="center center"></span>
-                        <span>Agiltoo</span>
+                        <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
+                        <span>{{ req?.collaborator?.organization?.name }}</span>
                     </td>
                     <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
                         <div class="circle" fxLayoutAlign="center center">AC</div>
-                        <span>LAURENT DIOP</span>
+                        <span>{{ req?.collaborator?.firstName }} {{ req?.collaborator?.lastName }}</span>
                     </td>
-                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF 475.000</td>
-                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">06-06-2022</td>
+                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}</td>
+                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd' }}</td>
                     <td class="advance" fxFlex="16.6" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
-                        <span class="statut statut--valid"></span><span>Xof 100000</span>
+                        <span class="statut statut--valid"></span><span>Xof {{ req?.amount }}</span>
                     </td>
                     <td fxFlex="16.6" fxLayoutAlign="end center">
                         <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
@@ -136,6 +136,6 @@
         </div>
     </div>
     <div class="info-current-user">
-        <app-user-details></app-user-details>
+        <app-user-details [user]="selectedReq?.collaborator"></app-user-details>
     </div>
 </div>

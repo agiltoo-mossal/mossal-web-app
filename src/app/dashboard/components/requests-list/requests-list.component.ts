@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Demande, FetchOrganizationDemandesGQL, User } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-requests-list',
@@ -6,7 +7,8 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
   styleUrls: ['./requests-list.component.scss'],
 })
 export class RequestsListComponent {
-  requests = [{}, {}, {}, {}, {}, {}];
+  requests = [];
+  selectedReq: Demande;
 
   @ViewChild('dropdownContent') dropdownContent: ElementRef;
   @ViewChild('dropdown') dropdown: ElementRef;
@@ -18,5 +20,24 @@ export class RequestsListComponent {
     } else {
       this.dropdownContent.nativeElement.classList.add('show');
     }
+  }
+
+  constructor(
+    private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL
+  ) {
+    this.getDemandes();
+  }
+
+  getDemandes() {
+    this.fetchOrganizationDemandesGQL.fetch({}).subscribe(
+      result => {
+        this.requests = result.data.fetchOrganizationDemandes as Demande[];
+        this.selectedReq = this.requests?.[0]
+      }
+    )
+  }
+
+  selectReq(selected: Demande) {
+    this.selectedReq = selected;
   }
 }
