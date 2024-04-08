@@ -146,15 +146,15 @@
         <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
             <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                 <span class="color"></span>
-                <div class="nbr">Validé (88)</div>
+                <div class="nbr">Validé ({{ nbValid }})</div>
             </div>
             <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                 <span class="color"></span>
-                <div class="nbr">Rejeté (32)</div>
+                <div class="nbr">Rejeté ({{ nbRejected }})</div>
             </div>
             <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                 <span class="color"></span>
-                <div class="nbr">En attente (13)</div>
+                <div class="nbr">En attente ({{ nbPending }})</div>
             </div>
         </div>
     </div>

@@ -65,13 +65,13 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserAnimationsModule,
     ReactiveFormsModule,
     FormsModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient],
-      },
-    }),
+    // TranslateModule.forRoot({
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: createTranslateLoader,
+    //     deps: [HttpClient],
+    //   },
+    // }),
     HeaderModule,
     FooterModule,
     FlexLayoutModule,

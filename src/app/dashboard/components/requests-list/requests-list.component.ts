@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { CancelDemandeByAdminGQL, Demande, FetchOrganizationDemandesGQL, RejectDemandeByAdminGQL, User, ValidateDemandeGQL } from 'src/graphql/generated';
+import { CancelDemandeByAdminGQL, Demande, DemandeStatus, FetchOrganizationDemandesGQL, RejectDemandeByAdminGQL, User, ValidateDemandeGQL } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-requests-list',
@@ -8,7 +8,7 @@ import { CancelDemandeByAdminGQL, Demande, FetchOrganizationDemandesGQL, RejectD
   styleUrls: ['./requests-list.component.scss'],
 })
 export class RequestsListComponent {
-  requests = [];
+  requests: Demande[] = [];
   selectedReq: Demande;
 
   @ViewChild('dropdownContent') dropdownContent: ElementRef;
@@ -96,5 +96,17 @@ export class RequestsListComponent {
         this.snackBarService.showErrorSnackBar(5000, "Vous ne pouvez pas effectuer cette action.");
       }
     )
+  }
+
+  get nbValid() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Validated)?.length || 0;
+  }
+
+  get nbRejected() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Rejected)?.length || 0;
+  }
+
+  get nbPending() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Pending)?.length || 0;
   }
 }
