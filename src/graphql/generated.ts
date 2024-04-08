@@ -51,6 +51,7 @@ export enum DemandeStatus {
   InProcess = 'IN_PROCESS',
   Pending = 'PENDING',
   Refused = 'REFUSED',
+  Rejected = 'REJECTED',
   Validated = 'VALIDATED'
 }
 
@@ -86,9 +87,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDemande: Demande;
   cancelDemande: Scalars['Boolean']['output'];
+  cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createOrganization: Organization;
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   resetCollaboratorPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
@@ -96,6 +99,7 @@ export type Mutation = {
   updateDemande: Scalars['Boolean']['output'];
   updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
+  validateDemande: Scalars['Boolean']['output'];
 };
 
 
@@ -105,6 +109,11 @@ export type MutationAddDemandeArgs = {
 
 
 export type MutationCancelDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
 };
 
@@ -121,6 +130,12 @@ export type MutationFinalizeForgotPasswordArgs = {
 
 export type MutationInviteCollaboratorArgs = {
   collaborator: InviteCollaboratorInput;
+};
+
+
+export type MutationRejectDemandeByAdminArgs = {
+  demandeId: Scalars['ID']['input'];
+  rejectedReason: Scalars['String']['input'];
 };
 
 
@@ -159,6 +174,11 @@ export type MutationUpdateMyBankAccountArgs = {
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
+};
+
+
+export type MutationValidateDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
 };
 
 export type Organization = {
@@ -344,6 +364,28 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{ [key: string]: nev
 
 export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
 
+export type ValidateDemandeMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type ValidateDemandeMutation = { __typename?: 'Mutation', validateDemande: boolean };
+
+export type CancelDemandeByAdminMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type CancelDemandeByAdminMutation = { __typename?: 'Mutation', cancelDemandeByAdmin: boolean };
+
+export type RejectDemandeByAdminMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+  rejectedReason: Scalars['String']['input'];
+}>;
+
+
+export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
+
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
   fetchOrganizationCollaborators {
@@ -476,6 +518,54 @@ export const FetchOrganizationDemandesDocument = gql`
   })
   export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
     document = FetchOrganizationDemandesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ValidateDemandeDocument = gql`
+    mutation ValidateDemande($demandeId: ID!) {
+  validateDemande(demandeId: $demandeId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ValidateDemandeGQL extends Apollo.Mutation<ValidateDemandeMutation, ValidateDemandeMutationVariables> {
+    document = ValidateDemandeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CancelDemandeByAdminDocument = gql`
+    mutation CancelDemandeByAdmin($demandeId: ID!) {
+  cancelDemandeByAdmin(demandeId: $demandeId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CancelDemandeByAdminGQL extends Apollo.Mutation<CancelDemandeByAdminMutation, CancelDemandeByAdminMutationVariables> {
+    document = CancelDemandeByAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RejectDemandeByAdminDocument = gql`
+    mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
+  rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
+    document = RejectDemandeByAdminDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

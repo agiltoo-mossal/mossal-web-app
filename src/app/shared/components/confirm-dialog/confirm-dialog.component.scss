@@ -1,0 +1,92 @@
+.confirm-dialog {
+  color: #000;
+  box-sizing: border-box !important;
+  width: 446px !important;
+  background: #ffffff;
+  padding-bottom: 0px !important;
+
+  .header {
+    position: absolute !important;
+    top: 15px;
+    right: 0px;
+    .mat-icon {
+      font-size: 15px;
+    }
+    .close {
+      cursor: pointer;
+    }
+  }
+
+  .message {
+    position: relative !important;
+    padding-left: 14.5px !important;
+    padding-right: 14.5px !important;
+    height: 124px;
+    font-family: 'Proxima Nova';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+
+
+  }
+
+  form {
+    margin-top: -24px;
+    margin-bottom: 24px;
+    margin-left: 32px;
+    margin-right: 32px;
+    label {
+      font-size: 13px;
+    }
+    textarea {
+      padding: 7px;
+    }
+  }
+
+  .footer {
+    box-sizing: border-box !important;
+    height: 81px !important;
+    background: #ffffff;
+    border-radius: 0px 0px 4px 4px;
+    padding: 20px !important;
+    border-top: 1px solid #dee0e3;
+
+    .cancel {
+      width: 92px;
+      height: 40px;
+      background: #ffffff;
+      border: 1px solid #001f60;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 16px;
+      text-align: center;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #001f60;
+      cursor: pointer;
+    }
+
+    .confirm {
+      width: 101px;
+      height: 40px;
+      background: #001f60;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 16px;
+      text-align: center;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+}
+
+::ng-deep .mat-dialog-container {
+  padding: 0;
+}

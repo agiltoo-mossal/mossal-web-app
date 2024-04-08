@@ -13,6 +13,8 @@ import { HeaderModule } from '../shared/components/header/header.module';
 import { DropdownModule } from '../shared/directives/dropdown/dropdown.module';
 import { UserComponent } from './components/user/user.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { RequiresConfirmationModule } from '../shared/directives/requires-confirmation/requires-confirmation.module';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,8 @@ import { NotificationsComponent } from './components/notifications/notifications
     UserDetailsModule,
     HeaderModule,
     DropdownModule,
+    RequiresConfirmationModule,
+    MatDialogModule
   ],
 })
 export class DashboardModule {}

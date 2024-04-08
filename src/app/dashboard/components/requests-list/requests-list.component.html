@@ -86,31 +86,54 @@
                     <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}</td>
                     <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd' }}</td>
                     <td class="advance" fxFlex="16.6" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
-                        <span class="statut statut--valid"></span><span>Xof {{ req?.amount }}</span>
+                        <span class="statut statut--{{ req?.status | lowercase }}"></span><span>Xof {{ req?.amount }}</span>
                     </td>
                     <td fxFlex="16.6" fxLayoutAlign="end center">
                         <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
                             <span fxLayout="row" class="btn-edit-statut">
                                 <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
-                                    fxLayoutAlign="center center"><span>Action</span><span
-                                        class="statut statut--valid"></span></span>
+                                    fxLayoutAlign="center center"><span>{{ req?.status | titlecase }}</span><span
+                                        class="statut statut--{{ req?.status | lowercase }}"></span></span>
                                 <mat-icon class="dropdown-icon"
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
                             <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                <div
+                                  class="dropdown-option"
+                                  fxLayout="row"
+                                  fxLayoutAlign="space-between center"
+                                  requiresConfirmation
+                                  [message]="'Voulez-vous valider cette demande?'"
+                                  [confirmCallback]="validateDemande"
+                                  [confirmCallbackParam]="req?.id"
+                                >
                                     Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                <div
+                                  class="dropdown-option"
+                                  fxLayout="row"
+                                  fxLayoutAlign="space-between center"
+                                  requiresConfirmation
+                                  [message]="'Voulez-vous rejeter cette demande?'"
+                                  [confirmCallback]="rejectDemande"
+                                  [reasonRequired]="true"
+                                  [confirmCallbackParam]="req?.id"
+                                >
                                     Rejetée
                                     <span class="statut statut--rejected"></span>
                                 </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
+                                <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
                                     attente
                                     <span class="statut statut--pending"></span>
-                                </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">
+                                </div> -->
+                                <div
+                                  class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                  requiresConfirmation
+                                  [message]="'Voulez-vous annuler cette demande?'"
+                                  [confirmCallback]="cancelDemande"
+                                  [confirmCallbackParam]="req?.id"
+                                >
                                     Annulée
                                     <span class="statut statut--cancel"></span>
                                 </div>
