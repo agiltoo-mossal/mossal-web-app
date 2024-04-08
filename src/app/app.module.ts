@@ -45,7 +45,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
       enableBearerInterceptor: true,
 
       initOptions: {
-        onLoad: 'login-required'
+        onLoad: 'login-required',
+        checkLoginIframe: false
       },
     });
 }
