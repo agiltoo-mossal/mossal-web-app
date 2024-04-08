@@ -15,6 +15,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   collaboratorForm: FormGroup;
   collaborator: User;
   @Input() collaboratorId: string;
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -51,35 +52,45 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   // Méthode pour soumettre le formulaire
   submitForm() {
-    if(this.collaboratorForm.invalid) {
+    if(this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched()
       return;
     }
+    this.isLoading = true;
     this.inviteCollaboratorGQL.mutate({ collaboratorInput: this.collaboratorForm.value }).subscribe(
       result => {
+        this.isLoading = false;
         if(result.data) {
           this.router.navigate(['/dashboard/collaborators']);
           this.snackBarService.showSuccessSnackBar("Invitation envoyé au collaborateur")
         }
 
+      },
+      error => {
+        this.isLoading = false;
       }
     )
   }
 
   edit() {
-    if(this.collaboratorForm.invalid) {
+    if(this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched()
       return;
     }
+    this.isLoading = true;
     const value = { ...this.collaboratorForm.value, salary: Number(this.collaboratorForm.value.salary || 0) };
     delete value.email;
     this.updateCollaboratorGQL.mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId }).subscribe(
       result => {
+        this.isLoading = false;
         if(result.data) {
           this.router.navigate(['/dashboard/collaborators']);
           this.snackBarService.showSuccessSnackBar("Collaborator modifié avec succés")
         }
 
+      },
+      error => {
+        this.isLoading = false;
       }
     )
   }

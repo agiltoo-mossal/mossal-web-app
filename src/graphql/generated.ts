@@ -50,7 +50,6 @@ export enum DemandeStatus {
   Cancelled = 'CANCELLED',
   InProcess = 'IN_PROCESS',
   Pending = 'PENDING',
-  Refused = 'REFUSED',
   Rejected = 'REJECTED',
   Validated = 'VALIDATED'
 }
@@ -97,6 +96,8 @@ export type Mutation = {
   startForgotPassword: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
   updateDemande: Scalars['Boolean']['output'];
+  updateMyAdminPassword: Scalars['Boolean']['output'];
+  updateMyAdminProfile: Scalars['Boolean']['output'];
   updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
@@ -166,6 +167,17 @@ export type MutationUpdateDemandeArgs = {
 };
 
 
+export type MutationUpdateMyAdminPasswordArgs = {
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateMyAdminProfileArgs = {
+  userInput: UpdateMyAdminProfileInput;
+};
+
+
 export type MutationUpdateMyBankAccountArgs = {
   bankAccountNumber: Scalars['String']['input'];
 };
@@ -210,6 +222,7 @@ export type Query = {
   __typename?: 'Query';
   checkMyBalance: Scalars['Float']['output'];
   checkMyDemandeFees: Scalars['Float']['output'];
+  fetchCurrentAdmin: User;
   fetchMyDemande: Demande;
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
@@ -311,6 +324,14 @@ export type UpdateCollaboratorInput = {
   wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateMyAdminProfileInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
@@ -385,6 +406,26 @@ export type RejectDemandeByAdminMutationVariables = Exact<{
 
 
 export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
+
+export type UpdateMyAdminPasswordMutationVariables = Exact<{
+  oldPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+}>;
+
+
+export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyAdminPassword: boolean };
+
+export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null } };
+
+export type UpdateMyAdminProfileMutationVariables = Exact<{
+  userInput: UpdateMyAdminProfileInput;
+}>;
+
+
+export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
@@ -566,6 +607,61 @@ export const RejectDemandeByAdminDocument = gql`
   })
   export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
     document = RejectDemandeByAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMyAdminPasswordDocument = gql`
+    mutation UpdateMyAdminPassword($oldPassword: String!, $newPassword: String!) {
+  updateMyAdminPassword(oldPassword: $oldPassword, newPassword: $newPassword)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMyAdminPasswordGQL extends Apollo.Mutation<UpdateMyAdminPasswordMutation, UpdateMyAdminPasswordMutationVariables> {
+    document = UpdateMyAdminPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchCurrentAdminDocument = gql`
+    query FetchCurrentAdmin {
+  fetchCurrentAdmin {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    address
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchCurrentAdminGQL extends Apollo.Query<FetchCurrentAdminQuery, FetchCurrentAdminQueryVariables> {
+    document = FetchCurrentAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMyAdminProfileDocument = gql`
+    mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
+  updateMyAdminProfile(userInput: $userInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
+    document = UpdateMyAdminProfileDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
