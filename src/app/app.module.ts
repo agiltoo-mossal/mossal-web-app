@@ -30,7 +30,11 @@ import { FooterModule } from './shared/components/footer/footer.module';
 import { ScrolTopModule } from './shared/components/scrol-top/scrol-top.module';
 import { AdminModule } from './admin/admin.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { KeycloakAngularModule, KeycloakService, KeycloakBearerInterceptor } from 'keycloak-angular';
+import {
+  KeycloakAngularModule,
+  KeycloakService,
+  KeycloakBearerInterceptor,
+} from 'keycloak-angular';
 import { environment } from 'src/environments/environment';
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -40,12 +44,11 @@ function initializeKeycloak(keycloak: KeycloakService) {
         url: environment.KEYCLOAK_URL,
         realm: environment.KEYCLOACK_REALM,
         clientId: environment.KEYCLOACK_CLIENT_ID,
-
       },
       enableBearerInterceptor: true,
 
       initOptions: {
-        onLoad: 'login-required'
+        onLoad: 'login-required',
       },
     });
 }
@@ -82,7 +85,7 @@ export function createTranslateLoader(http: HttpClient) {
     ScrolTopModule,
     AdminModule,
     NgbModule,
-    KeycloakAngularModule
+    KeycloakAngularModule,
   ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -105,9 +108,7 @@ export function createTranslateLoader(http: HttpClient) {
       useClass: KeycloakBearerInterceptor,
       multi: true,
     },
-    provideHttpClient(
-      withInterceptorsFromDi()
-    )
+    provideHttpClient(withInterceptorsFromDi()),
   ],
   bootstrap: [AppComponent],
 })

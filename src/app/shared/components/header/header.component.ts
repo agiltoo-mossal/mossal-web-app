@@ -60,12 +60,9 @@ export class HeaderComponent implements OnInit {
     return this.user.role.toLowerCase();
   }
 
-
   logout() {
-    this.keycloakService.logout().then(
-      result => {
-        this.router.navigate(["/"])
-      }
-    )
+    this.keycloakService.logout().then((result) => {
+      this.router.navigate(['/']);
+    });
   }
 }
