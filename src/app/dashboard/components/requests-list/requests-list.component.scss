@@ -78,33 +78,4 @@
         cursor: pointer;
     }
 
-
-
-}
-
-#filter-date-dropdown {
-    margin-top: 4px;
-
-    &.show {
-        display: flex !important;
-    }
-
-    input {
-        height: 56px;
-        padding: 0 24px;
-
-        border-radius: 8px;
-        border: 1px solid var(--XOF, #576E82);
-        background: var(--Blanc, #FFF);
-
-        color: #000;
-        font-family: Poppins;
-        font-size: 16px;
-        font-weight: 400;
-
-        &::placeholder {
-            color: #9A9AB0;
-        }
-    }
-
 }

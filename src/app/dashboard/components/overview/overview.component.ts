@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { GoogleChartInterface, GoogleChartType } from 'ng2-google-charts';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { Demande, DemandeStatus, FetchOrganizationCollaboratorsGQL, FetchOrganizationDemandesGQL, User } from 'src/graphql/generated';
+import {
+  Demande,
+  DemandeStatus,
+  FetchOrganizationCollaboratorsGQL,
+  FetchOrganizationDemandesGQL,
+  User,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-overview',
@@ -9,34 +15,42 @@ import { Demande, DemandeStatus, FetchOrganizationCollaboratorsGQL, FetchOrganiz
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit {
-  cardPrevData = [
+  datas = [
     {
-      label: 'Montant total demandé',
-      devis: 'XOF',
+      label: 'Nombre de demandes en attente (actifs) ',
       value: '2.500.000',
       img: './assets/img/data-preview-img1.svg',
       color: '#061E5C',
     },
     {
-      label: 'Reste total à payer',
-      devis: 'XOF',
+      label: 'Nombre de remboursements restants ',
       value: '1.500.000',
       img: './assets/img/data-preview-img2.svg',
       color: '#FFC708',
     },
     {
-      label: 'Actifs du 1 jan 2022 au 31 dec 2022',
-      devis: '',
+      label: 'Montant total des demandes ',
       value: '220',
       img: './assets/img/data-preview-img3.svg',
       color: '#40B139',
     },
     {
-      label: 'Inscrits du 1 jan au 31 dec 2022',
-      devis: '',
+      label: 'Nombre d’inscrits ',
       value: '200',
       img: './assets/img/data-preview-img4.svg',
       color: '#F41414',
+    },
+    {
+      label: 'Nombre de demandes en attente (actifs) ',
+      value: '2.500.000',
+      img: './assets/img/data-preview-img1.svg',
+      color: '#061E5C',
+    },
+    {
+      label: 'Nombre de remboursements restants ',
+      value: '1.500.000',
+      img: './assets/img/data-preview-img2.svg',
+      color: '#FFC708',
     },
   ];
 
@@ -57,27 +71,29 @@ export class OverviewComponent implements OnInit {
     this.fetchCollabs();
   }
 
-  getDemandes(useCache=true) {
-    let cache = 'cache-first'
-    if(!useCache) {
-      cache = 'no-cache'
+  getDemandes(useCache = true) {
+    let cache = 'cache-first';
+    if (!useCache) {
+      cache = 'no-cache';
     }
-    this.fetchOrganizationDemandesGQL.fetch({}, { fetchPolicy: cache as any }).subscribe(
-      result => {
+    this.fetchOrganizationDemandesGQL
+      .fetch({}, { fetchPolicy: cache as any })
+      .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
-        this.sortedRequests = this.requests.slice().sort((a, b) => a.createdAt > b.createdAt ? -1 : 1) as Demande[];
-      }
-    )
+        this.sortedRequests = this.requests
+          .slice()
+          .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
+      });
   }
 
   fetchCollabs() {
-    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe(
-      result => {
+    this.fetchOrganizationCollaboratorsGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
         this.selectedCollab = this.collabs?.[0];
-      }
-    )
+      });
   }
 
   selectCollab(selected: User) {
@@ -89,43 +105,58 @@ export class OverviewComponent implements OnInit {
   }
 
   get nbValid() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Validated)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Validated)
+        ?.length || 0
+    );
   }
 
   get nbRejected() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Rejected)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Rejected)
+        ?.length || 0
+    );
   }
 
   get nbPending() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Pending)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Pending)
+        ?.length || 0
+    );
   }
 
   get totalDemandeAmount() {
-    return this?.requests?.filter?.(r => [DemandeStatus.Validated, DemandeStatus.Pending].includes(r.status))
-    ?.reduce((a, b) => a + b.amount, 0) || 0;
+    return (
+      this?.requests
+        ?.filter?.((r) =>
+          [DemandeStatus.Validated, DemandeStatus.Pending].includes(r.status)
+        )
+        ?.reduce((a, b) => a + b.amount, 0) || 0
+    );
   }
 
   get totalDemandeToPay() {
-    return this?.requests?.filter?.(r => [DemandeStatus.Validated].includes(r.status))
-    ?.reduce((a, b) => a + b.amount, 0) || 0;
+    return (
+      this?.requests
+        ?.filter?.((r) => [DemandeStatus.Validated].includes(r.status))
+        ?.reduce((a, b) => a + b.amount, 0) || 0
+    );
   }
 
   get nbActifUsers() {
     const users = [];
-    this?.collabs?.map?.(r => {
-      if(!users.includes(r.id)) {
+    this?.collabs?.map?.((r) => {
+      if (!users.includes(r.id)) {
         users.push(r.id);
       }
     });
     return users.length;
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   getLastRequest(collabId: string) {
-    return this.sortedRequests.find(r => r.collaborator.id == collabId);
+    return this.sortedRequests.find((r) => r.collaborator.id == collabId);
   }
 
   // pieChart: GoogleChartInterface = {
