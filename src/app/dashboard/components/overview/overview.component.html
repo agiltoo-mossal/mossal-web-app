@@ -5,7 +5,7 @@
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
                 <div class="time-interval">
                     <span class="current-time-interval" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                        <span class="value" fxLayoutAlign="start center">Du 1 jan 2022 au 31dec 2022</span>
+                        <span class="value" fxLayoutAlign="start center">Du 1 jan 2024 au 31 dec 2024</span>
                         <mat-icon fxLayoutAlign="center center">arrow_drop_down</mat-icon>
                     </span>
                 </div>
@@ -13,31 +13,72 @@
             </div>
         </div>
         <div class="card-data-container" fxLayout="row" fxLayoutGap="32px" fxLayoutAlign="start start">
-            <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start" *ngFor="let card of cardPrevData">
+            <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start">
                 <div fxLayout="column">
                     <div>
-                        <span class="label">{{card.label}}</span>
+                        <span class="label">Montant total demandé</span>
                     </div>
                     <div fxLayout="column">
-                        <span class="devis" *ngIf="card.devis">{{card.devis}}</span>
-                        <span class="value" *ngIf="card.value">{{card.value}}</span>
+                        <span class="devis">XOF</span>
+                        <span class="value">{{totalDemandeAmount}}</span>
                     </div>
                 </div>
-                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':card.color}">
-                    <img [src]="card.img" alt="">
+                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#061E5C'}">
+                    <img [src]="'./assets/img/data-preview-img1.svg'" alt="">
                 </div>
             </div>
+            <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start">
+              <div fxLayout="column">
+                  <div>
+                      <span class="label">Reste total à payer</span>
+                  </div>
+                  <div fxLayout="column">
+                      <span class="devis">XOF</span>
+                      <span class="value">{{ totalDemandeToPay }}</span>
+                  </div>
+              </div>
+              <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color': '#FFC708'}">
+                  <img [src]="'./assets/img/data-preview-img2.svg'" alt="">
+              </div>
+          </div>
+          <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start">
+            <div fxLayout="column">
+                <div>
+                    <span class="label">Actifs du 1 jan 2024 au 31 dec 2024</span>
+                </div>
+                <div fxLayout="column">
+                    <span class="value">{{ nbActifUsers }}</span>
+                </div>
+            </div>
+            <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color': '#40B139'}">
+                <img [src]="'./assets/img/data-preview-img3.svg'" alt="">
+            </div>
+          </div>
+
+          <div class="data-card" fxLayout="row" fxLayoutAlign="space-between start">
+            <div fxLayout="column">
+                <div>
+                    <span class="label">Inscrits du 1 jan au 31 dec 2024</span>
+                </div>
+                <div fxLayout="column">
+                    <span class="value">{{ nbActifUsers }}</span>
+                </div>
+            </div>
+            <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color': '#F41414'}">
+                <img [src]="'./assets/img/data-preview-img4.svg'" alt="">
+            </div>
+          </div>
         </div>
-        <div class="chart-container" style="outline: 1px solid red;">
-            <!-- <google-chart [data]="pieChart"></google-chart> -->
+        <!-- <div class="chart-container" style="outline: 1px solid red;">
+            <google-chart [data]="pieChart"></google-chart>
             <google-chart [data]="chartData.dataTable">
             </google-chart>
-        </div>
+        </div> -->
     </div>
     <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
         <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="16px">
             <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
-                <span class="nbr-user">Utilisateurs enregistrés (40.000)</span>
+                <span class="nbr-user">Utilisateurs enregistrés ({{ nbActifUsers }})</span>
                 <div class="dropdown dropdown-filter" [appDropdown]="'dropdown-filter-user-list-saved'">
                     <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
                         <span class="icon" fxLayoutAlign="center center"><mat-icon
@@ -58,39 +99,39 @@
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Date</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Avance sur salaire</th>
                 </tr>
-                <tr class="user" fxLayout="row" *ngFor=" let user of userList;let i=index">
+                <tr class="user" fxLayout="row" *ngFor=" let req of collabs;let i=index">
                     <td class="radio-container" fxFlex="20" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
-                        <span class="radio active" fxLayoutAlign="center center"></span>
-                        <span>Agiltoo</span>
+                        <span (click)="selectCollab(req)" class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
+                        <span>{{ req?.organization?.name }}</span>
                     </td>
                     <td class="name" fxFlex="20" fxLayoutAlign="center center" fxLayoutGap="8px">
-                        <div class="circle" fxLayoutAlign="center center">AC</div>
-                        <span>LAURENT DIOP</span>
+                        <div class="circle" fxLayoutAlign="center center">{{ req?.firstName[0] }}{{ req?.lastName[0] }}</div>
+                        <span>{{ req?.firstName }} {{ req?.lastName }}</span>
                     </td>
-                    <td class="solde" fxFlex="20" fxLayoutAlign="center center">XOF 475.000</td>
-                    <td class="date" fxFlex="20" fxLayoutAlign="center center">06-06-2022</td>
+                    <td class="solde" fxFlex="20" fxLayoutAlign="center center">XOF {{ req?.balance }}</td>
+                    <td class="date" fxFlex="20" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd' }}</td>
                     <td class="advance" fxFlex="20" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"><span
-                            class="statut statut--valid"></span><span>Xof 100000</span></td>
+                      class="statut statut--{{ getLastRequest(req.id)?.status | lowercase }}"></span><span>{{ getLastRequest(req.id)?.amount ? 'XOF' :'' }} {{ getLastRequest(req.id)?.amount || '__' }}</span></td>
                 </tr>
             </table>
             <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
                 <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                     <span class="color"></span>
-                    <div class="nbr">Validé (88)</div>
+                    <div class="nbr">Validé ({{ nbValid }})</div>
                 </div>
                 <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                     <span class="color"></span>
-                    <div class="nbr">Rejeté (32)</div>
+                    <div class="nbr">Rejeté ({{ nbRejected }})</div>
                 </div>
                 <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
                     <span class="color"></span>
-                    <div class="nbr">En attente (13)</div>
+                    <div class="nbr">En attente ({{ nbPending }})</div>
                 </div>
             </div>
         </div>
         <div class="info-current-user">
-            <app-user-details></app-user-details>
+            <app-user-details [user]="selectedCollab"></app-user-details>
         </div>
     </div>
 </div>

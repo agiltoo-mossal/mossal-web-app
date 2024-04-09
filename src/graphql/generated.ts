@@ -325,11 +325,10 @@ export type UpdateCollaboratorInput = {
 };
 
 export type UpdateMyAdminProfileInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
-  email: Scalars['String']['input'];
+  address: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber: Scalars['String']['input'];
 };
 
 export type User = {
@@ -356,7 +355,7 @@ export type User = {
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -438,6 +437,7 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     uniqueIdentifier
     address
     salary
+    balance
     wizallAccountNumber
     bankAccountNumber
     position

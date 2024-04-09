@@ -8,6 +8,7 @@ query FetchOrganizationCollaborators {
 		uniqueIdentifier
 		address
 		salary
+    balance
 		wizallAccountNumber
 		bankAccountNumber
 		position

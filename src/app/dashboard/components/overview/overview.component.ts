@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GoogleChartInterface, GoogleChartType } from 'ng2-google-charts';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { Demande, DemandeStatus, FetchOrganizationCollaboratorsGQL, FetchOrganizationDemandesGQL, User } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-overview',
@@ -40,6 +42,92 @@ export class OverviewComponent implements OnInit {
 
   userList = [{}, {}, {}, {}, {}, {}, {}];
 
+  requests: Demande[] = [];
+  sortedRequests: Demande[] = [];
+  selectedReq: Demande;
+  collabs: User[] = [];
+  selectedCollab: User;
+
+  constructor(
+    private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
+    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
+    private snackBarService: SnackBarService
+  ) {
+    this.getDemandes();
+    this.fetchCollabs();
+  }
+
+  getDemandes(useCache=true) {
+    let cache = 'cache-first'
+    if(!useCache) {
+      cache = 'no-cache'
+    }
+    this.fetchOrganizationDemandesGQL.fetch({}, { fetchPolicy: cache as any }).subscribe(
+      result => {
+        this.requests = result.data.fetchOrganizationDemandes as Demande[];
+        this.selectedReq = this.requests?.[0];
+        this.sortedRequests = this.requests.slice().sort((a, b) => a.createdAt > b.createdAt ? -1 : 1) as Demande[];
+      }
+    )
+  }
+
+  fetchCollabs() {
+    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe(
+      result => {
+        this.collabs = result.data.fetchOrganizationCollaborators as User[];
+        this.selectedCollab = this.collabs?.[0];
+      }
+    )
+  }
+
+  selectCollab(selected: User) {
+    this.selectedCollab = selected;
+  }
+
+  selectReq(selected: Demande) {
+    this.selectedReq = selected;
+  }
+
+  get nbValid() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Validated)?.length || 0;
+  }
+
+  get nbRejected() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Rejected)?.length || 0;
+  }
+
+  get nbPending() {
+    return this?.requests?.filter?.(r => r.status === DemandeStatus.Pending)?.length || 0;
+  }
+
+  get totalDemandeAmount() {
+    return this?.requests?.filter?.(r => [DemandeStatus.Validated, DemandeStatus.Pending].includes(r.status))
+    ?.reduce((a, b) => a + b.amount, 0) || 0;
+  }
+
+  get totalDemandeToPay() {
+    return this?.requests?.filter?.(r => [DemandeStatus.Validated].includes(r.status))
+    ?.reduce((a, b) => a + b.amount, 0) || 0;
+  }
+
+  get nbActifUsers() {
+    const users = [];
+    this?.collabs?.map?.(r => {
+      if(!users.includes(r.id)) {
+        users.push(r.id);
+      }
+    });
+    return users.length;
+  }
+
+  ngOnInit(): void {
+
+  }
+
+  getLastRequest(collabId: string) {
+    return this.sortedRequests.find(r => r.collaborator.id == collabId);
+  }
+
   // pieChart: GoogleChartInterface = {
   //   chartType: GoogleChartType.PieChart, // or chartType: 'PieChart'
   //   dataTable: [
@@ -53,8 +141,6 @@ export class OverviewComponent implements OnInit {
   //   // firstRowIsData: true,
   //   options: { title: 'Tasks' },
   // };
-
-  ngOnInit(): void {}
   chartData: GoogleChartInterface = {
     // chartType: 'LineChart',
     chartType: GoogleChartType.LineChart,
