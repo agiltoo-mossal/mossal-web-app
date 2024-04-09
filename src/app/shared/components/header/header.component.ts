@@ -22,6 +22,33 @@ export class HeaderComponent implements OnInit {
   headerSubscription: Subscription;
   currentUser;
 
+  notificationList = [
+    {
+      title: 'Demande N°021',
+      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
+      date: 'Aujourd’hui',
+      author: 'Youssouph Ndiaye',
+    },
+    {
+      title: 'Remboursement',
+      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
+      date: 'Hier',
+      author: 'Laurent Diop',
+    },
+    {
+      title: 'Demande N°022',
+      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
+      date: '12 janvier 2024',
+      author: ' Demba Dia',
+    },
+    {
+      title: 'Réinitialisation mot de passe',
+      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
+      date: '10 janvier 2024 ',
+      author: ' Mossal',
+    },
+  ];
+
   constructor(
     private authService: AuthService,
     private appService: AppService,
@@ -40,12 +67,9 @@ export class HeaderComponent implements OnInit {
         this.isSidebarOpened = resp;
       });
 
-    this.keycloakService.loadUserProfile().then(
-      result => {
-        this.currentUser = result;
-      }
-    );
-
+    this.keycloakService.loadUserProfile().then((result) => {
+      this.currentUser = result;
+    });
   }
 
   ngOnInit(): void {}

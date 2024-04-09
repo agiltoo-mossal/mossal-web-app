@@ -5,79 +5,75 @@
         font-weight: 500;
     }
 
-    .time-interval {
+    .current-time-interval {
+        height: 35px;
+        color: #33343D;
+        font-size: 12px;
+        font-weight: 500;
+        background-color: #FFFFFF;
+        border-radius: 4px;
+        cursor: pointer;
 
+        .value {
+            height: 100%;
+            min-width: max-content;
+            padding: 0 16px 0;
+            border-right: 1px solid #E7E8F2;
+        }
 
-        .current-time-interval {
-            height: 35px;
-            color: #33343D;
-            font-size: 12px;
-            font-weight: 500;
-            background-color: #FFFFFF;
-            border-radius: 4px;
-            padding-right: 10px;
-            cursor: pointer;
-
-            .value {
-                height: 100%;
-                padding: 0 16px 0 10px;
-                border-right: 1px solid #E7E8F2;
-            }
+        .icon {
+            padding: 0 10px;
 
             mat-icon {
                 color: #E7E8F2;
             }
         }
+
+
     }
 
-    .card-data-container {
-        max-width: 100%;
-        width: 100%;
-        overflow-x: auto;
-        scroll-behavior: smooth;
 
-        &::-webkit-scrollbar {
-            display: none;
-        }
+}
 
-        &::-webkit-scrollbar-thumb {
-            display: none;
-        }
+.card-data-container {
+    display: grid;
+    gap: 2.6%;
+}
+
+.data-card {
+    border-radius: 8px;
+    background: #FFF;
+    box-shadow: 10px 24px 54px 0px rgba(0, 0, 0, 0.06);
+
+    // max-width: 322px;
+    // width: 100%;
+    height: 177.21px;
+    padding: 24px;
+    margin-bottom: 32px;
 
 
-        .data-card {
-            border-radius: 8px;
-            background: #FFF;
-            // box-shadow: 10px 24px 54px 0px rgba(0, 0, 0, 0.06);
+    .label {
+        color: rgba(0, 0, 0, 0.50);
+        font-family: Poppins;
+        font-size: 14px;
+        font-weight: 500;
+    }
 
-            min-width: 282.038px;
-            height: 177.21px;
-            padding: 16px;
+    .devis,
+    .value {
+        color: #000;
 
-            .label {
-                color: rgba(0, 0, 0, 0.50);
-                font-family: Poppins;
-                font-size: 14px;
-                font-weight: 500;
-            }
+        font-family: Poppins;
+        font-size: 23px;
+        font-weight: 600;
+    }
 
-            .devis,
-            .value {
-                color: #000;
-
-                font-family: Poppins;
-                font-size: 23px;
-                font-weight: 600;
-            }
-
-            .data-image {
-                width: 60px;
-                min-width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                overflow: hidden;
-            }
-        }
+    .data-image {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
     }
 }
 
@@ -149,4 +145,8 @@
 .info-current-user {
     max-width: 263px;
     width: 100%;
+}
+
+#filter-date-dropdown {
+    margin-top: 12px;
 }

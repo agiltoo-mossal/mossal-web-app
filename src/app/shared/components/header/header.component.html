@@ -13,14 +13,35 @@
             <span class="title">Aperçu</span>
             <div class="user-and-notif-container" fxLayout="row" fxLayoutGap="24px">
                 <div fxLayout="row">
-                    <span class="config-icon" fxLayoutAlign="center center"><mat-icon
+                    <span class="config-icon" fxLayoutAlign="center center" routerLink="/dashboard/user"><mat-icon
                             fxLayoutAlign="center center">settings</mat-icon></span>
-                    <span class="message-icon" fxLayoutAlign="center center">
-                        <span class="icon-wrapper">
-                            <mat-icon fxLayoutAlign="center center">notifications_none</mat-icon>
-                            <span class="signal-notif"></span>
+                    <div class="dropdown" [appDropdown]="'dropdown-notfification'">
+                        <span class="message-icon" fxLayoutAlign="center center">
+                            <span class="icon-wrapper">
+                                <mat-icon fxLayoutAlign="center center">notifications_none</mat-icon>
+                                <span class="signal-notif"></span>
+                            </span>
+                            <div class="dropdown-content" id="dropdown-notfification">
+                                <div class="notif-content-wrapper  personnaliez-sidebar">
+                                    <div *ngFor="let notif of notificationList;let i=index" fxLayout.lg="column"
+                                        fxLayoutGap.lg="15px">
+                                        <div class="dropdown-option notif" fxLayout.lg="column" fxLayoutGap.lg="12px">
+                                            <div fxLayout="column">
+                                                <span class="title">{{notif.title}}</span>
+                                                <span class="content text-on-2-line">{{notif.content}}</span>
+                                            </div>
+                                            <div fxLayout.lg="row" fxLayoutAlign.lg="start center" fxLayoutGap.lg="8px">
+                                                <span class="date">{{notif.date}}</span>
+                                                <span class="yellow-circle"></span>
+                                                <span class="send-by">par {{notif.author}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="separator" *ngIf="i!=notificationList.length-1"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </span>
-                    </span>
+                    </div>
                 </div>
                 <div class="user-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="50px">
                     <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="8px">
@@ -35,7 +56,7 @@
                     <div class="dropdown" appDropdown="dropdown-header">
                         <span class="icon-dropdown"><mat-icon>arrow_drop_down</mat-icon></span>
                         <div class="dropdown-content" id="dropdown-header">
-                            <div class="dropdown-option">Profil</div>
+                            <div class="dropdown-option" routerLink="/dashboard/user">Profil</div>
                             <div class="dropdown-option" (click)="logout()">Logout</div>
                         </div>
                     </div>
