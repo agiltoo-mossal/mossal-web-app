@@ -20,11 +20,12 @@ export class HeaderComponent implements OnInit {
 
   contextSubscription: Subscription;
   headerSubscription: Subscription;
+  currentUser;
 
   constructor(
     private authService: AuthService,
     private appService: AppService,
-    private translationService: TranslationService,
+    // private translationService: TranslationService,
     private sidebarService: SidebarService,
     private keycloakService: KeycloakService,
     private router: Router
@@ -38,6 +39,13 @@ export class HeaderComponent implements OnInit {
       .subscribe((resp) => {
         this.isSidebarOpened = resp;
       });
+
+    this.keycloakService.loadUserProfile().then(
+      result => {
+        this.currentUser = result;
+      }
+    );
+
   }
 
   ngOnInit(): void {}
@@ -53,7 +61,7 @@ export class HeaderComponent implements OnInit {
   }
 
   get user() {
-    return this.authService.getCurrentUser() || {};
+    return this.currentUser || {};
   }
 
   get userRole() {

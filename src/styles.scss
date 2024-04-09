@@ -699,7 +699,7 @@ input:focus {
   display: block;
   border-radius: 50%;
 
-  &--valid {
+  &--valid, &--validated {
     background: #40B139;
   }
 
@@ -711,7 +711,7 @@ input:focus {
     background: #FFC708;
   }
 
-  &--cancel {
+  &--cancel, &--cancelled {
     background: #5C6D80;
   }
 }

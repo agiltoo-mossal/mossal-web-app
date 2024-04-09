@@ -1,0 +1,19 @@
+mutation UpdateMyAdminPassword($oldPassword: String!, $newPassword: String!) {
+  updateMyAdminPassword(oldPassword: $oldPassword, newPassword: $newPassword)
+}
+
+query FetchCurrentAdmin {
+  fetchCurrentAdmin {
+    id
+		firstName
+		lastName
+		email
+		phoneNumber
+		address
+  }
+}
+
+mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
+  updateMyAdminProfile(userInput: $userInput)
+}
+

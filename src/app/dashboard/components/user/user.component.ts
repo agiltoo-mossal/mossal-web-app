@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { FetchCurrentAdminGQL, UpdateMyAdminPasswordGQL, UpdateMyAdminProfileGQL } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-user',
@@ -10,4 +13,96 @@ export class UserComponent {
   newPassword: boolean = true;
   ConfirmPassword: boolean = true;
   toggleMailActivation: boolean = false;
+  updateProfileForm: FormGroup;
+  updatePasswordForm: FormGroup;
+  passwordNotEqual = false;
+  isLoading = false;
+
+  constructor(
+    private updateMyAdminPasswordGQL: UpdateMyAdminPasswordGQL,
+    private fb: FormBuilder,
+    private snackBarService: SnackBarService,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private updateMyAdminProfileGQL: UpdateMyAdminProfileGQL
+  ) {
+    this.updatePasswordForm = this.fb.group({
+      newPassword: ['', Validators.required],
+      oldPassword: ['', Validators.required],
+      confirmPassword: ['', Validators.required]
+    });
+
+    this.updateProfileForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', Validators.required],
+      phoneNumber: ['', Validators.required],
+      address: ['', Validators.required]
+    });
+
+    this.getCurrentUser();
+  }
+
+  updatePassword() {
+    if(this.updatePasswordForm.invalid || this.isLoading) {
+      this.updatePasswordForm.markAllAsTouched();
+      return;
+    }
+    const value = this.updatePasswordForm.value;
+    if(value.newPassword !== value.confirmPassword) {
+      this.passwordNotEqual = true;
+      // this.updatePasswordForm.controls['confirmPassword'].reset();
+      return;
+    }
+    this.isLoading = true;
+    this.updateMyAdminPasswordGQL.mutate({ oldPassword: value.oldPassword, newPassword: value.newPassword }).subscribe(
+      result => {
+        this.isLoading = false;
+        if(result.data.updateMyAdminPassword) {
+          this.snackBarService.showSuccessSnackBar("Mot de passe modifié avec succès");
+        } else {
+          this.snackBarService.showErrorSnackBar(5000, "Mot de passe incorrect")
+        }
+      },
+      error => {
+        this.isLoading = false;
+        this.snackBarService.showErrorSnackBar(5000, "Mot de passe incorrect")
+      }
+    );
+  }
+
+  getCurrentUser(useCache=true) {
+    let cache = 'cache-first'
+    if(!useCache) {
+      cache = 'no-cache'
+    }
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: cache as any }).subscribe(
+      result => {
+        if(result.data) {
+          this.updateProfileForm.patchValue(result?.data?.fetchCurrentAdmin);
+          this.updateProfileForm.controls['email'].disable();
+        }
+      }
+    );
+  }
+
+  updateProfile() {
+    if(this.updateProfileForm.invalid) {
+      this.updateProfileForm.markAllAsTouched();
+      return;
+    }
+    const value = this.updateProfileForm.value;
+    delete value.email;
+    this.updateMyAdminProfileGQL.mutate({ userInput: value }).subscribe(
+      result => {
+        if(result.data.updateMyAdminProfile) {
+          this.snackBarService.showSuccessSnackBar("Profile modifié avec succès");
+        } else {
+          this.snackBarService.showErrorSnackBar(5000, "Une erreur est survenue")
+        }
+      },
+      error => {
+        this.snackBarService.showErrorSnackBar(5000, "Une erreur est survenue")
+      }
+    )
+  }
 }

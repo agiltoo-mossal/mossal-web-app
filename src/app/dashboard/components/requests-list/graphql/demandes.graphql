@@ -1,0 +1,36 @@
+query FetchOrganizationDemandes {
+	fetchOrganizationDemandes {
+		id
+		amount
+		status
+		number
+		fees
+		collaborator {
+			id
+			firstName
+			lastName
+			balance
+      salary
+      authorizedAdvance
+      bankAccountNumber
+			organization {
+				name
+			}
+		}
+		createdAt
+		updatedAt
+	}
+}
+
+mutation ValidateDemande($demandeId: ID!) {
+  validateDemande(demandeId: $demandeId)
+}
+
+mutation CancelDemandeByAdmin($demandeId: ID!) {
+  cancelDemandeByAdmin(demandeId: $demandeId)
+}
+
+mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
+  rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
+}
+

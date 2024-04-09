@@ -17,9 +17,9 @@ export class AppComponent {
   constructor(
     private progressBarService: ProgressBarService,
 
-    private translationService: TranslationService
+    // private translationService: TranslationService
   ) {
-    this.translationService.loadTranslations('en');
+    // this.translationService.loadTranslations('en');
   }
 
   count = signal(0);

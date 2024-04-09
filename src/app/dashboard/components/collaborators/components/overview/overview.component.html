@@ -48,7 +48,7 @@
             <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of collabs">
                 <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                     fxLayoutGap="16px">
-                    <span class="radio active" fxLayoutAlign="center center"></span>
+                    <span (click)="selectCollab(collab)" class="radio {{ selectedCollab?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
                     <span>{{ collab.organization?.name || 'Agiltoo' }}</span>
                 </td>
                 <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
@@ -56,7 +56,7 @@
                     <span>{{ collab.firstName }} {{ collab.lastName }}</span>
                 </td>
                 <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.phoneNumber }}</td>
-                <td class="date" fxFlex="16.6" fxLayoutAlign="center center">06-06-2022</td>
+                <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.createdAt | date:'YYYY-MM-dd' }}</td>
                 <td fxFlex="16.6" fxLayoutAlign="end center">
                     <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
                         <span fxLayout="row" class="btn-edit-statut">
@@ -67,7 +67,7 @@
                         </span>
                         <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
                             <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-                                routerLink="/dashboard/collaborators/edit-collaborator">
+                                routerLink="/dashboard/collaborators/{{collab.id}}">
                                 <span><mat-icon>edit</mat-icon></span>
                                 <span>Editer</span>
                             </div>
@@ -78,6 +78,6 @@
         </table>
     </div>
     <div class="info-current-user">
-        <app-user-details></app-user-details>
+        <app-user-details [user]="selectedCollab"></app-user-details>
     </div>
 </div>

@@ -29,6 +29,18 @@
 
 }
 
+input {
+  &.error {
+    border: 1px solid red;
+  }
+}
+
+label {
+  &.error {
+    color: red;
+  }
+}
+
 .text-container {
     display: block;
     width: 100%;

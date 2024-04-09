@@ -22,6 +22,7 @@ export type Scalars = {
 export type Demande = {
   __typename?: 'Demande';
   amount: Scalars['Float']['output'];
+  collaborator: User;
   createdAt: Scalars['DateTime']['output'];
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
@@ -49,7 +50,7 @@ export enum DemandeStatus {
   Cancelled = 'CANCELLED',
   InProcess = 'IN_PROCESS',
   Pending = 'PENDING',
-  Refused = 'REFUSED',
+  Rejected = 'REJECTED',
   Validated = 'VALIDATED'
 }
 
@@ -85,15 +86,21 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDemande: Demande;
   cancelDemande: Scalars['Boolean']['output'];
+  cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createOrganization: Organization;
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   resetCollaboratorPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  updateCollaborator: Scalars['Boolean']['output'];
   updateDemande: Scalars['Boolean']['output'];
+  updateMyAdminPassword: Scalars['Boolean']['output'];
+  updateMyAdminProfile: Scalars['Boolean']['output'];
   updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
+  validateDemande: Scalars['Boolean']['output'];
 };
 
 
@@ -103,6 +110,11 @@ export type MutationAddDemandeArgs = {
 
 
 export type MutationCancelDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
 };
 
@@ -122,6 +134,12 @@ export type MutationInviteCollaboratorArgs = {
 };
 
 
+export type MutationRejectDemandeByAdminArgs = {
+  demandeId: Scalars['ID']['input'];
+  rejectedReason: Scalars['String']['input'];
+};
+
+
 export type MutationResetAdminPasswordArgs = {
   resetPasswordInput: ResetPasswordInput;
 };
@@ -137,9 +155,26 @@ export type MutationStartForgotPasswordArgs = {
 };
 
 
+export type MutationUpdateCollaboratorArgs = {
+  collaborator: UpdateCollaboratorInput;
+  collaboratorId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateDemandeArgs = {
   demandeId: Scalars['ID']['input'];
   demandeInput: DemandeUpdateInput;
+};
+
+
+export type MutationUpdateMyAdminPasswordArgs = {
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateMyAdminProfileArgs = {
+  userInput: UpdateMyAdminProfileInput;
 };
 
 
@@ -151,6 +186,11 @@ export type MutationUpdateMyBankAccountArgs = {
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
+};
+
+
+export type MutationValidateDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
 };
 
 export type Organization = {
@@ -182,11 +222,14 @@ export type Query = {
   __typename?: 'Query';
   checkMyBalance: Scalars['Float']['output'];
   checkMyDemandeFees: Scalars['Float']['output'];
+  fetchCurrentAdmin: User;
   fetchMyDemande: Demande;
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
   fetchOrganization: Organization;
+  fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
+  fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizations: Array<Organization>;
   loginAdmin: Session;
   loginCollaborator: Session;
@@ -213,6 +256,11 @@ export type QueryFetchMyDemandesMetricsArgs = {
 
 export type QueryFetchOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchOrganizationCollaboratorArgs = {
+  collaboratorId: Scalars['String']['input'];
 };
 
 
@@ -264,11 +312,32 @@ export type Session = {
   user?: Maybe<User>;
 };
 
+export type UpdateCollaboratorInput = {
+  address: Scalars['String']['input'];
+  bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+  position: Scalars['String']['input'];
+  salary?: InputMaybe<Scalars['Float']['input']>;
+  uniqueIdentifier: Scalars['String']['input'];
+  wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMyAdminProfileInput = {
+  address: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
+  authorizedAdvance: Scalars['Int']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -279,13 +348,14 @@ export type User = {
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
 
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -293,6 +363,68 @@ export type InviteCollaboratorMutationVariables = Exact<{
 
 
 export type InviteCollaboratorMutation = { __typename?: 'Mutation', inviteCollaborator: boolean };
+
+export type FetchOrganizationCollaboratorQueryVariables = Exact<{
+  collaboratorId: Scalars['String']['input'];
+}>;
+
+
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, organization: { __typename?: 'Organization', name: string } } };
+
+export type UpdateCollaboratorMutationVariables = Exact<{
+  collaboratorInput: UpdateCollaboratorInput;
+  collaboratorId: Scalars['String']['input'];
+}>;
+
+
+export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
+
+export type FetchOrganizationDemandesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
+
+export type ValidateDemandeMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type ValidateDemandeMutation = { __typename?: 'Mutation', validateDemande: boolean };
+
+export type CancelDemandeByAdminMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type CancelDemandeByAdminMutation = { __typename?: 'Mutation', cancelDemandeByAdmin: boolean };
+
+export type RejectDemandeByAdminMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+  rejectedReason: Scalars['String']['input'];
+}>;
+
+
+export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
+
+export type UpdateMyAdminPasswordMutationVariables = Exact<{
+  oldPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+}>;
+
+
+export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyAdminPassword: boolean };
+
+export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null } };
+
+export type UpdateMyAdminProfileMutationVariables = Exact<{
+  userInput: UpdateMyAdminProfileInput;
+}>;
+
+
+export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
@@ -305,9 +437,13 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     uniqueIdentifier
     address
     salary
+    balance
     wizallAccountNumber
     bankAccountNumber
     position
+    authorizedAdvance
+    createdAt
+    updatedAt
     organization {
       name
     }
@@ -336,6 +472,196 @@ export const InviteCollaboratorDocument = gql`
   })
   export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
     document = InviteCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationCollaboratorDocument = gql`
+    query FetchOrganizationCollaborator($collaboratorId: String!) {
+  fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    wizallAccountNumber
+    bankAccountNumber
+    position
+    authorizedAdvance
+    organization {
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
+    document = FetchOrganizationCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateCollaboratorDocument = gql`
+    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!) {
+  updateCollaborator(
+    collaborator: $collaboratorInput
+    collaboratorId: $collaboratorId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
+    document = UpdateCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationDemandesDocument = gql`
+    query FetchOrganizationDemandes {
+  fetchOrganizationDemandes {
+    id
+    amount
+    status
+    number
+    fees
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      salary
+      authorizedAdvance
+      bankAccountNumber
+      organization {
+        name
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
+    document = FetchOrganizationDemandesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ValidateDemandeDocument = gql`
+    mutation ValidateDemande($demandeId: ID!) {
+  validateDemande(demandeId: $demandeId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ValidateDemandeGQL extends Apollo.Mutation<ValidateDemandeMutation, ValidateDemandeMutationVariables> {
+    document = ValidateDemandeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CancelDemandeByAdminDocument = gql`
+    mutation CancelDemandeByAdmin($demandeId: ID!) {
+  cancelDemandeByAdmin(demandeId: $demandeId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CancelDemandeByAdminGQL extends Apollo.Mutation<CancelDemandeByAdminMutation, CancelDemandeByAdminMutationVariables> {
+    document = CancelDemandeByAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RejectDemandeByAdminDocument = gql`
+    mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
+  rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
+    document = RejectDemandeByAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMyAdminPasswordDocument = gql`
+    mutation UpdateMyAdminPassword($oldPassword: String!, $newPassword: String!) {
+  updateMyAdminPassword(oldPassword: $oldPassword, newPassword: $newPassword)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMyAdminPasswordGQL extends Apollo.Mutation<UpdateMyAdminPasswordMutation, UpdateMyAdminPasswordMutationVariables> {
+    document = UpdateMyAdminPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchCurrentAdminDocument = gql`
+    query FetchCurrentAdmin {
+  fetchCurrentAdmin {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    address
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchCurrentAdminGQL extends Apollo.Query<FetchCurrentAdminQuery, FetchCurrentAdminQueryVariables> {
+    document = FetchCurrentAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateMyAdminProfileDocument = gql`
+    mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
+  updateMyAdminProfile(userInput: $userInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
+    document = UpdateMyAdminProfileDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

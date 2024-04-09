@@ -49,6 +49,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
 
       initOptions: {
         onLoad: 'login-required',
+        checkLoginIframe: false,
       },
     });
 }
@@ -67,13 +68,13 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserAnimationsModule,
     ReactiveFormsModule,
     FormsModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient],
-      },
-    }),
+    // TranslateModule.forRoot({
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: createTranslateLoader,
+    //     deps: [HttpClient],
+    //   },
+    // }),
     HeaderModule,
     FooterModule,
     FlexLayoutModule,

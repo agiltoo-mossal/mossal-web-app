@@ -8,6 +8,7 @@ import { FetchOrganizationCollaboratorsGQL, User } from 'src/graphql/generated';
 })
 export class OverviewComponent {
   collabs: User[] = [];
+  selectedCollab: User;
   constructor(
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL
   ) {
@@ -15,10 +16,15 @@ export class OverviewComponent {
   }
 
   fetchCollabs() {
-    this.fetchOrganizationCollaboratorsGQL.fetch().subscribe(
+    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe(
       result => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
+        this.selectedCollab = this.collabs?.[0];
       }
     )
+  }
+
+  selectCollab(selected: User) {
+    this.selectedCollab = selected;
   }
 }

@@ -7,15 +7,15 @@
         <ul class="details-top" fxLayout="column" fxLayoutGap="12px">
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Salaire net mensuel :</span>
-                <span class="value">XOF 475.000</span>
+                <span class="value">XOF {{ user?.salary }}</span>
             </li>
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Acompte autorisé :</span>
-                <span class="value">35%</span>
+                <span class="value">XOF {{ user?.authorizedAdvance }}</span>
             </li>
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Iban :</span>
-                <span class="value">SN00 0000 0000 0000 0000</span>
+                <span class="value">{{ user?.bankAccountNumber }}</span>
             </li>
         </ul>
     </div>
@@ -36,8 +36,8 @@
                 </span>
             </div>
             <div fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="4px">
-                <span class="user-name" fxLayoutAlign="center start">Laurent DIOP</span>
-                <span class="user-company" fxLayoutAlign="center start">Agiltoo SN</span>
+                <span class="user-name" fxLayoutAlign="center start">{{ user?.firstName }} {{ user?.lastName }}</span>
+                <span class="user-company" fxLayoutAlign="center start">{{ user?.organization?.name }}</span>
             </div>
         </div>
         <span class="btn-save" fxLayoutAlign="center center">
