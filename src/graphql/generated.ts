@@ -89,6 +89,7 @@ export type Mutation = {
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createOrganization: Organization;
   finalizeForgotPassword: Scalars['Boolean']['output'];
+  inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
@@ -126,6 +127,11 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationFinalizeForgotPasswordArgs = {
   finalizeForgotPasswordInput: FinalizeForgotPasswordInput;
+};
+
+
+export type MutationInviteAdminArgs = {
+  admin: InviteCollaboratorInput;
 };
 
 
@@ -227,6 +233,7 @@ export type Query = {
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
   fetchOrganization: Organization;
+  fetchOrganizationAdmins: Array<User>;
   fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
   fetchOrganizationDemandes: Array<Demande>;
@@ -352,6 +359,18 @@ export type User = {
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
 
+export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+
+export type InviteAdminMutationVariables = Exact<{
+  adminInput: InviteCollaboratorInput;
+}>;
+
+
+export type InviteAdminMutation = { __typename?: 'Mutation', inviteAdmin: boolean };
+
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -426,6 +445,57 @@ export type UpdateMyAdminProfileMutationVariables = Exact<{
 
 export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
+export const FetchOrganizationAdminsDocument = gql`
+    query FetchOrganizationAdmins {
+  fetchOrganizationAdmins {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    balance
+    wizallAccountNumber
+    bankAccountNumber
+    position
+    authorizedAdvance
+    createdAt
+    updatedAt
+    organization {
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationAdminsGQL extends Apollo.Query<FetchOrganizationAdminsQuery, FetchOrganizationAdminsQueryVariables> {
+    document = FetchOrganizationAdminsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const InviteAdminDocument = gql`
+    mutation InviteAdmin($adminInput: InviteCollaboratorInput!) {
+  inviteAdmin(admin: $adminInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
+    document = InviteAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators {
   fetchOrganizationCollaborators {

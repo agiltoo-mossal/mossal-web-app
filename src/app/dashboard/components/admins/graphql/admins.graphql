@@ -1,0 +1,26 @@
+query FetchOrganizationAdmins {
+  fetchOrganizationAdmins {
+		id
+		firstName
+		lastName
+		email
+		phoneNumber
+		uniqueIdentifier
+		address
+		salary
+    balance
+		wizallAccountNumber
+		bankAccountNumber
+		position
+    authorizedAdvance
+    createdAt
+    updatedAt
+    organization {
+      name
+    }
+	}
+}
+
+mutation InviteAdmin($adminInput: InviteCollaboratorInput!) {
+  inviteAdmin(admin: $adminInput)
+}

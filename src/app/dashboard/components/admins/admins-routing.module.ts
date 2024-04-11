@@ -17,7 +17,7 @@ const routes: Routes = [
         component: OverviewComponent,
       },
       {
-        path: 'create-collaborator',
+        path: 'create-admin',
         component: CreateAdminComponent,
       },
       {
@@ -33,4 +33,4 @@ const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class CollaboratorsRoutingModule {}
+export class AdminsRoutingModule {}

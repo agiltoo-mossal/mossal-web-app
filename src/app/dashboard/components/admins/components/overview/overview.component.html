@@ -1,1 +1,84 @@
-<p>overview works!</p>
+<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+  <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
+      <div fxLayout="row" fxLayoutGap="19px">
+          <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
+              <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+              <input type="text" class="form-control" placeholder="Recherche">
+          </div>
+          <div fxLayout="row" fxLayoutGap="19px">
+              <div class="dropdown" appDropdown="downlod-dropdown">
+                  <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"><mat-icon
+                          fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un
+                          fichier</span></button>
+                  <div class="dropdown-content " id="downlod-dropdown">
+                      <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
+                          <div class="icon">
+                              <img src="./assets/img/icon-upload.png" alt="">
+                          </div>
+                          <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
+                              <span class="type">Importer</span>
+                              <span class="format">Format accepté : csv</span>
+                          </div>
+                      </div>
+                      <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
+                          <div class="icon">
+                              <img src="./assets/img/icon-download.png" alt="">
+                          </div>
+                          <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
+                              <span class="type">Télécharger le template</span>
+                              <span class="format">template.csv</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
+                  routerLink="/dashboard/admins/create-admin">
+                  <span>+</span> <span>Ajouter un admin</span>
+              </button>
+          </div>
+      </div>
+      <table class="table table-wrapper">
+          <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
+              <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
+              <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Admin</th>
+              <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Telephone</th>
+              <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date de création</th>
+              <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
+          </tr>
+          <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of admins">
+              <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
+                  fxLayoutGap="16px">
+                  <span (click)="selectAdmin(collab)" class="radio {{ selectedAdmin?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
+                  <span>{{ collab.organization?.name || 'Agiltoo' }}</span>
+              </td>
+              <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
+                  <div class="circle" fxLayoutAlign="center center">AC</div>
+                  <span>{{ collab.firstName }} {{ collab.lastName }}</span>
+              </td>
+              <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.phoneNumber }}</td>
+              <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.createdAt | date:'YYYY-MM-dd' }}</td>
+              <td fxFlex="16.6" fxLayoutAlign="end center">
+                  <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
+                      <span fxLayout="row" class="btn-edit-statut">
+                          <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
+                              fxLayoutAlign="center center"><span>Action</span><span
+                                  class="statut statut--valid"></span></span>
+                          <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+                      </span>
+                      <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+                          <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                              routerLink="/dashboard/collaborators/{{collab.id}}">
+                              <span><mat-icon>edit</mat-icon></span>
+                              <span>Editer</span>
+                          </div>
+                      </div>
+                  </div>
+              </td>
+          </tr>
+      </table>
+      <div *ngIf="!admins?.length">Pas d'admin ajouté</div>
+  </div>
+  <div class="info-current-user">
+      <app-user-details [user]="selectedAdmin"></app-user-details>
+  </div>
+</div>

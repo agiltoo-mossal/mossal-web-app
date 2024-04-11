@@ -34,6 +34,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'admins',
+        loadChildren: () =>
+          import('./components/admins/admins.module').then(
+            (m) => m.AdminsModule
+          ),
+      },
+      {
         path: 'Notifications',
         component: NotificationsComponent,
       },
