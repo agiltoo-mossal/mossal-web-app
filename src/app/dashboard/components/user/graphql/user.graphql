@@ -10,6 +10,7 @@ query FetchCurrentAdmin {
 		email
 		phoneNumber
 		address
+    role
   }
 }
 

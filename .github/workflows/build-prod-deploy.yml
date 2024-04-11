@@ -1,0 +1,42 @@
+name: Build and Deploy Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.2.0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build (main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          NODE_OPTIONS=--max-old-space-size=4096 npm run build
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.MOSSALL_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.MOSSALL_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to S3 and CloudFront (main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws configure list
+          aws s3 sync --acl public-read --delete dist/mossal-web-app s3://mossall-admin-web
+          aws cloudfront create-invalidation --distribution-id E2C995CWO07I73 --paths '/*'
+
