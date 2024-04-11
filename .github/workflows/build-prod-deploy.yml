@@ -37,6 +37,6 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           aws configure list
-          aws s3 sync --acl public-read --delete dist/mossal-web-app s3://mossall-admin-web
+          aws s3 sync --acl public-read --delete dist/mossal-web-app s3://mossall-web
           aws cloudfront create-invalidation --distribution-id E2C995CWO07I73 --paths '/*'
 
