@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\shared",
+    "\\src\\app\\shared\\components",
+    "\\src\\app\\shared\\components\\accordion"
+  ],
+  "SelectedNode": "\\src\\app\\shared\\components\\accordion\\accordion.component.html",
+  "PreviewInSolutionExplorer": false
+}

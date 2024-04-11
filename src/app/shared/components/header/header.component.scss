@@ -116,3 +116,51 @@
         font-weight: 400;
     }
 }
+
+#dropdown-notfification {
+    overflow: hidden;
+    border: 1px solid #33343D;
+    background: #FEFEFE;
+    padding: 0;
+
+    .notif-content-wrapper {
+        padding: 10px;
+        max-width: 347px;
+        max-height: 60vh;
+        overflow-y: auto;
+
+    }
+
+
+
+    .notif {
+        padding: 0;
+        width: 100%;
+
+        color: var(--XOF, #526F84);
+        font-size: 10px;
+        font-weight: 400;
+
+        .title {
+            color: var(--Primary, #001F60);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .yellow-circle {
+            width: 5px;
+            height: 5px;
+            background-color: #FFC708;
+            border-radius: 50%;
+        }
+    }
+
+    .separator {
+        width: 100%;
+        height: 1px;
+        background-color: #97979720;
+        margin-bottom: 15px;
+    }
+
+
+}

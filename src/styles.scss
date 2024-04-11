@@ -699,7 +699,8 @@ input:focus {
   display: block;
   border-radius: 50%;
 
-  &--valid, &--validated {
+  &--valid,
+  &--validated {
     background: #40B139;
   }
 
@@ -711,7 +712,8 @@ input:focus {
     background: #FFC708;
   }
 
-  &--cancel, &--cancelled {
+  &--cancel,
+  &--cancelled {
     background: #5C6D80;
   }
 }
@@ -960,37 +962,60 @@ textarea {
 
 
 
+#filter-date-dropdown {
+  margin-top: 4px;
+
+  &.show {
+    display: flex !important;
+  }
+
+  input {
+    height: 56px;
+    padding: 0 24px;
+
+    border-radius: 8px;
+    border: 1px solid var(--XOF, #576E82);
+    background: var(--Blanc, #FFF);
+
+    color: #000;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+
+    &::placeholder {
+      color: #9A9AB0;
+    }
+  }
+
+}
+
+.personnaliez-sidebar {
+
+  &::-webkit-scrollbar {
+    transition: all .5s;
+    width: 0px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #88888860;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #636e7550;
+  }
 
 
-// html,
-// body {
-//   height: 100%;
 
-//   // Personnalisation du scroll-bar
-//   /* Works on Firefox */
-//   * {
-//     scrollbar-width: thin;
-//     scrollbar-color: #91919f #fff;
-//   }
-
-//   /* Works on Chrome, Edge, and Safari */
-//   *::-webkit-scrollbar {
-//     width: 12px;
-//   }
-
-//   *::-webkit-scrollbar-track {
-//     background: #fff;
-//   }
-
-//   *::-webkit-scrollbar-thumb {
-//     background-color: #91919f;
-//     border-radius: 20px;
-//     border: 3px solid #fff;
-//   }
-// }
-// body {
-//   margin: 0;
-//  font-family: Roboto;
-// }
-/* Importing Bootstrap SCSS file. */
-// @import 'bootstrap/scss/bootstrap';
+  &:hover {
+    &::-webkit-scrollbar {
+      width: 9px;
+    }
+  }
+}
