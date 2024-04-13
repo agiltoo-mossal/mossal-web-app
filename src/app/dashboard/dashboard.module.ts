@@ -16,6 +16,7 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { RequiresConfirmationModule } from '../shared/directives/requires-confirmation/requires-confirmation.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     DropdownModule,
     RequiresConfirmationModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SidebarModule,
   ],
 })
 export class DashboardModule {}

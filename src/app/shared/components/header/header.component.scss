@@ -1,47 +1,15 @@
 .container {
     height: 70px;
-    padding: 0 24px 0 16px;
+    padding: 0 24px 0 26px;
     background: #FFF;
     border-bottom: 1px solid #E7E8F2;
 }
 
-.logo-container {
-    padding-right: 16px;
-    border-right: 1px solid #A7A9C020;
-
-    .logo-icon {
-        width: 40px;
-
-        img {
-            width: 100%;
-        }
-    }
-
-    .logo-text {
-        width: 90px;
-
-        img {
-            width: 100%;
-        }
-    }
-
-
-
-    .logo-text,
-    .logo-icon {
-        img {
-            max-height: 100%;
-            display: block;
-        }
-    }
-
-    &.is-opened {
-        width: 243px;
-    }
-
-    &.is-closed {
-        width: calc(16px + 56px);
-    }
+.toggle-sidebar {
+    font-size: 30px;
+    color: #636e75;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 .title {

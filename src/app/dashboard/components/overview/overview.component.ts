@@ -54,8 +54,6 @@ export class OverviewComponent implements OnInit {
     },
   ];
 
-  userList = [{}, {}, {}, {}, {}, {}, {}];
-
   requests: Demande[] = [];
   sortedRequests: Demande[] = [];
   selectedReq: Demande;
