@@ -965,9 +965,7 @@ textarea {
 #filter-date-dropdown {
   margin-top: 4px;
 
-  &.show {
-    display: flex !important;
-  }
+  display: flex !important;
 
   input {
     height: 56px;

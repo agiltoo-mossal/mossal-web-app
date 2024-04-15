@@ -15,7 +15,7 @@ import { UserComponent } from './components/user/user.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { RequiresConfirmationModule } from '../shared/directives/requires-confirmation/requires-confirmation.module';
 import { MatDialogModule } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
 
 @NgModule({
@@ -39,6 +39,7 @@ import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
     RequiresConfirmationModule,
     MatDialogModule,
     ReactiveFormsModule,
+    FormsModule,
     SidebarModule,
   ],
 })

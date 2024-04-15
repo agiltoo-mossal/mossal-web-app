@@ -45,10 +45,14 @@
                         </div>
                     </div>
                 </div>
-                <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown" #dropdown>
-                    <span>Date</span>
-                    <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
-                    <div class="dropdown-content " id="filter-date-dropdown" #dropdownContent>
+                <div fxFlex="20" class="dropdown">
+                    <span #btnToggleDropdownDate fxFill fxLayout="row" fxLayoutAlign="space-between center"
+                        (click)="toggleMenuFilterDate()">
+                        <span>Date</span>
+                        <mat-icon class="icon-dropdown"
+                            fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+                    </span>
+                    <div class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen" #dropdownContent>
                         <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                             <label for="debut">Du</label>
                             <input type="date" id="debut">
@@ -76,17 +80,21 @@
                 <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
-                        <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
+                        <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"
+                            fxLayoutAlign="center center"></span>
                         <span>{{ req?.collaborator?.organization?.name }}</span>
                     </td>
                     <td class="name" fxFlex="16.6" fxLayoutAlign="center center" fxLayoutGap="8px">
                         <div class="circle" fxLayoutAlign="center center">AC</div>
                         <span>{{ req?.collaborator?.firstName }} {{ req?.collaborator?.lastName }}</span>
                     </td>
-                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}</td>
-                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd' }}</td>
+                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}
+                    </td>
+                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd'
+                        }}</td>
                     <td class="advance" fxFlex="16.6" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
-                        <span class="statut statut--{{ req?.status | lowercase }}"></span><span>Xof {{ req?.amount }}</span>
+                        <span class="statut statut--{{ req?.status | lowercase }}"></span><span>Xof {{ req?.amount
+                            }}</span>
                     </td>
                     <td fxFlex="16.6" fxLayoutAlign="end center">
                         <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
@@ -98,28 +106,16 @@
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
                             <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div
-                                  class="dropdown-option"
-                                  fxLayout="row"
-                                  fxLayoutAlign="space-between center"
-                                  requiresConfirmation
-                                  [message]="'Voulez-vous valider cette demande?'"
-                                  [confirmCallback]="validateDemande"
-                                  [confirmCallbackParam]="req?.id"
-                                >
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                    requiresConfirmation [message]="'Voulez-vous valider cette demande?'"
+                                    [confirmCallback]="validateDemande" [confirmCallbackParam]="req?.id">
                                     Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div
-                                  class="dropdown-option"
-                                  fxLayout="row"
-                                  fxLayoutAlign="space-between center"
-                                  requiresConfirmation
-                                  [message]="'Voulez-vous rejeter cette demande?'"
-                                  [confirmCallback]="rejectDemande"
-                                  [reasonRequired]="true"
-                                  [confirmCallbackParam]="req?.id"
-                                >
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                    requiresConfirmation [message]="'Voulez-vous rejeter cette demande?'"
+                                    [confirmCallback]="rejectDemande" [reasonRequired]="true"
+                                    [confirmCallbackParam]="req?.id">
                                     Rejetée
                                     <span class="statut statut--rejected"></span>
                                 </div>
@@ -127,13 +123,9 @@
                                     attente
                                     <span class="statut statut--pending"></span>
                                 </div> -->
-                                <div
-                                  class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
-                                  requiresConfirmation
-                                  [message]="'Voulez-vous annuler cette demande?'"
-                                  [confirmCallback]="cancelDemande"
-                                  [confirmCallbackParam]="req?.id"
-                                >
+                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                    requiresConfirmation [message]="'Voulez-vous annuler cette demande?'"
+                                    [confirmCallback]="cancelDemande" [confirmCallbackParam]="req?.id">
                                     Annulée
                                     <span class="statut statut--cancel"></span>
                                 </div>

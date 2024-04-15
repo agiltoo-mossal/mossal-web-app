@@ -37,22 +37,22 @@ import {
 } from 'keycloak-angular';
 import { environment } from 'src/environments/environment';
 
-// function initializeKeycloak(keycloak: KeycloakService) {
-//   return () =>
-//     keycloak.init({
-//       config: {
-//         url: environment.KEYCLOAK_URL,
-//         realm: environment.KEYCLOACK_REALM,
-//         clientId: environment.KEYCLOACK_CLIENT_ID,
-//       },
-//       enableBearerInterceptor: true,
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: environment.KEYCLOAK_URL,
+        realm: environment.KEYCLOACK_REALM,
+        clientId: environment.KEYCLOACK_CLIENT_ID,
+      },
+      enableBearerInterceptor: true,
 
-//       initOptions: {
-//         onLoad: 'login-required',
-//         checkLoginIframe: false,
-//       },
-//     });
-// }
+      initOptions: {
+        onLoad: 'login-required',
+        checkLoginIframe: false,
+      },
+    });
+}
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
@@ -97,13 +97,13 @@ export function createTranslateLoader(http: HttpClient) {
       multi: true,
     },
     AppService,
-    // KeycloakService,
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: initializeKeycloak,
-    //   multi: true,
-    //   deps: [KeycloakService],
-    // },
+    KeycloakService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService],
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: KeycloakBearerInterceptor,

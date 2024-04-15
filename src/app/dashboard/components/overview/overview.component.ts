@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { GoogleChartInterface, GoogleChartType } from 'ng2-google-charts';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
@@ -67,6 +73,27 @@ export class OverviewComponent implements OnInit {
   ) {
     this.getDemandes();
     this.fetchCollabs();
+  }
+
+  isMenuFilterOpen: boolean = false;
+  toggleMenuFilterDate() {
+    this.isMenuFilterOpen = !this.isMenuFilterOpen;
+  }
+
+  @ViewChild('dropdownContent') dropdownContent: ElementRef;
+  @ViewChild('btnToggleDropdownDate') btnToggleDropdownDate: ElementRef;
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event) {
+    if (!this.isMenuFilterOpen) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (
+      !this.dropdownContent.nativeElement.contains(target) &&
+      !this.btnToggleDropdownDate.nativeElement.contains(target)
+    ) {
+      this.isMenuFilterOpen = false;
+    }
   }
 
   getDemandes(useCache = true) {
@@ -157,19 +184,6 @@ export class OverviewComponent implements OnInit {
     return this.sortedRequests.find((r) => r.collaborator.id == collabId);
   }
 
-  // pieChart: GoogleChartInterface = {
-  //   chartType: GoogleChartType.PieChart, // or chartType: 'PieChart'
-  //   dataTable: [
-  //     ['Task', 'Hours per Day'],
-  //     ['Work', 11],
-  //     ['Eat', 2],
-  //     ['Commute', 2],
-  //     ['Watch TV', 2],
-  //     ['Sleep', 7],
-  //   ],
-  //   // firstRowIsData: true,
-  //   options: { title: 'Tasks' },
-  // };
   chartData: GoogleChartInterface = {
     // chartType: 'LineChart',
     chartType: GoogleChartType.LineChart,
