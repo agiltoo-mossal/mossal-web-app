@@ -1,0 +1,13 @@
+query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
+  fetchDemandesMetrics(metricsInput: $metricsInput) {
+    remaining {
+      y: amount
+      x: date
+    }
+    total {
+      y: amount
+      x: date
+    }
+  }
+}
+

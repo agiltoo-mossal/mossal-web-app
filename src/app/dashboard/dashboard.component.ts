@@ -10,7 +10,7 @@ import { FetchCurrentAdminGQL, User } from 'src/graphql/generated';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  isSidebarOpened: boolean = false;
+  isSidebarOpened: boolean = true;
   dashboardNav = [
     {
       label: 'Tableau de bord',

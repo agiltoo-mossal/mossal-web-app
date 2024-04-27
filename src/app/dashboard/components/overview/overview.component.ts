@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { GoogleChartInterface, GoogleChartType } from 'ng2-google-charts';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   Demande,
+  DemandesMetrics,
   DemandeStatus,
+  FetchDemandesMetricsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   User,
@@ -15,44 +18,7 @@ import {
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit {
-  datas = [
-    {
-      label: 'Nombre de demandes en attente (actifs) ',
-      value: '2.500.000',
-      img: './assets/img/data-preview-img1.svg',
-      color: '#061E5C',
-    },
-    {
-      label: 'Nombre de remboursements restants ',
-      value: '1.500.000',
-      img: './assets/img/data-preview-img2.svg',
-      color: '#FFC708',
-    },
-    {
-      label: 'Montant total des demandes ',
-      value: '220',
-      img: './assets/img/data-preview-img3.svg',
-      color: '#40B139',
-    },
-    {
-      label: 'Nombre d’inscrits ',
-      value: '200',
-      img: './assets/img/data-preview-img4.svg',
-      color: '#F41414',
-    },
-    {
-      label: 'Nombre de demandes en attente (actifs) ',
-      value: '2.500.000',
-      img: './assets/img/data-preview-img1.svg',
-      color: '#061E5C',
-    },
-    {
-      label: 'Nombre de remboursements restants ',
-      value: '1.500.000',
-      img: './assets/img/data-preview-img2.svg',
-      color: '#FFC708',
-    },
-  ];
+  datas = [];
 
   userList = [{}, {}, {}, {}, {}, {}, {}];
 
@@ -61,14 +27,23 @@ export class OverviewComponent implements OnInit {
   selectedReq: Demande;
   collabs: User[] = [];
   selectedCollab: User;
+  metricsInput: FormGroup;
+  metricsData: DemandesMetrics;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
-    private snackBarService: SnackBarService
+    private snackBarService: SnackBarService,
+    private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
+    private fb: FormBuilder
   ) {
+    this.metricsInput = this.fb.group({
+      startDate: ['2024-01-01'],
+      endDate: [new Date()]
+    })
     this.getDemandes();
     this.fetchCollabs();
+    this.getDemandesMetrics();
   }
 
   getDemandes(useCache = true) {
@@ -85,6 +60,16 @@ export class OverviewComponent implements OnInit {
           .slice()
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
       });
+  }
+
+  getDemandesMetrics() {
+    const startDate = this.metricsInput.value.startDate || new Date('2024-01-01');
+    const endDate = this.metricsInput.value.endDate || new Date();
+    this.fetchDemandesMetricsGQL.fetch({ metricsInput: { startDate, endDate } }).subscribe(
+      result => {
+        this.metricsData = result.data.fetchDemandesMetrics as any;
+      }
+    )
   }
 
   fetchCollabs() {

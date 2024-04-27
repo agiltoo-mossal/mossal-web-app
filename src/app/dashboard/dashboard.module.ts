@@ -16,6 +16,8 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { RequiresConfirmationModule } from '../shared/directives/requires-confirmation/requires-confirmation.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { RefundChartsComponent } from './components/overview/components/refund-charts/refund-charts.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     RequestsListComponent,
     UserComponent,
     NotificationsComponent,
+    RefundChartsComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +40,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     DropdownModule,
     RequiresConfirmationModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgApexchartsModule
   ],
 })
 export class DashboardModule {}

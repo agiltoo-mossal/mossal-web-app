@@ -49,6 +49,7 @@ export type DemandeMetricFilter = {
 export enum DemandeStatus {
   Cancelled = 'CANCELLED',
   InProcess = 'IN_PROCESS',
+  Payed = 'PAYED',
   Pending = 'PENDING',
   Rejected = 'REJECTED',
   Validated = 'VALIDATED'
@@ -56,6 +57,26 @@ export enum DemandeStatus {
 
 export type DemandeUpdateInput = {
   amount: Scalars['Float']['input'];
+};
+
+export type DemandesMetrics = {
+  __typename?: 'DemandesMetrics';
+  payed: Array<DemandesMetricsRow>;
+  remaining: Array<DemandesMetricsRow>;
+  total: Array<DemandesMetricsRow>;
+};
+
+export type DemandesMetricsInput = {
+  endDate: Scalars['DateTime']['input'];
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type DemandesMetricsRow = {
+  __typename?: 'DemandesMetricsRow';
+  amount: Scalars['Float']['output'];
+  date: Scalars['String']['output'];
+  month: Scalars['Float']['output'];
+  year: Scalars['Float']['output'];
 };
 
 export type FinalizeForgotPasswordInput = {
@@ -87,6 +108,7 @@ export type Mutation = {
   addDemande: Demande;
   cancelDemande: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
+  createFinancialOrganization: Organization;
   createOrganization: Organization;
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
@@ -117,6 +139,11 @@ export type MutationCancelDemandeArgs = {
 
 export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateFinancialOrganizationArgs = {
+  organizationInput: OrganizationInput;
 };
 
 
@@ -229,6 +256,7 @@ export type Query = {
   checkMyBalance: Scalars['Float']['output'];
   checkMyDemandeFees: Scalars['Float']['output'];
   fetchCurrentAdmin: User;
+  fetchDemandesMetrics: DemandesMetrics;
   fetchMyDemande: Demande;
   fetchMyDemandes: Array<Demande>;
   fetchMyDemandesMetrics: Array<DemandeMetric>;
@@ -248,6 +276,11 @@ export type Query = {
 
 export type QueryCheckMyDemandeFeesArgs = {
   demandeAmount: Scalars['Float']['input'];
+};
+
+
+export type QueryFetchDemandesMetricsArgs = {
+  metricsInput: DemandesMetricsInput;
 };
 
 
@@ -397,6 +430,13 @@ export type UpdateCollaboratorMutationVariables = Exact<{
 
 
 export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
+
+export type FetchDemandesMetricsQueryVariables = Exact<{
+  metricsInput: DemandesMetricsInput;
+}>;
+
+
+export type FetchDemandesMetricsQuery = { __typename?: 'Query', fetchDemandesMetrics: { __typename?: 'DemandesMetrics', remaining: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }>, total: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }> } };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -593,6 +633,31 @@ export const UpdateCollaboratorDocument = gql`
   })
   export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
     document = UpdateCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchDemandesMetricsDocument = gql`
+    query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
+  fetchDemandesMetrics(metricsInput: $metricsInput) {
+    remaining {
+      y: amount
+      x: date
+    }
+    total {
+      y: amount
+      x: date
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchDemandesMetricsGQL extends Apollo.Query<FetchDemandesMetricsQuery, FetchDemandesMetricsQueryVariables> {
+    document = FetchDemandesMetricsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

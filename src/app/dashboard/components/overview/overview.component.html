@@ -83,11 +83,9 @@
           </div>
 
         </div>
-        <!-- <div class="chart-container" style="outline: 1px solid red;">
-            <google-chart [data]="pieChart"></google-chart>
-            <google-chart [data]="chartData.dataTable">
-            </google-chart>
-        </div> -->
+        <div class="chart-container" *ngIf="metricsData">
+            <app-refund-charts [metricsData]="metricsData"></app-refund-charts>
+        </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
         <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="16px">
