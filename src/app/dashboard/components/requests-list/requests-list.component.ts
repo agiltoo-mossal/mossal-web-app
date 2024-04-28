@@ -1,6 +1,14 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { CancelDemandeByAdminGQL, Demande, DemandeStatus, FetchOrganizationDemandesGQL, RejectDemandeByAdminGQL, User, ValidateDemandeGQL } from 'src/graphql/generated';
+import {
+  CancelDemandeByAdminGQL,
+  Demande,
+  DemandeStatus,
+  FetchOrganizationDemandesGQL,
+  RejectDemandeByAdminGQL,
+  User,
+  ValidateDemandeGQL,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-requests-list',
@@ -10,18 +18,6 @@ import { CancelDemandeByAdminGQL, Demande, DemandeStatus, FetchOrganizationDeman
 export class RequestsListComponent {
   requests: Demande[] = [];
   selectedReq: Demande;
-
-  @ViewChild('dropdownContent') dropdownContent: ElementRef;
-  @ViewChild('dropdown') dropdown: ElementRef;
-
-  @HostListener('document:click', ['$event'])
-  onClick(event: MouseEvent) {
-    if (!this.dropdown.nativeElement.contains(event.target)) {
-      this.dropdownContent.nativeElement.classList.remove('show');
-    } else {
-      this.dropdownContent.nativeElement.classList.add('show');
-    }
-  }
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -33,17 +29,38 @@ export class RequestsListComponent {
     this.getDemandes();
   }
 
-  getDemandes(useCache=true) {
-    let cache = 'cache-first'
-    if(!useCache) {
-      cache = 'no-cache'
+  isMenuFilterOpen: boolean = false;
+  toggleMenuFilterDate() {
+    this.isMenuFilterOpen = !this.isMenuFilterOpen;
+  }
+
+  @ViewChild('dropdownContent') dropdownContent: ElementRef;
+  @ViewChild('btnToggleDropdownDate') btnToggleDropdownDate: ElementRef;
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event) {
+    if (!this.isMenuFilterOpen) {
+      return;
     }
-    this.fetchOrganizationDemandesGQL.fetch({}, { fetchPolicy: cache as any }).subscribe(
-      result => {
+    const target = event.target as HTMLElement;
+    if (
+      !this.dropdownContent.nativeElement.contains(target) &&
+      !this.btnToggleDropdownDate.nativeElement.contains(target)
+    ) {
+      this.isMenuFilterOpen = false;
+    }
+  }
+
+  getDemandes(useCache = true) {
+    let cache = 'cache-first';
+    if (!useCache) {
+      cache = 'no-cache';
+    }
+    this.fetchOrganizationDemandesGQL
+      .fetch({}, { fetchPolicy: cache as any })
+      .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
-        this.selectedReq = this.requests?.[0]
-      }
-    )
+        this.selectedReq = this.requests?.[0];
+      });
   }
 
   selectReq(selected: Demande) {
@@ -52,61 +69,87 @@ export class RequestsListComponent {
 
   cancelDemande = (demandeId: string) => {
     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
-      result => {
-        if(result.data.cancelDemandeByAdmin) {
-          this.snackBarService.showSuccessSnackBar("demande annulée avec succés!");
+      (result) => {
+        if (result.data.cancelDemandeByAdmin) {
+          this.snackBarService.showSuccessSnackBar(
+            'demande annulée avec succés!'
+          );
           this.getDemandes(false);
         } else {
           this.snackBarService.showErrorSnackBar();
         }
       },
-      error => {
-        this.snackBarService.showErrorSnackBar(5000, "Vous ne pouvez pas effectuer cette action.");
+      (error) => {
+        this.snackBarService.showErrorSnackBar(
+          5000,
+          'Vous ne pouvez pas effectuer cette action.'
+        );
       }
-    )
-  }
+    );
+  };
 
   rejectDemande = (demandeId: string, reason: string) => {
-    this.rejectDemandeByAdminGQL.mutate({ demandeId, rejectedReason: reason }).subscribe(
-      result => {
-        if(result.data.rejectDemandeByAdmin) {
-          this.snackBarService.showSuccessSnackBar("demande rejetée avec succés!");
-          this.getDemandes(false);
-        } else {
-          this.snackBarService.showErrorSnackBar();
+    this.rejectDemandeByAdminGQL
+      .mutate({ demandeId, rejectedReason: reason })
+      .subscribe(
+        (result) => {
+          if (result.data.rejectDemandeByAdmin) {
+            this.snackBarService.showSuccessSnackBar(
+              'demande rejetée avec succés!'
+            );
+            this.getDemandes(false);
+          } else {
+            this.snackBarService.showErrorSnackBar();
+          }
+        },
+        (error) => {
+          this.snackBarService.showErrorSnackBar(
+            5000,
+            'Vous ne pouvez pas effectuer cette action.'
+          );
         }
-      },
-      error => {
-        this.snackBarService.showErrorSnackBar(5000, "Vous ne pouvez pas effectuer cette action.");
-      }
-    )
-  }
+      );
+  };
 
   validateDemande = (demandeId: string) => {
     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
-      result => {
-        if(result.data.validateDemande) {
-          this.snackBarService.showSuccessSnackBar("demande validée avec succés!");
+      (result) => {
+        if (result.data.validateDemande) {
+          this.snackBarService.showSuccessSnackBar(
+            'demande validée avec succés!'
+          );
           this.getDemandes(false);
         } else {
           this.snackBarService.showErrorSnackBar();
         }
       },
-      error => {
-        this.snackBarService.showErrorSnackBar(5000, "Vous ne pouvez pas effectuer cette action.");
+      (error) => {
+        this.snackBarService.showErrorSnackBar(
+          5000,
+          'Vous ne pouvez pas effectuer cette action.'
+        );
       }
-    )
-  }
+    );
+  };
 
   get nbValid() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Validated)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Validated)
+        ?.length || 0
+    );
   }
 
   get nbRejected() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Rejected)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Rejected)
+        ?.length || 0
+    );
   }
 
   get nbPending() {
-    return this?.requests?.filter?.(r => r.status === DemandeStatus.Pending)?.length || 0;
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Pending)
+        ?.length || 0
+    );
   }
 }

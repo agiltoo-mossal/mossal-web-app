@@ -1,9 +1,8 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { TranslationService } from 'src/app/translation.service';
 import { APP_CONTEXT } from '../../enums/app-context.enum';
-import { SidebarService } from '../../services/sidebar.service';
 import { Subscription } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
@@ -13,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnDestroy {
   context: APP_CONTEXT = APP_CONTEXT.Default;
   AppContext = APP_CONTEXT;
   isSidebarOpened!: boolean;
@@ -53,7 +52,6 @@ export class HeaderComponent implements OnInit {
     private authService: AuthService,
     private appService: AppService,
     // private translationService: TranslationService,
-    private sidebarService: SidebarService,
     private keycloakService: KeycloakService,
     private router: Router
   ) {
@@ -61,18 +59,10 @@ export class HeaderComponent implements OnInit {
       this.context = ctx;
     });
 
-    this.headerSubscription = this.sidebarService
-      .isSidebarOpen()
-      .subscribe((resp) => {
-        this.isSidebarOpened = resp;
-      });
-
     this.keycloakService.loadUserProfile().then((result) => {
       this.currentUser = result;
     });
   }
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     // Se désabonner des observables pour éviter les fuites de mémoire

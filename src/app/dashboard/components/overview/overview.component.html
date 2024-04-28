@@ -7,10 +7,12 @@
                     <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"><span>Du 1 jan
                             2024</span> <span>au</span>
                         <span>31 dec 2024</span></span>
-                    <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
-                        [appDropdown]="'filter-date-dropdown'">
-                        <span class="icon"><mat-icon fxLayoutAlign="center center">arrow_drop_down</mat-icon></span>
-                        <div class="dropdown-content " id="filter-date-dropdown" #dropdownContent>
+                    <div fxLayout="row" fxLayoutAlign="space-between center" class="dropdown">
+                        <span class="icon" #btnToggleDropdownDate (click)="toggleMenuFilterDate()">
+                            <mat-icon fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+                        </span>
+                        <div class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen"
+                            #dropdownContent>
                             <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                                 <label for="debut">Du</label>
                                 <input type="date" id="debut">
@@ -27,60 +29,55 @@
         </div>
         <div class="card-data-container" fxLayout="row wrap" fxLayoutAlign="start start">
 
-          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
-              fxFlex.lt-sm="100" fxFlex.lt-md="48">
-              <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
-                  <div class="label">Nombre de demandes en attente (actifs)</div>
-                  <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#061E5C'}">
-                      <img [src]="'./assets/img/data-preview-img1.svg'" alt="">
-                  </div>
-              </div>
-              <span class="value">{{nbPending}}</span>
-          </div>
-
-          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
-          fxFlex.lt-sm="100" fxFlex.lt-md="48">
-            <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
-                <div class="label">Nombre de remboursements restants</div>
-                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#FFC708'}">
-                    <img [src]="'./assets/img/data-preview-img2.svg'" alt="">
+            <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+                <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                    <div class="label">Nombre de demandes en attente (actifs)</div>
+                    <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#061E5C'}">
+                        <img [src]="'./assets/img/data-preview-img1.svg'" alt="">
+                    </div>
                 </div>
+                <span class="value">{{nbPending}}</span>
             </div>
-            <span class="value">{{nbValid}}</span>
-          </div>
 
-          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
-          fxFlex.lt-sm="100" fxFlex.lt-md="48">
-            <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
-                <div class="label">Montant total des demandes</div>
-                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#40B139'}">
-                    <img [src]="'./assets/img/data-preview-img3.svg'" alt="">
+            <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+                <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                    <div class="label">Nombre de remboursements restants</div>
+                    <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#FFC708'}">
+                        <img [src]="'./assets/img/data-preview-img2.svg'" alt="">
+                    </div>
                 </div>
+                <span class="value">{{nbValid}}</span>
             </div>
-            <span class="value">{{totalDemandeAmount}}</span>
-          </div>
 
-          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
-          fxFlex.lt-sm="100" fxFlex.lt-md="48">
-            <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
-                <div class="label">Nombre d’inscrits</div>
-                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#F41414'}">
-                    <img [src]="'./assets/img/data-preview-img4.svg'" alt="">
+            <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+                <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                    <div class="label">Montant total des demandes</div>
+                    <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#40B139'}">
+                        <img [src]="'./assets/img/data-preview-img3.svg'" alt="">
+                    </div>
                 </div>
+                <span class="value">{{totalDemandeAmount}}</span>
             </div>
-            <span class="value">{{nbActifUsers}}</span>
-          </div>
 
-          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
-          fxFlex.lt-sm="100" fxFlex.lt-md="48">
-            <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
-                <div class="label">Montant remboursements restants</div>
-                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#FFC708'}">
-                    <img [src]="'./assets/img/data-preview-img2.svg'" alt="">
+            <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+                <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                    <div class="label">Nombre d’inscrits</div>
+                    <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#F41414'}">
+                        <img [src]="'./assets/img/data-preview-img4.svg'" alt="">
+                    </div>
                 </div>
+                <span class="value">{{nbActifUsers}}</span>
             </div>
-            <span class="value">{{totalDemandeToPay}}</span>
-          </div>
+
+            <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+                <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                    <div class="label">Montant remboursements restants</div>
+                    <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#FFC708'}">
+                        <img [src]="'./assets/img/data-preview-img2.svg'" alt="">
+                    </div>
+                </div>
+                <span class="value">{{totalDemandeToPay}}</span>
+            </div>
 
         </div>
         <div class="chart-container" *ngIf="metricsData">

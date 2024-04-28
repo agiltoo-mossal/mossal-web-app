@@ -15,9 +15,10 @@ import { UserComponent } from './components/user/user.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { RequiresConfirmationModule } from '../shared/directives/requires-confirmation/requires-confirmation.module';
 import { MatDialogModule } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { RefundChartsComponent } from './components/overview/components/refund-charts/refund-charts.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,9 @@ import { RefundChartsComponent } from './components/overview/components/refund-c
     RequiresConfirmationModule,
     MatDialogModule,
     ReactiveFormsModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    FormsModule,
+    SidebarModule,
   ],
 })
 export class DashboardModule {}
