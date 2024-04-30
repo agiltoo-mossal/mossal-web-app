@@ -11,6 +11,7 @@ export class OverviewComponent {
   collabs: User[] = [];
   selectedCollab: User;
   disableCache: boolean;
+  search: string = "";
   constructor(
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
     private activatedRoute: ActivatedRoute

@@ -8,6 +8,7 @@ import { FetchOrganizationAdminsGQL, User } from 'src/graphql/generated';
 export class OverviewComponent {
   admins: User[] = [];
   selectedAdmin: User;
+  search: string = "";
   constructor(
     private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL
   ) {

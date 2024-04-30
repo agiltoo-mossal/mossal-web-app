@@ -10,7 +10,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DropdownModule } from 'src/app/shared/directives/dropdown/dropdown.module';
 import { EditCollaboratorComponent } from './components/edit-collaborator/edit-collaborator.component';
 import { FormCollaboratorComponent } from './components/form-collaborator/form-collaborator.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatIconModule,
     FlexLayoutModule,
     DropdownModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FilterModule,
+    FormsModule
   ],
   exports: [CollaboratorsComponent],
 })

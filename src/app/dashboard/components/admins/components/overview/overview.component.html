@@ -3,7 +3,7 @@
       <div fxLayout="row" fxLayoutGap="19px">
           <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
               <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
-              <input type="text" class="form-control" placeholder="Recherche">
+              <input [(ngModel)]="search" type="text" class="form-control" placeholder="Recherche">
           </div>
           <div fxLayout="row" fxLayoutGap="19px">
               <div class="dropdown" appDropdown="downlod-dropdown">
@@ -45,7 +45,7 @@
               <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date de création</th>
               <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
           </tr>
-          <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of admins">
+          <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of admins | filter : search">
               <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                   fxLayoutGap="16px">
                   <span (click)="selectAdmin(collab)" class="radio {{ selectedAdmin?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>

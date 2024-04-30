@@ -6,11 +6,12 @@ import { UserDetailsModule } from 'src/app/shared/components/user-details/user-d
 import { MatIconModule } from '@angular/material/icon';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { DropdownModule } from 'src/app/shared/directives/dropdown/dropdown.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OverviewComponent } from './components/overview/overview.component';
 import { FormAdminComponent } from './components/form-admin/form-admin.component';
 import { EditAdminComponent } from './components/edit-admin/edit-admin.component';
 import { CreateAdminComponent } from './components/create-admin/create-admin.component';
+import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
 
 @NgModule({
   imports: [
@@ -20,7 +21,9 @@ import { CreateAdminComponent } from './components/create-admin/create-admin.com
     MatIconModule,
     FlexLayoutModule,
     DropdownModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule,
+    FilterModule
   ],
   declarations: [AdminsComponent, OverviewComponent, FormAdminComponent, EditAdminComponent, CreateAdminComponent]
 })
