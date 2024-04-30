@@ -8,6 +8,8 @@ import { ApplyContextClassModule } from '../../directives/apply-context-class/ap
 import { DropdownModule } from '../../directives/dropdown/dropdown.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { MenuHamburgerComponent } from '../menu-hamburger/menu-hamburger.component';
+import { FrenchDatePipe } from '../../pipes/french-date/french-date.pipe';
+import {MatBadgeModule} from '@angular/material/badge';
 
 @NgModule({
   declarations: [HeaderComponent],
@@ -20,6 +22,8 @@ import { MenuHamburgerComponent } from '../menu-hamburger/menu-hamburger.compone
     DropdownModule,
     TranslateModule,
     MenuHamburgerComponent,
+    FrenchDatePipe,
+    MatBadgeModule
   ],
   exports: [HeaderComponent],
 })

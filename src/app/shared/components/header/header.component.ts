@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { TranslationService } from 'src/app/translation.service';
@@ -6,46 +6,30 @@ import { APP_CONTEXT } from '../../enums/app-context.enum';
 import { Subscription } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
+import { NotificationsService } from 'src/app/dashboard/components/notifications/notifications.service';
+import { FetchOrganizationNotificationsGQL, Notification } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent implements OnDestroy, OnInit {
   context: APP_CONTEXT = APP_CONTEXT.Default;
   AppContext = APP_CONTEXT;
   isSidebarOpened!: boolean;
 
   contextSubscription: Subscription;
   headerSubscription: Subscription;
+  notificationSubscription: Subscription;
+  listNotisSubscription: Subscription;
+  viewSubscription: Subscription;
   currentUser;
+  newNotificationCounter = 0;
+  hasUnviewedNotif = false;
 
-  notificationList = [
-    {
-      title: 'Demande N°021',
-      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
-      date: 'Aujourd’hui',
-      author: 'Youssouph Ndiaye',
-    },
-    {
-      title: 'Remboursement',
-      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
-      date: 'Hier',
-      author: 'Laurent Diop',
-    },
-    {
-      title: 'Demande N°022',
-      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
-      date: '12 janvier 2024',
-      author: ' Demba Dia',
-    },
-    {
-      title: 'Réinitialisation mot de passe',
-      content: `Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt Lorem ipsum dolor sit amet, consectetuer adipiscing elit,  sed diam nonummy nibh euismod tincidunt`,
-      date: '10 janvier 2024 ',
-      author: ' Mossal',
-    },
+  notificationList: any[] = [
+
   ];
 
   constructor(
@@ -53,7 +37,9 @@ export class HeaderComponent implements OnDestroy {
     private appService: AppService,
     // private translationService: TranslationService,
     private keycloakService: KeycloakService,
-    private router: Router
+    private router: Router,
+    private notificationsService: NotificationsService,
+    private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL
   ) {
     this.contextSubscription = this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
@@ -62,12 +48,40 @@ export class HeaderComponent implements OnDestroy {
     this.keycloakService.loadUserProfile().then((result) => {
       this.currentUser = result;
     });
+    this.getNotifications();
+  }
+
+  ngOnInit(): void {
+    this.notificationSubscription = this.notificationsService.listenForNotifications().subscribe(notification => {
+      this.notificationList.unshift(notification);
+      this.newNotificationCounter++;
+    });
+    this.viewSubscription = this.notificationsService.unViewedNotification.subscribe(
+      result => {
+        this.hasUnviewedNotif = result;
+      }
+    )
   }
 
   ngOnDestroy(): void {
     // Se désabonner des observables pour éviter les fuites de mémoire
     this.contextSubscription.unsubscribe();
     this.headerSubscription.unsubscribe();
+    this.notificationSubscription.unsubscribe();
+    this.listNotisSubscription.unsubscribe();
+    this.viewSubscription.unsubscribe();
+    this.newNotificationCounter = 0;
+  }
+
+  getNotifications() {
+    this.listNotisSubscription = this.fetchOrganizationNotificationsGQL.fetch().subscribe(
+      result => {
+        this.notificationList = (result.data?.fetchOrganizationNotifications?.slice(0, 5) || []) as any[];
+        if(this.notificationList.length && !this.notificationList[0].viewedByMe) {
+          this.hasUnviewedNotif = true;
+        }
+      }
+    )
   }
 
   get isLogedIn() {
@@ -86,5 +100,9 @@ export class HeaderComponent implements OnDestroy {
     this.keycloakService.logout().then((result) => {
       this.router.navigate(['/']);
     });
+  }
+
+  viewNotifications() {
+    this.newNotificationCounter = 0;
   }
 }

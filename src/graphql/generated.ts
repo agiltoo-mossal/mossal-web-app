@@ -67,8 +67,11 @@ export type DemandesMetrics = {
 };
 
 export type DemandesMetricsInput = {
-  endDate: Scalars['DateTime']['input'];
-  startDate: Scalars['DateTime']['input'];
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  maximum?: InputMaybe<Scalars['Float']['input']>;
+  minimum?: InputMaybe<Scalars['Float']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  status?: InputMaybe<DemandeStatus>;
 };
 
 export type DemandesMetricsRow = {
@@ -124,6 +127,7 @@ export type Mutation = {
   updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
+  viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
 
 
@@ -226,6 +230,17 @@ export type MutationValidateDemandeArgs = {
   demandeId: Scalars['ID']['input'];
 };
 
+export type Notification = {
+  __typename?: 'Notification';
+  author: User;
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  organization: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  viewedByMe: Scalars['Boolean']['output'];
+};
+
 export type Organization = {
   __typename?: 'Organization';
   id: Scalars['ID']['output'];
@@ -265,6 +280,7 @@ export type Query = {
   fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
   fetchOrganizationDemandes: Array<Demande>;
+  fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
   loginAdmin: Session;
   loginCollaborator: Session;
@@ -443,6 +459,16 @@ export type UpdateCollaboratorMutationVariables = Exact<{
 
 export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
 
+export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
+
+export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
+
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
 }>;
@@ -490,7 +516,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, organization: { __typename?: 'Organization', id: string } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -652,6 +678,48 @@ export const UpdateCollaboratorDocument = gql`
       super(apollo);
     }
   }
+export const FetchOrganizationNotificationsDocument = gql`
+    query FetchOrganizationNotifications {
+  fetchOrganizationNotifications {
+    title
+    content
+    author {
+      firstName
+      lastName
+    }
+    viewedByMe
+    organization
+    date: createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationNotificationsGQL extends Apollo.Query<FetchOrganizationNotificationsQuery, FetchOrganizationNotificationsQueryVariables> {
+    document = FetchOrganizationNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ViewOrganizationNotificationsDocument = gql`
+    mutation ViewOrganizationNotifications {
+  viewOrganizationNotifications
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ViewOrganizationNotificationsGQL extends Apollo.Mutation<ViewOrganizationNotificationsMutation, ViewOrganizationNotificationsMutationVariables> {
+    document = ViewOrganizationNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchDemandesMetricsDocument = gql`
     query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
   fetchDemandesMetrics(metricsInput: $metricsInput) {
@@ -787,6 +855,9 @@ export const FetchCurrentAdminDocument = gql`
     phoneNumber
     address
     role
+    organization {
+      id
+    }
   }
 }
     `;

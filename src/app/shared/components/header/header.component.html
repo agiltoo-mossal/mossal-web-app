@@ -9,10 +9,13 @@
                     fxLayoutAlign="center center">settings</mat-icon></span>
             <div class="dropdown" [appDropdown]="'dropdown-notfification'">
                 <span class="message-icon" fxLayoutAlign="center center">
-                    <span class="icon-wrapper">
+                    <span class="icon-wrapper" *ngIf="!newNotificationCounter">
                         <mat-icon fxLayoutAlign="center center">notifications_none</mat-icon>
-                        <span class="signal-notif"></span>
+                        <span class="signal-notif" *ngIf="hasUnviewedNotif"></span>
                     </span>
+                    <span class="icon-wrapper" (click)="viewNotifications()" *ngIf="newNotificationCounter">
+                      <mat-icon fxLayoutAlign="center center" matBadge="{{newNotificationCounter}}" matBadgeColor="warn">notifications_none</mat-icon>
+                  </span>
                     <div class="dropdown-content" id="dropdown-notfification">
                         <div class="notif-content-wrapper  personnaliez-sidebar">
                             <div *ngFor="let notif of notificationList;let i=index" fxLayout.lg="column"
@@ -23,9 +26,9 @@
                                         <span class="content text-on-2-line">{{notif.content}}</span>
                                     </div>
                                     <div fxLayout.lg="row" fxLayoutAlign.lg="start center" fxLayoutGap.lg="8px">
-                                        <span class="date">{{notif.date}}</span>
+                                        <span class="date">{{notif.date | frenchDate}}</span>
                                         <span class="yellow-circle"></span>
-                                        <span class="send-by">par {{notif.author}}</span>
+                                        <span class="send-by">par {{notif?.author?.firstName}} {{notif?.author?.lastName}}</span>
                                     </div>
                                 </div>
                                 <div class="separator" *ngIf="i!=notificationList.length-1"></div>

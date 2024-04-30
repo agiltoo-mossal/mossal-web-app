@@ -1,0 +1,17 @@
+query FetchOrganizationNotifications {
+  fetchOrganizationNotifications {
+    title
+    content
+    author {
+      firstName
+      lastName
+    }
+    viewedByMe
+    organization
+    date: createdAt
+  }
+}
+
+mutation ViewOrganizationNotifications {
+  viewOrganizationNotifications
+}

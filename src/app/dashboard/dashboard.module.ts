@@ -21,6 +21,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
 import { FrenchDatePipe } from '../shared/pipes/french-date/french-date.pipe';
 import { SortDescPipe } from '../shared/pipes/sort-desc/sort-desc.pipe';
+import { NotificationsService } from './components/notifications/notifications.service';
 
 @NgModule({
   declarations: [
@@ -51,5 +52,6 @@ import { SortDescPipe } from '../shared/pipes/sort-desc/sort-desc.pipe';
     FrenchDatePipe,
     SortDescPipe
   ],
+  providers: [NotificationsService]
 })
 export class DashboardModule {}
