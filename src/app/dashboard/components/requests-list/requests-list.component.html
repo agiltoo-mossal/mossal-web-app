@@ -45,24 +45,24 @@
                         </div>
                     </div>
                 </div>
-                <div fxFlex="20" class="dropdown">
+                <form fxFlex="20" class="dropdown">
                     <span #btnToggleDropdownDate fxFill fxLayout="row" fxLayoutAlign="space-between center"
                         (click)="toggleMenuFilterDate()">
-                        <span>Date</span>
+                        <span>Du {{ startDate | frenchDate }} au {{ endDate | frenchDate }}</span>
                         <mat-icon class="icon-dropdown"
                             fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     </span>
                     <div class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen" #dropdownContent>
                         <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                             <label for="debut">Du</label>
-                            <input type="date" id="debut">
+                            <input name="startDate" [(ngModel)]="startDate" type="date" id="debut">
                         </div>
                         <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                             <label for="fin">Au</label>
-                            <input type="date" id="fin">
+                            <input name="endDate" [(ngModel)]="endDate" type="date" id="fin">
                         </div>
                     </div>
-                </div>
+                </form>
                 <div fxFlex="20" class="btn-filter" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center">
                     <mat-icon>filter_list</mat-icon>
                     <span>Filtrer</span>
@@ -77,7 +77,7 @@
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
                 </tr>
-                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000)">
+                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000) | dateRangeFilter:'createdAt':startDate:endDate">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"

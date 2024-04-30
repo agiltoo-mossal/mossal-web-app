@@ -21,6 +21,8 @@ export class RequestsListComponent {
   selectedReq: Demande;
   min: number = 0;
   max: number = 10000;
+  startDate: string = "2024-01-01";
+  endDate: string = "2024-12-31";
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
