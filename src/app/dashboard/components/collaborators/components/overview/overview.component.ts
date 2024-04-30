@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FetchOrganizationCollaboratorsGQL, User } from 'src/graphql/generated';
 
 @Component({
@@ -9,10 +10,13 @@ import { FetchOrganizationCollaboratorsGQL, User } from 'src/graphql/generated';
 export class OverviewComponent {
   collabs: User[] = [];
   selectedCollab: User;
+  disableCache: boolean;
   constructor(
-    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL
+    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
+    private activatedRoute: ActivatedRoute
   ) {
     this.fetchCollabs();
+    // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
 
   fetchCollabs() {

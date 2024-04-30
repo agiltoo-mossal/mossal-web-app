@@ -51,7 +51,7 @@
                     <span (click)="selectCollab(collab)" class="radio {{ selectedCollab?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
                     <span>{{ collab.organization?.name || 'Agiltoo' }}</span>
                 </td>
-                <td class="name" fxFlex="16.6" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="8px">
+                <td class="name" fxFlex="16.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
                     <div class="circle" fxLayoutAlign="center center">AC</div>
                     <span>{{ collab.firstName }} {{ collab.lastName }}</span>
                 </td>

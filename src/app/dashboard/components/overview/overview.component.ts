@@ -123,7 +123,6 @@ export class OverviewComponent implements OnInit {
       .subscribe((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
         this.setHasValidatedDemande();
-        console.log({coll: this.collabs});
         this.selectedCollab = this.collabs?.[0];
       });
   }
@@ -178,7 +177,7 @@ export class OverviewComponent implements OnInit {
     return (
       this?.requests
         ?.filter?.((r) =>
-          [DemandeStatus.Validated, DemandeStatus.Pending].includes(r.status)
+          [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status)
         )
         ?.reduce((a, b) => a + b.amount, 0) || 0
     );
