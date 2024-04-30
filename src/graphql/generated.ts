@@ -304,6 +304,16 @@ export type QueryFetchOrganizationCollaboratorArgs = {
 };
 
 
+export type QueryFetchOrganizationCollaboratorsArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+};
+
+
+export type QueryFetchOrganizationDemandesArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+};
+
+
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
 };
@@ -404,7 +414,9 @@ export type InviteAdminMutationVariables = Exact<{
 
 export type InviteAdminMutation = { __typename?: 'Mutation', inviteAdmin: boolean };
 
-export type FetchOrganizationCollaboratorsQueryVariables = Exact<{ [key: string]: never; }>;
+export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+}>;
 
 
 export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
@@ -438,7 +450,9 @@ export type FetchDemandesMetricsQueryVariables = Exact<{
 
 export type FetchDemandesMetricsQuery = { __typename?: 'Query', fetchDemandesMetrics: { __typename?: 'DemandesMetrics', remaining: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }>, total: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }> } };
 
-export type FetchOrganizationDemandesQueryVariables = Exact<{ [key: string]: never; }>;
+export type FetchOrganizationDemandesQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+}>;
 
 
 export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
@@ -537,8 +551,8 @@ export const InviteAdminDocument = gql`
     }
   }
 export const FetchOrganizationCollaboratorsDocument = gql`
-    query FetchOrganizationCollaborators {
-  fetchOrganizationCollaborators {
+    query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
+  fetchOrganizationCollaborators(metricsInput: $metricsInput) {
     id
     firstName
     lastName
@@ -664,8 +678,8 @@ export const FetchDemandesMetricsDocument = gql`
     }
   }
 export const FetchOrganizationDemandesDocument = gql`
-    query FetchOrganizationDemandes {
-  fetchOrganizationDemandes {
+    query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
+  fetchOrganizationDemandes(metricsInput: $metricsInput) {
     id
     amount
     status

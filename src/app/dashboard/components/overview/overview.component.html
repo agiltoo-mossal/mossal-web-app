@@ -4,30 +4,39 @@
             <span class="dashboard-title">Echéances Avance sur salaire</span>
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
                 <div class="current-time-interval" fxLayout="row" fxLayoutAlign="start center">
-                    <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"><span>Du 1 jan
-                            2024</span> <span>au</span>
-                        <span>31 dec 2024</span></span>
+                    <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"><span>{{ startDate | frenchDate }}</span> <span>au</span>
+                        <span>{{ endDate | frenchDate }}</span></span>
                     <div fxLayout="row" fxLayoutAlign="space-between center" class="dropdown">
                         <span class="icon" #btnToggleDropdownDate (click)="toggleMenuFilterDate()">
                             <mat-icon fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                         </span>
-                        <div class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen"
+                        <form [formGroup]="metricsInput" class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen"
                             #dropdownContent>
                             <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                                 <label for="debut">Du</label>
-                                <input type="date" id="debut">
+                                <input formControlName="startDate" type="date" id="debut">
                             </div>
                             <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                                 <label for="fin">Au</label>
-                                <input type="date" id="fin">
+                                <input formControlName="endDate" type="date" id="fin">
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
                 <span class="dashboard-title">Filtrer</span>
             </div>
         </div>
         <div class="card-data-container" fxLayout="row wrap" fxLayoutAlign="start start">
+
+          <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
+            <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+                <div class="label">Nombre de demandes accordés</div>
+                <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{'background-color':'#061E5C'}">
+                    <img [src]="'./assets/img/data-preview-img1.svg'" alt="">
+                </div>
+            </div>
+            <span class="value">{{nbAccordedRequest}}</span>
+          </div>
 
             <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
                 <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
@@ -92,11 +101,11 @@
                     <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
                         <span class="icon" fxLayoutAlign="center center"><mat-icon
                                 fxLayoutAlign="center center">filter_list</mat-icon></span>
-                        <span class="text">Filtrer</span>
+                        <span class="text">Trier</span>
                     </div>
                     <div class="dropdown-content" id="dropdown-filter-user-list-saved">
-                        <div class="dropdown-option">Nouveaux utilisateurs inscrits récemment</div>
-                        <div class="dropdown-option">Utilisateurs avec les avances en cours</div>
+                        <div class="dropdown-option" (click)="sortBy='createdAt'">Nouveaux utilisateurs inscrits récemment</div>
+                        <div class="dropdown-option" (click)="sortBy='hasValidatedDemande'">Utilisateurs avec les avances en cours</div>
                     </div>
                 </div>
             </div>
@@ -108,7 +117,7 @@
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Date</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Avance sur salaire</th>
                 </tr>
-                <tr class="user" fxLayout="row" *ngFor=" let req of collabs;let i=index">
+                <tr class="user" fxLayout="row" *ngFor=" let req of collabs | sortDesc : sortBy;let i=index">
                     <td class="radio-container" fxFlex="20" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectCollab(req)"
@@ -116,7 +125,7 @@
                             fxLayoutAlign="center center"></span>
                         <span>{{ req?.organization?.name }}</span>
                     </td>
-                    <td class="name" fxFlex="20" fxLayoutAlign="center center" fxLayoutGap="8px">
+                    <td class="name" fxFlex="20" fxLayoutAlign="start start" fxLayoutGap="8px">
                         <div class="circle" fxLayoutAlign="center center">{{ req?.firstName[0] }}{{ req?.lastName[0] }}
                         </div>
                         <span>{{ req?.firstName }} {{ req?.lastName }}</span>

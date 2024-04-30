@@ -29,10 +29,12 @@ export class OverviewComponent implements OnInit {
   requests: Demande[] = [];
   sortedRequests: Demande[] = [];
   selectedReq: Demande;
-  collabs: User[] = [];
+  collabs: any[] = [];
   selectedCollab: User;
   metricsInput: FormGroup;
   metricsData: DemandesMetrics;
+  isMenuFilterOpen: boolean = false;
+  sortBy: "createdAt" | "hasValidatedDemande" = "createdAt";
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -41,16 +43,25 @@ export class OverviewComponent implements OnInit {
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
     private fb: FormBuilder
   ) {
+    const now = new Date("2024-12-31");
     this.metricsInput = this.fb.group({
       startDate: ['2024-01-01'],
-      endDate: [new Date()]
+      endDate: [`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`]
     })
+    this.metricsInput.valueChanges.subscribe(
+      r => {
+        this.getData();
+      }
+    )
+    this.getData();
+  }
+
+  getData() {
     this.getDemandes();
     this.fetchCollabs();
     this.getDemandesMetrics();
   }
 
-  isMenuFilterOpen: boolean = false;
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;
   }
@@ -71,19 +82,28 @@ export class OverviewComponent implements OnInit {
     }
   }
 
+  get startDate() {
+    return this.metricsInput.controls['startDate'].value;
+  }
+
+  get endDate() {
+    return this.metricsInput.controls['endDate'].value;
+  }
+
   getDemandes(useCache = true) {
     let cache = 'cache-first';
     if (!useCache) {
       cache = 'no-cache';
     }
     this.fetchOrganizationDemandesGQL
-      .fetch({}, { fetchPolicy: cache as any })
+      .fetch({ metricsInput: this.metricsInput.value }, { fetchPolicy: cache as any })
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
         this.sortedRequests = this.requests
           .slice()
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
+          this.setHasValidatedDemande();
       });
   }
 
@@ -99,11 +119,23 @@ export class OverviewComponent implements OnInit {
 
   fetchCollabs() {
     this.fetchOrganizationCollaboratorsGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
+      .fetch({ metricsInput: this.metricsInput.value }, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
+        this.setHasValidatedDemande();
+        console.log({coll: this.collabs});
         this.selectedCollab = this.collabs?.[0];
       });
+  }
+
+  setHasValidatedDemande() {
+    this.collabs = this.collabs.map(c => {
+      c.hasValidatedDemande = false;
+      if(this.getValidatedRequest(c.id)) {
+        c.hasValidatedDemande = true;
+      }
+      return c;
+    })
   }
 
   selectCollab(selected: User) {
@@ -117,6 +149,13 @@ export class OverviewComponent implements OnInit {
   get nbValid() {
     return (
       this?.requests?.filter?.((r) => r.status === DemandeStatus.Validated)
+        ?.length || 0
+    );
+  }
+
+  get nbAccordedRequest() {
+    return (
+      this?.requests?.filter?.((r) => [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status))
         ?.length || 0
     );
   }
@@ -169,40 +208,10 @@ export class OverviewComponent implements OnInit {
     return this.sortedRequests.find((r) => r.collaborator.id == collabId);
   }
 
-  chartData: GoogleChartInterface = {
-    // chartType: 'LineChart',
-    chartType: GoogleChartType.LineChart,
-    dataTable: [
-      [1, 37.8, 80.8, 41.8],
-      [2, 30.9, 69.5, 32.4],
-      [3, 25.4, 57, 25.7],
-      [4, 11.7, 18.8, 10.5],
-      [5, 11.9, 17.6, 10.4],
-      [6, 8.8, 13.6, 7.7],
-      [7, 7.6, 12.3, 9.6],
-      [8, 12.3, 29.2, 10.6],
-      [9, 16.9, 42.9, 14.8],
-      [10, 12.8, 30.9, 11.6],
-      [11, 5.3, 7.9, 4.7],
-      [12, 6.6, 8.4, 5.2],
-      [13, 4.8, 6.3, 3.6],
-      [14, 4.2, 6.2, 3.4],
-    ],
-    // columnNames: [
-    //   'Day',
-    //   'Guardians of the Galaxy',
-    //   'The Avengers',
-    //   'Transformers: Age of Extinction',
-    // ],
-    options: {
-      hAxis: {
-        title: 'Box Office Earnings in First Two Weeks of Opening',
-      },
-      vAxis: {
-        title: 'in millions of dollars (USD)',
-      },
-    },
-    // width: 1000,
-    // height: 400,
-  };
+  getValidatedRequest(collabId: string) {
+    return this.sortedRequests.find((r) => {
+      return r.collaborator.id == collabId && r.status == DemandeStatus.Validated
+    });
+  }
+
 }

@@ -703,6 +703,9 @@ input:focus {
   &--validated {
     background: #40B139;
   }
+  &--payed {
+    background: #00a8ee;
+  }
 
   &--rejected {
     background: #F41414;

@@ -19,6 +19,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { RefundChartsComponent } from './components/overview/components/refund-charts/refund-charts.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
+import { FrenchDatePipe } from '../shared/pipes/french-date/french-date.pipe';
+import { SortDescPipe } from '../shared/pipes/sort-desc/sort-desc.pipe';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
     RequestsListComponent,
     UserComponent,
     NotificationsComponent,
-    RefundChartsComponent
+    RefundChartsComponent,
+
   ],
   imports: [
     CommonModule,
@@ -45,6 +48,8 @@ import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
     NgApexchartsModule,
     FormsModule,
     SidebarModule,
+    FrenchDatePipe,
+    SortDescPipe
   ],
 })
 export class DashboardModule {}

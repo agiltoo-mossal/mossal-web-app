@@ -1,5 +1,5 @@
-query FetchOrganizationDemandes {
-	fetchOrganizationDemandes {
+query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
+	fetchOrganizationDemandes(metricsInput: $metricsInput) {
 		id
 		amount
 		status
