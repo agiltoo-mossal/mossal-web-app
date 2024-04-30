@@ -27,20 +27,20 @@
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-fourchette">
-                    <span class="text text-on-1-line" fxFlex="auto">Fourchette de demande</span>
+                    <span class="text text-on-1-line" fxFlex="auto">Entre {{ min }} et {{ max }}</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-fourchette">
-                        <div class="dropdown-option" fxLayoutAlign="space-between center">
+                        <div (click)="changeMinMax(0, 100)" class="dropdown-option" fxLayoutAlign="space-between center">
                             <span>0</span>à
                             <span>100</span>
                         </div>
-                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>100</span> à
+                        <div (click)="changeMinMax(100, 250)" class="dropdown-option" fxLayoutAlign="space-between center"><span>100</span> à
                             <span>250</span>
                         </div>
-                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>250</span> à
+                        <div (click)="changeMinMax(250, 1000)" class="dropdown-option" fxLayoutAlign="space-between center"><span>250</span> à
                             <span>1.000</span>
                         </div>
-                        <div class="dropdown-option" fxLayoutAlign="space-between center"><span>1.000</span> à
+                        <div (click)="changeMinMax(1000, 10000)" class="dropdown-option" fxLayoutAlign="space-between center"><span>1.000</span> à
                             <span>plus</span>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
                 </tr>
-                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests">
+                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000)">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"

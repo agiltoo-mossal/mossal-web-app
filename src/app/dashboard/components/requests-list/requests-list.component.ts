@@ -19,6 +19,8 @@ import {
 export class RequestsListComponent {
   requests: Demande[] = [];
   selectedReq: Demande;
+  min: number = 0;
+  max: number = 10000;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -174,5 +176,9 @@ export class RequestsListComponent {
       this?.requests?.filter?.((r) => r.status === DemandeStatus.Pending)
         ?.length || 0
     );
+  }
+
+  changeMinMax(mini, maxi) {
+    this.min = mini; this.max = maxi;
   }
 }

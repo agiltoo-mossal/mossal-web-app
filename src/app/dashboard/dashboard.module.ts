@@ -22,6 +22,7 @@ import { SidebarModule } from '../shared/components/sidebar/sidebar.module';
 import { FrenchDatePipe } from '../shared/pipes/french-date/french-date.pipe';
 import { SortDescPipe } from '../shared/pipes/sort-desc/sort-desc.pipe';
 import { NotificationsService } from './components/notifications/notifications.service';
+import { RangeFilterPipe } from '../shared/pipes/range-filter/range-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { NotificationsService } from './components/notifications/notifications.s
     FormsModule,
     SidebarModule,
     FrenchDatePipe,
-    SortDescPipe
+    SortDescPipe,
+    RangeFilterPipe
   ],
   providers: [NotificationsService]
 })
