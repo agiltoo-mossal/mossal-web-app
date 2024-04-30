@@ -4,23 +4,26 @@
             <div class="filters" fxLayout="row">
                 <div class="search" fxFlex="20" fxLayout="row" fxLayoutAlign="center center">
                     <mat-icon fxLayoutAlign="center center" class="icon-search">search</mat-icon>
-                    <input type="text" placeholder="Rechercher">
+                    <input [(ngModel)]="search" type="text" placeholder="Rechercher">
                     <mat-icon fxLayoutAlign="center center" class="icon-delete">close</mat-icon>
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-statut">
-                    <span class="text " fxFlex="auto">Statut</span>
+                    <span class="text " fxFlex="auto">{{ status || 'Statut' }}</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
-                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée <span
+                        <div (click)="changeStatus('VALIDATED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée <span
                                 class="statut statut--valid"></span>
                         </div>
-                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée <span
+                        <div (click)="changeStatus('PAYED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Payée <span
+                          class="statut statut--payed"></span>
+                        </div>
+                        <div (click)="changeStatus('REJECTED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée <span
                                 class="statut statut--rejected"></span></div>
-                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En attente
+                        <div (click)="changeStatus('PENDING')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En attente
                             <span class="statut statut--pending"></span>
                         </div>
-                        <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée <span
+                        <div (click)="changeStatus('CANCELLED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée <span
                                 class="statut statut--cancel"></span>
                         </div>
                     </div>
@@ -77,7 +80,7 @@
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
                 </tr>
-                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000) | dateRangeFilter:'createdAt':startDate:endDate">
+                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000) | dateRangeFilter:'createdAt':startDate:endDate | propertyMatch:'status': status | filter : search">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"

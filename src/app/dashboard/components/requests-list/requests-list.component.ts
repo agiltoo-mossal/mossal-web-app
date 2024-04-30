@@ -23,6 +23,8 @@ export class RequestsListComponent {
   max: number = 10000;
   startDate: string = "2024-01-01";
   endDate: string = "2024-12-31";
+  status: DemandeStatus = null;
+  search: string = "";
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -66,6 +68,7 @@ export class RequestsListComponent {
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
+        console.log({r: this.requests})
       });
   }
 
@@ -182,5 +185,9 @@ export class RequestsListComponent {
 
   changeMinMax(mini, maxi) {
     this.min = mini; this.max = maxi;
+  }
+
+  changeStatus(state) {
+    this.status = state;
   }
 }

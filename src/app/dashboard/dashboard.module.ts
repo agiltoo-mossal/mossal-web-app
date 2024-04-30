@@ -24,6 +24,8 @@ import { SortDescPipe } from '../shared/pipes/sort-desc/sort-desc.pipe';
 import { NotificationsService } from './components/notifications/notifications.service';
 import { RangeFilterPipe } from '../shared/pipes/range-filter/range-filter.pipe';
 import { DateRangerFilterPipe } from '../shared/pipes/date-range-filter/date-ranger-filter.pipe';
+import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match.pipe';
+import { FilterModule } from '../shared/pipes/filter/filter.module';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { DateRangerFilterPipe } from '../shared/pipes/date-range-filter/date-ran
     FrenchDatePipe,
     SortDescPipe,
     RangeFilterPipe,
-    DateRangerFilterPipe
+    DateRangerFilterPipe,
+    PropertyMatchPipe,
+    FilterModule
   ],
   providers: [NotificationsService]
 })
