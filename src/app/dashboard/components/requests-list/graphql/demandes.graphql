@@ -26,6 +26,10 @@ mutation ValidateDemande($demandeId: ID!) {
   validateDemande(demandeId: $demandeId)
 }
 
+mutation PayeDemande($demandeId: ID!) {
+  payeDemande(demandeId: $demandeId)
+}
+
 mutation CancelDemandeByAdmin($demandeId: ID!) {
   cancelDemandeByAdmin(demandeId: $demandeId)
 }
@@ -33,4 +37,3 @@ mutation CancelDemandeByAdmin($demandeId: ID!) {
 mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
   rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
 }
-

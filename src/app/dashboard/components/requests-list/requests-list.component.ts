@@ -5,6 +5,7 @@ import {
   Demande,
   DemandeStatus,
   FetchOrganizationDemandesGQL,
+  PayeDemandeGQL,
   RejectDemandeByAdminGQL,
   User,
   ValidateDemandeGQL,
@@ -22,6 +23,7 @@ export class RequestsListComponent {
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
     private validateDemandeGQL: ValidateDemandeGQL,
+    private payeDemandeGQL: PayeDemandeGQL,
     private cancelDemandeByAdminGQL: CancelDemandeByAdminGQL,
     private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL,
     private snackBarService: SnackBarService
@@ -117,6 +119,27 @@ export class RequestsListComponent {
         if (result.data.validateDemande) {
           this.snackBarService.showSuccessSnackBar(
             'demande validée avec succés!'
+          );
+          this.getDemandes(false);
+        } else {
+          this.snackBarService.showErrorSnackBar();
+        }
+      },
+      (error) => {
+        this.snackBarService.showErrorSnackBar(
+          5000,
+          'Vous ne pouvez pas effectuer cette action.'
+        );
+      }
+    );
+  };
+
+  payeDemande = (demandeId: string) => {
+    this.payeDemandeGQL.mutate({ demandeId }).subscribe(
+      (result) => {
+        if (result.data.payeDemande) {
+          this.snackBarService.showSuccessSnackBar(
+            'demande payée avec succés!'
           );
           this.getDemandes(false);
         } else {

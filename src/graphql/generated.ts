@@ -116,6 +116,7 @@ export type Mutation = {
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   resetCollaboratorPassword: Scalars['Boolean']['output'];
@@ -168,6 +169,11 @@ export type MutationInviteAdminArgs = {
 
 export type MutationInviteCollaboratorArgs = {
   collaborator: InviteCollaboratorInput;
+};
+
+
+export type MutationPayeDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
 };
 
 
@@ -490,6 +496,13 @@ export type ValidateDemandeMutationVariables = Exact<{
 
 export type ValidateDemandeMutation = { __typename?: 'Mutation', validateDemande: boolean };
 
+export type PayeDemandeMutationVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type PayeDemandeMutation = { __typename?: 'Mutation', payeDemande: boolean };
+
 export type CancelDemandeByAdminMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
 }>;
@@ -792,6 +805,22 @@ export const ValidateDemandeDocument = gql`
   })
   export class ValidateDemandeGQL extends Apollo.Mutation<ValidateDemandeMutation, ValidateDemandeMutationVariables> {
     document = ValidateDemandeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PayeDemandeDocument = gql`
+    mutation PayeDemande($demandeId: ID!) {
+  payeDemande(demandeId: $demandeId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PayeDemandeGQL extends Apollo.Mutation<PayeDemandeMutation, PayeDemandeMutationVariables> {
+    document = PayeDemandeDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

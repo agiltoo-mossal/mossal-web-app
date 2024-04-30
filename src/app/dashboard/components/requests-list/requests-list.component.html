@@ -106,13 +106,19 @@
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
                             <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
                                     requiresConfirmation [message]="'Voulez-vous valider cette demande?'"
                                     [confirmCallback]="validateDemande" [confirmCallbackParam]="req?.id">
                                     Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                <div *ngIf="req.status === 'VALIDATED'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                  requiresConfirmation [message]="'Voulez-vous payer cette demande?'"
+                                  [confirmCallback]="payeDemande" [confirmCallbackParam]="req?.id">
+                                  Payée
+                                  <span class="statut statut--payed"></span>
+                                </div>
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
                                     requiresConfirmation [message]="'Voulez-vous rejeter cette demande?'"
                                     [confirmCallback]="rejectDemande" [reasonRequired]="true"
                                     [confirmCallbackParam]="req?.id">
@@ -123,7 +129,7 @@
                                     attente
                                     <span class="statut statut--pending"></span>
                                 </div> -->
-                                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
                                     requiresConfirmation [message]="'Voulez-vous annuler cette demande?'"
                                     [confirmCallback]="cancelDemande" [confirmCallbackParam]="req?.id">
                                     Annulée
