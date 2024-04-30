@@ -26,7 +26,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     private updateCollaboratorGQL: UpdateCollaboratorGQL
   ) {
     this.collaboratorForm = this.fb.group({
-      email: ['', Validators.required],
+      email: ["", [Validators.required]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       phoneNumber: ['', Validators.required],
@@ -37,6 +37,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       wizallAccountNumber: ['', Validators.required],
       bankAccountNumber: ['', Validators.required]
     })
+
   }
 
   ngOnInit(): void {
@@ -48,6 +49,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.getCollab();
+    if(this.formType == 'edit') {
+      this.collaboratorForm.controls['email'].disable();
+    }
   }
 
   // Méthode pour soumettre le formulaire
@@ -97,7 +101,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   getCollab() {
     if(this.collaboratorId) {
-      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }).subscribe(
+      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }, { fetchPolicy: 'no-cache' }).subscribe(
         result => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);

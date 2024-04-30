@@ -131,8 +131,7 @@
                         <span>{{ req?.firstName }} {{ req?.lastName }}</span>
                     </td>
                     <td class="solde" fxFlex="20" fxLayoutAlign="center center">XOF {{ req?.balance }}</td>
-                    <td class="date" fxFlex="20" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd'
-                        }}</td>
+                    <td class="date" fxFlex="20" fxLayoutAlign="center center">{{ req?.createdAt | frenchDate }}</td>
                     <td class="advance" fxFlex="20" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"><span
                             class="statut statut--{{ getLastRequest(req.id)?.status | lowercase }}"></span><span>{{
                             getLastRequest(req.id)?.amount ? 'XOF' :'' }} {{ getLastRequest(req.id)?.amount || '__'
