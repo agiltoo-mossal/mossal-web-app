@@ -35,6 +35,7 @@ export class OverviewComponent implements OnInit {
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
   sortBy: "createdAt" | "hasValidatedDemande" = "createdAt";
+  filterBy = "createdAt";
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -122,19 +123,29 @@ export class OverviewComponent implements OnInit {
       .fetch({ metricsInput: this.metricsInput.value }, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
-        this.setHasValidatedDemande();
+        // this.setHasValidatedDemande();
         this.selectedCollab = this.collabs?.[0];
       });
   }
 
   setHasValidatedDemande() {
-    this.collabs = this.collabs.map(c => {
+    return this.collabs.map(c => {
       c.hasValidatedDemande = false;
-      if(this.getValidatedRequest(c.id)) {
+      const r = this.getValidatedRequest(c.id);
+      if(r) {
         c.hasValidatedDemande = true;
+        c.pendingRequest = r;
       }
       return c;
     })
+  }
+
+  get collaborators() {
+    if(this.filterBy === "hasValidatedDemande") {
+      return this.setHasValidatedDemande().filter(c => c.pendingRequest);
+    } else {
+      return this.collabs;
+    }
   }
 
   selectCollab(selected: User) {
@@ -203,8 +214,8 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  getLastRequest(collabId: string) {
-    return this.sortedRequests.find((r) => r.collaborator.id == collabId);
+  getLastRequest(req: any) {
+    return req.pendingRequest || this.sortedRequests.find((r) => r.collaborator.id == req.id);
   }
 
   getValidatedRequest(collabId: string) {

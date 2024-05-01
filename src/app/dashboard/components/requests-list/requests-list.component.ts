@@ -190,4 +190,13 @@ export class RequestsListComponent {
   changeStatus(state) {
     this.status = state;
   }
+
+  resetFilter() {
+    this.min = 0;
+    this.max = 10000;
+    this.startDate = "2024-01-01";
+    this.endDate = "2024-12-31";
+    this.status = null;
+    this.search = "";
+  }
 }

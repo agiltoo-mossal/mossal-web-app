@@ -96,16 +96,16 @@
     <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
         <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="16px">
             <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
-                <span class="nbr-user">Utilisateurs enregistrés ({{ nbActifUsers }})</span>
+                <span class="nbr-user">Utilisateurs enregistrés ({{ collaborators?.length || 0 }})</span>
                 <div class="dropdown dropdown-filter" [appDropdown]="'dropdown-filter-user-list-saved'">
                     <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
                         <span class="icon" fxLayoutAlign="center center"><mat-icon
                                 fxLayoutAlign="center center">filter_list</mat-icon></span>
-                        <span class="text">Trier</span>
+                        <span class="text">Filtrer</span>
                     </div>
                     <div class="dropdown-content" id="dropdown-filter-user-list-saved">
-                        <div class="dropdown-option" (click)="sortBy='createdAt'">Nouveaux utilisateurs inscrits récemment</div>
-                        <div class="dropdown-option" (click)="sortBy='hasValidatedDemande'">Utilisateurs avec les avances en cours</div>
+                        <div class="dropdown-option" (click)="filterBy='createdAt'">Nouveaux utilisateurs inscrits récemment</div>
+                        <div class="dropdown-option" (click)="filterBy='hasValidatedDemande'">Utilisateurs avec les avances en cours</div>
                     </div>
                 </div>
             </div>
@@ -117,7 +117,7 @@
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Date</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Avance sur salaire</th>
                 </tr>
-                <tr class="user" fxLayout="row" *ngFor=" let req of collabs | sortDesc : sortBy;let i=index">
+                <tr class="user" fxLayout="row" *ngFor=" let req of collaborators;let i=index">
                     <td class="radio-container" fxFlex="20" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectCollab(req)"
@@ -133,8 +133,8 @@
                     <td class="solde" fxFlex="20" fxLayoutAlign="center center">XOF {{ req?.balance }}</td>
                     <td class="date" fxFlex="20" fxLayoutAlign="center center">{{ req?.createdAt | frenchDate }}</td>
                     <td class="advance" fxFlex="20" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"><span
-                            class="statut statut--{{ getLastRequest(req.id)?.status | lowercase }}"></span><span>{{
-                            getLastRequest(req.id)?.amount ? 'XOF' :'' }} {{ getLastRequest(req.id)?.amount || '__'
+                            class="statut statut--{{ getLastRequest(req)?.status | lowercase }}"></span><span>{{
+                            getLastRequest(req)?.amount ? 'XOF' :'' }} {{ getLastRequest(req)?.amount || '__'
                             }}</span></td>
                 </tr>
             </table>
