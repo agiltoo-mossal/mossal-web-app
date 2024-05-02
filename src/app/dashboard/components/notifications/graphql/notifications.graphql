@@ -1,5 +1,6 @@
 query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
+    entityId
     title
     content
     author {

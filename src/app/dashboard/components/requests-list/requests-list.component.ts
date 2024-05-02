@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   CancelDemandeByAdminGQL,
@@ -32,9 +33,15 @@ export class RequestsListComponent {
     private payeDemandeGQL: PayeDemandeGQL,
     private cancelDemandeByAdminGQL: CancelDemandeByAdminGQL,
     private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL,
-    private snackBarService: SnackBarService
+    private snackBarService: SnackBarService,
+    private activatedRoute: ActivatedRoute
   ) {
     this.getDemandes();
+    this.activatedRoute.queryParams.subscribe(
+      params => {
+        this.search = params['entity'] || "";
+      }
+    )
   }
 
   isMenuFilterOpen: boolean = false;

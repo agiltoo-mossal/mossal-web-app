@@ -39,6 +39,7 @@ export type DemandeMetric = {
   __typename?: 'DemandeMetric';
   month: Scalars['Float']['output'];
   value: Scalars['Float']['output'];
+  year: Scalars['Float']['output'];
 };
 
 export type DemandeMetricFilter = {
@@ -241,6 +242,7 @@ export type Notification = {
   author: User;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  entityId?: Maybe<Scalars['String']['output']>;
   organization: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -468,7 +470,7 @@ export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollab
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
+export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
 
 export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -694,6 +696,7 @@ export const UpdateCollaboratorDocument = gql`
 export const FetchOrganizationNotificationsDocument = gql`
     query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
+    entityId
     title
     content
     author {

@@ -5,7 +5,7 @@
                 <div class="search" fxFlex="20" fxLayout="row" fxLayoutAlign="center center">
                     <mat-icon fxLayoutAlign="center center" class="icon-search">search</mat-icon>
                     <input [(ngModel)]="search" type="text" placeholder="Rechercher">
-                    <mat-icon fxLayoutAlign="center center" class="icon-delete">close</mat-icon>
+                    <mat-icon fxLayoutAlign="center center" class="icon-delete" (click)="search=''">close</mat-icon>
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-statut">
