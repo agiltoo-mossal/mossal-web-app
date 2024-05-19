@@ -7,7 +7,7 @@ import { KeycloakService } from 'keycloak-angular';
 })
 export class InactivityService {
   private timeoutId: any;
-  private readonly timeout: number = 60000; // 1 minutes
+  private readonly timeout: number = 60000 * 5; // 1 minutes
 
   constructor(private router: Router, private keycloakService: KeycloakService, private ngZone: NgZone) {
     this.setupInactivityListener();
