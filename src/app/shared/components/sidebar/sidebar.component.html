@@ -8,7 +8,7 @@
             <img src="./assets/img/logo-text.png" alt="">
         </div>
     </div>
-    <div class="navigation" fxLayout="column" fxLayoutGap="2px">
+    <div fxFlex="auto" class="navigation" fxLayout="column" fxLayoutGap="2px">
         <span class="nav-item-container" *ngFor="let item of dashboardNav;let i=index">
             <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" class="nav-item"
                 [routerLink]="item.link" routerLinkActive="active">
@@ -16,5 +16,9 @@
                 <span class="label" *ngIf="isSidebarOpened">{{item.label}}</span>
             </span>
         </span>
+    </div>
+    <div class="btn-logout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px">
+        <span class="icon" fxLayoutAlign="start center"><mat-icon>exit_to_app</mat-icon></span><span
+            *ngIf="isSidebarOpened">Déconnexion</span>
     </div>
 </div>

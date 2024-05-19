@@ -26,6 +26,7 @@ import { RangeFilterPipe } from '../shared/pipes/range-filter/range-filter.pipe'
 import { DateRangerFilterPipe } from '../shared/pipes/date-range-filter/date-ranger-filter.pipe';
 import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match.pipe';
 import { FilterModule } from '../shared/pipes/filter/filter.module';
+import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,6 @@ import { FilterModule } from '../shared/pipes/filter/filter.module';
     UserComponent,
     NotificationsComponent,
     RefundChartsComponent,
-
   ],
   imports: [
     CommonModule,
@@ -58,8 +58,9 @@ import { FilterModule } from '../shared/pipes/filter/filter.module';
     RangeFilterPipe,
     DateRangerFilterPipe,
     PropertyMatchPipe,
-    FilterModule
+    FilterModule,
+    DemandeStatusModule,
   ],
-  providers: [NotificationsService]
+  providers: [NotificationsService],
 })
 export class DashboardModule {}

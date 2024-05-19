@@ -34,8 +34,8 @@ export class OverviewComponent implements OnInit {
   metricsInput: FormGroup;
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
-  sortBy: "createdAt" | "hasValidatedDemande" = "createdAt";
-  filterBy = "createdAt";
+  sortBy: 'createdAt' | 'hasValidatedDemande' = 'createdAt';
+  filterBy = 'createdAt';
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -44,16 +44,19 @@ export class OverviewComponent implements OnInit {
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
     private fb: FormBuilder
   ) {
-    const now = new Date("2024-12-31");
+    const now = new Date('2024-12-31');
     this.metricsInput = this.fb.group({
       startDate: ['2024-01-01'],
-      endDate: [`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`]
-    })
-    this.metricsInput.valueChanges.subscribe(
-      r => {
-        this.getData();
-      }
-    )
+      endDate: [
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+          2,
+          '0'
+        )}-${String(now.getDate()).padStart(2, '0')}`,
+      ],
+    });
+    this.metricsInput.valueChanges.subscribe((r) => {
+      this.getData();
+    });
     this.getData();
   }
 
@@ -97,30 +100,37 @@ export class OverviewComponent implements OnInit {
       cache = 'no-cache';
     }
     this.fetchOrganizationDemandesGQL
-      .fetch({ metricsInput: this.metricsInput.value }, { fetchPolicy: cache as any })
+      .fetch(
+        { metricsInput: this.metricsInput.value },
+        { fetchPolicy: cache as any }
+      )
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
         this.sortedRequests = this.requests
           .slice()
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
-          this.setHasValidatedDemande();
+        this.setHasValidatedDemande();
       });
   }
 
   getDemandesMetrics() {
-    const startDate = this.metricsInput.value.startDate || new Date('2024-01-01');
+    const startDate =
+      this.metricsInput.value.startDate || new Date('2024-01-01');
     const endDate = this.metricsInput.value.endDate || new Date();
-    this.fetchDemandesMetricsGQL.fetch({ metricsInput: { startDate, endDate } }).subscribe(
-      result => {
+    this.fetchDemandesMetricsGQL
+      .fetch({ metricsInput: { startDate, endDate } })
+      .subscribe((result) => {
         this.metricsData = result.data.fetchDemandesMetrics as any;
-      }
-    )
+      });
   }
 
   fetchCollabs() {
     this.fetchOrganizationCollaboratorsGQL
-      .fetch({ metricsInput: this.metricsInput.value }, { fetchPolicy: 'no-cache' })
+      .fetch(
+        { metricsInput: this.metricsInput.value },
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
         // this.setHasValidatedDemande();
@@ -129,20 +139,20 @@ export class OverviewComponent implements OnInit {
   }
 
   setHasValidatedDemande() {
-    return this.collabs.map(c => {
+    return this.collabs.map((c) => {
       c.hasValidatedDemande = false;
       const r = this.getValidatedRequest(c.id);
-      if(r) {
+      if (r) {
         c.hasValidatedDemande = true;
         c.pendingRequest = r;
       }
       return c;
-    })
+    });
   }
 
   get collaborators() {
-    if(this.filterBy === "hasValidatedDemande") {
-      return this.setHasValidatedDemande().filter(c => c.pendingRequest);
+    if (this.filterBy === 'hasValidatedDemande') {
+      return this.setHasValidatedDemande().filter((c) => c.pendingRequest);
     } else {
       return this.collabs;
     }
@@ -165,8 +175,9 @@ export class OverviewComponent implements OnInit {
 
   get nbAccordedRequest() {
     return (
-      this?.requests?.filter?.((r) => [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status))
-        ?.length || 0
+      this?.requests?.filter?.((r) =>
+        [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status)
+      )?.length || 0
     );
   }
 
@@ -215,13 +226,17 @@ export class OverviewComponent implements OnInit {
   ngOnInit(): void {}
 
   getLastRequest(req: any) {
-    return req.pendingRequest || this.sortedRequests.find((r) => r.collaborator.id == req.id);
+    return (
+      req.pendingRequest ||
+      this.sortedRequests.find((r) => r.collaborator.id == req.id)
+    );
   }
 
   getValidatedRequest(collabId: string) {
     return this.sortedRequests.find((r) => {
-      return r.collaborator.id == collabId && r.status == DemandeStatus.Validated
+      return (
+        r.collaborator.id == collabId && r.status == DemandeStatus.Validated
+      );
     });
   }
-
 }
