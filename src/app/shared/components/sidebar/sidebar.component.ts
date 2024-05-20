@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { FetchCurrentAdminGQL, User } from 'src/graphql/generated';
+import { KeycloakService } from 'keycloak-angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -40,7 +42,9 @@ export class SidebarComponent {
 
   constructor(
     private sidebarService: SidebarService,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private keycloakService: KeycloakService,
+    private router: Router
   ) {
     this.getCurrentUser();
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
@@ -55,7 +59,7 @@ export class SidebarComponent {
         this.currentUser.role == 'SUPER_ADMIN_ORG'
           ? this.menuSuperAdmin
           : this.menuAdmin;
-      console.log({ user: this.currentUser });
+      // console.log({ user: this.currentUser });
     });
   }
   get menuAdmin() {
@@ -122,5 +126,11 @@ export class SidebarComponent {
         icon: 'person_outline',
       },
     ];
+  }
+
+  logout() {
+    this.keycloakService.logout().then((result) => {
+      this.router.navigate(['/']);
+    });
   }
 }

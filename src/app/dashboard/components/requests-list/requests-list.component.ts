@@ -22,10 +22,10 @@ export class RequestsListComponent {
   selectedReq: Demande;
   min: number = 0;
   max: number = 10000;
-  startDate: string = "2024-01-01";
-  endDate: string = "2024-12-31";
+  startDate: string = '2024-01-01';
+  endDate: string = '2024-12-31';
   status: DemandeStatus = null;
-  search: string = "";
+  search: string = '';
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -37,11 +37,9 @@ export class RequestsListComponent {
     private activatedRoute: ActivatedRoute
   ) {
     this.getDemandes();
-    this.activatedRoute.queryParams.subscribe(
-      params => {
-        this.search = params['entity'] || "";
-      }
-    )
+    this.activatedRoute.queryParams.subscribe((params) => {
+      this.search = params['entity'] || '';
+    });
   }
 
   isMenuFilterOpen: boolean = false;
@@ -75,7 +73,7 @@ export class RequestsListComponent {
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
-        console.log({r: this.requests})
+        // console.log({r: this.requests})
       });
   }
 
@@ -191,7 +189,8 @@ export class RequestsListComponent {
   }
 
   changeMinMax(mini, maxi) {
-    this.min = mini; this.max = maxi;
+    this.min = mini;
+    this.max = maxi;
   }
 
   changeStatus(state) {
@@ -201,9 +200,9 @@ export class RequestsListComponent {
   resetFilter() {
     this.min = 0;
     this.max = 10000;
-    this.startDate = "2024-01-01";
-    this.endDate = "2024-12-31";
+    this.startDate = '2024-01-01';
+    this.endDate = '2024-12-31';
     this.status = null;
-    this.search = "";
+    this.search = '';
   }
 }

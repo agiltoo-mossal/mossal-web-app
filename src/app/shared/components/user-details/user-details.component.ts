@@ -6,13 +6,17 @@ import {
   ApexNonAxisChartSeries,
   ApexResponsive,
   ApexChart,
+  ApexDataLabels,
+  ApexLegend,
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
   responsive: ApexResponsive[];
-  labels: any;
+  legend: ApexLegend;
+  labels: string[];
+  colors: string[];
 };
 
 @Component({
@@ -28,16 +32,21 @@ export class UserDetailsComponent {
 
   constructor() {
     this.chartOptions = {
-      series: [35, 55, 41],
+      series: [35, 65],
       chart: {
         type: 'donut',
       },
+      legend: {
+        show: false,
+      },
+      labels: ['Reste a payer', 'Remboursée'],
+      colors: ['#FFC708', '#BDBDBD'],
       responsive: [
         {
           breakpoint: 480,
           options: {
             chart: {
-              //  width: 100,
+              // width: 100,
             },
             legend: {
               position: 'bottom',

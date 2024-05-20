@@ -4,8 +4,9 @@
             Informations
         </span>
         <div class="chart-container" fxLayout="center center">
-            <apx-chart fxLayout="center center" [series]="chartOptions.series" [chart]="chartOptions.chart"
-                [responsive]="chartOptions.responsive">
+            <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                [responsive]="chartOptions.responsive" [labels]="chartOptions.labels" [legend]="chartOptions.legend"
+                [colors]="chartOptions.colors">
             </apx-chart>
         </div>
         <ul class="details-top" fxLayout="column" fxLayoutGap="12px">
