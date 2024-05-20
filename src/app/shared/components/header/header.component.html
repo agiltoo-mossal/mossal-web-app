@@ -14,27 +14,28 @@
                         <span class="signal-notif" *ngIf="hasUnviewedNotif"></span>
                     </span>
                     <span class="icon-wrapper" (click)="viewNotifications()" *ngIf="newNotificationCounter">
-                      <mat-icon fxLayoutAlign="center center" matBadge="{{newNotificationCounter}}" matBadgeColor="warn">notifications_none</mat-icon>
-                  </span>
+                        <mat-icon fxLayoutAlign="center center" matBadge="{{newNotificationCounter}}"
+                            matBadgeColor="warn">notifications_none</mat-icon>
+                    </span>
                     <div class="dropdown-content" id="dropdown-notfification">
                         <div class="notif-content-wrapper  personnaliez-sidebar">
-                            <div
-                            [routerLink]="['/dashboard/requests-list']"
-                            [queryParams]="{ 'entity': notif.entityId }"
-                            routerLinkActive="router-link-active" routerLinkActive="router-link-active"  *ngFor="let notif of notificationList;let i=index" fxLayout.lg="column"
-                                fxLayoutGap.lg="15px">
-                                <div class="dropdown-option notif" fxLayout.lg="column" fxLayoutGap.lg="12px">
+                            <div [routerLink]="['/dashboard/requests-list']"
+                                [queryParams]="{ 'entity': notif.entityId }" routerLinkActive="router-link-active"
+                                routerLinkActive="router-link-active" *ngFor="let notif of notificationList;let i=index"
+                                fxLayout="column" fxLayoutGap="15px">
+                                <div class="dropdown-option notif" fxLayout="column" fxLayoutGap="12px">
                                     <div fxLayout="column">
                                         <span class="title">{{notif.title}}</span>
                                         <span class="content text-on-2-line">{{notif.content}}</span>
                                     </div>
-                                    <div fxLayout.lg="row" fxLayoutAlign.lg="start center" fxLayoutGap.lg="8px">
+                                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
                                         <span class="date">{{(notif.date || notif.createdAt) | frenchDate}}</span>
                                         <span class="yellow-circle"></span>
-                                        <span class="send-by">par {{notif?.author?.firstName}} {{notif?.author?.lastName}}</span>
+                                        <span class="send-by">par {{notif?.author?.firstName}}
+                                            {{notif?.author?.lastName}}</span>
                                     </div>
                                 </div>
-                                <div class="separator" *ngIf="i!=notificationList.length-1"></div>
+                                <hr *ngIf="i!=notificationList.length-1">
                             </div>
                         </div>
                     </div>
@@ -51,11 +52,18 @@
                     <span class="role">ADMIN</span>
                 </div>
             </div>
-            <div class="dropdown" appDropdown="dropdown-header">
+            <div class="dropdown dropdown-user" appDropdown="dropdown-header">
                 <span class="icon-dropdown"><mat-icon>arrow_drop_down</mat-icon></span>
                 <div class="dropdown-content" id="dropdown-header">
-                    <div class="dropdown-option" routerLink="/dashboard/user">Profil</div>
-                    <div class="dropdown-option" (click)="logout()">Logout</div>
+                    <div class="dropdown-option" routerLink="/dashboard/user" fxLayout="row"
+                        fxLayoutAlign="start center">
+                        <mat-icon>person_outline</mat-icon>
+                        <span>Profile</span>
+                    </div>
+                    <div class="dropdown-option" (click)="logout()" fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon fxLayoutAlign="start center">exit_to_app</mat-icon>
+                        <span>Déconnexion</span>
+                    </div>
                 </div>
             </div>
         </div>

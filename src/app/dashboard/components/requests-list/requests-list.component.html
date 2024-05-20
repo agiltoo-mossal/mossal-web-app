@@ -9,22 +9,25 @@
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-statut">
-                    <span class="text " fxFlex="auto">{{ status || 'Statut' }}</span>
+                    <!-- <span class="text " fxFlex="auto">{{ status | demandeStatus || 'Statut' }}</span> -->
+                    <span class="text " fxFlex="auto">{{ status ? (status | demandeStatus) : 'Statut' }}</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
-                        <div (click)="changeStatus('VALIDATED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Validée <span
-                                class="statut statut--valid"></span>
+                        <div (click)="changeStatus('VALIDATED')" class="dropdown-option" fxLayout="row"
+                            fxLayoutAlign="space-between center">Validée <span class="statut statut--valid"></span>
                         </div>
-                        <div (click)="changeStatus('PAYED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Payée <span
-                          class="statut statut--payed"></span>
+                        <div (click)="changeStatus('PAYED')" class="dropdown-option" fxLayout="row"
+                            fxLayoutAlign="space-between center">Payée <span class="statut statut--payed"></span>
                         </div>
-                        <div (click)="changeStatus('REJECTED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Rejetée <span
-                                class="statut statut--rejected"></span></div>
-                        <div (click)="changeStatus('PENDING')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En attente
+                        <div (click)="changeStatus('REJECTED')" class="dropdown-option" fxLayout="row"
+                            fxLayoutAlign="space-between center">Rejetée <span class="statut statut--rejected"></span>
+                        </div>
+                        <div (click)="changeStatus('PENDING')" class="dropdown-option" fxLayout="row"
+                            fxLayoutAlign="space-between center">En attente
                             <span class="statut statut--pending"></span>
                         </div>
-                        <div (click)="changeStatus('CANCELLED')" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">Annulée <span
-                                class="statut statut--cancel"></span>
+                        <div (click)="changeStatus('CANCELLED')" class="dropdown-option" fxLayout="row"
+                            fxLayoutAlign="space-between center">Annulée <span class="statut statut--cancel"></span>
                         </div>
                     </div>
                 </div>
@@ -33,17 +36,21 @@
                     <span class="text text-on-1-line" fxFlex="auto">Entre {{ min }} et {{ max }}</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-fourchette">
-                        <div (click)="changeMinMax(0, 100)" class="dropdown-option" fxLayoutAlign="space-between center">
+                        <div (click)="changeMinMax(0, 100)" class="dropdown-option"
+                            fxLayoutAlign="space-between center">
                             <span>0</span>à
-                            <span>100</span>
+                            <span>100k</span>
                         </div>
-                        <div (click)="changeMinMax(100, 250)" class="dropdown-option" fxLayoutAlign="space-between center"><span>100</span> à
-                            <span>250</span>
+                        <div (click)="changeMinMax(100, 250)" class="dropdown-option"
+                            fxLayoutAlign="space-between center"><span>100k</span> à
+                            <span>250k</span>
                         </div>
-                        <div (click)="changeMinMax(250, 1000)" class="dropdown-option" fxLayoutAlign="space-between center"><span>250</span> à
-                            <span>1.000</span>
+                        <div (click)="changeMinMax(250, 1000)" class="dropdown-option"
+                            fxLayoutAlign="space-between center"><span>250k</span> à
+                            <span>1.000k</span>
                         </div>
-                        <div (click)="changeMinMax(1000, 10000)" class="dropdown-option" fxLayoutAlign="space-between center"><span>1.000</span> à
+                        <div (click)="changeMinMax(1000, 10000)" class="dropdown-option"
+                            fxLayoutAlign="space-between center"><span>1.000k</span> à
                             <span>plus</span>
                         </div>
                     </div>
@@ -66,7 +73,8 @@
                         </div>
                     </div>
                 </form>
-                <div (click)="resetFilter()" fxFlex="20" class="btn-filter" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="center center">
+                <div (click)="resetFilter()" fxFlex="20" class="btn-filter" fxLayout="row" fxLayoutGap="16px"
+                    fxLayoutAlign="center center">
                     <mat-icon>filter_list</mat-icon>
                     <span>Reset</span>
                 </div>
@@ -80,7 +88,8 @@
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
                 </tr>
-                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000) | dateRangeFilter:'createdAt':startDate:endDate | propertyMatch:'status': status | filter : search">
+                <tr class="user" fxLayout="row" fxLayoutAlign="space-between center"
+                    *ngFor=" let req of requests | rangeFilter:'amount':(min * 1000):(max * 1000) | dateRangeFilter:'createdAt':startDate:endDate | propertyMatch:'status': status | filter : search">
                     <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                         fxLayoutGap="16px">
                         <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"
@@ -109,22 +118,24 @@
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
                             </span>
                             <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
-                                    requiresConfirmation [message]="'Voulez-vous valider cette demande?'"
-                                    [confirmCallback]="validateDemande" [confirmCallbackParam]="req?.id">
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row"
+                                    fxLayoutAlign="space-between center" requiresConfirmation
+                                    [message]="'Voulez-vous valider cette demande?'" [confirmCallback]="validateDemande"
+                                    [confirmCallbackParam]="req?.id">
                                     Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div *ngIf="req.status === 'VALIDATED'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
-                                  requiresConfirmation [message]="'Voulez-vous payer cette demande?'"
-                                  [confirmCallback]="payeDemande" [confirmCallbackParam]="req?.id">
-                                  Payée
-                                  <span class="statut statut--payed"></span>
-                                </div>
-                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
-                                    requiresConfirmation [message]="'Voulez-vous rejeter cette demande?'"
-                                    [confirmCallback]="rejectDemande" [reasonRequired]="true"
+                                <div *ngIf="req.status === 'VALIDATED'" class="dropdown-option" fxLayout="row"
+                                    fxLayoutAlign="space-between center" requiresConfirmation
+                                    [message]="'Voulez-vous payer cette demande?'" [confirmCallback]="payeDemande"
                                     [confirmCallbackParam]="req?.id">
+                                    Payée
+                                    <span class="statut statut--payed"></span>
+                                </div>
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row"
+                                    fxLayoutAlign="space-between center" requiresConfirmation
+                                    [message]="'Voulez-vous rejeter cette demande?'" [confirmCallback]="rejectDemande"
+                                    [reasonRequired]="true" [confirmCallbackParam]="req?.id">
                                     Rejetée
                                     <span class="statut statut--rejected"></span>
                                 </div>
@@ -132,9 +143,10 @@
                                     attente
                                     <span class="statut statut--pending"></span>
                                 </div> -->
-                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center"
-                                    requiresConfirmation [message]="'Voulez-vous annuler cette demande?'"
-                                    [confirmCallback]="cancelDemande" [confirmCallbackParam]="req?.id">
+                                <div *ngIf="req.status === 'PENDING'" class="dropdown-option" fxLayout="row"
+                                    fxLayoutAlign="space-between center" requiresConfirmation
+                                    [message]="'Voulez-vous annuler cette demande?'" [confirmCallback]="cancelDemande"
+                                    [confirmCallbackParam]="req?.id">
                                     Annulée
                                     <span class="statut statut--cancel"></span>
                                 </div>

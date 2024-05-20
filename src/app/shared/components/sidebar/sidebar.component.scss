@@ -5,7 +5,7 @@
     position: relative;
 
     &.is-opened {
-        width: 250px;
+        width: 270px;
 
         .toggleSidebar {
             transform: rotate(0deg);
@@ -22,6 +22,17 @@
         }
 
 
+        mat-icon {
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+        }
+
+        .icon {
+            height: 32px;
+            width: 32px;
+            border-radius: 50px;
+        }
     }
 
     .logo-container {
@@ -69,12 +80,8 @@
             width: 24px;
             border-radius: 50px;
             background-color: transparent;
+            transition: all .3s;
 
-            mat-icon {
-                width: 16px;
-                height: 16px;
-                font-size: 16px;
-            }
         }
 
         .label {
@@ -85,10 +92,10 @@
         }
 
         cursor: pointer;
+        border-radius: 6px;
 
         &.active {
             background: #F1F7FF;
-            border-radius: 6px;
             color: #061E5C;
 
             .icon {
@@ -97,7 +104,6 @@
         }
 
         &:hover {
-            border-radius: 6px;
             background: #F1F7FF;
         }
     }
@@ -107,4 +113,29 @@
         padding-right: 16px;
     }
 
+    .btn-logout {
+        height: 70px;
+        width: 100%;
+        border-top: 1px solid #A7A9C0;
+        padding-left: 32px;
+        cursor: pointer;
+
+        color: #F41414;
+        font-size: 18px;
+        font-weight: 400px;
+        line-height: 21.6px;
+        letter-spacing: 0.5%;
+    }
+
+    .navigation {
+        overflow-y: auto;
+    }
+
+}
+
+mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    transition: all .3s ease;
 }
