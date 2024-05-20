@@ -686,8 +686,9 @@ input:focus {
   }
 
   .circle {
-    width: 32px;
-    height: 32px;
+    display: block;
+    padding: 8px;
+    min-width: min-content;
     border-radius: 50%;
     background: #0C1D58;
 

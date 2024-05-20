@@ -9,8 +9,8 @@
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-statut">
-                    <!-- <span class="text " fxFlex="auto">{{ status | demandeStatus || 'Statut' }}</span> -->
-                    <span class="text " fxFlex="auto">{{ status ? (status | demandeStatus) : 'Statut' }}</span>
+                    <span class="text " [ngClass]="status?'selected':''" fxFlex="auto">{{ status ? (status |
+                        demandeStatus) : 'Statut' }}</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
                         <div (click)="changeStatus('VALIDATED')" class="dropdown-option" fxLayout="row"
@@ -33,7 +33,7 @@
                 </div>
                 <div fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown"
                     appDropdown="dropdown-fourchette">
-                    <span class="text text-on-1-line" fxFlex="auto">Entre {{ min }} et {{ max }}</span>
+                    <span class="text text-on-1-line" fxFlex="auto">Entre {{ min }} et {{ max }}k</span>
                     <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
                     <div class="dropdown-content dropdown-content-filter" id="dropdown-fourchette">
                         <div (click)="changeMinMax(0, 100)" class="dropdown-option"
@@ -112,7 +112,8 @@
                         <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
                             <span fxLayout="row" class="btn-edit-statut">
                                 <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
-                                    fxLayoutAlign="center center"><span>{{ req?.status | titlecase }}</span><span
+                                    fxLayoutAlign="center center"><span>{{ req?.status | demandeStatus | titlecase
+                                        }}</span><span
                                         class="statut statut--{{ req?.status | lowercase }}"></span></span>
                                 <mat-icon class="dropdown-icon"
                                     fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>

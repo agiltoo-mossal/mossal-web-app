@@ -17,7 +17,7 @@
             </span>
         </span>
     </div>
-    <div class="btn-logout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px">
+    <div class="btn-logout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" (click)="logout()">
         <span class="icon" fxLayoutAlign="start center"><mat-icon>exit_to_app</mat-icon></span><span
             *ngIf="isSidebarOpened">Déconnexion</span>
     </div>
