@@ -6,12 +6,12 @@ import { DemandeStatus } from 'src/graphql/generated';
 })
 export class DemandeStatusPipe implements PipeTransform {
   private statusMapping: { [key in DemandeStatus]: string } = {
-    [DemandeStatus.Cancelled]: 'Annulé',
+    [DemandeStatus.Cancelled]: 'Annulée',
     [DemandeStatus.InProcess]: 'En cours',
     [DemandeStatus.Payed]: 'Rembousée',
     [DemandeStatus.Pending]: 'En attente',
-    [DemandeStatus.Rejected]: 'Rejeté',
-    [DemandeStatus.Validated]: 'Validé',
+    [DemandeStatus.Rejected]: 'Rejetée',
+    [DemandeStatus.Validated]: 'Validée',
   };
 
   transform(value: DemandeStatus): string {
