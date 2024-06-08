@@ -1,4 +1,4 @@
-<div class="container" fxLayout="column" fxLayoutGap="13px">
+<div class="container " fxLayout="column" fxLayoutGap="13px" >
     <div class="top" fxLayout="column">
         <span class="title">
             Informations
@@ -12,11 +12,11 @@
         <ul class="details-top" fxLayout="column" fxLayoutGap="12px">
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Salaire net mensuel :</span>
-                <span class="value">XOF {{ user?.salary }}</span>
+                <span class="value">XOF {{ user?.salary | number:'1.0-0' }}</span>
             </li>
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Acompte autorisé :</span>
-                <span class="value">XOF {{ user?.authorizedAdvance }}</span>
+                <span class="value">XOF {{ user?.authorizedAdvance | number:'1.0-0' }}</span>
             </li>
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Iban :</span>

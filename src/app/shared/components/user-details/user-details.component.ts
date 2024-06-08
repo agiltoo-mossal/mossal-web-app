@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, computed, effect } from '@angular/core';
 import { User } from 'src/graphql/generated';
 
 import {
@@ -9,6 +9,7 @@ import {
   ApexDataLabels,
   ApexLegend,
 } from 'ng-apexcharts';
+import { OverviewService } from 'src/app/dashboard/components/overview/overview.service';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -30,9 +31,9 @@ export class UserDetailsComponent {
   @ViewChild('chart') chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
-  constructor() {
+  constructor(private collaboratorService: OverviewService) {
     this.chartOptions = {
-      series: [35, 65],
+      series: [0, 0],
       chart: {
         type: 'donut',
       },
@@ -55,5 +56,19 @@ export class UserDetailsComponent {
         },
       ],
     };
+    effect(() => {
+      this.chartOptions.series = this.average;
+    });
+  }
+  get average() {
+    const dataColloborator = this.collaboratorService.getUserSelected;
+
+    const somTotale = dataColloborator.authorizedAdvance;
+    if (!somTotale || !dataColloborator) return [0, 0];
+    const averageBalance =
+      (dataColloborator?.balance ?? 0) /
+      (somTotale);
+    const rest = 1 - averageBalance;
+    return [Math.round( +(averageBalance*100).toFixed(0)), Math.round( +(rest*100).toFixed(0))];
   }
 }

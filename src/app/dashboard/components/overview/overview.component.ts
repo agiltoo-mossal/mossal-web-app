@@ -17,6 +17,8 @@ import {
   FetchOrganizationDemandesGQL,
   User,
 } from 'src/graphql/generated';
+import { dataStatic } from 'src/app/shared/types/data-static';
+import { OverviewService } from './overview.service';
 
 @Component({
   selector: 'app-overview',
@@ -25,7 +27,7 @@ import {
 })
 export class OverviewComponent implements OnInit {
   datas = [];
-
+  dataStatics=dataStatic
   requests: Demande[] = [];
   sortedRequests: Demande[] = [];
   selectedReq: Demande;
@@ -42,7 +44,8 @@ export class OverviewComponent implements OnInit {
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
     private snackBarService: SnackBarService,
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userCollaboratorService:OverviewService
   ) {
     const now = new Date('2024-12-31');
     this.metricsInput = this.fb.group({
@@ -59,7 +62,26 @@ export class OverviewComponent implements OnInit {
     });
     this.getData();
   }
+    ngOnInit(): void {
+     
+    }
 
+
+    private updateStaticData() {
+      const infoCount=[
+        this.nbAccordedRequest,
+        this.nbPending,
+        this.nbValid,
+        this.totalDemandeAmount,
+        this.nbActifUsers,
+        this.totalDemandeToPay,
+
+      ];
+      this.dataStatics=this.dataStatics.map((item,index)=>{
+        return {...item,value:infoCount[index]}
+      })
+
+    }
   getData() {
     this.getDemandes();
     this.fetchCollabs();
@@ -111,6 +133,7 @@ export class OverviewComponent implements OnInit {
           .slice()
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
         this.setHasValidatedDemande();
+        this.updateStaticData();
       });
   }
 
@@ -135,6 +158,7 @@ export class OverviewComponent implements OnInit {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
         // this.setHasValidatedDemande();
         this.selectedCollab = this.collabs?.[0];
+        this.userCollaboratorService.updatUserSelected(this.selectedCollab);
       });
   }
 
@@ -160,6 +184,7 @@ export class OverviewComponent implements OnInit {
 
   selectCollab(selected: User) {
     this.selectedCollab = selected;
+    this.userCollaboratorService.updatUserSelected(selected);
   }
 
   selectReq(selected: Demande) {
@@ -223,7 +248,7 @@ export class OverviewComponent implements OnInit {
     return users.length;
   }
 
-  ngOnInit(): void {}
+
 
   getLastRequest(req: any) {
     return (
