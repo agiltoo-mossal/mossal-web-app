@@ -27,7 +27,6 @@ import { DateRangerFilterPipe } from '../shared/pipes/date-range-filter/date-ran
 import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match.pipe';
 import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
-import { SafeHtmlPipe } from '../shared/pipes/safe-html/safe-html.pipe';
 
 @NgModule({
   declarations: [
