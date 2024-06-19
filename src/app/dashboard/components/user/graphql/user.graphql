@@ -11,6 +11,7 @@ query FetchCurrentAdmin {
 		phoneNumber
 		address
     role
+    position
     organization {
       id
     }

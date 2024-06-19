@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Session } from 'src/graphql/generated';
 
 export enum AuthConstant {
   tokenLocalName = "token",
@@ -23,7 +22,7 @@ export class AuthService {
     return localStorage.getItem(AuthConstant.tokenLocalName);
   }
 
-  saveSession(session: Session) {
+  saveSession(session: any) {
     localStorage.setItem(AuthConstant.sessionLocalName, JSON.stringify(session));
   }
 

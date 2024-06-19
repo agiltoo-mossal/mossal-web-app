@@ -49,7 +49,7 @@
                 </div>
                 <div class="user-detail" fxLayout="column" fxLayoutAlign="center start">
                     <span class="name">{{ user?.firstName }} {{ user?.lastName }}</span>
-                    <span class="role">ADMIN</span>
+                    <span class="role">{{ user?.position || 'ADMIN' }}</span>
                 </div>
             </div>
             <div class="dropdown dropdown-user" appDropdown="dropdown-header">

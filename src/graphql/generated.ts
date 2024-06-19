@@ -17,6 +17,9 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+  _Any: { input: any; output: any; }
+  federation__FieldSet: { input: any; output: any; }
+  link__Import: { input: any; output: any; }
 };
 
 export type Demande = {
@@ -31,22 +34,6 @@ export type Demande = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type DemandeInput = {
-  amount: Scalars['Float']['input'];
-};
-
-export type DemandeMetric = {
-  __typename?: 'DemandeMetric';
-  month: Scalars['Float']['output'];
-  value: Scalars['Float']['output'];
-  year: Scalars['Float']['output'];
-};
-
-export type DemandeMetricFilter = {
-  endDate: Scalars['DateTime']['input'];
-  startDate: Scalars['DateTime']['input'];
-};
-
 export enum DemandeStatus {
   Cancelled = 'CANCELLED',
   InProcess = 'IN_PROCESS',
@@ -55,10 +42,6 @@ export enum DemandeStatus {
   Rejected = 'REJECTED',
   Validated = 'VALIDATED'
 }
-
-export type DemandeUpdateInput = {
-  amount: Scalars['Float']['input'];
-};
 
 export type DemandesMetrics = {
   __typename?: 'DemandesMetrics';
@@ -109,8 +92,6 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addDemande: Demande;
-  cancelDemande: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createFinancialOrganization: Organization;
   createOrganization: Organization;
@@ -120,26 +101,13 @@ export type Mutation = {
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
-  resetCollaboratorPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
-  updateDemande: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
-  updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
-};
-
-
-export type MutationAddDemandeArgs = {
-  demandeInput: DemandeInput;
-};
-
-
-export type MutationCancelDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
 };
 
 
@@ -189,11 +157,6 @@ export type MutationResetAdminPasswordArgs = {
 };
 
 
-export type MutationResetCollaboratorPasswordArgs = {
-  resetPasswordInput: ResetPasswordInput;
-};
-
-
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
 };
@@ -205,12 +168,6 @@ export type MutationUpdateCollaboratorArgs = {
 };
 
 
-export type MutationUpdateDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
-  demandeInput: DemandeUpdateInput;
-};
-
-
 export type MutationUpdateMyAdminPasswordArgs = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
@@ -219,11 +176,6 @@ export type MutationUpdateMyAdminPasswordArgs = {
 
 export type MutationUpdateMyAdminProfileArgs = {
   userInput: UpdateMyAdminProfileInput;
-};
-
-
-export type MutationUpdateMyBankAccountArgs = {
-  bankAccountNumber: Scalars['String']['input'];
 };
 
 
@@ -251,7 +203,10 @@ export type Notification = {
 
 export type Organization = {
   __typename?: 'Organization';
+  amountPercent: Scalars['Float']['output'];
+  fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
+  maxDemandeAmount: Scalars['Float']['output'];
   /** Nom de l'organisation */
   name: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
@@ -259,6 +214,9 @@ export type Organization = {
 };
 
 export type OrganizationInput = {
+  amountPercent: Scalars['Float']['input'];
+  fees: Scalars['Float']['input'];
+  maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
   name: Scalars['String']['input'];
   /** Email de l'utilisateur racine ou admin */
@@ -270,19 +228,19 @@ export type OrganizationInput = {
 };
 
 export type OrganizationUpdateInput = {
+  amountPercent: Scalars['Float']['input'];
+  fees: Scalars['Float']['input'];
+  maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  checkMyBalance: Scalars['Float']['output'];
-  checkMyDemandeFees: Scalars['Float']['output'];
+  _entities: Array<Maybe<_Entity>>;
+  _service: _Service;
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
-  fetchMyDemande: Demande;
-  fetchMyDemandes: Array<Demande>;
-  fetchMyDemandesMetrics: Array<DemandeMetric>;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
   fetchOrganizationCollaborator: User;
@@ -291,30 +249,16 @@ export type Query = {
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
   loginAdmin: Session;
-  loginCollaborator: Session;
-  refreshCollaboratorToken: Session;
-  /** Token to call reset password endpoint */
-  requestResetCollaboratorPassword: Scalars['String']['output'];
 };
 
 
-export type QueryCheckMyDemandeFeesArgs = {
-  demandeAmount: Scalars['Float']['input'];
+export type Query_EntitiesArgs = {
+  representations: Array<Scalars['_Any']['input']>;
 };
 
 
 export type QueryFetchDemandesMetricsArgs = {
   metricsInput: DemandesMetricsInput;
-};
-
-
-export type QueryFetchMyDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
-};
-
-
-export type QueryFetchMyDemandesMetricsArgs = {
-  metricsFilter: DemandeMetricFilter;
 };
 
 
@@ -340,21 +284,6 @@ export type QueryFetchOrganizationDemandesArgs = {
 
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
-};
-
-
-export type QueryLoginCollaboratorArgs = {
-  loginInput: LoginInput;
-};
-
-
-export type QueryRefreshCollaboratorTokenArgs = {
-  refreshToken: Scalars['String']['input'];
-};
-
-
-export type QueryRequestResetCollaboratorPasswordArgs = {
-  oldPassword: Scalars['String']['input'];
 };
 
 export type ResetPasswordInput = {
@@ -421,10 +350,25 @@ export type User = {
   position?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
+  totalDemandeAmount: Scalars['Float']['output'];
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
+
+export type _Entity = Demande | Organization;
+
+export type _Service = {
+  __typename?: '_Service';
+  sdl?: Maybe<Scalars['String']['output']>;
+};
+
+export enum Link__Purpose {
+  /** `EXECUTION` features provide metadata necessary for operation execution. */
+  Execution = 'EXECUTION',
+  /** `SECURITY` features provide metadata necessary to securely resolve fields. */
+  Security = 'SECURITY'
+}
 
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -531,7 +475,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, organization: { __typename?: 'Organization', id: string } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, organization: { __typename?: 'Organization', id: string } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -887,6 +831,7 @@ export const FetchCurrentAdminDocument = gql`
     phoneNumber
     address
     role
+    position
     organization {
       id
     }

@@ -61,9 +61,11 @@ export class OverviewComponent implements OnInit {
   }
 
   getData() {
-    this.getDemandes();
-    this.fetchCollabs();
-    this.getDemandesMetrics();
+    try {
+      this.getDemandes();
+      this.fetchCollabs();
+      this.getDemandesMetrics();
+    } catch(e) {}
   }
 
   toggleMenuFilterDate() {

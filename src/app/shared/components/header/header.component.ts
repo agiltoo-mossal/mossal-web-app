@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'src/app/dashboard/components/notifications/notifications.service';
-import { FetchOrganizationNotificationsGQL, Notification } from 'src/graphql/generated';
+import { FetchCurrentAdminGQL, FetchOrganizationNotificationsGQL, Notification } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-header',
@@ -39,15 +39,17 @@ export class HeaderComponent implements OnDestroy, OnInit {
     private keycloakService: KeycloakService,
     private router: Router,
     private notificationsService: NotificationsService,
-    private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL
+    private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
   ) {
     this.contextSubscription = this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
     });
 
-    this.keycloakService.loadUserProfile().then((result) => {
-      this.currentUser = result;
-    });
+    // this.keycloakService.loadUserProfile().then((result) => {
+    //   this.currentUser = result;
+    // });
+    this.fetchCurrentAdmin();
     this.getNotifications();
   }
 
@@ -104,5 +106,11 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   viewNotifications() {
     this.newNotificationCounter = 0;
+  }
+
+  fetchCurrentAdmin() {
+    this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
+      this.currentUser = result.data.fetchCurrentAdmin;
+    });
   }
 }

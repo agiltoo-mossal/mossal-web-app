@@ -42,7 +42,7 @@ export class FormAdminComponent {
   ngOnInit(): void {
     this.formText =
       this.formType == 'edit'
-        ? 'Modifier les infos du update '
+        ? "Modifier les infos de l'admin "
         : 'Création compte admin';
   }
 
@@ -85,7 +85,7 @@ export class FormAdminComponent {
         this.isLoading = false;
         if(result.data) {
           this.router.navigate(['/dashboard/admins']);
-          this.snackBarService.showSuccessSnackBar("Collaborator modifié avec succés")
+          this.snackBarService.showSuccessSnackBar("Admin modifié avec succés")
         }
 
       },
