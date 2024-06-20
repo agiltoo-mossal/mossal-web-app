@@ -67,11 +67,11 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     // Se désabonner des observables pour éviter les fuites de mémoire
-    this.contextSubscription.unsubscribe();
-    this.headerSubscription.unsubscribe();
-    this.notificationSubscription.unsubscribe();
-    this.listNotisSubscription.unsubscribe();
-    this.viewSubscription.unsubscribe();
+    this.contextSubscription?.unsubscribe?.();
+    this.headerSubscription?.unsubscribe?.();
+    this.notificationSubscription?.unsubscribe?.();
+    this.listNotisSubscription?.unsubscribe?.();
+    this.viewSubscription?.unsubscribe?.();
     this.newNotificationCounter = 0;
   }
 
