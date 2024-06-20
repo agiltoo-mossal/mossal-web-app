@@ -1,0 +1,31 @@
+query LoginAdmin($loginInput: LoginInput!) {
+	loginAdmin(loginInput: $loginInput) {
+		user {
+			id
+			firstName
+			lastName
+			organization {
+				id
+				rootEmail
+				name
+			}
+		}
+		enabled
+		token
+		access_token
+		refresh_token
+		expires_in
+	}
+}
+
+mutation ResetAdminPassword($resetPasswordInput: ResetPasswordInput!) {
+	resetAdminPassword(resetPasswordInput: $resetPasswordInput)
+}
+
+mutation StartForgotPassword($email: String!) {
+	startForgotPassword(email: $email)
+}
+
+mutation FinalizeForgotPassword($finalizeForgotPasswordInput: FinalizeForgotPasswordInput!) {
+	finalizeForgotPassword(finalizeForgotPasswordInput: $finalizeForgotPasswordInput)
+}

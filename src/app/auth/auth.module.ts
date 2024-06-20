@@ -21,11 +21,13 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
     AuthComponent,
     LoginComponent,
+    ResetPasswordComponent
   ],
   imports: [
     CommonModule,

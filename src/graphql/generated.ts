@@ -370,6 +370,34 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
+export type LoginAdminQueryVariables = Exact<{
+  loginInput: LoginInput;
+}>;
+
+
+export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization: { __typename?: 'Organization', id: string, rootEmail: string, name: string } } | null } };
+
+export type ResetAdminPasswordMutationVariables = Exact<{
+  resetPasswordInput: ResetPasswordInput;
+}>;
+
+
+export type ResetAdminPasswordMutation = { __typename?: 'Mutation', resetAdminPassword: boolean };
+
+export type StartForgotPasswordMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type StartForgotPasswordMutation = { __typename?: 'Mutation', startForgotPassword: boolean };
+
+export type FinalizeForgotPasswordMutationVariables = Exact<{
+  finalizeForgotPasswordInput: FinalizeForgotPasswordInput;
+}>;
+
+
+export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalizeForgotPassword: boolean };
+
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -484,6 +512,88 @@ export type UpdateMyAdminProfileMutationVariables = Exact<{
 
 export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
+export const LoginAdminDocument = gql`
+    query LoginAdmin($loginInput: LoginInput!) {
+  loginAdmin(loginInput: $loginInput) {
+    user {
+      id
+      firstName
+      lastName
+      organization {
+        id
+        rootEmail
+        name
+      }
+    }
+    enabled
+    token
+    access_token
+    refresh_token
+    expires_in
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LoginAdminGQL extends Apollo.Query<LoginAdminQuery, LoginAdminQueryVariables> {
+    document = LoginAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ResetAdminPasswordDocument = gql`
+    mutation ResetAdminPassword($resetPasswordInput: ResetPasswordInput!) {
+  resetAdminPassword(resetPasswordInput: $resetPasswordInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ResetAdminPasswordGQL extends Apollo.Mutation<ResetAdminPasswordMutation, ResetAdminPasswordMutationVariables> {
+    document = ResetAdminPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const StartForgotPasswordDocument = gql`
+    mutation StartForgotPassword($email: String!) {
+  startForgotPassword(email: $email)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class StartForgotPasswordGQL extends Apollo.Mutation<StartForgotPasswordMutation, StartForgotPasswordMutationVariables> {
+    document = StartForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FinalizeForgotPasswordDocument = gql`
+    mutation FinalizeForgotPassword($finalizeForgotPasswordInput: FinalizeForgotPasswordInput!) {
+  finalizeForgotPassword(
+    finalizeForgotPasswordInput: $finalizeForgotPasswordInput
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
+    document = FinalizeForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationAdminsDocument = gql`
     query FetchOrganizationAdmins {
   fetchOrganizationAdmins {
