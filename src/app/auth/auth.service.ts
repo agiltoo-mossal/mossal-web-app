@@ -78,8 +78,9 @@ export class AuthService {
       localStorage.setItem(AuthConstant.refreshTokenLocalName, session.refresh_token);
       if(session.token && !session.access_token) {
         this.router.navigate(['/auth/reset'])
+      } else {
+        this.router.navigate(['/dashboard']);
       }
-      this.router.navigate(['/dashboard']);
       // return session;
     } catch(e) {
       this.snackBarService.showSnackBar("Nom d'utilisateur ou mot de passe incorrecte!", "", { panelClass: ['red-snackbar'], duration: 2500 });
