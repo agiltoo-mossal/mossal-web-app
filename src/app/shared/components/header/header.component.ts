@@ -99,9 +99,10 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
 
   logout() {
-    this.keycloakService.logout().then((result) => {
-      this.router.navigate(['/']);
-    });
+    this.authService.logout()
+    // this.keycloakService.logout().then((result) => {
+    //   this.router.navigate(['/']);
+    // });
   }
 
   viewNotifications() {

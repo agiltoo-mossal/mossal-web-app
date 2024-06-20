@@ -114,6 +114,7 @@ export class AuthService {
     // AuthService.refresh_token = null;
     // AuthService.token = null;
     this.cleanAuthData();
-    return true;
+    this.router.navigate(['/auth/login'])
+    // return true;
   }
 }
