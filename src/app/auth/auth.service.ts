@@ -92,7 +92,13 @@ export class AuthService {
     const token = localStorage.getItem(AuthConstant.tokenLocalName);
     try {
       const res = await lastValueFrom(this.resetPasswordGQL.mutate({ resetPasswordInput: { password, token } }));
-      return res.data.resetAdminPassword;
+      if(res.data.resetAdminPassword) {
+        this.router.navigate(['/auth/login'])
+      } else {
+        this.snackBarService.showSnackBar("Session expirée!", "", { panelClass: ['red-snackbar'], duration: 2500 });
+        throw res.data.resetAdminPassword;
+      }
+
     } catch(e) {
       this.snackBarService.showSnackBar("Session expirée!", "", { panelClass: ['red-snackbar'], duration: 2500 });
       throw e;
