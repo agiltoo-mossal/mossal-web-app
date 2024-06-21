@@ -839,7 +839,9 @@ input:focus {
 .invalid {
   border-color: #e94916 !important;
 }
-
+.help-text {
+  font-size: 12px;
+}
 input,
 select,
 textarea {

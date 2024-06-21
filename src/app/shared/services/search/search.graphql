@@ -1,0 +1,11 @@
+query BankAccountNumberExists($bankAccountNumber: String!) {
+  bankAccountNumberExists(bankAccountNumber: $bankAccountNumber)
+}
+
+query PhoneNumberExists($phoneNumber: String!) {
+  phoneNumberExists(phoneNumber: $phoneNumber)
+}
+
+query UniqueIdentifierExists($uniqueIdentifier: String!) {
+  uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier)
+}

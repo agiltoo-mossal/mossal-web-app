@@ -30,6 +30,7 @@ export type Demande = {
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
+  paymentSuccess?: Maybe<Scalars['Boolean']['output']>;
   status: DemandeStatus;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -235,10 +236,16 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Payment = {
+  __typename?: 'Payment';
+  id: Scalars['ID']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   _entities: Array<Maybe<_Entity>>;
   _service: _Service;
+  bankAccountNumberExists: Scalars['Boolean']['output'];
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
   fetchOrganization: Organization;
@@ -248,12 +255,21 @@ export type Query = {
   fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
+  fetchPayment: Payment;
+  fetchPayments: Array<Payment>;
   loginAdmin: Session;
+  phoneNumberExists: Scalars['Boolean']['output'];
+  uniqueIdentifierExists: Scalars['Boolean']['output'];
 };
 
 
 export type Query_EntitiesArgs = {
   representations: Array<Scalars['_Any']['input']>;
+};
+
+
+export type QueryBankAccountNumberExistsArgs = {
+  bankAccountNumber: Scalars['String']['input'];
 };
 
 
@@ -282,8 +298,23 @@ export type QueryFetchOrganizationDemandesArgs = {
 };
 
 
+export type QueryFetchPaymentArgs = {
+  paymentId: Scalars['ID']['input'];
+};
+
+
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
+};
+
+
+export type QueryPhoneNumberExistsArgs = {
+  phoneNumber: Scalars['String']['input'];
+};
+
+
+export type QueryUniqueIdentifierExistsArgs = {
+  uniqueIdentifier: Scalars['String']['input'];
 };
 
 export type ResetPasswordInput = {
@@ -511,6 +542,27 @@ export type UpdateMyAdminProfileMutationVariables = Exact<{
 
 
 export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
+
+export type BankAccountNumberExistsQueryVariables = Exact<{
+  bankAccountNumber: Scalars['String']['input'];
+}>;
+
+
+export type BankAccountNumberExistsQuery = { __typename?: 'Query', bankAccountNumberExists: boolean };
+
+export type PhoneNumberExistsQueryVariables = Exact<{
+  phoneNumber: Scalars['String']['input'];
+}>;
+
+
+export type PhoneNumberExistsQuery = { __typename?: 'Query', phoneNumberExists: boolean };
+
+export type UniqueIdentifierExistsQueryVariables = Exact<{
+  uniqueIdentifier: Scalars['String']['input'];
+}>;
+
+
+export type UniqueIdentifierExistsQuery = { __typename?: 'Query', uniqueIdentifierExists: boolean };
 
 export const LoginAdminDocument = gql`
     query LoginAdmin($loginInput: LoginInput!) {
@@ -970,6 +1022,54 @@ export const UpdateMyAdminProfileDocument = gql`
   })
   export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
     document = UpdateMyAdminProfileDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const BankAccountNumberExistsDocument = gql`
+    query BankAccountNumberExists($bankAccountNumber: String!) {
+  bankAccountNumberExists(bankAccountNumber: $bankAccountNumber)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class BankAccountNumberExistsGQL extends Apollo.Query<BankAccountNumberExistsQuery, BankAccountNumberExistsQueryVariables> {
+    document = BankAccountNumberExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PhoneNumberExistsDocument = gql`
+    query PhoneNumberExists($phoneNumber: String!) {
+  phoneNumberExists(phoneNumber: $phoneNumber)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PhoneNumberExistsGQL extends Apollo.Query<PhoneNumberExistsQuery, PhoneNumberExistsQueryVariables> {
+    document = PhoneNumberExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UniqueIdentifierExistsDocument = gql`
+    query UniqueIdentifierExists($uniqueIdentifier: String!) {
+  uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UniqueIdentifierExistsGQL extends Apollo.Query<UniqueIdentifierExistsQuery, UniqueIdentifierExistsQueryVariables> {
+    document = UniqueIdentifierExistsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
