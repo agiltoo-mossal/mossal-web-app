@@ -161,7 +161,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.checkUniqueIdentifier();
   }
 
-  hasErrors() {
+  get hasErrors() {
     return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists;
   }
 }
