@@ -246,6 +246,7 @@ export type Query = {
   _entities: Array<Maybe<_Entity>>;
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
+  emailExists: Scalars['Boolean']['output'];
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
   fetchOrganization: Organization;
@@ -270,6 +271,13 @@ export type Query_EntitiesArgs = {
 
 export type QueryBankAccountNumberExistsArgs = {
   bankAccountNumber: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryEmailExistsArgs = {
+  email: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -310,11 +318,13 @@ export type QueryLoginAdminArgs = {
 
 export type QueryPhoneNumberExistsArgs = {
   phoneNumber: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryUniqueIdentifierExistsArgs = {
   uniqueIdentifier: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResetPasswordInput = {
@@ -563,6 +573,13 @@ export type UniqueIdentifierExistsQueryVariables = Exact<{
 
 
 export type UniqueIdentifierExistsQuery = { __typename?: 'Query', uniqueIdentifierExists: boolean };
+
+export type EmailExistsQueryVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type EmailExistsQuery = { __typename?: 'Query', emailExists: boolean };
 
 export const LoginAdminDocument = gql`
     query LoginAdmin($loginInput: LoginInput!) {
@@ -1070,6 +1087,22 @@ export const UniqueIdentifierExistsDocument = gql`
   })
   export class UniqueIdentifierExistsGQL extends Apollo.Query<UniqueIdentifierExistsQuery, UniqueIdentifierExistsQueryVariables> {
     document = UniqueIdentifierExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EmailExistsDocument = gql`
+    query EmailExists($email: String!) {
+  emailExists(email: $email)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
+    document = EmailExistsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

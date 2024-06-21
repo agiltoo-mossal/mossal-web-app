@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
-import { BankAccountNumberExistsGQL, PhoneNumberExistsGQL, UniqueIdentifierExistsGQL } from 'src/graphql/generated';
+import { BankAccountNumberExistsGQL, EmailExistsGQL, PhoneNumberExistsGQL, UniqueIdentifierExistsGQL } from 'src/graphql/generated';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +10,14 @@ export class SearchService {
   constructor(
     private phoneNumberExistsGQL: PhoneNumberExistsGQL,
     private uniqueIdentifierExistsGQL: UniqueIdentifierExistsGQL,
-    private bankAccountNumberExistsGQL: BankAccountNumberExistsGQL
+    private bankAccountNumberExistsGQL: BankAccountNumberExistsGQL,
+    private emailExistsGQL: EmailExistsGQL
   ) { }
+
+  async emailExists(email: string) {
+    const result = await lastValueFrom(this.emailExistsGQL.fetch({ email }));
+    return result.data.emailExists;
+  }
 
   async phoneNumberExists(phoneNumber: string) {
     const result = await lastValueFrom(this.phoneNumberExistsGQL.fetch({ phoneNumber }));

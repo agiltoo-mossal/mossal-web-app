@@ -21,6 +21,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   phoneNumberExists: boolean = false;
   bankAccountNumberExists: boolean = false;
   uniqueIdentifierExists: boolean = false;
+  emailExists: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -134,6 +135,16 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     });
   }
 
+  checkEmail() {
+    this.collaboratorForm.get('email').valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this.searchService.emailExists(value))
+    ).subscribe(result => {
+      this.emailExists = result;
+    });
+  }
+
   checkBankAccount() {
     this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
       debounceTime(300),
@@ -159,9 +170,10 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.checkPhone();
     this.checkBankAccount();
     this.checkUniqueIdentifier();
+    this.checkEmail();
   }
 
   get hasErrors() {
-    return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists;
+    return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists || this.emailExists;
   }
 }

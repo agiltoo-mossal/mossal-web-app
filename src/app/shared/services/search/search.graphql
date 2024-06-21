@@ -9,3 +9,7 @@ query PhoneNumberExists($phoneNumber: String!) {
 query UniqueIdentifierExists($uniqueIdentifier: String!) {
   uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier)
 }
+
+query EmailExists($email: String!) {
+  emailExists(email: $email)
+}
