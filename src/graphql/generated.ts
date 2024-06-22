@@ -473,7 +473,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -561,7 +561,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, organization: { __typename?: 'Organization', id: string } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, organization: { __typename?: 'Organization', id: string, name: string } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -773,9 +773,6 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     createdAt
     updatedAt
     blocked
-    organization {
-      name
-    }
   }
 }
     `;
@@ -1054,6 +1051,7 @@ export const FetchCurrentAdminDocument = gql`
     position
     organization {
       id
+      name
     }
   }
 }

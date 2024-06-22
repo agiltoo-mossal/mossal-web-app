@@ -114,7 +114,7 @@
             </div>
             <table class="table">
                 <tr class="titles-container" fxLayout="row">
-                    <th class="title" fxFlex="20" fxLayoutAlign="start center">Entreprise</th>
+                    <th class="title" fxFlex="20" fxLayoutAlign="start center">Identifiant</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Collaborateur</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Solde</th>
                     <th class="title" fxFlex="20" fxLayoutAlign="center center">Date</th>
@@ -126,7 +126,7 @@
                         <span (click)="selectCollab(req)"
                             class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}"
                             fxLayoutAlign="center center"></span>
-                        <span>{{ req?.organization?.name }}</span>
+                        <span>{{ req?.uniqueIdentifier }}</span>
                     </td>
                     <td class="name" fxFlex="20" fxLayoutAlign="start center" fxLayoutGap="8px">
                         <div class="circle" fxLayoutAlign="center center">{{ req?.firstName[0] }}{{ req?.lastName[0] }}

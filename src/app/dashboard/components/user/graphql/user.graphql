@@ -14,6 +14,7 @@ query FetchCurrentAdmin {
     position
     organization {
       id
+      name
     }
   }
 }

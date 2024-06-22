@@ -81,10 +81,10 @@
             </div>
             <table class="table">
                 <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Collaborateur</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Solde</th>
-                    <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date</th>
+                    <th class="title" fxFlex="16.6" fxLayoutAlign="start center">N° Demande</th>
+                    <th class="title" fxFlex="20.6" fxLayoutAlign="center center">Collaborateur</th>
+                    <th class="title" fxFlex="13.6" fxLayoutAlign="center center">Solde</th>
+                    <th class="title" fxFlex="15.6" fxLayoutAlign="center center">Date</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Avance sur salaire</th>
                     <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
                 </tr>
@@ -94,15 +94,15 @@
                         fxLayoutGap="16px">
                         <span (click)="selectReq(req)" class="radio {{ selectedReq?.id === req.id ? 'active' : '' }}"
                             fxLayoutAlign="center center"></span>
-                        <span>{{ req?.collaborator?.organization?.name }}</span>
+                        <span>{{ req?.number }}</span>
                     </td>
-                    <td class="name" fxFlex="16.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+                    <td class="name" fxFlex="20.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
                         <div class="circle" fxLayoutAlign="center center">AC</div>
                         <span>{{ req?.collaborator?.firstName }} {{ req?.collaborator?.lastName }}</span>
                     </td>
-                    <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}
+                    <td class="solde" fxFlex="13.6" fxLayoutAlign="center center">XOF {{ req?.collaborator?.balance }}
                     </td>
-                    <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd'
+                    <td class="date" fxFlex="15.6" fxLayoutAlign="center center">{{ req?.createdAt | date : 'YYYY-MM-dd'
                         }}</td>
                     <td class="advance" fxFlex="16.6" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
                         <span class="statut statut--{{ req?.status | lowercase }}"></span><span>Xof {{ req?.amount

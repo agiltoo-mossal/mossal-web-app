@@ -39,25 +39,25 @@
         </div>
         <table class="table table-wrapper">
             <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
-                <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Entreprise</th>
-                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Collaborateur</th>
-                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Telephone</th>
-                <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Date de création</th>
+                <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Identifiant</th>
+                <th class="title" fxFlex="20.6" fxLayoutAlign="center center">Collaborateur</th>
+                <th class="title" fxFlex="15.6" fxLayoutAlign="center center">Telephone</th>
+                <th class="title" fxFlex="13.6" fxLayoutAlign="center center">Date de création</th>
                 <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
             </tr>
             <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of collabs | filter : search">
                 <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
                     fxLayoutGap="16px">
                     <span (click)="selectCollab(collab)" class="radio {{ selectedCollab?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
-                    <span>{{ collab.organization?.name || 'Agiltoo' }}</span>
+                    <span>{{ collab.uniqueIdentifier }}</span>
                 </td>
-                <td class="name" fxFlex="16.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+                <td class="name" fxFlex="20.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
                     <div class="circle" fxLayoutAlign="center center">AC</div>
                     <span>{{ collab.firstName }} {{ collab.lastName }}</span>
                     <!-- <mat-icon *ngIf="collab.blocked" class="color-danger">lock</mat-icon> -->
                 </td>
-                <td class="solde" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.phoneNumber }}</td>
-                <td class="date" fxFlex="16.6" fxLayoutAlign="center center">{{ collab.createdAt | date:'YYYY-MM-dd' }}</td>
+                <td class="solde" fxFlex="15.6" fxLayoutAlign="center center">{{ collab.phoneNumber }}</td>
+                <td class="date" fxFlex="13.6" fxLayoutAlign="center center">{{ collab.createdAt | date:'YYYY-MM-dd' }}</td>
                 <td fxFlex="16.6" fxLayoutAlign="end center">
                     <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
                         <span fxLayout="row" class="btn-edit-statut">

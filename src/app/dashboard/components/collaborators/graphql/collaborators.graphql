@@ -16,9 +16,9 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
     createdAt
     updatedAt
     blocked
-    organization {
-      name
-    }
+    # organization {
+    #   name
+    # }
 	}
 }
 
