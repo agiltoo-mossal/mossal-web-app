@@ -1,15 +1,15 @@
-query BankAccountNumberExists($bankAccountNumber: String!) {
-  bankAccountNumberExists(bankAccountNumber: $bankAccountNumber)
+query BankAccountNumberExists($bankAccountNumber: String!, $isAdmin: Boolean, $userId: String) {
+  bankAccountNumberExists(bankAccountNumber: $bankAccountNumber, isAdmin: $isAdmin, userId: $userId)
 }
 
-query PhoneNumberExists($phoneNumber: String!) {
-  phoneNumberExists(phoneNumber: $phoneNumber)
+query PhoneNumberExists($phoneNumber: String!, $isAdmin: Boolean, $userId: String) {
+  phoneNumberExists(phoneNumber: $phoneNumber, isAdmin: $isAdmin, userId: $userId)
 }
 
-query UniqueIdentifierExists($uniqueIdentifier: String!) {
-  uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier)
+query UniqueIdentifierExists($uniqueIdentifier: String!, $isAdmin: Boolean, $userId: String) {
+  uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier, isAdmin: $isAdmin, userId: $userId)
 }
 
-query EmailExists($email: String!) {
-  emailExists(email: $email)
+query EmailExists($email: String!, $isAdmin: Boolean, $userId: String) {
+  emailExists(email: $email, isAdmin: $isAdmin, userId: $userId)
 }

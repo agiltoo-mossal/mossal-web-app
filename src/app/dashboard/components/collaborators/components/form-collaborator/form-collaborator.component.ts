@@ -129,7 +129,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.collaboratorForm.get('phoneNumber').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.phoneNumberExists(value))
+      switchMap(value => this.searchService.phoneNumberExists(value, false, this.collaboratorId))
     ).subscribe(result => {
       this.phoneNumberExists = result;
     });
@@ -139,7 +139,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.collaboratorForm.get('email').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.emailExists(value))
+      switchMap(value => this.searchService.emailExists(value, false, this.collaboratorId))
     ).subscribe(result => {
       this.emailExists = result;
     });
@@ -149,7 +149,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.bankAccountNumberExists(value))
+      switchMap(value => this.searchService.bankAccountNumberExists(value, false, this.collaboratorId))
     ).subscribe(result => {
       this.bankAccountNumberExists = result;
 
@@ -160,7 +160,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.collaboratorForm.get('uniqueIdentifier').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.uniqueIdentifierExists(value))
+      switchMap(value => this.searchService.uniqueIdentifierExists(value, false, this.collaboratorId))
     ).subscribe(result => {
       this.uniqueIdentifierExists = result;
     });

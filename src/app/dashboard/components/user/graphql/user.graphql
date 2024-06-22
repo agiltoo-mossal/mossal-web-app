@@ -22,3 +22,10 @@ mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
   updateMyAdminProfile(userInput: $userInput)
 }
 
+mutation LockUser($userId: String!) {
+  lockUser(userId: $userId)
+}
+
+mutation UnlockUser($userId: String!) {
+  unlockUser(userId: $userId)
+}

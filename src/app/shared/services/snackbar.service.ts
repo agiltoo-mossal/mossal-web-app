@@ -52,7 +52,7 @@ export class SnackBarService {
     duration: number = 4000,
     errorMessage?: string
   ): Observable<void> {
-    return this.showSnackBar(errorMessage || "Quelque chose a mal tourné!", undefined, {
+    return this.showSnackBar(errorMessage || "Quelque chose a mal tourné. Vérifiez votre connexion svp.", undefined, {
       panelClass: SnackBarClassByResult.Error,
       duration,
       direction: 'ltr'

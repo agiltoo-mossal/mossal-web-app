@@ -110,7 +110,7 @@ export class FormAdminComponent {
 
   getCollab() {
     if(this.collaboratorId) {
-      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }).subscribe(
+      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }, { fetchPolicy: 'no-cache' }).subscribe(
         result => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);
@@ -127,7 +127,7 @@ export class FormAdminComponent {
     this.collaboratorForm.get('phoneNumber').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.phoneNumberExists(value))
+      switchMap(value => this.searchService.phoneNumberExists(value, true, this.collaboratorId))
     ).subscribe(result => {
       this.phoneNumberExists = result;
     });
@@ -137,7 +137,7 @@ export class FormAdminComponent {
     this.collaboratorForm.get('email').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.emailExists(value))
+      switchMap(value => this.searchService.emailExists(value, true, this.collaboratorId))
     ).subscribe(result => {
       this.emailExists = result;
     });
@@ -147,7 +147,7 @@ export class FormAdminComponent {
     this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.bankAccountNumberExists(value))
+      switchMap(value => this.searchService.bankAccountNumberExists(value, true, this.collaboratorId))
     ).subscribe(result => {
       this.bankAccountNumberExists = result;
 
@@ -158,7 +158,7 @@ export class FormAdminComponent {
     this.collaboratorForm.get('uniqueIdentifier').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(value => this.searchService.uniqueIdentifierExists(value))
+      switchMap(value => this.searchService.uniqueIdentifierExists(value, true, this.collaboratorId))
     ).subscribe(result => {
       this.uniqueIdentifierExists = result;
     });

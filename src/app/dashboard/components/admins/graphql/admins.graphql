@@ -8,6 +8,7 @@ query FetchOrganizationAdmins {
 		uniqueIdentifier
 		address
 		salary
+    blocked
     balance
 		wizallAccountNumber
 		bankAccountNumber
@@ -24,3 +25,4 @@ query FetchOrganizationAdmins {
 mutation InviteAdmin($adminInput: InviteCollaboratorInput!) {
   inviteAdmin(admin: $adminInput)
 }
+

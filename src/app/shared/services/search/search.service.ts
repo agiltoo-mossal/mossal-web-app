@@ -14,23 +14,23 @@ export class SearchService {
     private emailExistsGQL: EmailExistsGQL
   ) { }
 
-  async emailExists(email: string) {
-    const result = await lastValueFrom(this.emailExistsGQL.fetch({ email }));
+  async emailExists(email: string, isAdmin=false, userId=null) {
+    const result = await lastValueFrom(this.emailExistsGQL.fetch({ email, isAdmin, userId }));
     return result.data.emailExists;
   }
 
-  async phoneNumberExists(phoneNumber: string) {
-    const result = await lastValueFrom(this.phoneNumberExistsGQL.fetch({ phoneNumber }));
+  async phoneNumberExists(phoneNumber: string, isAdmin=false, userId=null) {
+    const result = await lastValueFrom(this.phoneNumberExistsGQL.fetch({ phoneNumber, isAdmin, userId }));
     return result.data.phoneNumberExists;
   }
 
-  async uniqueIdentifierExists(uniqueIdentifier: string) {
-    const result = await lastValueFrom(this.uniqueIdentifierExistsGQL.fetch({ uniqueIdentifier }));
+  async uniqueIdentifierExists(uniqueIdentifier: string, isAdmin=false, userId=null) {
+    const result = await lastValueFrom(this.uniqueIdentifierExistsGQL.fetch({ uniqueIdentifier, isAdmin, userId }));
     return result.data.uniqueIdentifierExists;
   }
 
-  async bankAccountNumberExists(bankAccountNumber: string) {
-    const result = await lastValueFrom(this.bankAccountNumberExistsGQL.fetch({ bankAccountNumber }));
+  async bankAccountNumberExists(bankAccountNumber: string, isAdmin=false, userId=null) {
+    const result = await lastValueFrom(this.bankAccountNumberExistsGQL.fetch({ bankAccountNumber, isAdmin, userId }));
     return result.data.bankAccountNumberExists;
   }
 

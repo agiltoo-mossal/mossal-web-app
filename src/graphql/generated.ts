@@ -99,10 +99,12 @@ export type Mutation = {
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  unlockUser: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
@@ -142,6 +144,11 @@ export type MutationInviteCollaboratorArgs = {
 };
 
 
+export type MutationLockUserArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationPayeDemandeArgs = {
   demandeId: Scalars['ID']['input'];
 };
@@ -160,6 +167,11 @@ export type MutationResetAdminPasswordArgs = {
 
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationUnlockUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -385,6 +397,7 @@ export type User = {
   authorizedAdvance: Scalars['Int']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  blocked?: Maybe<Scalars['Boolean']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
@@ -446,7 +459,7 @@ export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalize
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
 
 export type InviteAdminMutationVariables = Exact<{
   adminInput: InviteCollaboratorInput;
@@ -460,7 +473,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string } }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -557,8 +570,24 @@ export type UpdateMyAdminProfileMutationVariables = Exact<{
 
 export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
+export type LockUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type LockUserMutation = { __typename?: 'Mutation', lockUser: boolean };
+
+export type UnlockUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type UnlockUserMutation = { __typename?: 'Mutation', unlockUser: boolean };
+
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -566,6 +595,8 @@ export type BankAccountNumberExistsQuery = { __typename?: 'Query', bankAccountNu
 
 export type PhoneNumberExistsQueryVariables = Exact<{
   phoneNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -573,6 +604,8 @@ export type PhoneNumberExistsQuery = { __typename?: 'Query', phoneNumberExists: 
 
 export type UniqueIdentifierExistsQueryVariables = Exact<{
   uniqueIdentifier: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -580,6 +613,8 @@ export type UniqueIdentifierExistsQuery = { __typename?: 'Query', uniqueIdentifi
 
 export type EmailExistsQueryVariables = Exact<{
   email: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -678,6 +713,7 @@ export const FetchOrganizationAdminsDocument = gql`
     uniqueIdentifier
     address
     salary
+    blocked
     balance
     wizallAccountNumber
     bankAccountNumber
@@ -736,6 +772,7 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     authorizedAdvance
     createdAt
     updatedAt
+    blocked
     organization {
       name
     }
@@ -1048,9 +1085,45 @@ export const UpdateMyAdminProfileDocument = gql`
       super(apollo);
     }
   }
+export const LockUserDocument = gql`
+    mutation LockUser($userId: String!) {
+  lockUser(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LockUserGQL extends Apollo.Mutation<LockUserMutation, LockUserMutationVariables> {
+    document = LockUserDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UnlockUserDocument = gql`
+    mutation UnlockUser($userId: String!) {
+  unlockUser(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UnlockUserGQL extends Apollo.Mutation<UnlockUserMutation, UnlockUserMutationVariables> {
+    document = UnlockUserDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const BankAccountNumberExistsDocument = gql`
-    query BankAccountNumberExists($bankAccountNumber: String!) {
-  bankAccountNumberExists(bankAccountNumber: $bankAccountNumber)
+    query BankAccountNumberExists($bankAccountNumber: String!, $isAdmin: Boolean, $userId: String) {
+  bankAccountNumberExists(
+    bankAccountNumber: $bankAccountNumber
+    isAdmin: $isAdmin
+    userId: $userId
+  )
 }
     `;
 
@@ -1065,8 +1138,8 @@ export const BankAccountNumberExistsDocument = gql`
     }
   }
 export const PhoneNumberExistsDocument = gql`
-    query PhoneNumberExists($phoneNumber: String!) {
-  phoneNumberExists(phoneNumber: $phoneNumber)
+    query PhoneNumberExists($phoneNumber: String!, $isAdmin: Boolean, $userId: String) {
+  phoneNumberExists(phoneNumber: $phoneNumber, isAdmin: $isAdmin, userId: $userId)
 }
     `;
 
@@ -1081,8 +1154,12 @@ export const PhoneNumberExistsDocument = gql`
     }
   }
 export const UniqueIdentifierExistsDocument = gql`
-    query UniqueIdentifierExists($uniqueIdentifier: String!) {
-  uniqueIdentifierExists(uniqueIdentifier: $uniqueIdentifier)
+    query UniqueIdentifierExists($uniqueIdentifier: String!, $isAdmin: Boolean, $userId: String) {
+  uniqueIdentifierExists(
+    uniqueIdentifier: $uniqueIdentifier
+    isAdmin: $isAdmin
+    userId: $userId
+  )
 }
     `;
 
@@ -1097,8 +1174,8 @@ export const UniqueIdentifierExistsDocument = gql`
     }
   }
 export const EmailExistsDocument = gql`
-    query EmailExists($email: String!) {
-  emailExists(email: $email)
+    query EmailExists($email: String!, $isAdmin: Boolean, $userId: String) {
+  emailExists(email: $email, isAdmin: $isAdmin, userId: $userId)
 }
     `;
 

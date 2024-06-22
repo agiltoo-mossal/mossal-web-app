@@ -15,6 +15,7 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
     authorizedAdvance
     createdAt
     updatedAt
+    blocked
     organization {
       name
     }
