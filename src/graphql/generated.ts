@@ -271,12 +271,14 @@ export type Query_EntitiesArgs = {
 
 export type QueryBankAccountNumberExistsArgs = {
   bankAccountNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryEmailExistsArgs = {
   email: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -317,12 +319,14 @@ export type QueryLoginAdminArgs = {
 
 
 export type QueryPhoneNumberExistsArgs = {
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   phoneNumber: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryUniqueIdentifierExistsArgs = {
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['String']['input']>;
 };

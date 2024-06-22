@@ -42,7 +42,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       ]],
       address: [''],
       position: ['', Validators.required],
-      uniqueIdentifier: [''],
+      uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
       wizallAccountNumber: [''],
       bankAccountNumber: ['', Validators.required]
