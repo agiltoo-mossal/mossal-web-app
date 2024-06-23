@@ -16,9 +16,9 @@ query FetchOrganizationAdmins {
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
+    # organization {
+    #   name
+    # }
 	}
 }
 

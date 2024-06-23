@@ -472,7 +472,7 @@ export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalize
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> };
 
 export type InviteAdminMutationVariables = Exact<{
   adminInput: InviteCollaboratorInput;
@@ -532,7 +532,7 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null } }> };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -734,9 +734,6 @@ export const FetchOrganizationAdminsDocument = gql`
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
   }
 }
     `;
@@ -956,9 +953,6 @@ export const FetchOrganizationDemandesDocument = gql`
       salary
       authorizedAdvance
       bankAccountNumber
-      organization {
-        name
-      }
     }
     createdAt
     updatedAt

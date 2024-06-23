@@ -13,9 +13,9 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
       salary
       authorizedAdvance
       bankAccountNumber
-			organization {
-				name
-			}
+			# organization {
+			# 	name
+			# }
 		}
 		createdAt
 		updatedAt
