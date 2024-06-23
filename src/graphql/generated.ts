@@ -76,7 +76,9 @@ export type FinalizeForgotPasswordInput = {
 export type InviteCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -375,6 +377,8 @@ export type Session = {
 export type UpdateCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -386,6 +390,8 @@ export type UpdateCollaboratorInput = {
 
 export type UpdateMyAdminProfileInput = {
   address: Scalars['String']['input'];
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -397,9 +403,11 @@ export type User = {
   authorizedAdvance: Scalars['Int']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  birthDate?: Maybe<Scalars['DateTime']['output']>;
   blocked?: Maybe<Scalars['Boolean']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  favoriteWallet?: Maybe<Wallet>;
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
@@ -413,6 +421,11 @@ export type User = {
   updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
+
+/** Possible wallets */
+export enum Wallet {
+  Wave = 'WAVE'
+}
 
 export type _Entity = Demande | Organization;
 
@@ -473,7 +486,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -487,7 +500,7 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, organization: { __typename?: 'Organization', name: string } } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string } } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;
@@ -773,6 +786,8 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     createdAt
     updatedAt
     blocked
+    favoriteWallet
+    birthDate
   }
 }
     `;
@@ -818,6 +833,9 @@ export const FetchOrganizationCollaboratorDocument = gql`
     bankAccountNumber
     position
     authorizedAdvance
+    favoriteWallet
+    birthDate
+    blocked
     organization {
       name
     }

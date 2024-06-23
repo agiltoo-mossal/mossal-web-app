@@ -17,10 +17,14 @@
                     <small class="color-danger" *ngIf="emailExists">Email déjà pris</small>
                 </div>
                 <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="phone">Tél</label>
+                    <label for="phone">Téléphone</label>
                     <input formControlName="phoneNumber" type="text" id="phone" class="form-control" placeholder="770000000">
                     <small class="color-danger" *ngIf="phoneNumber.touched && phoneNumber.invalid">Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</small>
                     <small class="color-danger" *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
+                </div>
+                <div fxLayout="column" fxLayoutGap="15px">
+                  <label for="birthDate">Date de naissance</label>
+                  <input formControlName="birthDate" type="date" id="birthDate" class="form-control">
                 </div>
                 <div fxLayout="column" fxLayoutGap="15px">
                     <label for="code-postal">Adresse postale</label>
@@ -41,6 +45,7 @@
                     <label for="salary">Salaire</label>
                     <input formControlName="salary" type="number" id="salary" class="form-control">
                 </div>
+
                 <div fxLayout="column" fxLayoutGap="15px">
                     <label for="nbr-compte">N° Compte</label>
                     <input formControlName="bankAccountNumber" type="text" id="nbr-compte" class="form-control">
@@ -50,12 +55,36 @@
                     <label for="nbr-wizzal">N° Compte Wizall</label>
                     <input formControlName="wizallAccountNumber" type="text" id="nbr-wizzal" class="form-control">
                 </div> -->
+                <div fxLayout="column" fxLayoutGap="15px">
+                  <label for="favoriteWallet">Mobile money favoris</label>
+                  <select formControlName="favoriteWallet" id="favoriteWallet" class="form-control">
+                    <option *ngFor="let wallet of MobileMoney" [value]="wallet">{{ wallet }}</option>
+                  </select>
+                </div>
 
             </div>
         </div>
         <div fxLayout="row" fxLayoutGap="38px" *ngIf="formType=='edit'">
             <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
-            <button fxFlex="50" class="btn btn-form-default" [routerLink]="['/dashboard/collaborators']" routerLinkActive="router-link-active" >Suspendre</button>
+            <button
+            *ngIf="!collaborator?.blocked"
+            fxFlex="50"
+            class="btn btn-form-default"
+            requiresConfirmation
+            [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
+            [confirmCallbackParam]="collaborator?.id">
+            Suspendre
+          </button>
+
+          <button
+            *ngIf="collaborator?.blocked"
+            fxFlex="50"
+            class="btn btn-form-default"
+            requiresConfirmation
+            [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
+            [confirmCallbackParam]="collaborator?.id">
+            Débloquer
+          </button>
         </div>
         <div *ngIf="formType=='create'">
             <button class="submit" fxFlex="50" (click)="submitForm()">Envoyé</button>

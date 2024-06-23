@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { FetchOrganizationCollaboratorGQL, InviteCollaboratorGQL, UpdateCollaboratorGQL, User } from 'src/graphql/generated';
+import { dateToString } from 'src/app/shared/utils/time';
+import { FetchOrganizationCollaboratorGQL, InviteCollaboratorGQL, LockUserGQL, UnlockUserGQL, UpdateCollaboratorGQL, User, Wallet } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-form-collaborator',
@@ -22,6 +23,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   bankAccountNumberExists: boolean = false;
   uniqueIdentifierExists: boolean = false;
   emailExists: boolean = false;
+  MobileMoney = Object.values(Wallet);
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +32,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private lockUserGQL: LockUserGQL,
+    private unlockUserGQL: UnlockUserGQL,
   ) {
     this.collaboratorForm = this.fb.group({
       email: ["", [Validators.required]],
@@ -45,7 +49,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
       wizallAccountNumber: [''],
-      bankAccountNumber: ['', Validators.required]
+      bankAccountNumber: ['', Validators.required],
+      birthDate: [null],
+      favoriteWallet: [Wallet.Wave]
     })
 
   }
@@ -118,8 +124,11 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     if(this.collaboratorId) {
       this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }, { fetchPolicy: 'no-cache' }).subscribe(
         result => {
+
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
-          this.collaboratorForm.patchValue(this.collaborator);
+          const birthDate = dateToString(this.collaborator.birthDate);
+          this.collaboratorForm.patchValue({ ...this.collaborator, birthDate });
+
         }
       )
     }
@@ -175,5 +184,27 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   get hasErrors() {
     return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists || this.emailExists;
+  }
+
+  lockUser = (userId: string) => {
+    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.lockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur bloqué avec succès!");
+        this.getCollab();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
+  }
+
+  unlockUser = (userId: string) => {
+    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.unlockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur débloqué avec succès!");
+        this.getCollab();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
   }
 }

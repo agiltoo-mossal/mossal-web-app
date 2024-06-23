@@ -54,9 +54,27 @@
           </div>
       </div>
       <div fxLayout="row" fxLayoutGap="38px" *ngIf="formType=='edit'">
-          <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
-          <button fxFlex="50" class="btn btn-form-default" [routerLink]="['/dashboard/collaborators']" routerLinkActive="router-link-active" >Suspendre</button>
-      </div>
+        <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
+        <button
+        *ngIf="!collaborator?.blocked"
+        fxFlex="50"
+        class="btn btn-form-default"
+        requiresConfirmation
+        [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
+        [confirmCallbackParam]="collaborator?.id">
+        Suspendre
+      </button>
+
+      <button
+        *ngIf="collaborator?.blocked"
+        fxFlex="50"
+        class="btn btn-form-default"
+        requiresConfirmation
+        [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
+        [confirmCallbackParam]="collaborator?.id">
+        Débloquer
+      </button>
+    </div>
       <div *ngIf="formType=='create'">
           <button class="submit" fxFlex="50" (click)="submitForm()">Envoyé</button>
       </div>
