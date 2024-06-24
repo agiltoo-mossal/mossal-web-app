@@ -438,6 +438,7 @@ export type User = {
 
 /** Possible wallets */
 export enum Wallet {
+  OrangeMoney = 'ORANGE_MONEY',
   Wave = 'WAVE'
 }
 
