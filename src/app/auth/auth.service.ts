@@ -68,7 +68,7 @@ export class AuthService {
   async login(credentials: LoginInput) {
 
     try {
-      const res = await lastValueFrom(this.loginAdminGQL.fetch({ loginInput: credentials }));
+      const res = await lastValueFrom(this.loginAdminGQL.fetch({ loginInput: credentials }, { fetchPolicy: 'no-cache' }));
       const session = res.data.loginAdmin
       // AuthService.token = session.token;
       // AuthService.access_token = session.access_token;

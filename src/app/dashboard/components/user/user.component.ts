@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/auth/auth.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { DisableEmailNotificationGQL, EnableEmailNotificationGQL, FetchCurrentAdminGQL, UpdateMyAdminPasswordGQL, UpdateMyAdminProfileGQL, User } from 'src/graphql/generated';
 
@@ -26,7 +27,8 @@ export class UserComponent {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private updateMyAdminProfileGQL: UpdateMyAdminProfileGQL,
     private enableEmailNotificationGQL: EnableEmailNotificationGQL,
-    private disableEmailNotificationGQL: DisableEmailNotificationGQL
+    private disableEmailNotificationGQL: DisableEmailNotificationGQL,
+    private authService: AuthService
   ) {
     this.updatePasswordForm = this.fb.group({
       newPassword: ['', Validators.required],
@@ -69,6 +71,7 @@ export class UserComponent {
         this.isLoading = false;
         if(result.data.updateMyAdminPassword) {
           this.snackBarService.showSuccessSnackBar("Mot de passe modifié avec succès");
+          this.authService.logout();
         } else {
           this.snackBarService.showErrorSnackBar(5000, "Mot de passe incorrect")
         }
