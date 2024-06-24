@@ -98,6 +98,8 @@ export type Mutation = {
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createFinancialOrganization: Organization;
   createOrganization: Organization;
+  disableEmailNotification: Scalars['Boolean']['output'];
+  enableEmailNotification: Scalars['Boolean']['output'];
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
@@ -128,6 +130,16 @@ export type MutationCreateFinancialOrganizationArgs = {
 
 export type MutationCreateOrganizationArgs = {
   organizationInput: OrganizationInput;
+};
+
+
+export type MutationDisableEmailNotificationArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationEnableEmailNotificationArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -391,6 +403,7 @@ export type UpdateCollaboratorInput = {
 export type UpdateMyAdminProfileInput = {
   address: Scalars['String']['input'];
   birthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  enableEmailNotification?: InputMaybe<Scalars['Boolean']['input']>;
   favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
@@ -407,6 +420,7 @@ export type User = {
   blocked?: Maybe<Scalars['Boolean']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  enableEmailNotification?: Maybe<Scalars['Boolean']['output']>;
   favoriteWallet?: Maybe<Wallet>;
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -574,7 +588,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, organization: { __typename?: 'Organization', id: string, name: string } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -596,6 +610,20 @@ export type UnlockUserMutationVariables = Exact<{
 
 
 export type UnlockUserMutation = { __typename?: 'Mutation', unlockUser: boolean };
+
+export type EnableEmailNotificationMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type EnableEmailNotificationMutation = { __typename?: 'Mutation', enableEmailNotification: boolean };
+
+export type DisableEmailNotificationMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
 
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
@@ -1064,6 +1092,7 @@ export const FetchCurrentAdminDocument = gql`
     address
     role
     position
+    enableEmailNotification
     organization {
       id
       name
@@ -1125,6 +1154,38 @@ export const UnlockUserDocument = gql`
   })
   export class UnlockUserGQL extends Apollo.Mutation<UnlockUserMutation, UnlockUserMutationVariables> {
     document = UnlockUserDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EnableEmailNotificationDocument = gql`
+    mutation EnableEmailNotification($userId: String!) {
+  enableEmailNotification(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EnableEmailNotificationGQL extends Apollo.Mutation<EnableEmailNotificationMutation, EnableEmailNotificationMutationVariables> {
+    document = EnableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DisableEmailNotificationDocument = gql`
+    mutation DisableEmailNotification($userId: String!) {
+  disableEmailNotification(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
+    document = DisableEmailNotificationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

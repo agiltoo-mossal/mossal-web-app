@@ -12,6 +12,7 @@ query FetchCurrentAdmin {
 		address
     role
     position
+    enableEmailNotification
     organization {
       id
       name
@@ -29,4 +30,12 @@ mutation LockUser($userId: String!) {
 
 mutation UnlockUser($userId: String!) {
   unlockUser(userId: $userId)
+}
+
+mutation EnableEmailNotification($userId: String!) {
+  enableEmailNotification(userId: $userId)
+}
+
+mutation DisableEmailNotification($userId: String!) {
+  disableEmailNotification(userId: $userId)
 }

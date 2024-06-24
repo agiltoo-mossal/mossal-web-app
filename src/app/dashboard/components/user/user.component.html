@@ -76,7 +76,7 @@
                     <div fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between start">
                         <span class="label">Notifications par email</span>
                         <span class="toggle-container">
-                            <span class="btn-toggle-container" (click)="toggleMailActivation=!toggleMailActivation">
+                            <span class="btn-toggle-container" (click)="setToggleMailActivation()">
                                 <span class="btn-toggle" [ngClass]="toggleMailActivation?'actived':''"></span>
                             </span>
                             <span class="text-container"
