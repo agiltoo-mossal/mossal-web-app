@@ -16,6 +16,9 @@ query FetchCurrentAdmin {
     organization {
       id
       name
+      maxDemandeAmount
+      amountPercent
+      fees
     }
   }
 }

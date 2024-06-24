@@ -534,6 +534,14 @@ export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: strin
 
 export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
 
+export type UpdateOrganizationMutationVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+  organizationInput: OrganizationUpdateInput;
+}>;
+
+
+export type UpdateOrganizationMutation = { __typename?: 'Mutation', updateOrganization: boolean };
+
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
 }>;
@@ -588,7 +596,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -942,6 +950,25 @@ export const ViewOrganizationNotificationsDocument = gql`
       super(apollo);
     }
   }
+export const UpdateOrganizationDocument = gql`
+    mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
+  updateOrganization(
+    organizationId: $organizationId
+    organizationInput: $organizationInput
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateOrganizationGQL extends Apollo.Mutation<UpdateOrganizationMutation, UpdateOrganizationMutationVariables> {
+    document = UpdateOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchDemandesMetricsDocument = gql`
     query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
   fetchDemandesMetrics(metricsInput: $metricsInput) {
@@ -1096,6 +1123,9 @@ export const FetchCurrentAdminDocument = gql`
     organization {
       id
       name
+      maxDemandeAmount
+      amountPercent
+      fees
     }
   }
 }
