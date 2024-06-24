@@ -10,6 +10,7 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
 			firstName
 			lastName
 			balance
+      totalDemandeAmount
       salary
       authorizedAdvance
       bankAccountNumber

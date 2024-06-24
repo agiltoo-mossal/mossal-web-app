@@ -9,6 +9,7 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
 		address
 		salary
     balance
+    totalDemandeAmount
 		wizallAccountNumber
 		bankAccountNumber
 		position

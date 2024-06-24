@@ -19,6 +19,15 @@
                 <span class="value">XOF {{ user?.authorizedAdvance }}</span>
             </li>
             <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
+              <span class="label">Total demande :</span>
+              <span class="value">XOF {{ user?.totalDemandeAmount }}</span>
+          </li>
+
+          <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="label">Balance :</span>
+            <span class="value">XOF {{ user?.balance }}</span>
+        </li>
+            <li class="item" fxLayout="row" fxLayoutAlign="space-between center">
                 <span class="label">Iban :</span>
                 <span class="value">{{ user?.bankAccountNumber }}</span>
             </li>
