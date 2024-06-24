@@ -38,11 +38,18 @@ export class UserComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-      address: ['', Validators.required]
+      phoneNumber: ['', [
+        Validators.required,
+        Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
+      ]],
+      address: ['']
     });
 
     this.getCurrentUser();
+  }
+
+  get phoneNumber() {
+    return this.updateProfileForm.controls['phoneNumber'];
   }
 
   updatePassword() {
