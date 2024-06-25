@@ -7,6 +7,7 @@ import { RequestsListComponent } from './components/requests-list/requests-list.
 import { UserComponent } from './components/user/user.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { OrganizationComponent } from './components/organization/organization.component';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -17,7 +18,7 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
-
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'overview',

@@ -76,6 +76,7 @@ export class AuthService {
       localStorage.setItem(AuthConstant.access_tokenLocalName, session.access_token);
       localStorage.setItem(AuthConstant.tokenLocalName, session.token);
       localStorage.setItem(AuthConstant.refreshTokenLocalName, session.refresh_token);
+      localStorage.setItem(AuthConstant.sessionLocalName, JSON.stringify(session));
       if(session.token && !session.access_token) {
         this.router.navigate(['/auth/reset'])
       } else {
