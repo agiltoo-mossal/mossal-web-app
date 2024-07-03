@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FetchOrganizationAdminsGQL, User } from 'src/graphql/generated';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { FetchOrganizationAdminsGQL, LockUserGQL, UnlockUserGQL, User } from 'src/graphql/generated';
 
 @Component({
   templateUrl: './overview.component.html',
@@ -10,7 +11,10 @@ export class OverviewComponent {
   selectedAdmin: User;
   search: string = "";
   constructor(
-    private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL
+    private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL,
+    private lockUserGQL: LockUserGQL,
+    private unlockUserGQL: UnlockUserGQL,
+    private snackBarService: SnackBarService
   ) {
     this.fetchAdmins();
   }
@@ -26,5 +30,27 @@ export class OverviewComponent {
 
   selectAdmin(selected: User) {
     this.selectedAdmin = selected;
+  }
+
+  lockUser = (userId: string) => {
+    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.lockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur bloqué avec succès!");
+        this.fetchAdmins();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
+  }
+
+  unlockUser = (userId: string) => {
+    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.unlockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur débloqué avec succès!");
+        this.fetchAdmins();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
   }
 }

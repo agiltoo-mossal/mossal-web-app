@@ -12,6 +12,7 @@ import { FormAdminComponent } from './components/form-admin/form-admin.component
 import { EditAdminComponent } from './components/edit-admin/edit-admin.component';
 import { CreateAdminComponent } from './components/create-admin/create-admin.component';
 import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
+import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-confirmation/requires-confirmation.module';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
     DropdownModule,
     ReactiveFormsModule,
     FormsModule,
-    FilterModule
+    FilterModule,
+    RequiresConfirmationModule
   ],
   declarations: [AdminsComponent, OverviewComponent, FormAdminComponent, EditAdminComponent, CreateAdminComponent]
 })

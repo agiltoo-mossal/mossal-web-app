@@ -25,7 +25,7 @@ export type ChartOptions = {
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.scss'],
 })
-export class UserDetailsComponent {
+export class UserDetailsComponent implements OnChanges {
   @Input() user: User;
 
   @ViewChild('chart') chart: ChartComponent;
@@ -40,7 +40,7 @@ export class UserDetailsComponent {
       legend: {
         show: false,
       },
-      labels: ['Reste a payer', 'Remboursée'],
+      labels: ['Total demande', 'Montant autorisé'],
       colors: ['#FFC708', '#BDBDBD'],
       responsive: [
         {
@@ -65,10 +65,11 @@ export class UserDetailsComponent {
 
     const somTotale = dataColloborator.authorizedAdvance;
     if (!somTotale || !dataColloborator) return [0, 0];
-    const averageBalance =
-      (dataColloborator?.balance ?? 0) /
-      (somTotale);
+    const averageBalance = (dataColloborator?.balance ?? 0) / somTotale;
     const rest = 1 - averageBalance;
-    return [Math.round( +(averageBalance*100).toFixed(0)), Math.round( +(rest*100).toFixed(0))];
+    return [
+      Math.round(+(averageBalance * 100).toFixed(0)),
+      Math.round(+(rest * 100).toFixed(0)),
+    ];
   }
 }

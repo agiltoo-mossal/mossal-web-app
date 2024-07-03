@@ -37,6 +37,7 @@ export class SidebarComponent {
       link: 'user',
       icon: 'person_outline',
     },
+
   ];
   currentUser: User;
 
@@ -124,6 +125,11 @@ export class SidebarComponent {
         label: 'Mon Compte',
         link: 'user',
         icon: 'person_outline',
+      },
+      {
+        label: 'Organization',
+        link: 'organization',
+        icon: 'business',
       },
     ];
   }

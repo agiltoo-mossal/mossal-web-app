@@ -725,11 +725,11 @@ input:focus {
 
   &--valid,
   &--validated {
-    background: #40B139;
+    background: #00a8ee;
   }
 
   &--payed {
-    background: #00a8ee;
+    background: #40B139;
   }
 
   &--rejected {
@@ -768,7 +768,7 @@ input:focus {
 
   .valid {
     .color {
-      background-color: #40B139;
+      background-color: #00a8ee;
     }
   }
 
@@ -839,7 +839,9 @@ input:focus {
 .invalid {
   border-color: #e94916 !important;
 }
-
+.help-text {
+  font-size: 12px;
+}
 input,
 select,
 textarea {

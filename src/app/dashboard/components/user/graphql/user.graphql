@@ -11,8 +11,14 @@ query FetchCurrentAdmin {
 		phoneNumber
 		address
     role
+    position
+    enableEmailNotification
     organization {
       id
+      name
+      maxDemandeAmount
+      amountPercent
+      fees
     }
   }
 }
@@ -21,3 +27,18 @@ mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
   updateMyAdminProfile(userInput: $userInput)
 }
 
+mutation LockUser($userId: String!) {
+  lockUser(userId: $userId)
+}
+
+mutation UnlockUser($userId: String!) {
+  unlockUser(userId: $userId)
+}
+
+mutation EnableEmailNotification($userId: String!) {
+  enableEmailNotification(userId: $userId)
+}
+
+mutation DisableEmailNotification($userId: String!) {
+  disableEmailNotification(userId: $userId)
+}

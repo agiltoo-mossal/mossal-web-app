@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FetchOrganizationCollaboratorsGQL, User } from 'src/graphql/generated';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { FetchOrganizationCollaboratorsGQL, LockUserGQL, UnlockUserGQL, User } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-overview',
@@ -14,7 +15,10 @@ export class OverviewComponent {
   search: string = "";
   constructor(
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private lockUserGQL: LockUserGQL,
+    private unlockUserGQL: UnlockUserGQL,
+    private snackBarService: SnackBarService
   ) {
     this.fetchCollabs();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
@@ -31,5 +35,27 @@ export class OverviewComponent {
 
   selectCollab(selected: User) {
     this.selectedCollab = selected;
+  }
+
+  lockUser = (userId: string) => {
+    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.lockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur bloqué avec succès!");
+        this.fetchCollabs();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
+  }
+
+  unlockUser = (userId: string) => {
+    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.unlockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur débloqué avec succès!");
+        this.fetchCollabs();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
   }
 }

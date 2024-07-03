@@ -4,54 +4,77 @@
       <div fxLayout="row" fxLayoutGap="32px">
           <div class="wrapper" fxFlex="50" fxLayout="column" fxLayoutGap="38px">
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="prenom">Prénom</label>
+                  <label for="prenom">Prénom <span class="color-danger">*</span></label>
                   <input formControlName="firstName" type="text" id="prenom" class="form-control" placeholder="John">
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="nom">Nom</label>
+                  <label for="nom">Nom <span class="color-danger">*</span></label>
                   <input formControlName="lastName" type="text" id="nom" class="form-control" placeholder="Doe">
               </div>
               <div fxLayout="column" fxLayoutGap="15px" *ngIf="formType!='edit'">
-                  <label for="address">Adresse mail</label>
+                  <label for="address">Adresse mail <span class="color-danger">*</span></label>
                   <input formControlName="email" type="text" id="address" class="form-control" placeholder="john@gmail.com">
+                  <small class="color-danger" *ngIf="emailExists">Email déjà pris</small>
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="phone">Tél</label>
-                  <input formControlName="phoneNumber" type="text" id="phone" class="form-control" placeholder="+221 77 000 00 00">
+                  <label for="phone">Téléphone <span class="color-danger">*</span></label>
+                  <input formControlName="phoneNumber" type="text" id="phone" class="form-control" placeholder="770000000">
+                  <small class="color-danger" *ngIf="phoneNumber.touched && phoneNumber.invalid">Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</small>
+                  <small class="color-danger" *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="code-postal">Adresse postale</label>
+                  <label for="code-postal">Adresse</label>
                   <input formControlName="address" type="text" id="code-postal" class="form-control" placeholder="">
               </div>
           </div>
           <div class="wrapper" fxFlex="50" fxLayout="column" fxLayoutGap="38px">
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="fonction">Fonction</label>
+                  <label for="fonction">Fonction <span class="color-danger">*</span></label>
                   <input formControlName="position" type="text" id="fonction" class="form-control">
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="unique-id">Identifiant unique</label>
+                  <label for="unique-id">Identifiant unique <span class="color-danger">*</span></label>
                   <input formControlName="uniqueIdentifier" type="text" id="unique-id" class="form-control">
+                  <small class="color-danger" *ngIf="uniqueIdentifierExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="salary">Salaire</label>
+                  <label for="salary">Salaire <span class="color-danger">*</span></label>
                   <input formControlName="salary" type="number" id="salary" class="form-control">
               </div>
               <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="nbr-compte">N° Compte Cofina</label>
+                  <label for="nbr-compte">N° Compte Bancaire <span class="color-danger">*</span></label>
                   <input formControlName="bankAccountNumber" type="text" id="nbr-compte" class="form-control">
+                  <small class="color-danger" *ngIf="bankAccountNumberExists">Compte déjà pris par un utilisateur de l'entreprise</small>
               </div>
-              <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="nbr-wizzal">N° Compte Wizall</label>
+              <!-- <div fxLayout="column" fxLayoutGap="15px">
+                  <label for="nbr-wizzal">N° Compte</label>
                   <input formControlName="wizallAccountNumber" type="text" id="nbr-wizzal" class="form-control">
-              </div>
+              </div> -->
 
           </div>
       </div>
       <div fxLayout="row" fxLayoutGap="38px" *ngIf="formType=='edit'">
-          <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
-          <button fxFlex="50" class="btn btn-form-default" [routerLink]="['/dashboard/collaborators']" routerLinkActive="router-link-active" >Suspendre</button>
-      </div>
+        <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
+        <button
+        *ngIf="!collaborator?.blocked"
+        fxFlex="50"
+        class="btn btn-form-default"
+        requiresConfirmation
+        [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
+        [confirmCallbackParam]="collaborator?.id">
+        Suspendre
+      </button>
+
+      <button
+        *ngIf="collaborator?.blocked"
+        fxFlex="50"
+        class="btn btn-form-default"
+        requiresConfirmation
+        [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
+        [confirmCallbackParam]="collaborator?.id">
+        Débloquer
+      </button>
+    </div>
       <div *ngIf="formType=='create'">
           <button class="submit" fxFlex="50" (click)="submitForm()">Envoyé</button>
       </div>
