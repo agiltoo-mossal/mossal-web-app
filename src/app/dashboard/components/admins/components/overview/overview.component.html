@@ -5,7 +5,34 @@
   fxLayoutGap="40px"
 >
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    <app-file-upload></app-file-upload>
+    <!-- <app-file-upload></app-file-upload> -->
+    <div fxLayout="row" fxLayoutGap="19px">
+      <div class="dropdown">
+        <label
+          for="file_input"
+          class="btn btn-primary"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+        >
+          <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
+          ><span>Importer un fichier</span>
+        </label>
+        <input
+          type="file"
+          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          style="display: none"
+          id="file_input"
+        />
+      </div>
+      <button
+        class="btn btn-primary"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+        routerLink="/dashboard/collaborators/create-collaborator"
+      >
+        <span>+</span> <span>Ajouter un collaborateur</span>
+      </button>
+    </div>
     <table class="table table-wrapper">
       <tr
         class="titles-container"

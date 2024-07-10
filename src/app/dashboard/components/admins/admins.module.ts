@@ -31,7 +31,6 @@ import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-
   declarations: [
     AdminsComponent,
     OverviewComponent,
-    FileUploadComponent,
     FormAdminComponent,
     EditAdminComponent,
     CreateAdminComponent,

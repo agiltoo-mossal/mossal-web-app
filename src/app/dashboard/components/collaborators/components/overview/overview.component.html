@@ -5,39 +5,8 @@
   fxLayoutGap="40px"
 >
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    <div fxLayout="row" fxLayoutGap="19px">
-      <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
-        <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
-        <input
-          [(ngModel)]="search"
-          type="text"
-          class="form-control"
-          placeholder="Recherche"
-        />
-      </div>
-      <div fxLayout="row" fxLayoutGap="19px">
-        <div class="dropdown" >
-          <label
-            for="file_input"
-            class="btn btn-primary"
-            fxLayoutAlign="center center"
-            fxLayoutGap="8px"
-          >
-            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
-            ><span>Importer un fichier</span>
-          </label>
-            <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"  style="display: none;" id="file_input">
-        </div>
-        <button
-          class="btn btn-primary"
-          fxLayoutAlign="center center"
-          fxLayoutGap="8px"
-          routerLink="/dashboard/collaborators/create-collaborator"
-        >
-          <span>+</span> <span>Ajouter un collaborateur</span>
-        </button>
-      </div>
-    </div>
+    
+      <app-file-upload></app-file-upload>
     <table class="table table-wrapper">
       <tr
         class="titles-container"
