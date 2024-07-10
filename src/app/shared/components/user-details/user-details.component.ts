@@ -25,7 +25,7 @@ export type ChartOptions = {
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.scss'],
 })
-export class UserDetailsComponent implements OnChanges {
+export class UserDetailsComponent {
   @Input() user: User;
 
   @ViewChild('chart') chart: ChartComponent;
