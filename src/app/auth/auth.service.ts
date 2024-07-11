@@ -74,7 +74,6 @@ export class AuthService {
 
   async login(credentials: LoginInput) {
     try {
-      console.log(credentials);
       const res = await lastValueFrom(
         this.loginAdminGQL.fetch(
           { loginInput: credentials },
@@ -98,7 +97,7 @@ export class AuthService {
         AuthConstant.sessionLocalName,
         JSON.stringify(session)
       );
-      if (session.token && !session.access_token) {
+      if (!session.user.status) {
         this.router.navigate(['/auth/reset']);
       } else {
         this.router.navigate(['/dashboard']);
@@ -115,7 +114,7 @@ export class AuthService {
   }
 
   async resetPassword(password: string) {
-    const token = localStorage.getItem(AuthConstant.tokenLocalName);
+    const token = localStorage.getItem(AuthConstant.access_tokenLocalName);
     try {
       const res = await lastValueFrom(
         this.resetPasswordGQL.mutate({

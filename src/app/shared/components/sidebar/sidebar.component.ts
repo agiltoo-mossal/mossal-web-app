@@ -37,7 +37,6 @@ export class SidebarComponent {
       link: 'user',
       icon: 'person_outline',
     },
-
   ];
   currentUser: User;
 
@@ -47,7 +46,7 @@ export class SidebarComponent {
     private keycloakService: KeycloakService,
     private router: Router
   ) {
-    this.getCurrentUser();
+    // this.getCurrentUser();
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
       this.isSidebarOpened = resp;
     });
