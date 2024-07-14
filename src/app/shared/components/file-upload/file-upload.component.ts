@@ -23,8 +23,7 @@ export class FileUploadComponent {
     });
     effect(() => {
       this.dataResponseFile = this.fileUploadService.getDataResponse();
-      if (this.dataResponseFile) this.showModal = true;
-      console.log(this.dataResponseFile);
+      if (this.dataResponseFile && this.showModal) this.showModal = true;
     });
   }
   onFileSelected(event: Event) {

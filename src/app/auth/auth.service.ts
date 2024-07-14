@@ -97,7 +97,7 @@ export class AuthService {
         AuthConstant.sessionLocalName,
         JSON.stringify(session)
       );
-      if (!session.user.status) {
+      if (!session?.enabled) {
         this.router.navigate(['/auth/reset']);
       } else {
         this.router.navigate(['/dashboard']);

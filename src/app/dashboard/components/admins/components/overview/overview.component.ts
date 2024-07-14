@@ -21,7 +21,8 @@ export class OverviewComponent {
     private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL,
-    private snackBarService: SnackBarService
+    private snackBarService: SnackBarService,
+    private fileUploadService: FileUploadService
   ) {
     this.fetchAdmins();
   }

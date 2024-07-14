@@ -418,6 +418,7 @@ export type User = {
   position?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<Scalars['Float']['output']>;
   totalDemandeAmount: Scalars['Float']['output'];
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -462,7 +463,7 @@ export type LoginAdminQuery = {
       id: string;
       firstName: string;
       lastName: string;
-      status: string;
+      role: string;
       organization: {
         __typename?: 'Organization';
         id: string;
@@ -859,7 +860,6 @@ export const LoginAdminDocument = gql`
         id
         firstName
         lastName
-        status
         organization {
           id
           rootEmail

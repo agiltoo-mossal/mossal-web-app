@@ -31,9 +31,9 @@
       class="btn btn-primary"
       fxLayoutAlign="center center"
       fxLayoutGap="8px"
-      routerLink="/dashboard/admins/create-admin"
+      routerLink="/dashboard/collaborators/create-collaborator"
     >
-      <span>+</span> <span>Ajouter un admin</span>
+      <span>+</span> <span>Ajouter un Collaborateur</span>
     </button>
   </div>
 </div>
@@ -59,7 +59,7 @@
             <p class="item_p">{{ dataResponseFile?.totalRows || 0 }}</p>
           </div>
         </div>
-        <button class="btn-red " (click)="showModal = false">
+        <button class="btn-red" (click)="showModal = false">
           <mat-icon>close</mat-icon>
         </button>
       </div>
