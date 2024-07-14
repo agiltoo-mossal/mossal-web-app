@@ -114,7 +114,7 @@ export class AuthService {
   }
 
   async resetPassword(password: string) {
-    const token = localStorage.getItem(AuthConstant.access_tokenLocalName);
+    const token = localStorage.getItem(AuthConstant.tokenLocalName);
     try {
       const res = await lastValueFrom(
         this.resetPasswordGQL.mutate({
