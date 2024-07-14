@@ -420,7 +420,7 @@ export type UpdateMyAdminProfileInput = {
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
-  authorizedAdvance: Scalars['Int']['output'];
+  authorizedAdvance: Scalars['Float']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['DateTime']['output']>;
