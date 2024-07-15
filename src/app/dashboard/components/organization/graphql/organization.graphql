@@ -1,0 +1,3 @@
+mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
+	updateOrganization(organizationId: $organizationId, organizationInput: $organizationInput)
+}

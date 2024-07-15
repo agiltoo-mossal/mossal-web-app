@@ -9,15 +9,20 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
 		address
 		salary
     balance
+    totalDemandeAmount
 		wizallAccountNumber
 		bankAccountNumber
 		position
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
+    blocked
+    favoriteWallet
+    birthDate
+
+    # organization {
+    #   name
+    # }
 	}
 }
 
@@ -39,6 +44,9 @@ query FetchOrganizationCollaborator($collaboratorId: String!) {
 		bankAccountNumber
 		position
     authorizedAdvance
+    favoriteWallet
+    birthDate
+    blocked
 		organization {
 			name
 		}

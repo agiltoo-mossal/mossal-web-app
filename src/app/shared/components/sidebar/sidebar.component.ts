@@ -3,6 +3,7 @@ import { SidebarService } from '../../services/sidebar.service';
 import { FetchCurrentAdminGQL, User } from 'src/graphql/generated';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -44,12 +45,15 @@ export class SidebarComponent {
     private sidebarService: SidebarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private keycloakService: KeycloakService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
-    this.getCurrentUser();
+    // this.getCurrentUser();
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
       this.isSidebarOpened = resp;
     });
+
+    this.getCurrentUser();
   }
 
   getCurrentUser() {
@@ -124,6 +128,11 @@ export class SidebarComponent {
         label: 'Mon Compte',
         link: 'user',
         icon: 'person_outline',
+      },
+      {
+        label: 'Organization',
+        link: 'organization',
+        icon: 'business',
       },
     ];
   }

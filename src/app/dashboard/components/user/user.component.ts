@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/auth/auth.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { FetchCurrentAdminGQL, UpdateMyAdminPasswordGQL, UpdateMyAdminProfileGQL } from 'src/graphql/generated';
+import { DisableEmailNotificationGQL, EnableEmailNotificationGQL, FetchCurrentAdminGQL, UpdateMyAdminPasswordGQL, UpdateMyAdminProfileGQL, User } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-user',
@@ -17,13 +18,17 @@ export class UserComponent {
   updatePasswordForm: FormGroup;
   passwordNotEqual = false;
   isLoading = false;
+  user: User;
 
   constructor(
     private updateMyAdminPasswordGQL: UpdateMyAdminPasswordGQL,
     private fb: FormBuilder,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
-    private updateMyAdminProfileGQL: UpdateMyAdminProfileGQL
+    private updateMyAdminProfileGQL: UpdateMyAdminProfileGQL,
+    private enableEmailNotificationGQL: EnableEmailNotificationGQL,
+    private disableEmailNotificationGQL: DisableEmailNotificationGQL,
+    private authService: AuthService
   ) {
     this.updatePasswordForm = this.fb.group({
       newPassword: ['', Validators.required],
@@ -35,11 +40,18 @@ export class UserComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-      address: ['', Validators.required]
+      phoneNumber: ['', [
+        Validators.required,
+        Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
+      ]],
+      address: ['']
     });
 
     this.getCurrentUser();
+  }
+
+  get phoneNumber() {
+    return this.updateProfileForm.controls['phoneNumber'];
   }
 
   updatePassword() {
@@ -59,6 +71,7 @@ export class UserComponent {
         this.isLoading = false;
         if(result.data.updateMyAdminPassword) {
           this.snackBarService.showSuccessSnackBar("Mot de passe modifié avec succès");
+          this.authService.logout();
         } else {
           this.snackBarService.showErrorSnackBar(5000, "Mot de passe incorrect")
         }
@@ -78,8 +91,10 @@ export class UserComponent {
     this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: cache as any }).subscribe(
       result => {
         if(result.data) {
+          this.user = result.data.fetchCurrentAdmin as User;
           this.updateProfileForm.patchValue(result?.data?.fetchCurrentAdmin);
           this.updateProfileForm.controls['email'].disable();
+          this.toggleMailActivation = result?.data?.fetchCurrentAdmin?.enableEmailNotification;
         }
       }
     );
@@ -104,5 +119,37 @@ export class UserComponent {
         this.snackBarService.showErrorSnackBar(5000, "Une erreur est survenue")
       }
     )
+  }
+
+  setToggleMailActivation() {
+    this.toggleMailActivation = !this.toggleMailActivation;
+    if(this.toggleMailActivation) {
+      this.enableEmailNotificationGQL.mutate({ userId: this.user.id }).subscribe(
+        result => {
+          if(result.data.enableEmailNotification) {
+            this.snackBarService.showSuccessSnackBar("Notifications par email activées avec succés!");
+          } else {
+            this.snackBarService.showErrorSnackBar();
+          }
+        },
+        error => {
+          this.snackBarService.showErrorSnackBar();
+        }
+      )
+    }
+    else {
+      this.disableEmailNotificationGQL.mutate({ userId: this.user.id }).subscribe(
+        result => {
+          if(result.data.disableEmailNotification) {
+            this.snackBarService.showSuccessSnackBar("Notifications par email désactivées avec succés!");
+          } else {
+            this.snackBarService.showErrorSnackBar();
+          }
+        },
+        error => {
+          this.snackBarService.showErrorSnackBar();
+        }
+      )
+    }
   }
 }

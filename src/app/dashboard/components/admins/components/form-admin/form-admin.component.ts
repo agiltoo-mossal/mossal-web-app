@@ -1,8 +1,10 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { FetchOrganizationCollaboratorGQL, InviteAdminGQL, UpdateCollaboratorGQL, User } from 'src/graphql/generated';
+import { FetchOrganizationCollaboratorGQL, InviteAdminGQL, LockUserGQL, UnlockUserGQL, UpdateCollaboratorGQL, User } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-form-admin',
@@ -17,33 +19,46 @@ export class FormAdminComponent {
   @Input() collaboratorId: string;
   isLoading: boolean = false;
 
+  phoneNumberExists: boolean = false;
+  bankAccountNumberExists: boolean = false;
+  uniqueIdentifierExists: boolean = false;
+  emailExists: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private inviteAdminGQL: InviteAdminGQL,
     private router: Router,
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
-    private updateCollaboratorGQL: UpdateCollaboratorGQL
+    private updateCollaboratorGQL: UpdateCollaboratorGQL,
+    private searchService: SearchService,
+    private lockUserGQL: LockUserGQL,
+    private unlockUserGQL: UnlockUserGQL
   ) {
     this.collaboratorForm = this.fb.group({
       email: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [
+        Validators.required,
+        Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
+      ]],
       address: [''],
       position: ['', Validators.required],
-      uniqueIdentifier: [''],
+      uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
-      wizallAccountNumber: ['', Validators.required],
+      wizallAccountNumber: [''],
       bankAccountNumber: ['', Validators.required]
-    })
+    });
   }
 
   ngOnInit(): void {
     this.formText =
       this.formType == 'edit'
-        ? 'Modifier les infos du update '
+        ? "Modifier les infos de l'admin "
         : 'Création compte admin';
+
+    this.initSearch();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -85,7 +100,7 @@ export class FormAdminComponent {
         this.isLoading = false;
         if(result.data) {
           this.router.navigate(['/dashboard/admins']);
-          this.snackBarService.showSuccessSnackBar("Collaborator modifié avec succés")
+          this.snackBarService.showSuccessSnackBar("Admin modifié avec succés")
         }
 
       },
@@ -97,12 +112,90 @@ export class FormAdminComponent {
 
   getCollab() {
     if(this.collaboratorId) {
-      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }).subscribe(
+      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }, { fetchPolicy: 'no-cache' }).subscribe(
         result => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);
         }
       )
     }
+  }
+
+  get phoneNumber() {
+    return this.collaboratorForm.controls['phoneNumber'];
+  }
+
+  checkPhone() {
+    this.collaboratorForm.get('phoneNumber').valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this.searchService.phoneNumberExists(value, true, this.collaboratorId))
+    ).subscribe(result => {
+      this.phoneNumberExists = result;
+    });
+  }
+
+  checkEmail() {
+    this.collaboratorForm.get('email').valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this.searchService.emailExists(value, true, this.collaboratorId))
+    ).subscribe(result => {
+      this.emailExists = result;
+    });
+  }
+
+  checkBankAccount() {
+    this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this.searchService.bankAccountNumberExists(value, true, this.collaboratorId))
+    ).subscribe(result => {
+      this.bankAccountNumberExists = result;
+
+    });
+  }
+
+  checkUniqueIdentifier() {
+    this.collaboratorForm.get('uniqueIdentifier').valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(value => this.searchService.uniqueIdentifierExists(value, true, this.collaboratorId))
+    ).subscribe(result => {
+      this.uniqueIdentifierExists = result;
+    });
+  }
+
+  initSearch() {
+    this.checkPhone();
+    this.checkBankAccount();
+    this.checkUniqueIdentifier();
+    this.checkEmail();
+  }
+
+  get hasErrors() {
+    return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists || this.emailExists;
+  }
+
+  lockUser = (userId: string) => {
+    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.lockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur bloqué avec succès!");
+        this.getCollab();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
+  }
+
+  unlockUser = (userId: string) => {
+    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+      if(result.data.unlockUser) {
+        this.snackBarService.showSuccessSnackBar("Utilisateur débloqué avec succès!");
+        this.getCollab();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    })
   }
 }

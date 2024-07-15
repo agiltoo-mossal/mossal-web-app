@@ -8,16 +8,18 @@ query FetchOrganizationAdmins {
 		uniqueIdentifier
 		address
 		salary
+    blocked
     balance
+    totalDemandeAmount
 		wizallAccountNumber
 		bankAccountNumber
 		position
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
+    # organization {
+    #   name
+    # }
 	}
 }
 

@@ -12,6 +12,8 @@ import { EditCollaboratorComponent } from './components/edit-collaborator/edit-c
 import { FormCollaboratorComponent } from './components/form-collaborator/form-collaborator.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
+import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-confirmation/requires-confirmation.module';
+import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
     CreateCollobatorComponent,
     EditCollaboratorComponent,
     FormCollaboratorComponent,
+    FileUploadComponent,
   ],
   imports: [
     CommonModule,
@@ -30,7 +33,8 @@ import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
     DropdownModule,
     ReactiveFormsModule,
     FilterModule,
-    FormsModule
+    FormsModule,
+    RequiresConfirmationModule,
   ],
   exports: [CollaboratorsComponent],
 })

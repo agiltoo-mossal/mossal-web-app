@@ -69,7 +69,7 @@ export class RequestsListComponent {
       cache = 'no-cache';
     }
     this.fetchOrganizationDemandesGQL
-      .fetch({}, { fetchPolicy: cache as any })
+      .fetch({}, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];

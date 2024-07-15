@@ -1,3 +1,5 @@
+
+
 @use "@angular/material" as mat;
 // Plus imports for other components in your app.
 
@@ -5,6 +7,8 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat.core();
+
+
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -57,6 +61,8 @@ $databeez-accent: (
     900: #ffffff,
   ),
 );
+
+
 
 $mossal-web-app-primary: mat.define-palette($databeez-primary);
 $mossal-web-app-accent: mat.define-palette($databeez-accent);
@@ -725,11 +731,11 @@ input:focus {
 
   &--valid,
   &--validated {
-    background: #40B139;
+    background: #00a8ee;
   }
 
   &--payed {
-    background: #00a8ee;
+    background: #40B139;
   }
 
   &--rejected {
@@ -768,7 +774,7 @@ input:focus {
 
   .valid {
     .color {
-      background-color: #40B139;
+      background-color: #00a8ee;
     }
   }
 
@@ -839,7 +845,9 @@ input:focus {
 .invalid {
   border-color: #e94916 !important;
 }
-
+.help-text {
+  font-size: 12px;
+}
 input,
 select,
 textarea {

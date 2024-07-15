@@ -27,6 +27,7 @@ import { DateRangerFilterPipe } from '../shared/pipes/date-range-filter/date-ran
 import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match.pipe';
 import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
+import { OrganizationComponent } from './components/organization/organization.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-stat
     UserComponent,
     NotificationsComponent,
     RefundChartsComponent,
+    OrganizationComponent
   ],
   imports: [
     CommonModule,

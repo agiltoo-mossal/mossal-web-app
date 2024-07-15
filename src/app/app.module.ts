@@ -36,6 +36,7 @@ import {
   KeycloakBearerInterceptor,
 } from 'keycloak-angular';
 import { environment } from 'src/environments/environment';
+import { AuthModule } from './auth/auth.module';
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -87,10 +88,11 @@ export function createTranslateLoader(http: HttpClient) {
     AdminModule,
     NgbModule,
     KeycloakAngularModule,
+    AuthModule,
   ],
   providers: [
-    // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ProgressBarInterceptor,
@@ -98,18 +100,18 @@ export function createTranslateLoader(http: HttpClient) {
     },
     AppService,
     KeycloakService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      multi: true,
-      deps: [KeycloakService],
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: KeycloakBearerInterceptor,
-      multi: true,
-    },
-    provideHttpClient(withInterceptorsFromDi()),
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: initializeKeycloak,
+    //   multi: true,
+    //   deps: [KeycloakService],
+    // },
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: KeycloakBearerInterceptor,
+    //   multi: true,
+    // },
+    // provideHttpClient(withInterceptorsFromDi()),
   ],
   bootstrap: [AppComponent],
 })

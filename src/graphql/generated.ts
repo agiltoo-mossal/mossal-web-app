@@ -17,6 +17,9 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+  _Any: { input: any; output: any; }
+  federation__FieldSet: { input: any; output: any; }
+  link__Import: { input: any; output: any; }
 };
 
 export type Demande = {
@@ -27,24 +30,9 @@ export type Demande = {
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
+  paymentSuccess?: Maybe<Scalars['Boolean']['output']>;
   status: DemandeStatus;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type DemandeInput = {
-  amount: Scalars['Float']['input'];
-};
-
-export type DemandeMetric = {
-  __typename?: 'DemandeMetric';
-  month: Scalars['Float']['output'];
-  value: Scalars['Float']['output'];
-  year: Scalars['Float']['output'];
-};
-
-export type DemandeMetricFilter = {
-  endDate: Scalars['DateTime']['input'];
-  startDate: Scalars['DateTime']['input'];
 };
 
 export enum DemandeStatus {
@@ -55,10 +43,6 @@ export enum DemandeStatus {
   Rejected = 'REJECTED',
   Validated = 'VALIDATED'
 }
-
-export type DemandeUpdateInput = {
-  amount: Scalars['Float']['input'];
-};
 
 export type DemandesMetrics = {
   __typename?: 'DemandesMetrics';
@@ -92,7 +76,9 @@ export type FinalizeForgotPasswordInput = {
 export type InviteCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -109,37 +95,27 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addDemande: Demande;
-  cancelDemande: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createFinancialOrganization: Organization;
   createOrganization: Organization;
+  disableEmailNotification: Scalars['Boolean']['output'];
+  enableEmailNotification: Scalars['Boolean']['output'];
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
-  resetCollaboratorPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  unlockUser: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
-  updateDemande: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
-  updateMyBankAccount: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
+  upladFile: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
-};
-
-
-export type MutationAddDemandeArgs = {
-  demandeInput: DemandeInput;
-};
-
-
-export type MutationCancelDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
 };
 
 
@@ -158,6 +134,16 @@ export type MutationCreateOrganizationArgs = {
 };
 
 
+export type MutationDisableEmailNotificationArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationEnableEmailNotificationArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationFinalizeForgotPasswordArgs = {
   finalizeForgotPasswordInput: FinalizeForgotPasswordInput;
 };
@@ -170,6 +156,11 @@ export type MutationInviteAdminArgs = {
 
 export type MutationInviteCollaboratorArgs = {
   collaborator: InviteCollaboratorInput;
+};
+
+
+export type MutationLockUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -189,25 +180,19 @@ export type MutationResetAdminPasswordArgs = {
 };
 
 
-export type MutationResetCollaboratorPasswordArgs = {
-  resetPasswordInput: ResetPasswordInput;
+export type MutationStartForgotPasswordArgs = {
+  email: Scalars['String']['input'];
 };
 
 
-export type MutationStartForgotPasswordArgs = {
-  email: Scalars['String']['input'];
+export type MutationUnlockUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
 export type MutationUpdateCollaboratorArgs = {
   collaborator: UpdateCollaboratorInput;
   collaboratorId: Scalars['String']['input'];
-};
-
-
-export type MutationUpdateDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
-  demandeInput: DemandeUpdateInput;
 };
 
 
@@ -222,14 +207,15 @@ export type MutationUpdateMyAdminProfileArgs = {
 };
 
 
-export type MutationUpdateMyBankAccountArgs = {
-  bankAccountNumber: Scalars['String']['input'];
-};
-
-
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
+};
+
+
+export type MutationUpladFileArgs = {
+  destination: Scalars['String']['input'];
+  file: Scalars['String']['input'];
 };
 
 
@@ -251,7 +237,10 @@ export type Notification = {
 
 export type Organization = {
   __typename?: 'Organization';
+  amountPercent: Scalars['Float']['output'];
+  fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
+  maxDemandeAmount: Scalars['Float']['output'];
   /** Nom de l'organisation */
   name: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
@@ -259,6 +248,9 @@ export type Organization = {
 };
 
 export type OrganizationInput = {
+  amountPercent: Scalars['Float']['input'];
+  fees: Scalars['Float']['input'];
+  maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
   name: Scalars['String']['input'];
   /** Email de l'utilisateur racine ou admin */
@@ -270,19 +262,26 @@ export type OrganizationInput = {
 };
 
 export type OrganizationUpdateInput = {
+  amountPercent: Scalars['Float']['input'];
+  fees: Scalars['Float']['input'];
+  maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Payment = {
+  __typename?: 'Payment';
+  id: Scalars['ID']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  checkMyBalance: Scalars['Float']['output'];
-  checkMyDemandeFees: Scalars['Float']['output'];
+  _entities: Array<Maybe<_Entity>>;
+  _service: _Service;
+  bankAccountNumberExists: Scalars['Boolean']['output'];
+  emailExists: Scalars['Boolean']['output'];
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
-  fetchMyDemande: Demande;
-  fetchMyDemandes: Array<Demande>;
-  fetchMyDemandesMetrics: Array<DemandeMetric>;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
   fetchOrganizationCollaborator: User;
@@ -290,31 +289,35 @@ export type Query = {
   fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
+  fetchPayment: Payment;
+  fetchPayments: Array<Payment>;
   loginAdmin: Session;
-  loginCollaborator: Session;
-  refreshCollaboratorToken: Session;
-  /** Token to call reset password endpoint */
-  requestResetCollaboratorPassword: Scalars['String']['output'];
+  phoneNumberExists: Scalars['Boolean']['output'];
+  uniqueIdentifierExists: Scalars['Boolean']['output'];
 };
 
 
-export type QueryCheckMyDemandeFeesArgs = {
-  demandeAmount: Scalars['Float']['input'];
+export type Query_EntitiesArgs = {
+  representations: Array<Scalars['_Any']['input']>;
+};
+
+
+export type QueryBankAccountNumberExistsArgs = {
+  bankAccountNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryEmailExistsArgs = {
+  email: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryFetchDemandesMetricsArgs = {
   metricsInput: DemandesMetricsInput;
-};
-
-
-export type QueryFetchMyDemandeArgs = {
-  demandeId: Scalars['ID']['input'];
-};
-
-
-export type QueryFetchMyDemandesMetricsArgs = {
-  metricsFilter: DemandeMetricFilter;
 };
 
 
@@ -338,23 +341,27 @@ export type QueryFetchOrganizationDemandesArgs = {
 };
 
 
+export type QueryFetchPaymentArgs = {
+  paymentId: Scalars['ID']['input'];
+};
+
+
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
 };
 
 
-export type QueryLoginCollaboratorArgs = {
-  loginInput: LoginInput;
+export type QueryPhoneNumberExistsArgs = {
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  phoneNumber: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
-export type QueryRefreshCollaboratorTokenArgs = {
-  refreshToken: Scalars['String']['input'];
-};
-
-
-export type QueryRequestResetCollaboratorPasswordArgs = {
-  oldPassword: Scalars['String']['input'];
+export type QueryUniqueIdentifierExistsArgs = {
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  uniqueIdentifier: Scalars['String']['input'];
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResetPasswordInput = {
@@ -389,6 +396,8 @@ export type Session = {
 export type UpdateCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -400,6 +409,9 @@ export type UpdateCollaboratorInput = {
 
 export type UpdateMyAdminProfileInput = {
   address: Scalars['String']['input'];
+  birthDate?: InputMaybe<Scalars['DateTime']['input']>;
+  enableEmailNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  favoriteWallet?: InputMaybe<Wallet>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
@@ -408,11 +420,15 @@ export type UpdateMyAdminProfileInput = {
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
-  authorizedAdvance: Scalars['Int']['output'];
+  authorizedAdvance: Scalars['Float']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
+  birthDate?: Maybe<Scalars['DateTime']['output']>;
+  blocked?: Maybe<Scalars['Boolean']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  enableEmailNotification?: Maybe<Scalars['Boolean']['output']>;
+  favoriteWallet?: Maybe<Wallet>;
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
@@ -421,15 +437,65 @@ export type User = {
   position?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<Scalars['Float']['output']>;
+  totalDemandeAmount: Scalars['Float']['output'];
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
 
+/** Possible wallets */
+export enum Wallet {
+  OrangeMoney = 'ORANGE_MONEY',
+  Wave = 'WAVE'
+}
+
+export type _Entity = Demande | Organization;
+
+export type _Service = {
+  __typename?: '_Service';
+  sdl?: Maybe<Scalars['String']['output']>;
+};
+
+export enum Link__Purpose {
+  /** `EXECUTION` features provide metadata necessary for operation execution. */
+  Execution = 'EXECUTION',
+  /** `SECURITY` features provide metadata necessary to securely resolve fields. */
+  Security = 'SECURITY'
+}
+
+export type LoginAdminQueryVariables = Exact<{
+  loginInput: LoginInput;
+}>;
+
+
+export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization: { __typename?: 'Organization', id: string, rootEmail: string, name: string } } | null } };
+
+export type ResetAdminPasswordMutationVariables = Exact<{
+  resetPasswordInput: ResetPasswordInput;
+}>;
+
+
+export type ResetAdminPasswordMutation = { __typename?: 'Mutation', resetAdminPassword: boolean };
+
+export type StartForgotPasswordMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type StartForgotPasswordMutation = { __typename?: 'Mutation', startForgotPassword: boolean };
+
+export type FinalizeForgotPasswordMutationVariables = Exact<{
+  finalizeForgotPasswordInput: FinalizeForgotPasswordInput;
+}>;
+
+
+export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalizeForgotPassword: boolean };
+
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> };
 
 export type InviteAdminMutationVariables = Exact<{
   adminInput: InviteCollaboratorInput;
@@ -443,7 +509,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, organization: { __typename?: 'Organization', name: string } }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -457,7 +523,7 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, organization: { __typename?: 'Organization', name: string } } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string } } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;
@@ -477,6 +543,14 @@ export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: strin
 
 export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
 
+export type UpdateOrganizationMutationVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+  organizationInput: OrganizationUpdateInput;
+}>;
+
+
+export type UpdateOrganizationMutation = { __typename?: 'Mutation', updateOrganization: boolean };
+
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
 }>;
@@ -489,7 +563,7 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, organization: { __typename?: 'Organization', name: string } } }> };
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -531,7 +605,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, organization: { __typename?: 'Organization', id: string } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -540,6 +614,152 @@ export type UpdateMyAdminProfileMutationVariables = Exact<{
 
 export type UpdateMyAdminProfileMutation = { __typename?: 'Mutation', updateMyAdminProfile: boolean };
 
+export type LockUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type LockUserMutation = { __typename?: 'Mutation', lockUser: boolean };
+
+export type UnlockUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type UnlockUserMutation = { __typename?: 'Mutation', unlockUser: boolean };
+
+export type EnableEmailNotificationMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type EnableEmailNotificationMutation = { __typename?: 'Mutation', enableEmailNotification: boolean };
+
+export type DisableEmailNotificationMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
+
+export type BankAccountNumberExistsQueryVariables = Exact<{
+  bankAccountNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type BankAccountNumberExistsQuery = { __typename?: 'Query', bankAccountNumberExists: boolean };
+
+export type PhoneNumberExistsQueryVariables = Exact<{
+  phoneNumber: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type PhoneNumberExistsQuery = { __typename?: 'Query', phoneNumberExists: boolean };
+
+export type UniqueIdentifierExistsQueryVariables = Exact<{
+  uniqueIdentifier: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UniqueIdentifierExistsQuery = { __typename?: 'Query', uniqueIdentifierExists: boolean };
+
+export type EmailExistsQueryVariables = Exact<{
+  email: Scalars['String']['input'];
+  isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type EmailExistsQuery = { __typename?: 'Query', emailExists: boolean };
+
+export const LoginAdminDocument = gql`
+    query LoginAdmin($loginInput: LoginInput!) {
+  loginAdmin(loginInput: $loginInput) {
+    user {
+      id
+      firstName
+      lastName
+      organization {
+        id
+        rootEmail
+        name
+      }
+    }
+    enabled
+    token
+    access_token
+    refresh_token
+    expires_in
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LoginAdminGQL extends Apollo.Query<LoginAdminQuery, LoginAdminQueryVariables> {
+    document = LoginAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ResetAdminPasswordDocument = gql`
+    mutation ResetAdminPassword($resetPasswordInput: ResetPasswordInput!) {
+  resetAdminPassword(resetPasswordInput: $resetPasswordInput)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ResetAdminPasswordGQL extends Apollo.Mutation<ResetAdminPasswordMutation, ResetAdminPasswordMutationVariables> {
+    document = ResetAdminPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const StartForgotPasswordDocument = gql`
+    mutation StartForgotPassword($email: String!) {
+  startForgotPassword(email: $email)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class StartForgotPasswordGQL extends Apollo.Mutation<StartForgotPasswordMutation, StartForgotPasswordMutationVariables> {
+    document = StartForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FinalizeForgotPasswordDocument = gql`
+    mutation FinalizeForgotPassword($finalizeForgotPasswordInput: FinalizeForgotPasswordInput!) {
+  finalizeForgotPassword(
+    finalizeForgotPasswordInput: $finalizeForgotPasswordInput
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
+    document = FinalizeForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationAdminsDocument = gql`
     query FetchOrganizationAdmins {
   fetchOrganizationAdmins {
@@ -551,16 +771,15 @@ export const FetchOrganizationAdminsDocument = gql`
     uniqueIdentifier
     address
     salary
+    blocked
     balance
+    totalDemandeAmount
     wizallAccountNumber
     bankAccountNumber
     position
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
   }
 }
     `;
@@ -603,15 +822,16 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     address
     salary
     balance
+    totalDemandeAmount
     wizallAccountNumber
     bankAccountNumber
     position
     authorizedAdvance
     createdAt
     updatedAt
-    organization {
-      name
-    }
+    blocked
+    favoriteWallet
+    birthDate
   }
 }
     `;
@@ -657,6 +877,9 @@ export const FetchOrganizationCollaboratorDocument = gql`
     bankAccountNumber
     position
     authorizedAdvance
+    favoriteWallet
+    birthDate
+    blocked
     organization {
       name
     }
@@ -736,6 +959,25 @@ export const ViewOrganizationNotificationsDocument = gql`
       super(apollo);
     }
   }
+export const UpdateOrganizationDocument = gql`
+    mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
+  updateOrganization(
+    organizationId: $organizationId
+    organizationInput: $organizationInput
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateOrganizationGQL extends Apollo.Mutation<UpdateOrganizationMutation, UpdateOrganizationMutationVariables> {
+    document = UpdateOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchDemandesMetricsDocument = gql`
     query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
   fetchDemandesMetrics(metricsInput: $metricsInput) {
@@ -774,12 +1016,11 @@ export const FetchOrganizationDemandesDocument = gql`
       firstName
       lastName
       balance
+      totalDemandeAmount
       salary
       authorizedAdvance
       bankAccountNumber
-      organization {
-        name
-      }
+      uniqueIdentifier
     }
     createdAt
     updatedAt
@@ -887,8 +1128,14 @@ export const FetchCurrentAdminDocument = gql`
     phoneNumber
     address
     role
+    position
+    enableEmailNotification
     organization {
       id
+      name
+      maxDemandeAmount
+      amountPercent
+      fees
     }
   }
 }
@@ -915,6 +1162,142 @@ export const UpdateMyAdminProfileDocument = gql`
   })
   export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
     document = UpdateMyAdminProfileDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const LockUserDocument = gql`
+    mutation LockUser($userId: String!) {
+  lockUser(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LockUserGQL extends Apollo.Mutation<LockUserMutation, LockUserMutationVariables> {
+    document = LockUserDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UnlockUserDocument = gql`
+    mutation UnlockUser($userId: String!) {
+  unlockUser(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UnlockUserGQL extends Apollo.Mutation<UnlockUserMutation, UnlockUserMutationVariables> {
+    document = UnlockUserDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EnableEmailNotificationDocument = gql`
+    mutation EnableEmailNotification($userId: String!) {
+  enableEmailNotification(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EnableEmailNotificationGQL extends Apollo.Mutation<EnableEmailNotificationMutation, EnableEmailNotificationMutationVariables> {
+    document = EnableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DisableEmailNotificationDocument = gql`
+    mutation DisableEmailNotification($userId: String!) {
+  disableEmailNotification(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
+    document = DisableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const BankAccountNumberExistsDocument = gql`
+    query BankAccountNumberExists($bankAccountNumber: String!, $isAdmin: Boolean, $userId: String) {
+  bankAccountNumberExists(
+    bankAccountNumber: $bankAccountNumber
+    isAdmin: $isAdmin
+    userId: $userId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class BankAccountNumberExistsGQL extends Apollo.Query<BankAccountNumberExistsQuery, BankAccountNumberExistsQueryVariables> {
+    document = BankAccountNumberExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const PhoneNumberExistsDocument = gql`
+    query PhoneNumberExists($phoneNumber: String!, $isAdmin: Boolean, $userId: String) {
+  phoneNumberExists(phoneNumber: $phoneNumber, isAdmin: $isAdmin, userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class PhoneNumberExistsGQL extends Apollo.Query<PhoneNumberExistsQuery, PhoneNumberExistsQueryVariables> {
+    document = PhoneNumberExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UniqueIdentifierExistsDocument = gql`
+    query UniqueIdentifierExists($uniqueIdentifier: String!, $isAdmin: Boolean, $userId: String) {
+  uniqueIdentifierExists(
+    uniqueIdentifier: $uniqueIdentifier
+    isAdmin: $isAdmin
+    userId: $userId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UniqueIdentifierExistsGQL extends Apollo.Query<UniqueIdentifierExistsQuery, UniqueIdentifierExistsQueryVariables> {
+    document = UniqueIdentifierExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const EmailExistsDocument = gql`
+    query EmailExists($email: String!, $isAdmin: Boolean, $userId: String) {
+  emailExists(email: $email, isAdmin: $isAdmin, userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
+    document = EmailExistsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
