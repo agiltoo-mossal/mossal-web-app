@@ -126,7 +126,7 @@
       <table class="table">
         <tr class="titles-container" fxLayout="row">
           <th class="title" fxFlex="20" fxLayoutAlign="start center">
-            Entreprise
+            Identifiant
           </th>
           <th class="title" fxFlex="20" fxLayoutAlign="center center">
             Collaborateur
@@ -154,7 +154,7 @@
               class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}"
               fxLayoutAlign="center center"
             ></span>
-            <span>{{ req?.organization?.name }}</span>
+            <span>{{ req?.uniqueIdentifier }}</span>
           </td>
           <td
             class="name"
