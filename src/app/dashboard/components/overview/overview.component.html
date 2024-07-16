@@ -66,7 +66,7 @@
 
                     </div>
                 </div>
-                <span class="value">{{totalDemandeAmount}}</span>
+                <span class="value">{{totalDemandeAmount | number:'1.0-0'}}</span>
             </div>
 
             <div class="data-card" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31" fxFlex.lt-sm="100" fxFlex.lt-md="48">
@@ -86,7 +86,7 @@
                         <img [src]="'./assets/img/data-preview-img1.svg'" alt="">
                     </div>
                 </div>
-                <span class="value">{{totalDemandeToPay}}</span>
+                <span class="value">{{totalDemandeToPay | number:'1.0-0'}}</span>
             </div>
 
         </div>
