@@ -1,21 +1,6 @@
-<div
-  fxLayout="row wrap"
-  fxLayoutAlign="start start"
-  fxFlex="100"
-  class="confirm-dialog"
->
-  <div
-    fxFlex="100"
-    class="message"
-    fxLayout="column"
-    fxLayoutAlign="center center"
-  >
-    <div
-      fxLayout="row wrap"
-      fxLayoutAlign="end start"
-      fxFlex="100"
-      class="header"
-    >
+<div fxLayout="row wrap" fxLayoutAlign="start start" fxFlex="100" class="confirm-dialog">
+  <div fxFlex="100" class="message" fxLayout="column" fxLayoutAlign="center center">
+    <div fxLayout="row wrap" fxLayoutAlign="end start" fxFlex="100" class="header">
       <mat-icon class="close" (click)="onCancel()">close</mat-icon>
     </div>
     <p>{{ data.message }}</p>
@@ -27,14 +12,8 @@
     <textarea fxFill class="form-control" name="reason" [(ngModel)]="reason" rows="7"></textarea>
   </form>
 
-  <div
-    fxFlex="100"
-    class="footer"
-    fxLayout="row wrap"
-    fxLayoutAlign="end center"
-    fxLayoutGap="16px"
-  >
-    <button class="cancel" (click)="onCancel()" mat-dialog-close>Cancel</button>
-    <button class="confirm" (click)="onConfirm()">Confirm</button>
+  <div fxFlex="100" class="footer" fxLayout="row wrap" fxLayoutAlign="end center" fxLayoutGap="16px">
+    <button class="cancel" (click)="onCancel()" mat-dialog-close>Annuler</button>
+    <button class="confirm" (click)="onConfirm()">Confirmer</button>
   </div>
 </div>

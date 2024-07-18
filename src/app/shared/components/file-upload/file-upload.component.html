@@ -1,0 +1,108 @@
+<div fxLayout="row" fxLayoutGap="19px">
+  <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
+    <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+    <input
+      [(ngModel)]="search"
+      type="text"
+      class="form-control"
+      placeholder="Recherche"
+    />
+  </div>
+  <div fxLayout="row" fxLayoutGap="19px">
+    <form enctype="multipart/form-data">
+      <label
+        for="file_input"
+        class="btn btn-primary"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
+        ><span>Importer un fichier</span>
+      </label>
+      <input
+        type="file"
+        (change)="onFileSelected($event)"
+        accept=".csv"
+        style="display: none"
+        id="file_input"
+      />
+    </form>
+    <button
+      class="btn btn-primary"
+      fxLayoutAlign="center center"
+      fxLayoutGap="8px"
+      routerLink="/dashboard/collaborators/create-collaborator"
+    >
+      <span>+</span> <span>Ajouter un Collaborateur</span>
+    </button>
+  </div>
+</div>
+
+<!-- The Modal -->
+<div #myModal class="modal" [ngClass]="showModal ? 'active' : ''">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div class="container">
+      <div class="row">
+        <div class="multi-button">
+          <div class="button" id="copy">
+            <p>SAUVEGARDER</p>
+            <p class="item_p">{{ dataResponseFile?.totalSuccess || 0 }}</p>
+          </div>
+          <div class="button" id="paste">
+            <p>EN ATTENTE</p>
+            <p class="item_p">{{ dataResponseFile?.totalErrors || 0 }}</p>
+          </div>
+          <div class="button" id="cut">
+            <p>TOTAL</p>
+            <p class="item_p">{{ dataResponseFile?.totalRows || 0 }}</p>
+          </div>
+        </div>
+        <button class="btn-red" (click)="showModal = false">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th scope="col">EMAIL</th>
+            <th scope="col">PRENOM</th>
+            <th scope="col">NOM</th>
+            <th scope="col">DATE DE NAISSANCE</th>
+            <th scope="col">NUMERO</th>
+            <th scope="col">ADRESSE</th>
+            <th scope="col">ETAT SAUVEGARDE</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of dataResponseFile?.data; track $index) {
+          <tr>
+            <th scope="row">{{ item.email }}</th>
+            <td data-title="Released">{{ item.firstName }}</td>
+            <td data-title="Studio">{{ item.lastName }}</td>
+            <td data-title="Worldwide Gross" data-type="currency">
+              {{ item.birthDate }}
+            </td>
+            <td data-title="Domestic Gross" data-type="currency">
+              {{ item.phoneNumber }}
+            </td>
+            <td data-title="International Gross" data-type="currency">
+              {{ item.address }}
+            </td>
+            <td data-title="Budget" data-type="currency" class="flex">
+              @if(item.error){
+              <mat-icon color="warn">rules</mat-icon>
+              }@else {
+              <mat-icon class="success">done</mat-icon>
+              }
+            </td>
+          </tr>
+
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
