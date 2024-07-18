@@ -113,7 +113,6 @@ export type Mutation = {
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
-  upladFile: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
@@ -210,12 +209,6 @@ export type MutationUpdateMyAdminProfileArgs = {
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
-};
-
-
-export type MutationUpladFileArgs = {
-  destination: Scalars['String']['input'];
-  file: Scalars['String']['input'];
 };
 
 
@@ -437,7 +430,6 @@ export type User = {
   position?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
-  status?: Maybe<Scalars['Float']['output']>;
   totalDemandeAmount: Scalars['Float']['output'];
   uniqueIdentifier?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
