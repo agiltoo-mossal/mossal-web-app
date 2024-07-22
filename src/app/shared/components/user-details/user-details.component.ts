@@ -1,4 +1,12 @@
-import { Component, Input, ViewChild, computed, effect, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewChild,
+  computed,
+  effect,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { User } from 'src/graphql/generated';
 
 import {
@@ -31,14 +39,13 @@ export class UserDetailsComponent implements OnChanges {
   @ViewChild('chart') chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
-  constructor(private collaboratorService: OverviewService) {
-
-  }
+  constructor(private collaboratorService: OverviewService) {}
   ngOnChanges(changes: SimpleChanges): void {
-
-
     this.chartOptions = {
-      series: [this.user?.totalDemandeAmount, this.user?.authorizedAdvance - this.user?.totalDemandeAmount],
+      series: [
+        this.user?.totalDemandeAmount ?? 0,
+        this.user?.authorizedAdvance ?? 0 - this.user?.totalDemandeAmount ?? 0,
+      ],
       chart: {
         type: 'donut',
       },
@@ -66,7 +73,6 @@ export class UserDetailsComponent implements OnChanges {
     // });
   }
   get average() {
-
     const dataColloborator = this.collaboratorService.getUserSelected;
     this.collaboratorService.getUserSelected;
 
@@ -78,7 +84,13 @@ export class UserDetailsComponent implements OnChanges {
     //   Math.round(+(averageBalance * 100).toFixed(0)),
     //   Math.round(+(rest * 100).toFixed(0)),
     // ];
-    console.log({user: this.user, coll: this.collaboratorService.getUserSelected})
-    return [this.user?.totalDemandeAmount, this.user?.authorizedAdvance - this.user?.totalDemandeAmount];
+    console.log({
+      user: this.user,
+      coll: this.collaboratorService.getUserSelected,
+    });
+    return [
+      this.user?.totalDemandeAmount,
+      this.user?.authorizedAdvance - this.user?.totalDemandeAmount,
+    ];
   }
 }

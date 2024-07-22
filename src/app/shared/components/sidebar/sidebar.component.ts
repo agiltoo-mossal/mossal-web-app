@@ -52,8 +52,6 @@ export class SidebarComponent implements OnInit {
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
       this.isSidebarOpened = resp;
     });
-
-    this.getCurrentUser();
   }
   getCurrentUser() {
     this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
