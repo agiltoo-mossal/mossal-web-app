@@ -113,7 +113,6 @@ export type Mutation = {
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
-  upladFile: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
@@ -210,12 +209,6 @@ export type MutationUpdateMyAdminProfileArgs = {
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
-};
-
-
-export type MutationUpladFileArgs = {
-  destination: Scalars['String']['input'];
-  file: Scalars['String']['input'];
 };
 
 
@@ -420,7 +413,7 @@ export type UpdateMyAdminProfileInput = {
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
-  authorizedAdvance: Scalars['Int']['output'];
+  authorizedAdvance: Scalars['Float']['output'];
   balance?: Maybe<Scalars['Float']['output']>;
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['DateTime']['output']>;
@@ -562,7 +555,7 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null } }> };
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -1019,6 +1012,7 @@ export const FetchOrganizationDemandesDocument = gql`
       salary
       authorizedAdvance
       bankAccountNumber
+      uniqueIdentifier
     }
     createdAt
     updatedAt

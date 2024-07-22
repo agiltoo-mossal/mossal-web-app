@@ -3,40 +3,16 @@
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <span class="dashboard-title">Echéances Avance sur salaire</span>
       <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
-        <div
-          class="current-time-interval"
-          fxLayout="row"
-          fxLayoutAlign="start center"
-        >
-          <span
-            class="value"
-            fxLayout="row"
-            fxLayoutGap="8px"
-            fxLayoutAlign="start center"
-            ><span>{{ startDate | frenchDate }}</span> <span>au</span>
-            <span>{{ endDate | frenchDate }}</span></span
-          >
-          <div
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-            class="dropdown"
-          >
-            <span
-              class="icon"
-              #btnToggleDropdownDate
-              (click)="toggleMenuFilterDate()"
-            >
-              <mat-icon fxLayoutAlign="center center"
-                >keyboard_arrow_down</mat-icon
-              >
+        <div class="current-time-interval" fxLayout="row" fxLayoutAlign="start center">
+          <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"><span>{{ startDate |
+              frenchDate }}</span> <span>au</span>
+            <span>{{ endDate | frenchDate }}</span></span>
+          <div fxLayout="row" fxLayoutAlign="space-between center" class="dropdown">
+            <span class="icon" #btnToggleDropdownDate (click)="toggleMenuFilterDate()">
+              <mat-icon fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
             </span>
-            <form
-              [formGroup]="metricsInput"
-              class="dropdown-content"
-              id="filter-date-dropdown"
-              *ngIf="isMenuFilterOpen"
-              #dropdownContent
-            >
+            <form [formGroup]="metricsInput" class="dropdown-content" id="filter-date-dropdown" *ngIf="isMenuFilterOpen"
+              #dropdownContent>
               <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
                 <label for="debut">Du</label>
                 <input formControlName="startDate" type="date" id="debut" />
@@ -51,29 +27,13 @@
         <span class="dashboard-title">Filtrer</span>
       </div>
     </div>
-    <div
-      class="card-data-container"
-      fxLayout="row wrap"
-      fxLayoutAlign="space-between "
-      fxLayoutGap="5px"
-    >
-      <div
-        class="data-card"
-        *ngFor="let item of dataStatics"
-        fxLayout="column"
-        fxFlex="23"
-        fxFlex.lt-lg="31"
-        fxFlex.lt-sm="100"
-        fxFlex.lt-md="48"
-      >
+    <div class="card-data-container" fxLayout="row wrap" fxLayoutAlign="space-between " fxLayoutGap="5px">
+      <div class="data-card" *ngFor="let item of dataStatics" fxLayout="column" fxFlex="23" fxFlex.lt-lg="31"
+        fxFlex.lt-sm="100" fxFlex.lt-md="48">
         <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
           <div class="label">{{ item.title }}</div>
-          <div
-            class="data-image"
-            fxLayoutAlign="center center"
-            [ngStyle]="{ 'border':'2px solid '+item.style}"
-          >
-            <img [src]="item.path" alt=""  />
+          <div class="data-image" fxLayoutAlign="center center" [ngStyle]="{ 'border':'2px solid '+item.style}">
+            <img [src]="item.path" alt="" />
           </div>
         </div>
         <span class="value">{{ item.value | number:'1.0-0' }}</span>
@@ -84,40 +44,20 @@
     </div>
   </div>
   <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
-    <div
-      fxFlex="auto"
-      class="user-list-container"
-      fxLayout="column"
-      fxLayoutGap="16px"
-    >
+    <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="16px">
       <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
-        <span class="nbr-user"
-          >Utilisateurs enregistrés ({{ collaborators?.length || 0 }})</span
-        >
-        <div
-          class="dropdown dropdown-filter"
-          [appDropdown]="'dropdown-filter-user-list-saved'"
-        >
-          <div
-            class="btn-filter"
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-          >
-            <span class="icon" fxLayoutAlign="center center"
-              ><mat-icon fxLayoutAlign="center center"
-                >filter_list</mat-icon
-              ></span
-            >
+        <span class="nbr-user">Utilisateurs enregistrés ({{ collaborators?.length || 0 }})</span>
+        <div class="dropdown dropdown-filter" [appDropdown]="'dropdown-filter-user-list-saved'">
+          <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="icon" fxLayoutAlign="center center"><mat-icon
+                fxLayoutAlign="center center">filter_list</mat-icon></span>
             <span class="text">Filtrer</span>
           </div>
           <div class="dropdown-content" id="dropdown-filter-user-list-saved">
             <div class="dropdown-option" (click)="filterBy = 'createdAt'">
               Nouveaux utilisateurs inscrits récemment
             </div>
-            <div
-              class="dropdown-option"
-              (click)="filterBy = 'hasValidatedDemande'"
-            >
+            <div class="dropdown-option" (click)="filterBy = 'hasValidatedDemande'">
               Utilisateurs avec les avances en cours
             </div>
           </div>
@@ -126,7 +66,7 @@
       <table class="table">
         <tr class="titles-container" fxLayout="row">
           <th class="title" fxFlex="20" fxLayoutAlign="start center">
-            Entreprise
+            Identifiant
           </th>
           <th class="title" fxFlex="20" fxLayoutAlign="center center">
             Collaborateur
@@ -137,31 +77,13 @@
             Avance sur salaire
           </th>
         </tr>
-        <tr
-          class="user"
-          fxLayout="row"
-          *ngFor="let req of collaborators; let i = index"
-        >
-          <td
-            class="radio-container"
-            fxFlex="20"
-            fxLayoutAlign="start center"
-            fxLayout="row"
-            fxLayoutGap="16px"
-          >
-            <span
-              (click)="selectCollab(req)"
-              class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}"
-              fxLayoutAlign="center center"
-            ></span>
-            <span>{{ req?.organization?.name }}</span>
+        <tr class="user" fxLayout="row" *ngFor="let req of collaborators; let i = index">
+          <td class="radio-container" fxFlex="20" fxLayoutAlign="start center" fxLayout="row" fxLayoutGap="16px">
+            <span (click)="selectCollab(req)" class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}"
+              fxLayoutAlign="center center"></span>
+            <span>{{ req?.uniqueIdentifier }}</span>
           </td>
-          <td
-            class="name"
-            fxFlex="20"
-            fxLayoutAlign="start center"
-            fxLayoutGap="8px"
-          >
+          <td class="name" fxFlex="20" fxLayoutAlign="start center" fxLayoutGap="8px">
             <div class="circle" fxLayoutAlign="center center">
               {{ req?.firstName[0] }}{{ req?.lastName[0] }}
             </div>
@@ -173,55 +95,24 @@
           <td class="date" fxFlex="20" fxLayoutAlign="center center">
             {{ req?.createdAt | frenchDate }}
           </td>
-          <td
-            class="advance"
-            fxFlex="20"
-            fxLayout="row"
-            fxLayoutGap="8px"
-            fxLayoutAlign="center center"
-          >
-            <span
-              class="statut statut--{{
+          <td class="advance" fxFlex="20" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+            <span class="statut statut--{{
                 getLastRequest(req)?.status | lowercase
-              }}"
-            ></span
-            ><span
-              >{{ getLastRequest(req)?.amount ? "XOF" : "" }}
-              {{ getLastRequest(req)?.amount| number:'1.0-0' || "__" }}</span
-            >
+              }}"></span><span>{{ getLastRequest(req)?.amount ? "XOF" : "" }}
+              {{ getLastRequest(req)?.amount| number:'1.0-0' || "__" }}</span>
           </td>
         </tr>
       </table>
-      <div
-        class="legends"
-        fxLayout="row"
-        fxLayoutAlign="center center"
-        fxLayoutGap="16px"
-      >
-        <div
-          class="valid"
-          fxLayout="row"
-          fxLayoutAlign="center center"
-          fxLayoutGap="8px"
-        >
+      <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+        <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
           <span class="color"></span>
           <div class="nbr">Validé ({{ nbValid }})</div>
         </div>
-        <div
-          class="rejected"
-          fxLayout="row"
-          fxLayoutAlign="center center"
-          fxLayoutGap="8px"
-        >
+        <div class="rejected" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
           <span class="color"></span>
           <div class="nbr">Rejeté ({{ nbRejected }})</div>
         </div>
-        <div
-          class="pending"
-          fxLayout="row"
-          fxLayoutAlign="center center"
-          fxLayoutGap="8px"
-        >
+        <div class="pending" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">
           <span class="color"></span>
           <div class="nbr">En attente ({{ nbPending }})</div>
         </div>
@@ -232,4 +123,3 @@
     </div>
   </div>
 </div>
-

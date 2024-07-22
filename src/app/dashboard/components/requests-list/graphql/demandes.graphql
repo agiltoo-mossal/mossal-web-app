@@ -14,6 +14,7 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
       salary
       authorizedAdvance
       bankAccountNumber
+      uniqueIdentifier
 			# organization {
 			# 	name
 			# }

@@ -88,11 +88,11 @@ export function createTranslateLoader(http: HttpClient) {
     AdminModule,
     NgbModule,
     KeycloakAngularModule,
-    AuthModule
+    AuthModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ProgressBarInterceptor,

@@ -27,7 +27,7 @@ import { OverviewService } from './overview.service';
 })
 export class OverviewComponent implements OnInit {
   datas = [];
-  dataStatics=dataStatic
+  dataStatics = dataStatic;
   requests: Demande[] = [];
   sortedRequests: Demande[] = [];
   selectedReq: Demande;
@@ -45,7 +45,7 @@ export class OverviewComponent implements OnInit {
     private snackBarService: SnackBarService,
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
     private fb: FormBuilder,
-    private userCollaboratorService:OverviewService
+    private userCollaboratorService: OverviewService
   ) {
     const now = new Date('2024-12-31');
     this.metricsInput = this.fb.group({
@@ -62,32 +62,27 @@ export class OverviewComponent implements OnInit {
     });
     this.getData();
   }
-    ngOnInit(): void {
-     
-    }
+  ngOnInit(): void {}
 
-
-    private updateStaticData() {
-      const infoCount=[
-        this.nbAccordedRequest,
-        this.nbPending,
-        this.nbValid,
-        this.totalDemandeAmount,
-        this.nbActifUsers,
-        this.totalDemandeToPay,
-
-      ];
-      this.dataStatics=this.dataStatics.map((item,index)=>{
-        return {...item,value:infoCount[index]}
-      })
-
-    }
+  private updateStaticData() {
+    const infoCount = [
+      this.nbAccordedRequest,
+      this.nbPending,
+      this.nbValid,
+      this.totalDemandeAmount,
+      this.nbActifUsers,
+      this.totalDemandeToPay,
+    ];
+    this.dataStatics = this.dataStatics.map((item, index) => {
+      return { ...item, value: infoCount[index] };
+    });
+  }
   getData() {
     try {
       this.getDemandes();
       this.fetchCollabs();
       this.getDemandesMetrics();
-    } catch(e) {}
+    } catch (e) {}
   }
 
   toggleMenuFilterDate() {
@@ -249,8 +244,6 @@ export class OverviewComponent implements OnInit {
     });
     return users.length;
   }
-
-
 
   getLastRequest(req: any) {
     return (
