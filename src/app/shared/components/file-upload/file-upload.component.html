@@ -42,7 +42,6 @@
 <div #myModal class="modal" [ngClass]="showModal ? 'active' : ''">
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">&times;</span>
     <div class="container">
       <div class="row">
         <div class="multi-button">
@@ -59,50 +58,54 @@
             <p class="item_p">{{ dataResponseFile?.totalRows || 0 }}</p>
           </div>
         </div>
-        <button class="btn-red " (click)="showModal = false">
+        <button class="btn-red " (click)="closeModal()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <table class="responsive-table">
-        <thead>
-          <tr>
-            <th scope="col">EMAIL</th>
-            <th scope="col">PRENOM</th>
-            <th scope="col">NOM</th>
-            <th scope="col">DATE DE NAISSANCE</th>
-            <th scope="col">NUMERO</th>
-            <th scope="col">ADRESSE</th>
-            <th scope="col">ETAT SAUVEGARDE</th>
-          </tr>
-        </thead>
+      <div class="table-container">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th scope="col">EMAIL</th>
+              <th scope="col">PRENOM</th>
+              <th scope="col">NOM</th>
+              <th scope="col">DATE DE NAISSANCE</th>
+              <th scope="col">NUMERO</th>
+              <th scope="col">ADRESSE</th>
+              <th scope="col">ETAT SAUVEGARDE</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          @for (item of dataResponseFile?.data; track $index) {
-          <tr>
-            <th scope="row">{{ item.email }}</th>
-            <td data-title="Released">{{ item.firstName }}</td>
-            <td data-title="Studio">{{ item.lastName }}</td>
-            <td data-title="Worldwide Gross" data-type="currency">
-              {{ item.birthDate }}
-            </td>
-            <td data-title="Domestic Gross" data-type="currency">
-              {{ item.phoneNumber }}
-            </td>
-            <td data-title="International Gross" data-type="currency">
-              {{ item.address }}
-            </td>
-            <td data-title="Budget" data-type="currency" class="flex">
-              @if(item.error){
-              <mat-icon color="warn">rules</mat-icon>
-              }@else {
-              <mat-icon class="success">done</mat-icon>
-              }
-            </td>
-          </tr>
+          <tbody>
+            @for (item of dataResponseFile?.data; track $index) {
+            <tr>
+              <th scope="row">{{ item.email }}</th>
+              <td data-title="Released">{{ item.firstName }}</td>
+              <td data-title="Studio">{{ item.lastName }}</td>
+              <td data-title="Worldwide Gross" data-type="currency">
+                {{ item.birthDate | date: "dd/MM/yyyy" }}
+              </td>
+              <td data-title="Domestic Gross" data-type="currency">
+                {{ item.phoneNumber }}
+              </td>
+              <td data-title="International Gross" data-type="currency">
+                {{ item.address }}
+              </td>
+              <td data-title="Budget" data-type="currency" class="flex">
+                
+                @if(item.error){
+                <mat-icon color="warn">rules</mat-icon>
+                }@else {
+                <mat-icon class="success">done</mat-icon>
+                }
+              </td>
+            </tr>
 
-          }
-        </tbody>
-      </table>
+            }
+          </tbody>
+        </table>
+
+      </div>
     </div>
   </div>
 </div>

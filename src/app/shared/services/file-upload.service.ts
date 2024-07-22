@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { environment } from 'src/environments/environment';
 // import { UploadfileGQL } from 'src/graphql/generated';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FileUploadService {
+  endPoint = environment.API_URI;
   constructor(private http: HttpClient) {}
   signalFile: WritableSignal<string | ArrayBuffer> = signal(null);
   signalDataResponse: WritableSignal<any> = signal(null);
@@ -29,7 +31,8 @@ export class FileUploadService {
     const formData: FormData = new FormData();
 
     formData.append('file', file);
-    this.http.post('http://localhost:3003/users/upload', formData).subscribe({
+
+    this.http.post(`${this.endPoint}/users/upload`, formData).subscribe({
       next: (res) => {
         console.log(res);
         this.signalDataResponse.set(res);

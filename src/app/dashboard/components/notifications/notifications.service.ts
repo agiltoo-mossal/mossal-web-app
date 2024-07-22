@@ -8,7 +8,9 @@ import { FetchCurrentAdminGQL } from 'src/graphql/generated';
   providedIn: 'root',
 })
 export class NotificationsService {
-  private socket = io(environment.ENTERPRISE_URI);
+  private socket = io(environment.ENTERPRISE_URI, {
+    transports: ['websocket'],
+  });
   private organization: string;
   unViewedNotification: Subject<any> = new Subject();
   constructor(private fetchCurrentAdminGQL: FetchCurrentAdminGQL) {

@@ -23,8 +23,9 @@ export class FileUploadComponent {
     });
     effect(() => {
       this.dataResponseFile = this.fileUploadService.getDataResponse();
-      if (this.dataResponseFile) this.showModal = true;
-      console.log(this.dataResponseFile);
+      if (this.dataResponseFile) {
+        this.showModal = true;
+      }
     });
   }
   onFileSelected(event: Event) {
@@ -33,5 +34,9 @@ export class FileUploadComponent {
       const file: File = (event.target as HTMLInputElement).files[0];
       this.fileUploadService.renderFile(file);
     }
+  }
+  closeModal() {
+    this.showModal = false;
+    this.fileUploadService.signalDataResponse.set(null);
   }
 }

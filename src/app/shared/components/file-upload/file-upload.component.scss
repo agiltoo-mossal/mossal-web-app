@@ -120,7 +120,6 @@
 }
 
 .btn-red{
-  font-size: 1rem;
   background-color: rgba(255, 0, 0, 0.765);
   outline: none;
   border: none;
@@ -129,18 +128,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  padding: 10px;
+  padding: 5px;
   transition: 1.2s ease;
   position: absolute;
-  top: 3px;
-  right: 20px;
+  top: -40px;
+  right: 8px;
 
 }
 .btn-red:hover{
   background-color: white;
+}
+.btn-red *{
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .btn-red:hover *{
   color:rgba(255, 0, 0, 0.765);
@@ -165,10 +170,15 @@ $bp-homer: 75em;
     margin: 2em auto;
   }
 }
+.table-container{
+  height: 400px;
+  overflow-y: scroll;
+}
 
 .responsive-table {
   width: 100%;
-  margin-bottom: 1.5em;
+  margin-bottom: 1em;
+  
   border-spacing: 0;
 
   @media (min-width: $bp-bart) {
@@ -319,14 +329,14 @@ $bp-homer: 75em;
       text-align: right;
 
       @media (min-width: $bp-bart) {
-        border-left: 1px solid white;
+        border-right: 1px solid white;
         border-bottom: 1px solid white;
         text-align: center;
       }
 
       &:last-of-type {
         @media (min-width: $bp-bart) {
-          border-right: 1px solid white;
+          border-bottom: none;
         }
       }
     }
