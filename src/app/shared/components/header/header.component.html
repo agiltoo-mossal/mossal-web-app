@@ -44,11 +44,13 @@
         </div>
         <div class="user-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="50px">
             <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="8px">
-                <div class="user-img">
-                    <img src="./assets/img/user-img.png" alt="">
-                </div>
+                
                 <div class="user-detail" fxLayout="column" fxLayoutAlign="center start">
-                    <span class="name">{{ user?.firstName }} {{ user?.lastName }}</span>
+                    <div fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="start end">
+                    <p class="name">{{ user?.firstName }} </p>
+                    <p class="name">{{ user?.lastName }}</p>
+
+                    </div>
                     <span class="role">{{ user?.position || 'ADMIN' }}</span>
                 </div>
             </div>
