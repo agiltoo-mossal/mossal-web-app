@@ -5,8 +5,58 @@
   fxLayoutGap="40px"
 >
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    
-      <app-file-upload></app-file-upload>
+    <div fxLayout="row" fxLayoutGap="19px">
+      <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
+        <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+        <input
+          [(ngModel)]="search"
+          type="text"
+          class="form-control"
+          placeholder="Recherche"
+        />
+      </div>
+      <div fxLayout="row" fxLayoutGap="19px">
+        <div class="dropdown" appDropdown="downlod-dropdown">
+          <button
+            class="btn btn-primary"
+            fxLayoutAlign="center center"
+            fxLayoutGap="8px"
+          >
+            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
+            ><span>Importer un fichier</span>
+          </button>
+          <div class="dropdown-content" id="downlod-dropdown">
+          <app-file-upload></app-file-upload>
+            <div
+              class="dropdown-option"
+              fxLayout="column"
+              fxLayoutGap="16px"
+              fxLayoutAlign="start center"
+            >
+              <div class="icon">
+                <img src="./assets/img/icon-download.png" alt="" />
+              </div>
+              <div
+                fxLayout="column"
+                fxLayoutGap="4px"
+                fxLayoutAlign="start center"
+              >
+                <span class="type">Télécharger le template</span>
+                <span class="format">template.csv</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="btn btn-primary"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+          routerLink="/dashboard/admins/create-admin"
+        >
+          <span>+</span> <span>Ajouter un admin</span>
+        </button>
+      </div>
+    </div>
     <table class="table table-wrapper">
       <tr
         class="titles-container"
