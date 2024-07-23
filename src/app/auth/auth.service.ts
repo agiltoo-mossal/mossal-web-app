@@ -6,6 +6,7 @@ import {
   LoginAdminGQL,
   LoginInput,
   ResetAdminPasswordGQL,
+  StartForgotPasswordGQL,
 } from 'src/graphql/generated';
 import { SnackBarService } from '../shared/services/snackbar.service';
 
@@ -29,6 +30,7 @@ export class AuthService {
     private loginAdminGQL: LoginAdminGQL,
     private snackBarService: SnackBarService,
     private resetPasswordGQL: ResetAdminPasswordGQL,
+    private requestResetPwdGQL: StartForgotPasswordGQL,
     private router: Router
   ) {}
 
@@ -136,6 +138,29 @@ export class AuthService {
         duration: 2500,
       });
       throw e;
+    }
+  }
+
+  async requestResetPassword(email: string) {
+    try {
+      const res = await lastValueFrom(
+        this.requestResetPwdGQL.mutate({
+          email,
+        })
+      );
+      if (res.data.startForgotPassword) {
+        this.router.navigate(['/auth/login']);
+      } else {
+        this.snackBarService.showSnackBar('email invalide', '', {
+          panelClass: ['red-snackbar'],
+          duration: 2500,
+        });
+      }
+    } catch (e) {
+      this.snackBarService.showSnackBar('Email est invalide!', '', {
+        panelClass: ['red-snackbar'],
+        duration: 2500,
+      });
     }
   }
 
