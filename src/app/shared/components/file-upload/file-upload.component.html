@@ -1,41 +1,31 @@
-<div fxLayout="row" fxLayoutGap="19px">
-  <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
-    <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
-    <input
-      [(ngModel)]="search"
-      type="text"
-      class="form-control"
-      placeholder="Recherche"
-    />
+
+<div
+  class="dropdown-option"
+  fxLayout="column"
+  fxLayoutGap="16px"
+  fxLayoutAlign="start center"
+>
+  <div class="icon">
+    <img src="./assets/img/icon-upload.png" alt="" />
   </div>
-  <div fxLayout="row" fxLayoutGap="19px">
-    <form enctype="multipart/form-data">
-      <label
-        for="file_input"
-        class="btn btn-primary"
-        fxLayoutAlign="center center"
-        fxLayoutGap="8px"
-      >
-        <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
-        ><span>Importer un fichier</span>
-      </label>
-      <input
-        type="file"
-        (change)="onFileSelected($event)"
-        accept=".csv"
-        style="display: none"
-        id="file_input"
-      />
-    </form>
-    <button
-      class="btn btn-primary"
-      fxLayoutAlign="center center"
-      fxLayoutGap="8px"
-      routerLink="/dashboard/collaborators/create-collaborator"
+  <form enctype="multipart/form-data">
+    <label
+      fxLayout="column"
+      fxLayoutGap="4px"
+      fxLayoutAlign="start center"
+      for="file_input"
     >
-      <span>+</span> <span>Ajouter un Collaborateur</span>
-    </button>
-  </div>
+      <span class="type">Importer</span>
+      <span class="format">Format accepté : csv</span>
+    </label>
+    <input
+      type="file"
+      (change)="onFileSelected($event)"
+      accept=".csv"
+      style="display: none"
+      id="file_input"
+    />
+  </form>
 </div>
 
 <!-- The Modal -->
@@ -58,7 +48,7 @@
             <p class="item_p">{{ dataResponseFile?.totalRows || 0 }}</p>
           </div>
         </div>
-        <button class="btn-red " (click)="closeModal()">
+        <button class="btn-red" (click)="closeModal()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -83,7 +73,7 @@
               <td data-title="Released">{{ item.firstName }}</td>
               <td data-title="Studio">{{ item.lastName }}</td>
               <td data-title="Worldwide Gross" data-type="currency">
-                {{ item.birthDate | date: "dd/MM/yyyy" }}
+                {{ item.birthDate | date : "dd/MM/yyyy" }}
               </td>
               <td data-title="Domestic Gross" data-type="currency">
                 {{ item.phoneNumber }}
@@ -92,7 +82,6 @@
                 {{ item.address }}
               </td>
               <td data-title="Budget" data-type="currency" class="flex">
-                
                 @if(item.error){
                 <mat-icon color="warn">rules</mat-icon>
                 }@else {
@@ -104,7 +93,6 @@
             }
           </tbody>
         </table>
-
       </div>
     </div>
   </div>

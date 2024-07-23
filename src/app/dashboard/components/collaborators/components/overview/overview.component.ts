@@ -31,7 +31,10 @@ export class OverviewComponent {
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
       if (tempData) {
-        this.collabs = [...this.collabs, ...tempData.data];
+        this.collabs = [
+          ...tempData.data.filter((item) => item.error == false),
+          ...this.collabs,
+        ];
       }
     });
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
