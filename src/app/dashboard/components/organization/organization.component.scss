@@ -1,32 +1,30 @@
 .toggle-container {
-    width: 77px;
+  width: 77px;
 }
 
 .btn-toggle-container {
+  display: block;
+  width: 100%;
+  height: 32px;
+  border-radius: 14px;
+  background-color: #0c1d58;
+  padding: 4px;
+
+  .btn-toggle {
     display: block;
-    width: 100%;
-    height: 32px;
-    border-radius: 14px;
-    background-color: #0C1D58;
-    padding: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
 
-    .btn-toggle {
-        display: block;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: #FFF;
-        cursor: pointer;
+    transform: translateX(0px);
+    transition: all 0.6s;
 
-        transform: translateX(0px);
-        transition: all .6s;
-
-
-        &.actived {
-            transform: translateX(45px);
-        }
+    &.actived {
+      transform: translateX(45px);
     }
-
+  }
 }
 
 input {
@@ -42,12 +40,82 @@ label {
 }
 
 .text-container {
-    display: block;
-    width: 100%;
-    color: var(--Noir, #000);
-    font-family: Poppins;
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 120%;
-    letter-spacing: 0.055px;
+  display: block;
+  width: 100%;
+  color: var(--Noir, #000);
+  font-family: Poppins;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: 0.055px;
+}
+
+// date
+h1 {
+  font-weight: 800;
+  margin: 1rem 0 0;
+}
+
+ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  flex-wrap: wrap;
+  list-style: none;
+
+  li {
+    display: flex;
+    width: 4rem;
+    height: 4rem;
+    flex-flow: column;
+    font-weight: 300;
+    border-radius: 0.2rem;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 5px 5px 0 rgba(31, 38, 135, 0.37);
+    transition: box-shadow 0.3s ease-in-out;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    margin: 0.35rem;
+    position: relative;
+    overflow: hidden;
+
+    button {
+      padding: 1rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    time {
+      font-size: 2rem;
+      margin: 0 0 1rem 0;
+      font-weight: 500;
+    }
+    &:hover {
+      box-shadow: 0 10px 10px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 0px;
+      right: 0;
+      bottom: -4px;
+      background-color: #fcd980;
+    }
+    .active {
+      time {
+        font-weight: 800;
+      }
+      &::after {
+        height: 8px;
+      }
+    }
+  }
 }
