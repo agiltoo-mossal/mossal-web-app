@@ -145,7 +145,7 @@
                 fxLayout="row"
                 fxLayoutAlign="start center"
                 fxLayoutGap="12px"
-                routerLink="/dashboard/collaborators/{{ collab.id }}"
+                routerLink="/dashboard/collaborators/{{ collab.id ?? collab?._id }}"
               >
                 <span><mat-icon>edit</mat-icon></span>
                 <span>Editer</span>
