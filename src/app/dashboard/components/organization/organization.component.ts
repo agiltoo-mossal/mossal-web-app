@@ -82,6 +82,10 @@ export class OrganizationComponent {
   setDate(item: number) {
     console.log(item);
     this.dayLimite = item;
+    this.itemsCardDate.forEach((element) => {
+      element.active = false;
+    });
+    this.itemsCardDate[item - 1].active = true;
   }
   updateOrganization() {
     if (this.form.invalid) {

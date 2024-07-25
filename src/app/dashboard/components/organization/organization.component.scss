@@ -94,7 +94,7 @@ ul {
     time {
       font-size: 2rem;
       margin: 0 0 1rem 0;
-      font-weight: 500;
+      font-weight: 400;
     }
     &:hover {
       box-shadow: 0 10px 10px 0 rgba(31, 38, 135, 0.37);
@@ -108,13 +108,14 @@ ul {
       right: 0;
       bottom: -4px;
       background-color: #fcd980;
+      transition: height 0.2s ease-in-out;
     }
-    .active {
+    &.active {
       time {
         font-weight: 800;
       }
       &::after {
-        height: 8px;
+        height: 9px;
       }
     }
   }

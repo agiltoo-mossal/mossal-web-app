@@ -60,7 +60,7 @@
           <ul>
             @for (item of itemsCardDate; track $index) {
 
-            <li [ngClass]="{'active': item.active}">
+            <li [ngClass]="{'active': item.active==true}">
                 <button (click)="setDate(item.day)">
                     <time [dateTime]="lastDayOfCurrentMonth.getFullYear() + '-' + (lastDayOfCurrentMonth.getMonth() )+ '-' + item">{{item.day}}</time>
                 </button>
