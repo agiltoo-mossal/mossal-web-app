@@ -94,7 +94,7 @@
         >
           <span
             (click)="selectCollab(collab)"
-            class="radio {{ selectedCollab?.id === collab.id ? 'active' : '' }}"
+            class="radio {{ (selectedCollab?.id === collab.id)  ? 'active' : '' }}"
             fxLayoutAlign="center center"
           ></span>
           <span>{{ collab.uniqueIdentifier }}</span>
@@ -184,7 +184,7 @@
       </tr>
     </table>
   </div>
-  <div class="info-current-user">
+  <div class="info-current-user container_sticky">
     <app-user-details [user]="selectedCollab"></app-user-details>
   </div>
 </div>
