@@ -22,6 +22,21 @@ export type Scalars = {
   link__Import: { input: any; output: any; }
 };
 
+export type Activity = {
+  __typename?: 'Activity';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ActivityInput = {
+  id: Scalars['String']['input'];
+};
+
+export type ActivityUpdateInput = {
+  id: Scalars['String']['input'];
+};
+
 export type Demande = {
   __typename?: 'Demande';
   amount: Scalars['Float']['output'];
@@ -31,8 +46,8 @@ export type Demande = {
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
-  paymentSuccess?: Maybe<Scalars['Boolean']['output']>;
   status: DemandeStatus;
+  statusText?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -97,6 +112,7 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
+  createActivity: Activity;
   createFinancialOrganization: Organization;
   createOrganization: Organization;
   disableEmailNotification: Scalars['Boolean']['output'];
@@ -110,6 +126,7 @@ export type Mutation = {
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateActivity: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
@@ -122,6 +139,11 @@ export type Mutation = {
 
 export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateActivityArgs = {
+  activityInput: ActivityInput;
 };
 
 
@@ -188,6 +210,12 @@ export type MutationStartForgotPasswordArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateActivityArgs = {
+  activityId: Scalars['ID']['input'];
+  activityInput: ActivityUpdateInput;
 };
 
 
@@ -281,6 +309,8 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
+  fetchActivities: Array<Activity>;
+  fetchActivity: Activity;
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
   fetchOrganization: Organization;
@@ -314,6 +344,11 @@ export type QueryEmailExistsArgs = {
   email: Scalars['String']['input'];
   isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryFetchActivityArgs = {
+  activityId: Scalars['ID']['input'];
 };
 
 
@@ -563,7 +598,7 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
+export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -1011,6 +1046,7 @@ export const FetchOrganizationDemandesDocument = gql`
     status
     number
     fees
+    statusText
     collaborator {
       id
       firstName
