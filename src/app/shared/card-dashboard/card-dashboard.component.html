@@ -1,0 +1,20 @@
+<div
+  class="data-card"
+  fxLayout="column"
+  fxFlex="23"
+  fxFlex.lt-lg="31"
+  fxFlex.lt-sm="100"
+  fxFlex.lt-md="48"
+>
+  <div class="header" fxLayout="row" fxLayoutAlign="space-between start">
+    <div class="label">{{ data.title }}</div>
+    <div
+      class="data-image"
+      fxLayoutAlign="center center"
+      [ngStyle]="{ border: '2px solid ' + data.style }"
+    >
+      <img [src]="data.path" alt="" />
+    </div>
+  </div>
+  <span class="value">{{ data.value | number : "1.0-0" }}</span>
+</div>

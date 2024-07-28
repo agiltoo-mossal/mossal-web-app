@@ -26,8 +26,11 @@
             ><span>Importer un fichier</span>
           </button>
           <div class="dropdown-content" id="downlod-dropdown">
-          <app-file-upload></app-file-upload>
-            <div
+            <app-file-upload></app-file-upload>
+            <a
+              style="display: block;"
+              href="./assets/files/template-collaborator.csv"
+              [download]="'template-collaborator-'+generateNumber()+'.csv' "
               class="dropdown-option"
               fxLayout="column"
               fxLayoutGap="16px"
@@ -44,7 +47,7 @@
                 <span class="type">Télécharger le template</span>
                 <span class="format">template.csv</span>
               </div>
-            </div>
+            </a>
           </div>
         </div>
         <button
@@ -94,7 +97,7 @@
         >
           <span
             (click)="selectCollab(collab)"
-            class="radio {{ (selectedCollab?.id === collab.id)  ? 'active' : '' }}"
+            class="radio {{ selectedCollab?.id === collab.id ? 'active' : '' }}"
             fxLayoutAlign="center center"
           ></span>
           <span>{{ collab.uniqueIdentifier }}</span>
@@ -145,7 +148,9 @@
                 fxLayout="row"
                 fxLayoutAlign="start center"
                 fxLayoutGap="12px"
-                routerLink="/dashboard/collaborators/{{ collab.id ?? collab?._id }}"
+                routerLink="/dashboard/collaborators/{{
+                  collab.id ?? collab?._id
+                }}"
               >
                 <span><mat-icon>edit</mat-icon></span>
                 <span>Editer</span>

@@ -39,7 +39,9 @@ export class OverviewComponent {
     });
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
-
+  generateNumber() {
+    return new Date().getTime();
+  }
   fetchCollabs() {
     this.fetchOrganizationCollaboratorsGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
