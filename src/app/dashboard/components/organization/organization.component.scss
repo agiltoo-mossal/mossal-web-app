@@ -100,7 +100,7 @@ ul {
       box-shadow: 0 10px 10px 0 rgba(31, 38, 135, 0.37);
     }
 
-    &::after {
+    &::after, &::before {
       content: "";
       position: absolute;
       width: 100%;
@@ -110,12 +110,18 @@ ul {
       background-color: #fcd980;
       transition: height 0.2s ease-in-out;
     }
-    &.active {
+    &.pending {
       time {
         font-weight: 800;
       }
       &::after {
         height: 9px;
+      }
+    }
+    &.active {
+      &::before {
+        height: 100%;
+        z-index: -1;
       }
     }
   }

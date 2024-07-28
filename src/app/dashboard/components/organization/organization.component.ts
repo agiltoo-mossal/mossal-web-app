@@ -23,7 +23,7 @@ export class OrganizationComponent {
     new Date().getMonth() + 1,
     0
   );
-  itemsCardDate: { day: number; active: boolean }[] = [];
+  itemsCardDate: { day: number; active: boolean; pending: boolean }[] = [];
   password: boolean = true;
   newPassword: boolean = true;
   ConfirmPassword: boolean = true;
@@ -52,22 +52,20 @@ export class OrganizationComponent {
     });
 
     this.getCurrentorganization();
-    for (
-      let index = 1;
-      index <= this.lastDayOfCurrentMonth.getDate();
-      index++
-    ) {
+    this.generateCardItems();
+  }
+
+  generateCardItems() {
+    for (let index = 1; index <= 28; index++) {
       const daySelected = {
         day: index,
         active: false,
+        pending: false,
       };
-      if (index === 15) {
-        daySelected.active = true;
-      }
+
       this.itemsCardDate.push(daySelected);
     }
   }
-
   getCurrentorganization(useCache = true) {
     this.fetchCurrentAdminGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
@@ -75,17 +73,52 @@ export class OrganizationComponent {
         if (result.data) {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
+          console.log({ org: this.organization });
           this.form.patchValue(this.organization);
+          this.itemsCardDate.forEach((element) => {
+            element.active = false;
+            if (element.day === this.organization.demandeDeadlineDay) {
+              element.active = true;
+            }
+          });
         }
       });
   }
   setDate(item: number) {
-    console.log(item);
     this.dayLimite = item;
     this.itemsCardDate.forEach((element) => {
-      element.active = false;
+      element.pending = false;
     });
-    this.itemsCardDate[item - 1].active = true;
+    this.itemsCardDate[item - 1].pending = true;
+    this.dayLimite = item;
+  }
+  updateDateLimit() {
+    this.updateOrganizationGQL
+      .mutate({
+        organizationId: this.organization.id,
+        organizationInput: {
+          demandeDeadlineDay: this.dayLimite,
+        } as any,
+      })
+      .subscribe({
+        next: (result) => {
+          if (result.data.updateOrganization) {
+            this.snackBarService.showSuccessSnackBar(
+              'DATE LIMITE DES DEMANDES EST MODIFIEE'
+            );
+            this.itemsCardDate.forEach((item) => {
+              item.pending = false;
+              item.active = false;
+            });
+            this.itemsCardDate[this.dayLimite - 1].active = true;
+          } else {
+            this.snackBarService.showErrorSnackBar();
+          }
+        },
+        error: (error) => {
+          this.snackBarService.showErrorSnackBar();
+        },
+      });
   }
   updateOrganization() {
     if (this.form.invalid) {
