@@ -28,6 +28,7 @@ import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match
 import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
 import { OrganizationComponent } from './components/organization/organization.component';
+import { ActivitiesComponent } from './components/activities/activities.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { OrganizationComponent } from './components/organization/organization.co
     UserComponent,
     NotificationsComponent,
     RefundChartsComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    ActivitiesComponent
   ],
   imports: [
     CommonModule,
