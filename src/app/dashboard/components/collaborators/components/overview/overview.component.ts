@@ -81,14 +81,20 @@ export class OverviewComponent implements AfterViewInit {
     private fileUploadService: FileUploadService,
     private fb: FormBuilder
   ) {
-    this.fetchCollabs();
+    // this.fetchCollabs();
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
       if (tempData) {
-        this.collabs = [
-          ...tempData.data.filter((item) => item.error == false),
-          ...this.collabs,
-        ];
+        // this.data = [
+        //   ...tempData.data.filter((item) => item.error == false),
+        //   ...this.data,
+        // ];
+        // this.dataSource.data = this.data;
+        // this.initSearchForm();
+
+        this.searchForm.patchValue({
+          search: '',
+        });
       }
     });
     this.initSearchForm();
@@ -160,6 +166,7 @@ export class OverviewComponent implements AfterViewInit {
       .subscribe((data: any) => {
         this.data = data.fetchPaginatedOrganizationCollaborators.results as any;
         this.dataSource.data = this.data as any;
+        this.selectedCollab = this.data[0];
         this.resultsLength =
           data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
         console.log({ data });
