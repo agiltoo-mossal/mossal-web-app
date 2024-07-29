@@ -131,6 +131,11 @@ export class SidebarComponent implements OnInit {
         link: 'organization',
         icon: 'business',
       },
+      {
+        label: 'Activities',
+        link: 'activities',
+        icon: 'feed',
+      },
     ];
   }
 

@@ -29,6 +29,12 @@ import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match
 import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
 import { OrganizationComponent } from './components/organization/organization.component';
+import { ActivitiesComponent } from './components/activities/activities.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
 
 @NgModule({
@@ -40,6 +46,7 @@ import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.
     NotificationsComponent,
     RefundChartsComponent,
     OrganizationComponent,
+    ActivitiesComponent,
     CardDashboardComponent,
   ],
   imports: [
@@ -66,6 +73,11 @@ import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.
     PropertyMatchPipe,
     FilterModule,
     DemandeStatusModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   providers: [NotificationsService],
 })
