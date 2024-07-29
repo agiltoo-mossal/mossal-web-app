@@ -46,6 +46,7 @@ export type Demande = {
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
+  rejectedReason?: Maybe<Scalars['String']['output']>;
   status: DemandeStatus;
   statusText?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -264,6 +265,17 @@ export type Notification = {
   viewedByMe: Scalars['Boolean']['output'];
 };
 
+/** Sort order */
+export enum OrderByDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export type OrderByInput = {
+  direction: OrderByDirection;
+  property: Scalars['String']['input'];
+};
+
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
@@ -298,6 +310,26 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PaginatedDemandeResult = {
+  __typename?: 'PaginatedDemandeResult';
+  pagination: PaginationInfo;
+  results: Array<Demande>;
+};
+
+export type PaginatedUserResult = {
+  __typename?: 'PaginatedUserResult';
+  pagination: PaginationInfo;
+  results: Array<User>;
+};
+
+export type PaginationInfo = {
+  __typename?: 'PaginationInfo';
+  currentPage: Scalars['Int']['output'];
+  pageCount: Scalars['Int']['output'];
+  pageSize: Scalars['Int']['output'];
+  totalItems: Scalars['Int']['output'];
+};
+
 export type Payment = {
   __typename?: 'Payment';
   id: Scalars['ID']['output'];
@@ -320,6 +352,8 @@ export type Query = {
   fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
+  fetchPaginatedOrganizationCollaborators: PaginatedUserResult;
+  fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
   fetchPayments: Array<Payment>;
   loginAdmin: Session;
@@ -377,6 +411,18 @@ export type QueryFetchOrganizationDemandesArgs = {
 };
 
 
+export type QueryFetchPaginatedOrganizationCollaboratorsArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedOrganizationDemandesArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
 export type QueryFetchPaymentArgs = {
   paymentId: Scalars['ID']['input'];
 };
@@ -398,6 +444,13 @@ export type QueryUniqueIdentifierExistsArgs = {
   isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryDataConfigInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrderByInput>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResetPasswordInput = {
@@ -545,6 +598,14 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 
 
 export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
+
+export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchPaginatedOrganizationCollaborators: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> } };
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
@@ -876,6 +937,53 @@ export const FetchOrganizationCollaboratorsDocument = gql`
   })
   export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
     document = FetchOrganizationCollaboratorsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
+    query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrganizationCollaborators(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      firstName
+      lastName
+      email
+      phoneNumber
+      uniqueIdentifier
+      address
+      salary
+      balance
+      totalDemandeAmount
+      wizallAccountNumber
+      bankAccountNumber
+      position
+      authorizedAdvance
+      createdAt
+      updatedAt
+      blocked
+      favoriteWallet
+      birthDate
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedOrganizationCollaboratorsGQL extends Apollo.Query<FetchPaginatedOrganizationCollaboratorsQuery, FetchPaginatedOrganizationCollaboratorsQueryVariables> {
+    document = FetchPaginatedOrganizationCollaboratorsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

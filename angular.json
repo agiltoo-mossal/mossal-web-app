@@ -39,6 +39,7 @@
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss",
               "node_modules/xterm/css/xterm.css",
               "node_modules/slick-carousel/slick/slick.css",
@@ -121,7 +122,11 @@
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss", "node_modules/xterm/css/xterm.css"],
+            "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.scss",
+              "node_modules/xterm/css/xterm.css"
+            ],
             "scripts": []
           }
         }

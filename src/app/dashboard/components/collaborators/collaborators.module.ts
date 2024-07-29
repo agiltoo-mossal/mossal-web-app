@@ -14,6 +14,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
 import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-confirmation/requires-confirmation.module';
 import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -35,6 +40,11 @@ import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-
     FilterModule,
     FormsModule,
     RequiresConfirmationModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   exports: [CollaboratorsComponent],
 })
