@@ -1,6 +1,6 @@
 
 <label
-style="display: block;"
+style="display: flex; height: 100% ; flex-direction: column; justify-content: center; align-items: center; "
   for="file_input"
   class="dropdown-option"
   fxLayout="column"
@@ -83,7 +83,8 @@ style="display: block;"
               <td data-title="International Gross" data-type="currency">
                 {{ item.address }}
               </td>
-              <td data-title="Budget" data-type="currency" class="flex">
+              <td data-title="Budget" data-type="currency" class="flex"
+                [matTooltip]="item?.errorsArray.length > 0 ? item?.errorsArray.join(', ') : ''">
                 @if(item.error){
                 <mat-icon color="warn">rules</mat-icon>
                 }@else {

@@ -267,7 +267,6 @@ export type Notification = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
-  demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   maxDemandeAmount: Scalars['Float']['output'];
@@ -292,10 +291,9 @@ export type OrganizationInput = {
 };
 
 export type OrganizationUpdateInput = {
-  amountPercent?: InputMaybe<Scalars['Float']['input']>;
-  demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
-  fees?: InputMaybe<Scalars['Float']['input']>;
-  maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
+  amountPercent: Scalars['Float']['input'];
+  fees: Scalars['Float']['input'];
+  maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
 };

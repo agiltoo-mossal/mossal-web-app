@@ -6,6 +6,7 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
+
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
@@ -46,6 +47,7 @@ import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.
     DashboardRoutingModule,
     RouterModule,
     FlexLayoutModule,
+
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,
