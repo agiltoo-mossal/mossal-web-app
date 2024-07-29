@@ -15,6 +15,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** Any type */
+  Any: { input: any; output: any; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
   _Any: { input: any; output: any; }
@@ -25,17 +27,24 @@ export type Scalars = {
 export type Activity = {
   __typename?: 'Activity';
   createdAt: Scalars['DateTime']['output'];
+  currentValue?: Maybe<Scalars['Any']['output']>;
   id: Scalars['ID']['output'];
+  initialValue?: Maybe<Scalars['Any']['output']>;
+  message: Scalars['String']['output'];
+  meta?: Maybe<Scalars['Any']['output']>;
+  organization: Organization;
+  scope: ActivityScope;
   updatedAt: Scalars['DateTime']['output'];
+  user: User;
 };
 
-export type ActivityInput = {
-  id: Scalars['String']['input'];
-};
-
-export type ActivityUpdateInput = {
-  id: Scalars['String']['input'];
-};
+/** Possible activities */
+export enum ActivityScope {
+  Authentification = 'authentification',
+  Collaborateur = 'collaborateur',
+  Demande = 'demande',
+  Organisation = 'organisation'
+}
 
 export type Demande = {
   __typename?: 'Demande';
@@ -113,7 +122,6 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
-  createActivity: Activity;
   createFinancialOrganization: Organization;
   createOrganization: Organization;
   disableEmailNotification: Scalars['Boolean']['output'];
@@ -127,7 +135,6 @@ export type Mutation = {
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
-  updateActivity: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
@@ -140,11 +147,6 @@ export type Mutation = {
 
 export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
-};
-
-
-export type MutationCreateActivityArgs = {
-  activityInput: ActivityInput;
 };
 
 
@@ -211,12 +213,6 @@ export type MutationStartForgotPasswordArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
-};
-
-
-export type MutationUpdateActivityArgs = {
-  activityId: Scalars['ID']['input'];
-  activityInput: ActivityUpdateInput;
 };
 
 
@@ -310,6 +306,12 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PaginatedActivityResult = {
+  __typename?: 'PaginatedActivityResult';
+  pagination: PaginationInfo;
+  results: Array<Activity>;
+};
+
 export type PaginatedDemandeResult = {
   __typename?: 'PaginatedDemandeResult';
   pagination: PaginationInfo;
@@ -341,7 +343,6 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
-  fetchActivities: Array<Activity>;
   fetchActivity: Activity;
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
@@ -352,6 +353,7 @@ export type Query = {
   fetchOrganizationDemandes: Array<Demande>;
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
+  fetchPaginatedActivities: PaginatedActivityResult;
   fetchPaginatedOrganizationCollaborators: PaginatedUserResult;
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
@@ -408,6 +410,11 @@ export type QueryFetchOrganizationCollaboratorsArgs = {
 
 export type QueryFetchOrganizationDemandesArgs = {
   metricsInput?: InputMaybe<DemandesMetricsInput>;
+};
+
+
+export type QueryFetchPaginatedActivitiesArgs = {
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
 

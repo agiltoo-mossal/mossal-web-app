@@ -29,18 +29,7 @@ export interface PeriodicElement {
   symbol: string;
 }
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
+
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -140,7 +129,6 @@ export class OverviewComponent implements AfterViewInit {
             // sortOrder: this.sort.direction,
             search: this.searchForm?.value?.search,
           };
-          console.log({ queryFilter });
 
           return this.fetchPaginatedOrganizationCollaboratorsGQL.fetch(
             { queryFilter },
@@ -158,8 +146,7 @@ export class OverviewComponent implements AfterViewInit {
 
           // Only refresh the result length if there is new data. In case of rate
           // limit errors, we do not want to reset the paginator to zero, as that
-          // would prevent users from re-triggering requests.
-          console.log({ result });
+          // would prevent users from re-triggering requests
           return result.data;
         })
       )
@@ -169,7 +156,7 @@ export class OverviewComponent implements AfterViewInit {
         this.selectedCollab = this.data[0];
         this.resultsLength =
           data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
-        console.log({ data });
+          this.selectedCollab = this.data?.[0];
       });
   }
 

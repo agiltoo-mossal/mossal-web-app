@@ -63,7 +63,7 @@
         </button>
       </div>
     </div>
-  
+
 
     <div class="example-table-container">
       <table
@@ -78,13 +78,13 @@
         <!-- Number Column -->
         <ng-container matColumnDef="uniqueIdentifier">
           <th  mat-header-cell *matHeaderCellDef class="title " >Identifiant</th>
-          <td class="radio-container" mat-cell 
-         
+          <td class="radio-container" mat-cell
+
           *matCellDef="let row">
           <div class="radio-container">
           <span
             (click)="selectCollab(row)"
-            class="radio {{ row?.id === selectedCollab.id ? 'active' : '' }}"
+            class="radio {{ row?.id === selectedCollab?.id ? 'active' : '' }}"
             fxLayoutAlign="center center"
           ></span>
           <span>{{ row.uniqueIdentifier }}</span>
@@ -182,7 +182,7 @@
               </div>
             </div>
           </td>
-     
+
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
