@@ -98,7 +98,7 @@ ngAfterViewInit() {
           page: this.paginator.pageIndex + 1,
           // sortField: this.sort.active,
           // sortOrder: this.sort.direction,
-          search: this.search
+          search: this.searchForm?.value?.search
         };
         console.log({queryFilter})
 
