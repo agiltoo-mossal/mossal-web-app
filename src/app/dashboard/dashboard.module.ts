@@ -6,6 +6,7 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
+
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
@@ -34,6 +35,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -44,13 +46,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     NotificationsComponent,
     RefundChartsComponent,
     OrganizationComponent,
-    ActivitiesComponent
+    ActivitiesComponent,
+    CardDashboardComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     RouterModule,
     FlexLayoutModule,
+
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,

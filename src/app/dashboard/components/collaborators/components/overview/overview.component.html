@@ -33,10 +33,12 @@
           </button>
           <div class="dropdown-content" id="downlod-dropdown">
             <app-file-upload></app-file-upload>
-            <div
+            <a
+              style="display: block;"
+              href="./assets/files/template-collaborator.csv"
+              [download]="'template-collaborator.csv' "
               class="dropdown-option"
               fxLayout="column"
-              fxLayoutGap="16px"
               fxLayoutAlign="start center"
             >
               <div class="icon">
@@ -44,13 +46,12 @@
               </div>
               <div
                 fxLayout="column"
-                fxLayoutGap="4px"
                 fxLayoutAlign="start center"
               >
                 <span class="type">Télécharger le template</span>
                 <span class="format">template.csv</span>
               </div>
-            </div>
+            </a>
           </div>
         </div>
         <button
@@ -195,7 +196,7 @@
       ></mat-paginator>
     </div>
   </div>
-  <div class="info-current-user">
+  <div class="info-current-user container_sticky">
     <app-user-details [user]="selectedCollab"></app-user-details>
   </div>
 </div>

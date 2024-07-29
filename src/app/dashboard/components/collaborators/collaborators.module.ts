@@ -19,6 +19,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upload.module';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     CreateCollobatorComponent,
     EditCollaboratorComponent,
     FormCollaboratorComponent,
-    FileUploadComponent,
   ],
   imports: [
     CommonModule,
@@ -44,7 +44,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    FileUploadModule,
   ],
   exports: [CollaboratorsComponent],
 })

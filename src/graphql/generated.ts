@@ -592,7 +592,7 @@ export type FetchPaginatedActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
 
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -882,6 +882,7 @@ export const FetchPaginatedActivitiesDocument = gql`
     results {
       id
       message
+      scope
       user {
         id
         firstName

@@ -9,6 +9,7 @@ query FetchPaginatedActivities($queryFilter: QueryDataConfigInput) {
 		results {
 			id
 			message
+      scope
 			user {
 				id
 				firstName
