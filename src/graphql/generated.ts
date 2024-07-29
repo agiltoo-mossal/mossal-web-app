@@ -587,6 +587,13 @@ export type FinalizeForgotPasswordMutationVariables = Exact<{
 
 export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalizeForgotPassword: boolean };
 
+export type FetchPaginatedActivitiesQueryVariables = Exact<{
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -858,6 +865,41 @@ export const FinalizeForgotPasswordDocument = gql`
   })
   export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
     document = FinalizeForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedActivitiesDocument = gql`
+    query FetchPaginatedActivities($queryFilter: QueryDataConfigInput) {
+  fetchPaginatedActivities(queryFilter: $queryFilter) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      message
+      user {
+        id
+        firstName
+        lastName
+        email
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedActivitiesGQL extends Apollo.Query<FetchPaginatedActivitiesQuery, FetchPaginatedActivitiesQueryVariables> {
+    document = FetchPaginatedActivitiesDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

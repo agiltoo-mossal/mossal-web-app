@@ -29,6 +29,11 @@ import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
 import { OrganizationComponent } from './components/organization/organization.component';
 import { ActivitiesComponent } from './components/activities/activities.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -64,6 +69,11 @@ import { ActivitiesComponent } from './components/activities/activities.componen
     PropertyMatchPipe,
     FilterModule,
     DemandeStatusModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   providers: [NotificationsService],
 })

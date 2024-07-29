@@ -8,6 +8,7 @@ import { UserComponent } from './components/user/user.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { OrganizationComponent } from './components/organization/organization.component';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { ActivitiesComponent } from './components/activities/activities.component';
 
 const routes: Routes = [
   {
@@ -53,6 +54,10 @@ const routes: Routes = [
       {
         path: 'organization',
         component: OrganizationComponent,
+      },
+      {
+        path: 'activities',
+        component: ActivitiesComponent,
       },
     ],
   },
