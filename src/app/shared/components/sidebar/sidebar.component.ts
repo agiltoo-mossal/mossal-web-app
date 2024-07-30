@@ -132,7 +132,7 @@ export class SidebarComponent implements OnInit {
         icon: 'business',
       },
       {
-        label: 'Activities',
+        label: 'Activités',
         link: 'activities',
         icon: 'feed',
       },
