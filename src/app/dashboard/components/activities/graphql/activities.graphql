@@ -1,0 +1,23 @@
+query FetchPaginatedActivities($queryFilter: QueryDataConfigInput) {
+	fetchPaginatedActivities(queryFilter: $queryFilter) {
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results {
+			id
+			message
+      scope
+			user {
+				id
+				firstName
+				lastName
+				email
+			}
+			createdAt
+			updatedAt
+		}
+	}
+}

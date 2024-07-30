@@ -1,0 +1,102 @@
+
+<label
+style="display: flex; height: 100% ; flex-direction: column; justify-content: center; align-items: center; "
+  for="file_input"
+  class="dropdown-option"
+  fxLayout="column"
+  fxLayoutGap="16px"
+  fxLayoutAlign="start center"
+>
+  <div class="icon">
+    <img src="./assets/img/icon-upload.png" alt="" />
+  </div>
+  <form enctype="multipart/form-data">
+    <div
+      fxLayout="column"
+      fxLayoutGap="4px"
+      fxLayoutAlign="start center"
+      for="file_input"
+    >
+      <span class="type">Importer</span>
+      <span class="format">Format accepté : csv</span>
+    </div>
+    <input
+      type="file"
+      (change)="onFileSelected($event)"
+      accept=".csv"
+      style="display: none"
+      id="file_input"
+    />
+  </form>
+</label>
+
+<!-- The Modal -->
+<div #myModal class="modal" [ngClass]="showModal ? 'active' : ''">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="container">
+      <div class="row">
+        <div class="multi-button">
+          <div class="button" id="copy">
+            <p>SAUVEGARDER</p>
+            <p class="item_p">{{ dataResponseFile?.totalSuccess || 0 }}</p>
+          </div>
+          <div class="button" id="paste">
+            <p>EN ATTENTE</p>
+            <p class="item_p">{{ dataResponseFile?.totalErrors || 0 }}</p>
+          </div>
+          <div class="button" id="cut">
+            <p>TOTAL</p>
+            <p class="item_p">{{ dataResponseFile?.totalRows || 0 }}</p>
+          </div>
+        </div>
+        <button class="btn-red" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="table-container">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th scope="col">EMAIL</th>
+              <th scope="col">PRENOM</th>
+              <th scope="col">NOM</th>
+              <th scope="col">DATE DE NAISSANCE</th>
+              <th scope="col">NUMERO</th>
+              <th scope="col">ADRESSE</th>
+              <th scope="col">ETAT SAUVEGARDE</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (item of dataResponseFile?.data; track $index) {
+            <tr>
+              <th scope="row">{{ item.email }}</th>
+              <td data-title="Released">{{ item.firstName }}</td>
+              <td data-title="Studio">{{ item.lastName }}</td>
+              <td data-title="Worldwide Gross" data-type="currency">
+                {{ item.birthDate | date : "dd/MM/yyyy" }}
+              </td>
+              <td data-title="Domestic Gross" data-type="currency">
+                {{ item.phoneNumber }}
+              </td>
+              <td data-title="International Gross" data-type="currency">
+                {{ item.address }}
+              </td>
+              <td data-title="Budget" data-type="currency" class="flex"
+                [matTooltip]="item?.errorsArray.length > 0 ? item?.errorsArray.join(', ') : ''">
+                @if(item.error){
+                <mat-icon color="warn">rules</mat-icon>
+                }@else {
+                <mat-icon class="success">done</mat-icon>
+                }
+              </td>
+            </tr>
+
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
 		status
 		number
 		fees
+    statusText
 		collaborator {
 			id
 			firstName
@@ -14,6 +15,7 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
       salary
       authorizedAdvance
       bankAccountNumber
+      uniqueIdentifier
 			# organization {
 			# 	name
 			# }

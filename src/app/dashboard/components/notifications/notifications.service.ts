@@ -5,26 +5,25 @@ import { environment } from 'src/environments/environment';
 import { FetchCurrentAdminGQL } from 'src/graphql/generated';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationsService {
-  private socket = io(environment.ENTERPRISE_URI);
+  private socket = io(environment.ENTERPRISE_URI, {
+    transports: ['websocket'],
+  });
   private organization: string;
   unViewedNotification: Subject<any> = new Subject();
   constructor(private fetchCurrentAdminGQL: FetchCurrentAdminGQL) {
-    this.fetchCurrentAdminGQL.fetch().subscribe(
-      result => {
-        this.organization = result.data?.fetchCurrentAdmin?.organization?.id;
-      }
-    )
+    this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
+      this.organization = result.data?.fetchCurrentAdmin?.organization?.id;
+    });
   }
   listenForNotifications(): Observable<any> {
     const notifications = new Subject<Notification>();
     this.socket.on('notification', (notification) => {
-      if(this.organization == notification.organization) {
+      if (this.organization == notification.organization) {
         notifications.next(notification);
       }
-
     });
     return notifications.asObservable();
   }

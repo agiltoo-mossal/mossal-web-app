@@ -17,6 +17,9 @@ import {
   FetchOrganizationDemandesGQL,
   User,
 } from 'src/graphql/generated';
+import { dataStatic } from 'src/app/shared/types/data-static';
+import { OverviewService } from './overview.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-overview',
@@ -25,7 +28,7 @@ import {
 })
 export class OverviewComponent implements OnInit {
   datas = [];
-
+  dataStatics = dataStatic;
   requests: Demande[] = [];
   sortedRequests: Demande[] = [];
   selectedReq: Demande;
@@ -42,7 +45,8 @@ export class OverviewComponent implements OnInit {
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
     private snackBarService: SnackBarService,
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userCollaboratorService: OverviewService
   ) {
     const now = new Date('2024-12-31');
     this.metricsInput = this.fb.group({
@@ -59,13 +63,31 @@ export class OverviewComponent implements OnInit {
     });
     this.getData();
   }
+  ngOnInit(): void {}
 
+  private updateStaticData() {
+    const infoCount = [
+      this.nbAccordedRequest,
+      this.nbPending,
+      this.nbValid,
+      this.totalDemandeAmount,
+      this.nbActifUsers,
+      this.totalDemandeToPay,
+    ];
+    this.dataStatics = this.dataStatics.map((item, index) => {
+      return { ...item, value: infoCount[index] };
+    });
+  }
   getData() {
     try {
-      this.getDemandes();
-      this.fetchCollabs();
-      this.getDemandesMetrics();
-    } catch(e) {}
+      Promise.all([
+        this.getDemandes(),
+        this.fetchCollabs(),
+        this.getDemandesMetrics(),
+      ]).then(() => {
+        this.updateStaticData();
+      });
+    } catch (e) {}
   }
 
   toggleMenuFilterDate() {
@@ -96,47 +118,65 @@ export class OverviewComponent implements OnInit {
     return this.metricsInput.controls['endDate'].value;
   }
 
-  getDemandes(useCache = true) {
+  getDemandes(useCache = true): Promise<void> {
     let cache = 'cache-first';
     if (!useCache) {
       cache = 'no-cache';
     }
-    this.fetchOrganizationDemandesGQL
-      .fetch(
+
+    return lastValueFrom(
+      this.fetchOrganizationDemandesGQL.fetch(
         { metricsInput: this.metricsInput.value },
         { fetchPolicy: cache as any }
       )
-      .subscribe((result) => {
+    )
+      .then((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
         this.sortedRequests = this.requests
           .slice()
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)) as Demande[];
         this.setHasValidatedDemande();
+      })
+      .catch((error) => {
+        console.error('Error fetching demandes:', error);
+        throw error;
       });
   }
 
-  getDemandesMetrics() {
+  getDemandesMetrics(): Promise<void> {
     const startDate =
       this.metricsInput.value.startDate || new Date('2024-01-01');
     const endDate = this.metricsInput.value.endDate || new Date();
-    this.fetchDemandesMetricsGQL
-      .fetch({ metricsInput: { startDate, endDate } })
-      .subscribe((result) => {
+
+    return lastValueFrom(
+      this.fetchDemandesMetricsGQL.fetch({
+        metricsInput: { startDate, endDate },
+      })
+    )
+      .then((result) => {
         this.metricsData = result.data.fetchDemandesMetrics as any;
+      })
+      .catch((error) => {
+        console.error('Error fetching demandes metrics:', error);
+        throw error;
       });
   }
 
-  fetchCollabs() {
-    this.fetchOrganizationCollaboratorsGQL
-      .fetch(
+  fetchCollabs(): Promise<void> {
+    return lastValueFrom(
+      this.fetchOrganizationCollaboratorsGQL.fetch(
         { metricsInput: this.metricsInput.value },
         { fetchPolicy: 'no-cache' }
       )
-      .subscribe((result) => {
+    )
+      .then((result) => {
         this.collabs = result.data.fetchOrganizationCollaborators as User[];
-        // this.setHasValidatedDemande();
         this.selectedCollab = this.collabs?.[0];
+      })
+      .catch((error) => {
+        console.error('Error fetching collaborators:', error);
+        throw error;
       });
   }
 
@@ -162,6 +202,7 @@ export class OverviewComponent implements OnInit {
 
   selectCollab(selected: User) {
     this.selectedCollab = selected;
+    this.userCollaboratorService.updatUserSelected(selected);
   }
 
   selectReq(selected: Demande) {
@@ -224,8 +265,6 @@ export class OverviewComponent implements OnInit {
     });
     return users.length;
   }
-
-  ngOnInit(): void {}
 
   getLastRequest(req: any) {
     return (

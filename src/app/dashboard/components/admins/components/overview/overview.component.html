@@ -1,6 +1,12 @@
-<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+<div
+  class="page-wrapper"
+  fxLayout="row"
+  fxLayoutAlign="none start"
+  fxLayoutGap="40px"
+>
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-      <div fxLayout="row" fxLayoutGap="19px">
+    <!-- <app-file-upload></app-file-upload> -->
+    <div fxLayout="row" fxLayoutGap="19px">
           <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
               <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
               <input [(ngModel)]="search" type="text" class="form-control" placeholder="Recherche">
@@ -37,63 +43,133 @@
               </button>
           </div>
       </div>
-      <table class="table table-wrapper">
-          <tr class="titles-container" fxLayout="row" fxLayoutAlign="space-between center">
-            <th class="title" fxFlex="16.6" fxLayoutAlign="start center">Identifiant</th>
-            <th class="title" fxFlex="20.6" fxLayoutAlign="center center">Admin</th>
-            <th class="title" fxFlex="15.6" fxLayoutAlign="center center">Telephone</th>
-            <th class="title" fxFlex="13.6" fxLayoutAlign="center center">Date de création</th>
-            <th class="title" fxFlex="16.6" fxLayoutAlign="center center">Actions</th>
-          </tr>
-          <tr class="user" fxLayout="row" fxLayoutAlign="space-between center" *ngFor=" let collab of admins | filter : search">
-              <td class="radio-container" fxFlex="16.6" fxLayoutAlign="start center" fxLayout="row"
-                  fxLayoutGap="16px">
-                  <span (click)="selectAdmin(collab)" class="radio {{ selectedAdmin?.id === collab.id ? 'active' : '' }}" fxLayoutAlign="center center"></span>
-                  <span>{{ collab.uniqueIdentifier }}</span>
-              </td>
-              <td class="name" fxFlex="20.6" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
-                  <div class="circle" fxLayoutAlign="center center">AC</div>
-                  <span>{{ collab.firstName }} {{ collab.lastName }} </span>
-                  <!-- <mat-icon *ngIf="collab.blocked" class="color-danger">lock</mat-icon> -->
-              </td>
-              <td class="solde" fxFlex="15.6" fxLayoutAlign="center center">{{ collab.phoneNumber }}</td>
-              <td class="date" fxFlex="13.6" fxLayoutAlign="center center">{{ collab.createdAt | date:'YYYY-MM-dd' }}</td>
-              <td fxFlex="16.6" fxLayoutAlign="end center">
-                  <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
-                      <span fxLayout="row" class="btn-edit-statut">
-                          <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
-                              fxLayoutAlign="center center"><span>Action</span><span
-                                  class="statut statut--{{ collab?.blocked ? 'rejected' : 'valid' }}"></span></span>
-                          <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
-                      </span>
-                      <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                          <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-                              routerLink="/dashboard/admins/{{collab.id}}">
-                              <span><mat-icon>edit</mat-icon></span>
-                              <span>Editer</span>
-                          </div>
-                          <div *ngIf="!collab.blocked" class="dropdown-option color-danger" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-                          requiresConfirmation
-                          [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
-                          [confirmCallbackParam]="collab?.id">
-                              <span><mat-icon>lock</mat-icon></span>
-                              <span>Suspendre</span>
-                          </div>
-                          <div *ngIf="collab.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-                          requiresConfirmation
-                          [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
-                          [confirmCallbackParam]="collab?.id">
-                              <span><mat-icon>lock_open</mat-icon></span>
-                              <span>Débloquer</span>
-                          </div>
-                      </div>
-                  </div>
-              </td>
-          </tr>
-      </table>
-      <div *ngIf="!admins?.length">Pas d'admin ajouté</div>
+    <table class="table table-wrapper">
+      <tr
+        class="titles-container"
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+      >
+        <th class="title" fxFlex="16.6" fxLayoutAlign="start center">
+          Identifiant
+        </th>
+        <th class="title" fxFlex="20.6" fxLayoutAlign="center center">Admin</th>
+        <th class="title" fxFlex="15.6" fxLayoutAlign="center center">
+          Telephone
+        </th>
+        <th class="title" fxFlex="13.6" fxLayoutAlign="center center">
+          Date de création
+        </th>
+        <th class="title" fxFlex="16.6" fxLayoutAlign="center center">
+          Actions
+        </th>
+      </tr>
+      <tr
+        class="user"
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        *ngFor="let collab of admins | filter : search"
+      >
+        <td
+          class="radio-container"
+          fxFlex="16.6"
+          fxLayoutAlign="start center"
+          fxLayout="row"
+          fxLayoutGap="16px"
+        >
+          <span
+            (click)="selectAdmin(collab)"
+            class="radio {{ selectedAdmin?.id === collab.id ? 'active' : '' }}"
+            fxLayoutAlign="center center"
+          ></span>
+          <span>{{ collab.uniqueIdentifier }}</span>
+        </td>
+        <td
+          class="name"
+          fxFlex="20.6"
+          fxLayout="row"
+          fxLayoutAlign="start center"
+          fxLayoutGap="8px"
+        >
+          <div class="circle" fxLayoutAlign="center center">AC</div>
+          <span>{{ collab.firstName }} {{ collab.lastName }} </span>
+          <!-- <mat-icon *ngIf="collab.blocked" class="color-danger">lock</mat-icon> -->
+        </td>
+        <td class="solde" fxFlex="15.6" fxLayoutAlign="center center">
+          {{ collab.phoneNumber }}
+        </td>
+        <td class="date" fxFlex="13.6" fxLayoutAlign="center center">
+          {{ collab.createdAt | date : "YYYY-MM-dd" }}
+        </td>
+        <td fxFlex="16.6" fxLayoutAlign="end center">
+          <div fxFlex="100" class="dropdown" appDropdown="dropdown-action">
+            <span fxLayout="row" class="btn-edit-statut">
+              <span
+                class="text"
+                fxFlex="auto"
+                fxLayout="row"
+                fxLayoutGap="8px"
+                fxLayoutAlign="center center"
+                ><span>Action</span
+                ><span
+                  class="statut statut--{{
+                    collab?.blocked ? 'rejected' : 'valid'
+                  }}"
+                ></span
+              ></span>
+              <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
+                >keyboard_arrow_down</mat-icon
+              >
+            </span>
+            <div
+              class="dropdown-content dropdown-content-filter"
+              id="dropdown-action"
+            >
+              <div
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="12px"
+                routerLink="/dashboard/admins/{{ collab.id }}"
+              >
+                <span><mat-icon>edit</mat-icon></span>
+                <span>Editer</span>
+              </div>
+              <div
+                *ngIf="!collab.blocked"
+                class="dropdown-option color-danger"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="12px"
+                requiresConfirmation
+                [message]="'Voulez-vous bloquer cet utilisateur?'"
+                [confirmCallback]="lockUser"
+                [confirmCallbackParam]="collab?.id"
+              >
+                <span><mat-icon>lock</mat-icon></span>
+                <span>Suspendre</span>
+              </div>
+              <div
+                *ngIf="collab.blocked"
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="12px"
+                requiresConfirmation
+                [message]="'Voulez-vous débloquer cet utilisateur?'"
+                [confirmCallback]="unlockUser"
+                [confirmCallbackParam]="collab?.id"
+              >
+                <span><mat-icon>lock_open</mat-icon></span>
+                <span>Débloquer</span>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div *ngIf="!admins?.length">Pas d'admin ajouté</div>
   </div>
-  <div class="info-current-user">
-      <app-user-details [user]="selectedAdmin"></app-user-details>
+  <div class="info-current-user container_sticky">
+    <app-user-details [user]="selectedAdmin"></app-user-details>
   </div>
 </div>

@@ -13,6 +13,7 @@ import { EditAdminComponent } from './components/edit-admin/edit-admin.component
 import { CreateAdminComponent } from './components/create-admin/create-admin.component';
 import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
 import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-confirmation/requires-confirmation.module';
+import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
 
 @NgModule({
   imports: [
@@ -25,8 +26,14 @@ import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-c
     ReactiveFormsModule,
     FormsModule,
     FilterModule,
-    RequiresConfirmationModule
+    RequiresConfirmationModule,
   ],
-  declarations: [AdminsComponent, OverviewComponent, FormAdminComponent, EditAdminComponent, CreateAdminComponent]
+  declarations: [
+    AdminsComponent,
+    OverviewComponent,
+    FormAdminComponent,
+    EditAdminComponent,
+    CreateAdminComponent,
+  ],
 })
-export class AdminsModule { }
+export class AdminsModule {}

@@ -7,7 +7,11 @@ import { Subscription } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'src/app/dashboard/components/notifications/notifications.service';
-import { FetchCurrentAdminGQL, FetchOrganizationNotificationsGQL, Notification } from 'src/graphql/generated';
+import {
+  FetchCurrentAdminGQL,
+  FetchOrganizationNotificationsGQL,
+  Notification,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-header',
@@ -28,9 +32,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
   newNotificationCounter = 0;
   hasUnviewedNotif = false;
 
-  notificationList: any[] = [
-
-  ];
+  notificationList: any[] = [];
 
   constructor(
     private authService: AuthService,
@@ -54,15 +56,16 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.notificationSubscription = this.notificationsService.listenForNotifications().subscribe(notification => {
-      this.notificationList.unshift(notification);
-      this.newNotificationCounter++;
-    });
-    this.viewSubscription = this.notificationsService.unViewedNotification.subscribe(
-      result => {
+    this.notificationSubscription = this.notificationsService
+      .listenForNotifications()
+      .subscribe((notification) => {
+        this.notificationList.unshift(notification);
+        this.newNotificationCounter++;
+      });
+    this.viewSubscription =
+      this.notificationsService.unViewedNotification.subscribe((result) => {
         this.hasUnviewedNotif = result;
-      }
-    )
+      });
   }
 
   ngOnDestroy(): void {
@@ -76,14 +79,19 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
 
   getNotifications() {
-    this.listNotisSubscription = this.fetchOrganizationNotificationsGQL.fetch().subscribe(
-      result => {
-        this.notificationList = (result.data?.fetchOrganizationNotifications?.slice(0, 5) || []) as any[];
-        if(this.notificationList.length && !this.notificationList[0].viewedByMe) {
+    this.listNotisSubscription = this.fetchOrganizationNotificationsGQL
+      .fetch()
+      .subscribe((result) => {
+        this.notificationList =
+          (result.data?.fetchOrganizationNotifications?.slice(0, 5) ||
+            []) as any[];
+        if (
+          this.notificationList.length &&
+          !this.notificationList[0].viewedByMe
+        ) {
           this.hasUnviewedNotif = true;
         }
-      }
-    )
+      });
   }
 
   get isLogedIn() {
@@ -99,7 +107,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
 
   logout() {
-    this.authService.logout()
+    this.authService.logout();
     // this.keycloakService.logout().then((result) => {
     //   this.router.navigate(['/']);
     // });
