@@ -60,24 +60,41 @@
           <ul>
             @for (item of itemsCardDate; track $index) {
 
-            <li [ngClass]="{'pending': item.pending==true, 'active': item.active==true}">
-                <button (click)="setDate(item.day)">
-                    <time [dateTime]="lastDayOfCurrentMonth.getFullYear() + '-' + (lastDayOfCurrentMonth.getMonth() )+ '-' + item">{{item.day}}</time>
-                </button>
+            <li
+              [ngClass]="{
+                pending: item.pending == true,
+                active: item.active == true
+              }"
+            >
+              <button (click)="setDate(item.day)">
+                <time
+                  [dateTime]="
+                    lastDayOfCurrentMonth.getFullYear() +
+                    '-' +
+                    lastDayOfCurrentMonth.getMonth() +
+                    '-' +
+                    item
+                  "
+                  >{{ item.day }}</time
+                >
+              </button>
             </li>
             }
           </ul>
-          <div fxFill fxLayout="row wrap" fxLayoutAlign="start start">
-            <button class="submit" (click)="updateDateLimit()" fxFlex="100">Soumettre</button>
-          </div>
         </div>
       </form>
     </div>
   </div>
-  <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="32px">
-    <button class="submit" (click)="updateOrganization()" fxFlex="50">
-      Mettre à jour
-    </button>
-    <div fxFlex="50"></div>
+  <div fxLayout="row" fxLayoutGap="32px" style="width: 100%;">
+    <div fxLayout="colum" fxLayoutAlign="start start" fxFlex="50" >
+      <button class="submit" (click)="updateOrganization()">
+        Mettre à jour
+      </button>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="start start" fxFlex="50">
+      <button class="submit" (click)="updateDateLimit()" >
+        Soumettre
+      </button>
+    </div>
   </div>
 </div>
