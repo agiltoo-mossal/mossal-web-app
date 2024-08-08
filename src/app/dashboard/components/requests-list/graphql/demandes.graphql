@@ -5,6 +5,7 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
 		status
 		number
 		fees
+    statusText
 		collaborator {
 			id
 			firstName

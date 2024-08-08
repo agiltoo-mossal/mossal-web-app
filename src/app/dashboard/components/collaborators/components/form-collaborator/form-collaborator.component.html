@@ -44,6 +44,7 @@
                 <div fxLayout="column" fxLayoutGap="15px">
                     <label for="salary">Salaire <span class="color-danger">*</span></label>
                     <input formControlName="salary" type="number" id="salary" class="form-control">
+                     <small class="color-danger" *ngIf="salary.touched && salary.hasError('min')">Salaire minimum est 50,000 FCFA</small>
                 </div>
 
                 <div fxLayout="column" fxLayoutGap="15px">

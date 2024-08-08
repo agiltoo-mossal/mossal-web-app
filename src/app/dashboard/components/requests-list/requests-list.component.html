@@ -112,7 +112,7 @@
                         <div fxFlex="100" class="dropdown " appDropdown="dropdown-action">
                             <span fxLayout="row" class="btn-edit-statut">
                                 <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px"
-                                    fxLayoutAlign="center center"><span>{{ req?.status | demandeStatus | titlecase
+                                    fxLayoutAlign="center center"><span>{{ req?.statusText | demandeStatus | titlecase
                                         }}</span><span
                                         class="statut statut--{{ req?.status | lowercase }}"></span></span>
                                 <mat-icon class="dropdown-icon"
@@ -126,7 +126,7 @@
                                     Validée
                                     <span class="statut statut--valid"></span>
                                 </div>
-                                <div *ngIf="req.status === 'VALIDATED'" class="dropdown-option" fxLayout="row"
+                                <div *ngIf="req.status === 'VALIDATED' && req.statusText === 'VALIDATED'" class="dropdown-option" fxLayout="row"
                                     fxLayoutAlign="space-between center" requiresConfirmation
                                     [message]="'Voulez-vous payer cette demande?'" [confirmCallback]="payeDemande"
                                     [confirmCallbackParam]="req?.id">
@@ -172,7 +172,7 @@
             </div>
         </div>
     </div>
-    <div class="info-current-user">
+    <div class="info-current-user container_sticky">
         <app-user-details [user]="selectedReq?.collaborator"></app-user-details>
     </div>
 </div>

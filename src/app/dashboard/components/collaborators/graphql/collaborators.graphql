@@ -26,6 +26,39 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
 	}
 }
 
+query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrganizationCollaborators(metricsInput: $metricsInput, queryFilter: $queryFilter) {
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results {
+			id
+			firstName
+			lastName
+			email
+			phoneNumber
+			uniqueIdentifier
+			address
+			salary
+			balance
+			totalDemandeAmount
+			wizallAccountNumber
+			bankAccountNumber
+			position
+			authorizedAdvance
+			createdAt
+			updatedAt
+			blocked
+			favoriteWallet
+			birthDate
+		}
+	}
+}
+
+
 mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
   inviteCollaborator(collaborator: $collaboratorInput)
 }
