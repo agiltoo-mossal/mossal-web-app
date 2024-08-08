@@ -275,6 +275,7 @@ export type OrderByInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  demandeDeadlineDay: Scalars['Float']['output'];
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   maxDemandeAmount: Scalars['Float']['output'];
@@ -300,6 +301,7 @@ export type OrganizationInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent: Scalars['Float']['input'];
+  demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees: Scalars['Float']['input'];
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
@@ -715,7 +717,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay: number } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -1330,6 +1332,7 @@ export const FetchCurrentAdminDocument = gql`
       maxDemandeAmount
       amountPercent
       fees
+      demandeDeadlineDay
     }
   }
 }
