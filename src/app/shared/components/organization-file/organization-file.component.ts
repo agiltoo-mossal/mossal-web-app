@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FetchSupportPaiementGQL } from 'src/graphql/generated';
+import { SnackBarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-organization-file',
@@ -7,7 +8,10 @@ import { FetchSupportPaiementGQL } from 'src/graphql/generated';
   styleUrl: './organization-file.component.scss',
 })
 export class OrganizationFileComponent implements OnInit {
-  constructor(private fetchSupportPaiement: FetchSupportPaiementGQL) {}
+  constructor(
+    private fetchSupportPaiement: FetchSupportPaiementGQL,
+    private snackBarService: SnackBarService
+  ) {}
 
   ngOnInit(): void {}
   uploadDemande() {}
@@ -16,7 +20,7 @@ export class OrganizationFileComponent implements OnInit {
     this.fetchSupportPaiement.fetch().subscribe({
       next: ({ data }) => {
         const temps = data.fetchSupportPaiement;
-        if (temps) {
+        if (temps.length) {
           const csvRows = [
             [
               'Prenom',
@@ -44,6 +48,10 @@ export class OrganizationFileComponent implements OnInit {
           a.setAttribute('download', 'support-paiement.csv');
           a.click();
           window.URL.revokeObjectURL(url);
+        } else {
+          this.snackBarService.showSnackBar(
+            "Aucun paiement n'a encore été effectue"
+          );
         }
       },
       error: (error) => console.log(error),
