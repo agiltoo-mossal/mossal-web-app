@@ -275,6 +275,7 @@ export type OrderByInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   maxDemandeAmount: Scalars['Float']['output'];
@@ -358,6 +359,7 @@ export type Query = {
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
   fetchPayments: Array<Payment>;
+  fetchSupportPaiement: Array<SupportPaiement>;
   loginAdmin: Session;
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
@@ -487,6 +489,16 @@ export type Session = {
   token_type?: Maybe<Scalars['String']['output']>;
   /** Null if user must reset his password */
   user?: Maybe<User>;
+};
+
+export type SupportPaiement = {
+  __typename?: 'SupportPaiement';
+  amount: Scalars['Float']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  owner: Scalars['String']['output'];
+  phoneNumber: Scalars['String']['output'];
 };
 
 export type UpdateCollaboratorInput = {
@@ -751,6 +763,11 @@ export type DisableEmailNotificationMutationVariables = Exact<{
 
 
 export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
+
+export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'SupportPaiement', amount: number, owner: string, firstName: string, lastName: string, phoneNumber: string, email: string }> };
 
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
@@ -1420,6 +1437,29 @@ export const DisableEmailNotificationDocument = gql`
   })
   export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
     document = DisableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchSupportPaiementDocument = gql`
+    query FetchSupportPaiement {
+  fetchSupportPaiement {
+    amount
+    owner
+    firstName
+    lastName
+    phoneNumber
+    email
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchSupportPaiementGQL extends Apollo.Query<FetchSupportPaiementQuery, FetchSupportPaiementQueryVariables> {
+    document = FetchSupportPaiementDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
