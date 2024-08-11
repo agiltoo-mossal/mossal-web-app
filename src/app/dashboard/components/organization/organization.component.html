@@ -1,27 +1,100 @@
-<div class=" page-wrapper form-container form-container-card" fxLayout="column" fxLayoutGap="32px">
-    <div fxLayout="row" fxLayoutGap="32px">
-        <div fxFlex="50" fxLayout="column" fxLayoutGap="38px">
-            <span class="title">Mon profil</span>
-            <form *ngIf="form" [formGroup]="form" class="wrapper form-container"
-                fxLayout="column" fxLayoutGap="38px">
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="prenom">Nom <span class="color-danger">*</span></label>
-                    <input formControlName="name" type="text" id="name" class="form-control" placeholder="Cofina">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="nom">Pourcentage de demande maximum sur le salaire(minimum 1, maximum 100)<span class="color-danger">*</span></label>
-                    <input formControlName="amountPercent" type="number" id="amountPercent" class="form-control" placeholder="75">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="address">Montant maximale peu importe le salaire(minimum 5000)<span class="color-danger">*</span></label>
-                    <input formControlName="maxDemandeAmount" type="number" id="maxDemandeAmount" class="form-control"
-                        placeholder="1000000">
-                </div>
-            </form>
+<div
+  class="page-wrapper form-container form-container-card"
+  fxLayout="column"
+  fxLayoutGap="32px"
+>
+  <div fxLayout="row" fxLayoutGap="32px">
+    <div fxFlex="50" fxLayout="column" fxLayoutGap="38px">
+      <span class="title">Mon profil</span>
+      <form
+        *ngIf="form"
+        [formGroup]="form"
+        class="wrapper form-container"
+        fxLayout="column"
+        fxLayoutGap="38px"
+      >
+        <div fxLayout="column" fxLayoutGap="15px">
+          <label for="prenom">Nom <span class="color-danger">*</span></label>
+          <input
+            formControlName="name"
+            type="text"
+            id="name"
+            class="form-control"
+            placeholder="Cofina"
+          />
         </div>
+        <div fxLayout="column" fxLayoutGap="15px">
+          <label for="nom"
+            >Pourcentage de demande maximum sur le salaire(minimum 1, maximum
+            100)<span class="color-danger">*</span></label
+          >
+          <input
+            formControlName="amountPercent"
+            type="number"
+            id="amountPercent"
+            class="form-control"
+            placeholder="75"
+          />
+        </div>
+        <div fxLayout="column" fxLayoutGap="15px">
+          <label for="address"
+            >Montant maximale peu importe le salaire(minimum 5000)<span
+              class="color-danger"
+              >*</span
+            ></label
+          >
+          <input
+            formControlName="maxDemandeAmount"
+            type="number"
+            id="maxDemandeAmount"
+            class="form-control"
+            placeholder="1000000"
+          />
+        </div>
+      </form>
     </div>
-    <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="32px">
-        <button class="submit" (click)="updateOrganization()" fxFlex="50">Mettre à jour</button>
-        <div fxFlex="50"></div>
+    <div fxFlex="50" fxLayout="column" fxLayoutGap="24px">
+      <form fxLayout="column" fxLayoutGap="38px" class="form-container">
+        <span class="title">Date limite des demandes</span>
+        <div class="wrapper" fxLayout="column" fxLayoutGap="38px">
+          <ul>
+            @for (item of itemsCardDate; track $index) {
+
+            <li
+              [ngClass]="{
+                pending: item.pending == true,
+                active: item.active == true
+              }"
+            >
+              <button (click)="setDate(item.day)">
+                <time
+                  [dateTime]="
+                    lastDayOfCurrentMonth.getFullYear() +
+                    '-' +
+                    lastDayOfCurrentMonth.getMonth() +
+                    '-' +
+                    item
+                  "
+                  >{{ item.day }}</time
+                >
+              </button>
+            </li>
+            }
+          </ul>
+        </div>
+      </form>
     </div>
+  </div>
+  <div fxLayout="row" fxLayoutGap="32px" style="width: 100%;">
+    <div fxLayout="colum" fxLayoutAlign="start start" fxFlex="50" >
+      <button class="submit" (click)="updateOrganization()">
+        Mettre à jour
+      </button>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="start start" fxFlex="50">
+      <button class="submit" (click)="updateDateLimit()" >
+        Soumettre
+      </button>
+    </div>
+  </div>
 </div>
