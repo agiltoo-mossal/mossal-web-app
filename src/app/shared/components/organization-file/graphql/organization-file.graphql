@@ -6,5 +6,6 @@ query FetchSupportPaiement {
     lastName
     phoneNumber 
     email
+    uniqueIdentifier
     }
 }
