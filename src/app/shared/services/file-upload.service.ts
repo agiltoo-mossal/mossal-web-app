@@ -10,6 +10,7 @@ export class FileUploadService {
   endPoint = environment.API_URI;
   constructor(private http: HttpClient) {}
   signalFile: WritableSignal<string | ArrayBuffer> = signal(null);
+  signalDataOrganisation: WritableSignal<any> = signal(null);
   signalDataResponse: WritableSignal<any> = signal(null);
   renderFile(file: File, endPoint?: string) {
     const reader = new FileReader();

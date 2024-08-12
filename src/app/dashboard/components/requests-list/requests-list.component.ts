@@ -1,5 +1,12 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  HostListener,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FileUploadService } from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   CancelDemandeByAdminGQL,
@@ -34,11 +41,22 @@ export class RequestsListComponent {
     private cancelDemandeByAdminGQL: CancelDemandeByAdminGQL,
     private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL,
     private snackBarService: SnackBarService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private fileUploadService: FileUploadService
   ) {
     this.getDemandes();
     this.activatedRoute.queryParams.subscribe((params) => {
       this.search = params['entity'] || '';
+    });
+    effect(() => {
+      if (
+        this.fileUploadService.signalDataOrganisation()?.length > 0 &&
+        this.fileUploadService
+          .signalDataOrganisation()
+          .filter((item) => item?.error == false)?.length > 0
+      ) {
+        this.getDemandes();
+      }
     });
   }
 
