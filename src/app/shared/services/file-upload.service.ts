@@ -10,8 +10,9 @@ export class FileUploadService {
   endPoint = environment.API_URI;
   constructor(private http: HttpClient) {}
   signalFile: WritableSignal<string | ArrayBuffer> = signal(null);
+  signalDataOrganisation: WritableSignal<any> = signal(null);
   signalDataResponse: WritableSignal<any> = signal(null);
-  renderFile(file: File) {
+  renderFile(file: File, endPoint?: string) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event: any) => {
@@ -41,5 +42,13 @@ export class FileUploadService {
         console.log(err);
       },
     });
+  }
+
+  sendFileEndpoint(file: any, url: string) {
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+
+    return this.http.post(`${this.endPoint}/${url}`, formData);
   }
 }

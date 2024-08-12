@@ -36,6 +36,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
+import { OrganizationFileModule } from '../shared/components/organization-file/organization-file.module';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    OrganizationFileModule,
   ],
   providers: [NotificationsService],
 })
