@@ -275,7 +275,7 @@ export type OrderByInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
-  demandeDeadlineDay: Scalars['Float']['output'];
+  demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   maxDemandeAmount: Scalars['Float']['output'];
@@ -300,10 +300,10 @@ export type OrganizationInput = {
 };
 
 export type OrganizationUpdateInput = {
-  amountPercent: Scalars['Float']['input'];
+  amountPercent?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
-  fees: Scalars['Float']['input'];
-  maxDemandeAmount: Scalars['Float']['input'];
+  fees?: InputMaybe<Scalars['Float']['input']>;
+  maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -360,6 +360,7 @@ export type Query = {
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
   fetchPayments: Array<Payment>;
+  fetchSupportPaiement: Array<SupportPaiement>;
   loginAdmin: Session;
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
@@ -489,6 +490,17 @@ export type Session = {
   token_type?: Maybe<Scalars['String']['output']>;
   /** Null if user must reset his password */
   user?: Maybe<User>;
+};
+
+export type SupportPaiement = {
+  __typename?: 'SupportPaiement';
+  amount: Scalars['Float']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  owner: Scalars['String']['output'];
+  phoneNumber: Scalars['String']['output'];
+  uniqueIdentifier: Scalars['String']['output'];
 };
 
 export type UpdateCollaboratorInput = {
@@ -717,7 +729,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay: number } } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null } } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -753,6 +765,11 @@ export type DisableEmailNotificationMutationVariables = Exact<{
 
 
 export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
+
+export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'SupportPaiement', amount: number, owner: string, firstName: string, lastName: string, phoneNumber: string, email: string, uniqueIdentifier: string }> };
 
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
@@ -1423,6 +1440,30 @@ export const DisableEmailNotificationDocument = gql`
   })
   export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
     document = DisableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchSupportPaiementDocument = gql`
+    query FetchSupportPaiement {
+  fetchSupportPaiement {
+    amount
+    owner
+    firstName
+    lastName
+    phoneNumber
+    email
+    uniqueIdentifier
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchSupportPaiementGQL extends Apollo.Query<FetchSupportPaiementQuery, FetchSupportPaiementQueryVariables> {
+    document = FetchSupportPaiementDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
