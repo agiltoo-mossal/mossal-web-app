@@ -127,7 +127,7 @@ export class SidebarComponent implements OnInit {
         icon: 'person_outline',
       },
       {
-        label: 'Organization',
+        label: 'Organisation',
         link: 'organization',
         icon: 'business',
       },
