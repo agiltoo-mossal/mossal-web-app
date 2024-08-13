@@ -52,7 +52,7 @@ export class OrganizationFileComponent implements OnInit {
           window.URL.revokeObjectURL(url);
         } else {
           this.snackBarService.showSnackBar(
-            "Aucun paiement n'a encore été effectue"
+            "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
           );
         }
       },
