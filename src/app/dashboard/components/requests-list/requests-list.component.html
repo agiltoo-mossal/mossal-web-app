@@ -2,7 +2,7 @@
   class="page-wrapper"
   fxLayout="row"
   fxLayoutAlign="none start"
-  fxLayoutGap="40px"
+  fxLayoutGap="25px"
 >
   <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
     <div fxLayout="column">
@@ -198,7 +198,7 @@
           fxLayout="row"
           fxLayoutAlign="space-between center"
         >
-          <th class="title" fxFlex="16.6" fxLayoutAlign="start center">
+          <th class="title" fxFlex="13" fxLayoutAlign="start center">
             N° Demande
           </th>
           <th class="title" fxFlex="20.6" fxLayoutAlign="center center">
@@ -213,7 +213,7 @@
           <th class="title" fxFlex="16.6" fxLayoutAlign="center center">
             Avance sur salaire
           </th>
-          <th class="title" fxFlex="16.6" fxLayoutAlign="center center">
+          <th class="title" fxFlex="30" fxLayoutAlign="center center">
             Actions
           </th>
         </tr>
@@ -231,7 +231,7 @@
         >
           <td
             class="radio-container"
-            fxFlex="16.6"
+            fxFlex="13"
             fxLayoutAlign="start center"
             fxLayout="row"
             fxLayoutGap="16px"
@@ -272,7 +272,7 @@
             <span class="statut statut--{{ req?.status | lowercase }}"></span
             ><span>Xof {{ req?.amount }}</span>
           </td>
-          <td fxFlex="16.6" fxLayoutAlign="end center">
+          <td fxFlex="30" fxLayoutAlign="end center">
             <div fxFlex="100" class="dropdown" appDropdown="dropdown-action">
               <span fxLayout="row" class="btn-edit-statut">
                 <span
