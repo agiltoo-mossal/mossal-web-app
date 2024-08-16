@@ -19,8 +19,10 @@ query FetchCurrentAdmin {
       maxDemandeAmount
       amountPercent
       fees
+      demandeDeadlineDay
     }
   }
+
 }
 
 mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
