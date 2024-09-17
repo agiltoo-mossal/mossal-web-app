@@ -75,7 +75,6 @@ export class RequestsListComponent implements AfterViewInit {
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
     private fb: FormBuilder
   ) {
-    this.getDemandes();
     this.initSearchForm();
     this.activatedRoute.queryParams.subscribe((params) => {
       this.search = params['entity'] || '';
@@ -144,7 +143,7 @@ export class RequestsListComponent implements AfterViewInit {
       .subscribe((data: any) => {
         this.requests = data.fetchPaginatedOrganizationDemandes.results;
         this.dataSource.data = this.requests as any;
-        this.selectedReq = this.requests[0];
+        this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
         this.resultsLength =
           data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
         // this.selectedAdmin = this.data?.[0];

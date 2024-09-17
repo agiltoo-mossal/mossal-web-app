@@ -59,7 +59,6 @@ export class OverviewComponent implements AfterViewInit {
     private fileUploadService: FileUploadService,
     private fb: FormBuilder
   ) {
-    this.fetchAdmins();
     this.initSearchForm();
   }
 
