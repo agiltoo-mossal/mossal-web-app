@@ -6,7 +6,7 @@
 >
   <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
     <div fxLayout="column">
-      <div class="filters" fxLayout="row">
+      <div class="filters" fxLayout="row" [formGroup]="searchForm">
         <div
           class="search"
           fxFlex="20"
@@ -16,7 +16,11 @@
           <mat-icon fxLayoutAlign="center center" class="icon-search"
             >search</mat-icon
           >
-          <input [(ngModel)]="search" type="text" placeholder="Rechercher" />
+          <input
+            formControlName="search"
+            type="text"
+            placeholder="Rechercher"
+          />
           <mat-icon
             fxLayoutAlign="center center"
             class="icon-delete"
@@ -272,7 +276,12 @@
               Avance sur salaire
             </th>
 
-            <td mat-cell *matCellDef="let req" class="advance" style="width: 15%;">
+            <td
+              mat-cell
+              *matCellDef="let req"
+              class="advance"
+              style="width: 15%"
+            >
               <div
                 style="
                   display: flex;
@@ -298,7 +307,7 @@
             >
               Action
             </th>
-            <td mat-cell *matCellDef="let row" style="width: 200px;">
+            <td mat-cell *matCellDef="let row" style="width: 200px">
               <div class="dropdown" appDropdown="dropdown-action">
                 <span fxLayout="row" class="btn-edit-statut">
                   <span

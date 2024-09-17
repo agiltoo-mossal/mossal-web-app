@@ -14,6 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
   merge,
   startWith,
@@ -104,7 +105,9 @@ export class RequestsListComponent implements AfterViewInit {
       this.paginator.page,
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
+
         // startWith('')
       )
     )
@@ -112,6 +115,7 @@ export class RequestsListComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
+
           const queryFilter = {
             limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
