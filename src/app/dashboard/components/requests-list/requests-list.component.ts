@@ -85,6 +85,8 @@ export class RequestsListComponent implements AfterViewInit {
   initSearchForm() {
     this.searchForm = this.fb.group({
       search: [''],
+      status: [''],
+      average: [''],
     });
   }
   ngAfterViewInit(): void {
@@ -109,7 +111,9 @@ export class RequestsListComponent implements AfterViewInit {
         filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
 
         // startWith('')
-      )
+      ),
+      this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
+      this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
     )
       .pipe(
         startWith({}),
@@ -123,9 +127,22 @@ export class RequestsListComponent implements AfterViewInit {
             // sortOrder: this.sort.direction,
             search: this.searchForm?.value?.search,
           };
+          const metricsInput = {};
+
+          if (this.status) {
+            metricsInput['status'] = this.status;
+          }
+          if (this.searchForm.get('average').value) {
+            metricsInput['minimum'] = this.searchForm
+              .get('average')
+              .getRawValue().min;
+            metricsInput['maximum'] = this.searchForm
+              .get('average')
+              .getRawValue().max;
+          }
 
           return this.paginatedRequestGQL.fetch(
-            { queryFilter },
+            { queryFilter, metricsInput },
             { fetchPolicy: 'no-cache' }
           );
         }),
@@ -300,12 +317,16 @@ export class RequestsListComponent implements AfterViewInit {
   }
 
   changeMinMax(mini, maxi) {
-    this.min = mini;
-    this.max = maxi;
+    this.min = mini * 1000;
+    this.max = maxi * 1000;
+    this.searchForm.get('average').setValue({ min: this.min, max: this.max });
   }
 
   changeStatus(state) {
+    console.log({ state });
     this.status = state;
+    this.searchForm.get('status').setValue(state);
+    console.log(this.searchForm.getRawValue());
   }
 
   resetFilter() {
