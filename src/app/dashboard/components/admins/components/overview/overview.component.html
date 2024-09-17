@@ -2,106 +2,124 @@
   class="page-wrapper"
   fxLayout="row"
   fxLayoutAlign="none start"
-  fxLayoutGap="40px"
+  fxLayoutGap="20px"
 >
-  <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    <!-- <app-file-upload></app-file-upload> -->
+  <div fxFlex="auto" fxLayout="column" fxLayoutGap="15px">
     <div fxLayout="row" fxLayoutGap="19px">
-          <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
-              <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
-              <input [(ngModel)]="search" type="text" class="form-control" placeholder="Recherche">
-          </div>
-          <div fxLayout="row" fxLayoutGap="19px">
-              <div class="dropdown" appDropdown="downlod-dropdown">
-                  <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"><mat-icon
-                          fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un
-                          fichier</span></button>
-                  <div class="dropdown-content " id="downlod-dropdown">
-                      <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
-                          <div class="icon">
-                              <img src="./assets/img/icon-upload.png" alt="">
-                          </div>
-                          <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
-                              <span class="type">Importer</span>
-                              <span class="format">Format accepté : csv</span>
-                          </div>
-                      </div>
-                      <div class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
-                          <div class="icon">
-                              <img src="./assets/img/icon-download.png" alt="">
-                          </div>
-                          <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
-                              <span class="type">Télécharger le template</span>
-                              <span class="format">template.csv</span>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
-                  routerLink="/dashboard/admins/create-admin">
-                  <span>+</span> <span>Ajouter un admin</span>
-              </button>
-          </div>
+      <div
+        *ngIf="searchForm"
+        [formGroup]="searchForm"
+        class="search-container"
+        fxFlex="auto"
+        fxLayoutAlign="start center"
+      >
+        <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+        <input
+          formControlName="search"
+          type="text"
+          class="form-control"
+          placeholder="Recherche"
+        />
       </div>
-    <table class="table table-wrapper">
-      <tr
-        class="titles-container"
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-      >
-        <th class="title" fxFlex="16.6" fxLayoutAlign="start center">
-          Identifiant
-        </th>
-        <th class="title" fxFlex="20.6" fxLayoutAlign="center center">Admin</th>
-        <th class="title" fxFlex="15.6" fxLayoutAlign="center center">
-          Telephone
-        </th>
-        <th class="title" fxFlex="13.6" fxLayoutAlign="center center">
-          Date de création
-        </th>
-        <th class="title" fxFlex="16.6" fxLayoutAlign="center center">
-          Actions
-        </th>
-      </tr>
-      <tr
-        class="user"
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-        *ngFor="let collab of admins | filter : search"
-      >
-        <td
-          class="radio-container"
-          fxFlex="16.6"
-          fxLayoutAlign="start center"
-          fxLayout="row"
-          fxLayoutGap="16px"
+      <div fxLayout="row" fxLayoutGap="19px">
+        <div class="dropdown" appDropdown="downlod-dropdown">
+          <button
+            class="btn btn-primary"
+            fxLayoutAlign="center center"
+            fxLayoutGap="8px"
+          >
+            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
+            ><span>Importer un fichier</span>
+          </button>
+          <div class="dropdown-content" id="downlod-dropdown">
+            <app-file-upload></app-file-upload>
+            <a
+              style="display: block;"
+              href="./assets/files/template-collaborator.xlsx"
+              [download]="'template-collaborator.xlsx' "
+              class="dropdown-option"
+              fxLayout="column"
+              fxLayoutAlign="start center"
+            >
+              <div class="icon">
+                <img src="./assets/img/icon-download.png" alt="" />
+              </div>
+              <div
+                fxLayout="column"
+                fxLayoutAlign="start center"
+              >
+                <span class="type">Télécharger le template</span>
+                <span class="format">template.XLSX</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <button
+          class="btn btn-primary"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+          routerLink="/dashboard/admins/create-admin"
         >
+          <span>+</span> <span>Ajouter un admin</span>
+        </button>
+      </div>
+    </div>
+
+
+    <div class="example-table-container">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="example-table"
+        matSort
+      >
+        <!-- matSortActive="uniqueIdentifier"
+        matSortDisableClear
+        matSortDirection="desc" -->
+        <!-- Number Column -->
+        <ng-container matColumnDef="uniqueIdentifier">
+          <th  mat-header-cell *matHeaderCellDef class="title " >Identifiant</th>
+          <td class="radio-container" mat-cell
+
+          *matCellDef="let row">
+          <div class="radio-container">
           <span
-            (click)="selectAdmin(collab)"
-            class="radio {{ selectedAdmin?.id === collab.id ? 'active' : '' }}"
+            (click)="selectAdmin(row)"
+            class="radio {{ row?.id === selectedAdmin?.id ? 'active' : '' }}"
             fxLayoutAlign="center center"
           ></span>
-          <span>{{ collab.uniqueIdentifier }}</span>
-        </td>
-        <td
-          class="name"
-          fxFlex="20.6"
-          fxLayout="row"
-          fxLayoutAlign="start center"
-          fxLayoutGap="8px"
-        >
-          <div class="circle" fxLayoutAlign="center center">AC</div>
-          <span>{{ collab.firstName }} {{ collab.lastName }} </span>
-          <!-- <mat-icon *ngIf="collab.blocked" class="color-danger">lock</mat-icon> -->
-        </td>
-        <td class="solde" fxFlex="15.6" fxLayoutAlign="center center">
-          {{ collab.phoneNumber }}
-        </td>
-        <td class="date" fxFlex="13.6" fxLayoutAlign="center center">
-          {{ collab.createdAt | date : "YYYY-MM-dd" }}
-        </td>
-        <td fxFlex="16.6" fxLayoutAlign="end center">
-          <div fxFlex="100" class="dropdown" appDropdown="dropdown-action">
+          <span>{{ row.uniqueIdentifier }}</span>
+
+          </div>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="admin">
+          <th mat-header-cell *matHeaderCellDef class="title">Administrateur</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.firstName }} {{ row.lastName }}
+          </td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear>Date</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.createdAt | date : "YYYY-MM-dd" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear  style="text-align: center;">Action</th>
+          <td mat-cell *matCellDef="let row">
+            <div  class="dropdown" appDropdown="dropdown-action">
             <span fxLayout="row" class="btn-edit-statut">
               <span
                 class="text"
@@ -109,10 +127,12 @@
                 fxLayout="row"
                 fxLayoutGap="8px"
                 fxLayoutAlign="center center"
+                                  style="padding: 0 8px;"
+
                 ><span>Action</span
                 ><span
                   class="statut statut--{{
-                    collab?.blocked ? 'rejected' : 'valid'
+                    row?.blocked ? 'rejected' : 'valid'
                   }}"
                 ></span
               ></span>
@@ -129,13 +149,13 @@
                 fxLayout="row"
                 fxLayoutAlign="start center"
                 fxLayoutGap="12px"
-                routerLink="/dashboard/admins/{{ collab.id }}"
+                routerLink="/dashboard/admins/{{ row.id }}"
               >
                 <span><mat-icon>edit</mat-icon></span>
                 <span>Editer</span>
               </div>
               <div
-                *ngIf="!collab.blocked"
+                *ngIf="!row.blocked"
                 class="dropdown-option color-danger"
                 fxLayout="row"
                 fxLayoutAlign="start center"
@@ -143,13 +163,13 @@
                 requiresConfirmation
                 [message]="'Voulez-vous bloquer cet utilisateur?'"
                 [confirmCallback]="lockUser"
-                [confirmCallbackParam]="collab?.id"
+                [confirmCallbackParam]="row?.id"
               >
                 <span><mat-icon>lock</mat-icon></span>
                 <span>Suspendre</span>
               </div>
               <div
-                *ngIf="collab.blocked"
+                *ngIf="row.blocked"
                 class="dropdown-option"
                 fxLayout="row"
                 fxLayoutAlign="start center"
@@ -157,17 +177,26 @@
                 requiresConfirmation
                 [message]="'Voulez-vous débloquer cet utilisateur?'"
                 [confirmCallback]="unlockUser"
-                [confirmCallbackParam]="collab?.id"
+                [confirmCallbackParam]="row?.id"
               >
                 <span><mat-icon>lock_open</mat-icon></span>
                 <span>Débloquer</span>
               </div>
             </div>
           </div>
-        </td>
-      </tr>
-    </table>
-    <div *ngIf="!admins?.length">Pas d'admin ajouté</div>
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [length]="resultsLength"
+        aria-label=""
+      ></mat-paginator>
+    </div>
   </div>
   <div class="info-current-user container_sticky">
     <app-user-details [user]="selectedAdmin"></app-user-details>

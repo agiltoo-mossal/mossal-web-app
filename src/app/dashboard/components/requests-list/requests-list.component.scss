@@ -87,3 +87,113 @@
 
 
 }
+
+#downlod-dropdown {
+  margin-top: 8px;
+  border-radius: 15px;
+  border: 2px dashed #979797;
+  background: var(--Blanc, #fff);
+
+  &.show {
+    display: flex !important;
+  }
+
+  .type {
+    color: var(--Noir, #000);
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .format {
+    color: var(--Noir, #000);
+    font-family: Poppins;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 120%;
+    letter-spacing: 0.055px;
+  }
+
+  .dropdown-option {
+    padding: 24px 40px;
+  }
+}
+.mdc-data-table__cell {
+  overflow: visible !important;
+}
+
+.mdc-data-table__cell {
+  .btn-edit-statut {
+    // max-width: 128px;
+    height: 42px;
+    border-radius: 4px;
+    background: #eeeff7;
+    cursor: pointer;
+
+    .dropdown-icon {
+      display: block;
+      width: 42px;
+      height: 100%;
+      border-left: 1px solid #d2d3e0;
+    }
+  }
+}
+table .mat-mdc-header-cell {
+  color: #061e5c;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 120%;
+  /* 38.4px */
+  letter-spacing: 0.16px;
+    padding: 22px 30px;
+
+}
+.mat-mdc-cell {
+  color: #33343d;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 22px 8px;
+
+  .radio-container {
+    color: var(--Noir, #000040);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .radio {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #061e5c;
+      border-radius: 50%;
+      &.active {
+        position: relative;
+
+        &::before {
+          position: absolute;
+          content: "";
+
+          width: 8px;
+          height: 8px;
+
+          background-color: #061e5c;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  .circle {
+    display: block;
+    padding: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #0C1D58;
+
+    color: var(--Blanc, #FFF);
+
+    font-size: 12px;
+    font-weight: 400;
+  }
+}

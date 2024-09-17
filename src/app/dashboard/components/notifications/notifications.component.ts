@@ -1,6 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { FetchOrganizationNotificationsGQL, ViewOrganizationNotificationsGQL } from 'src/graphql/generated';
+import {
+  FetchOrganizationNotificationsGQL,
+  FetchPaginatedNotificationsGQL,
+  ViewOrganizationNotificationsGQL,
+} from 'src/graphql/generated';
 import { NotificationsService } from './notifications.service';
 
 @Component({
@@ -15,32 +19,31 @@ export class NotificationsComponent implements OnDestroy, OnInit {
   constructor(
     private notificationsService: NotificationsService,
     private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
-    private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL
-  ) {
+    private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
 
-  }
+    private paginatedNofif: FetchPaginatedNotificationsGQL
+  ) {}
 
   getNotifications() {
-    this.listNotisSubscription = this.fetchOrganizationNotificationsGQL.fetch().subscribe(
-      result => {
-        this.notfis = (result.data?.fetchOrganizationNotifications || []) as any[];
-
-      }
-    )
+    this.listNotisSubscription = this.fetchOrganizationNotificationsGQL
+      .fetch()
+      .subscribe((result) => {
+        this.notfis = (result.data?.fetchOrganizationNotifications ||
+          []) as any[];
+      });
   }
-
 
   ngOnInit(): void {
     this.getNotifications();
-    this.viewSubscription = this.viewOrganizationNotificationsGQL.mutate().subscribe(
-      result => {
+    this.viewSubscription = this.viewOrganizationNotificationsGQL
+      .mutate()
+      .subscribe((result) => {
         this.notificationsService.unViewedNotification.next(false);
-      }
-    )
+      });
   }
 
   ngOnDestroy(): void {
-      this.listNotisSubscription.unsubscribe();
-      this.viewSubscription.unsubscribe();
+    this.listNotisSubscription.unsubscribe();
+    this.viewSubscription.unsubscribe();
   }
 }

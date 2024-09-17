@@ -22,14 +22,6 @@ import {
   User,
 } from 'src/graphql/generated';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -156,7 +148,7 @@ export class OverviewComponent implements AfterViewInit {
         this.selectedCollab = this.data[0];
         this.resultsLength =
           data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
-          this.selectedCollab = this.data?.[0];
+        this.selectedCollab = this.data?.[0];
       });
   }
 

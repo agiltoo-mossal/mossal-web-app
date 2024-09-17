@@ -320,6 +320,12 @@ export type PaginatedDemandeResult = {
   results: Array<Demande>;
 };
 
+export type PaginatedNotificationResult = {
+  __typename?: 'PaginatedNotificationResult';
+  pagination: PaginationInfo;
+  results: Array<Notification>;
+};
+
 export type PaginatedUserResult = {
   __typename?: 'PaginatedUserResult';
   pagination: PaginationInfo;
@@ -356,6 +362,8 @@ export type Query = {
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
   fetchPaginatedActivities: PaginatedActivityResult;
+  fetchPaginatedNotifications: PaginatedNotificationResult;
+  fetchPaginatedOrganisationAdmins: PaginatedUserResult;
   fetchPaginatedOrganizationCollaborators: PaginatedUserResult;
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
@@ -417,6 +425,18 @@ export type QueryFetchOrganizationDemandesArgs = {
 
 
 export type QueryFetchPaginatedActivitiesArgs = {
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedNotificationsArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedOrganisationAdminsArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -620,6 +640,14 @@ export type InviteAdminMutationVariables = Exact<{
 
 export type InviteAdminMutation = { __typename?: 'Mutation', inviteAdmin: boolean };
 
+export type FetchPaginatedOrganisationAdminsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> } };
+
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
 }>;
@@ -667,6 +695,14 @@ export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: strin
 
 export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
 
+export type FetchPaginatedNotificationsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedNotificationsQuery = { __typename?: 'Query', fetchPaginatedNotifications: { __typename?: 'PaginatedNotificationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> } };
+
 export type UpdateOrganizationMutationVariables = Exact<{
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
@@ -688,6 +724,14 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 
 
 export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
+
+export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> } };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -975,6 +1019,51 @@ export const InviteAdminDocument = gql`
       super(apollo);
     }
   }
+export const FetchPaginatedOrganisationAdminsDocument = gql`
+    query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrganisationAdmins(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      firstName
+      lastName
+      email
+      phoneNumber
+      uniqueIdentifier
+      address
+      salary
+      blocked
+      balance
+      totalDemandeAmount
+      wizallAccountNumber
+      bankAccountNumber
+      position
+      authorizedAdvance
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedOrganisationAdminsGQL extends Apollo.Query<FetchPaginatedOrganisationAdminsQuery, FetchPaginatedOrganisationAdminsQueryVariables> {
+    document = FetchPaginatedOrganisationAdminsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
   fetchOrganizationCollaborators(metricsInput: $metricsInput) {
@@ -1171,6 +1260,44 @@ export const ViewOrganizationNotificationsDocument = gql`
       super(apollo);
     }
   }
+export const FetchPaginatedNotificationsDocument = gql`
+    query FetchPaginatedNotifications($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedNotifications(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      entityId
+      title
+      content
+      author {
+        firstName
+        lastName
+      }
+      viewedByMe
+      organization
+      date: createdAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedNotificationsGQL extends Apollo.Query<FetchPaginatedNotificationsQuery, FetchPaginatedNotificationsQueryVariables> {
+    document = FetchPaginatedNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const UpdateOrganizationDocument = gql`
     mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
   updateOrganization(
@@ -1246,6 +1373,53 @@ export const FetchOrganizationDemandesDocument = gql`
   })
   export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
     document = FetchOrganizationDemandesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedOrganizationDemandesDocument = gql`
+    query FetchPaginatedOrganizationDemandes($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrganizationDemandes(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedOrganizationDemandesGQL extends Apollo.Query<FetchPaginatedOrganizationDemandesQuery, FetchPaginatedOrganizationDemandesQueryVariables> {
+    document = FetchPaginatedOrganizationDemandesDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

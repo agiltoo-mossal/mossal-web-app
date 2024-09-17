@@ -14,6 +14,10 @@ import { CreateAdminComponent } from './components/create-admin/create-admin.com
 import { FilterModule } from 'src/app/shared/pipes/filter/filter.module';
 import { RequiresConfirmationModule } from 'src/app/shared/directives/requires-confirmation/requires-confirmation.module';
 import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upload.module';
 
 @NgModule({
   imports: [
@@ -27,6 +31,10 @@ import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-
     FormsModule,
     FilterModule,
     RequiresConfirmationModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatSortModule,
+    FileUploadModule,
   ],
   declarations: [
     AdminsComponent,

@@ -1,28 +1,68 @@
 query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
-	fetchOrganizationDemandes(metricsInput: $metricsInput) {
-		id
-		amount
-		status
-		number
-		fees
+  fetchOrganizationDemandes(metricsInput: $metricsInput) {
+    id
+    amount
+    status
+    number
+    fees
     statusText
-		collaborator {
-			id
-			firstName
-			lastName
-			balance
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
       totalDemandeAmount
       salary
       authorizedAdvance
       bankAccountNumber
       uniqueIdentifier
-			# organization {
-			# 	name
-			# }
-		}
-		createdAt
-		updatedAt
-	}
+      # organization {
+      # 	name
+      # }
+    }
+    createdAt
+    updatedAt
+  }
+}
+query FetchPaginatedOrganizationDemandes(
+  $metricsInput: DemandesMetricsInput
+  $queryFilter: QueryDataConfigInput
+) {
+  fetchPaginatedOrganizationDemandes(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+        # organization {
+        # 	name
+        # }
+      }
+      createdAt
+      updatedAt
+    }
+  }
 }
 
 mutation ValidateDemande($demandeId: ID!) {

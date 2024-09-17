@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+     "graphql-gen-test": "graphql-codegen --config ./src/app/graphql/codegen.ts --require dotenv/config --verbose",
     "start": "ng serve --port 4500",
     "build": "ng build --configuration production",
     "build:dev": "ng build --configuration development",
