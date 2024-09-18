@@ -315,6 +315,18 @@ export class RequestsListComponent implements AfterViewInit {
         ?.length || 0
     );
   }
+  get nbPayed() {
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Payed)
+        ?.length || 0
+    );
+  }
+  get nbCanceled() {
+    return (
+      this?.requests?.filter?.((r) => r.status === DemandeStatus.Rejected)
+        ?.length || 0
+    );
+  }
 
   changeMinMax(mini, maxi) {
     this.min = mini * 1000;
