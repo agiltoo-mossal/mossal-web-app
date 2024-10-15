@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  OnInit,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -25,6 +26,7 @@ import {
   CancelDemandeByAdminGQL,
   Demande,
   DemandeStatus,
+  FetchCountStatusGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationDemandesGQL,
   PayeDemandeGQL,
@@ -39,7 +41,7 @@ import {
   styleUrls: ['./requests-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class RequestsListComponent implements AfterViewInit {
+export class RequestsListComponent implements AfterViewInit, OnInit {
   requests: Demande[] = [];
   selectedReq: Demande;
   min: number = 0;
@@ -54,6 +56,12 @@ export class RequestsListComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource = new MatTableDataSource<Demande>();
   page: number = 1;
+  fetchStatus: {
+    pending: number;
+    validated: number;
+    rejected: number;
+    payed: number;
+  };
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
@@ -74,6 +82,8 @@ export class RequestsListComponent implements AfterViewInit {
     private snackBarService: SnackBarService,
     private activatedRoute: ActivatedRoute,
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
+
+    private fetchCountStatusGQL: FetchCountStatusGQL,
     private fb: FormBuilder
   ) {
     this.initSearchForm();
@@ -81,7 +91,14 @@ export class RequestsListComponent implements AfterViewInit {
       this.search = params['entity'] || '';
     });
   }
-
+  ngOnInit(): void {
+    this.fetchCountStatusGQL.fetch().subscribe({
+      next: (value) => {
+        console.log(value);
+        this.fetchStatus = value.data.fectchCountStatus;
+      },
+    });
+  }
   initSearchForm() {
     this.searchForm = this.fb.group({
       search: [''],

@@ -1,18 +1,18 @@
 query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
   fetchOrganizationCollaborators(metricsInput: $metricsInput) {
-		id
-		firstName
-		lastName
-		email
-		phoneNumber
-		uniqueIdentifier
-		address
-		salary
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
     balance
     totalDemandeAmount
-		wizallAccountNumber
-		bankAccountNumber
-		position
+    wizallAccountNumber
+    bankAccountNumber
+    position
     authorizedAdvance
     createdAt
     updatedAt
@@ -23,41 +23,46 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
     # organization {
     #   name
     # }
-	}
+  }
 }
 
-query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
-  fetchPaginatedOrganizationCollaborators(metricsInput: $metricsInput, queryFilter: $queryFilter) {
-		pagination {
-			totalItems
-			pageCount
-			currentPage
-			pageSize
-		}
-		results {
-			id
-			firstName
-			lastName
-			email
-			phoneNumber
-			uniqueIdentifier
-			address
-			salary
-			balance
-			totalDemandeAmount
-			wizallAccountNumber
-			bankAccountNumber
-			position
-			authorizedAdvance
-			createdAt
-			updatedAt
-			blocked
-			favoriteWallet
-			birthDate
-		}
-	}
+query FetchPaginatedOrganizationCollaborators(
+  $metricsInput: DemandesMetricsInput
+  $queryFilter: QueryDataConfigInput
+) {
+  fetchPaginatedOrganizationCollaborators(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      firstName
+      lastName
+      email
+      phoneNumber
+      uniqueIdentifier
+      address
+      salary
+      balance
+      totalDemandeAmount
+      wizallAccountNumber
+      bankAccountNumber
+      position
+      authorizedAdvance
+      createdAt
+      updatedAt
+      blocked
+      favoriteWallet
+      birthDate
+    }
+  }
 }
-
 
 mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
   inviteCollaborator(collaborator: $collaboratorInput)
@@ -65,27 +70,33 @@ mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
 
 query FetchOrganizationCollaborator($collaboratorId: String!) {
   fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
-		id
-		firstName
-		lastName
-		email
-		phoneNumber
-		uniqueIdentifier
-		address
-		salary
-		wizallAccountNumber
-		bankAccountNumber
-		position
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    wizallAccountNumber
+    bankAccountNumber
+    position
     authorizedAdvance
     favoriteWallet
     birthDate
     blocked
-		organization {
-			name
-		}
-	}
+    organization {
+      name
+    }
+  }
 }
 
-mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!) {
-  updateCollaborator(collaborator: $collaboratorInput, collaboratorId: $collaboratorId)
+mutation UpdateCollaborator(
+  $collaboratorInput: UpdateCollaboratorInput!
+  $collaboratorId: String!
+) {
+  updateCollaborator(
+    collaborator: $collaboratorInput
+    collaboratorId: $collaboratorId
+  )
 }

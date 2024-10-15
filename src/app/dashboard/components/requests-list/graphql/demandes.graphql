@@ -80,3 +80,12 @@ mutation CancelDemandeByAdmin($demandeId: ID!) {
 mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
   rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
 }
+
+query FetchCountStatus {
+  fectchCountStatus{
+    pending
+    validated
+    rejected
+    payed
+  }
+}

@@ -46,6 +46,14 @@ export enum ActivityScope {
   Organisation = 'organisation'
 }
 
+export type CountStatusDemande = {
+  __typename?: 'CountStatusDemande';
+  payed: Scalars['Float']['output'];
+  pending: Scalars['Float']['output'];
+  rejected: Scalars['Float']['output'];
+  validated: Scalars['Float']['output'];
+};
+
 export type Demande = {
   __typename?: 'Demande';
   amount: Scalars['Float']['output'];
@@ -351,6 +359,7 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
+  fectchCountStatus: CountStatusDemande;
   fetchActivity: Activity;
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
@@ -364,6 +373,7 @@ export type Query = {
   fetchPaginatedActivities: PaginatedActivityResult;
   fetchPaginatedNotifications: PaginatedNotificationResult;
   fetchPaginatedOrganisationAdmins: PaginatedUserResult;
+  fetchPaginatedOrganisationCol: PaginatedUserResult;
   fetchPaginatedOrganizationCollaborators: PaginatedUserResult;
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
@@ -438,6 +448,11 @@ export type QueryFetchPaginatedNotificationsArgs = {
 export type QueryFetchPaginatedOrganisationAdminsArgs = {
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedOrganisationColArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
 };
 
 
@@ -538,7 +553,7 @@ export type UpdateCollaboratorInput = {
 };
 
 export type UpdateMyAdminProfileInput = {
-  address: Scalars['String']['input'];
+  address?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   enableEmailNotification?: InputMaybe<Scalars['Boolean']['input']>;
   favoriteWallet?: InputMaybe<Wallet>;
@@ -761,6 +776,11 @@ export type RejectDemandeByAdminMutationVariables = Exact<{
 
 
 export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
+
+export type FetchCountStatusQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchCountStatusQuery = { __typename?: 'Query', fectchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number } };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -1484,6 +1504,27 @@ export const RejectDemandeByAdminDocument = gql`
   })
   export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
     document = RejectDemandeByAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchCountStatusDocument = gql`
+    query FetchCountStatus {
+  fectchCountStatus {
+    pending
+    validated
+    rejected
+    payed
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchCountStatusGQL extends Apollo.Query<FetchCountStatusQuery, FetchCountStatusQueryVariables> {
+    document = FetchCountStatusDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
