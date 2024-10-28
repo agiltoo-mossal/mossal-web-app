@@ -14,8 +14,8 @@
       ><span style="font-size: 13px">Support de préparation de la paie </span>
     </button>
     <div class="dropdown-content flex jcs content" id="downlod-dropdown">
-      <button
-        (click)="uploadDemande()"
+      <label
+        for="file_input_demande"
         class="dropdown-option"
         fxLayout="column"
         fxLayoutGap="16px"
@@ -30,7 +30,14 @@
 
           <span class="format">Format accepté : XLSX</span>
         </div>
-      </button>
+      </label>
+       <input
+          type="file"
+          (change)="uploadDemande($event)"
+          accept=".xlsx"
+          style="display: none"
+          id="file_input_demande"
+        />
       <button
         (click)="downloadDemande()"
         class="dropdown-option"

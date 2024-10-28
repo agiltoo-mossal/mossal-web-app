@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FetchSupportPaiementGQL } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
 import * as XLSX from 'xlsx';
+import { FileUploadService } from '../../services/file-upload.service';
 
 @Component({
   selector: 'app-organization-file',
@@ -15,14 +16,36 @@ export class OrganizationFileComponent implements OnInit {
 
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
-    private snackBarService: SnackBarService
+    private snackBarService: SnackBarService,
+    private fileService: FileUploadService
   ) {}
 
   ngOnInit(): void {}
-  uploadDemande() {}
+  async uploadDemande(event: Event) {
+    const files = event.target as HTMLInputElement;
+    if (files) {
+      const file: File = (event.target as HTMLInputElement).files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.fileService.sendFileEndpoint(file, `demande/upload`).subscribe({
+          next: (res) => {
+            if ((res as any).data) {
+              this.snackBarService.showSnackBar(
+                'Demande de paiement envoyé avec success !'
+              );
+              // this.fileService.signalDataOrganisation.set((res as any).data);
+            } else {
+            }
+          },
+          error: (error) => console.log(error),
+        });
+      };
+    }
+  }
 
   downloadDemande() {
-    this.fetchSupportPaiement.fetch().subscribe({
+    this.fetchSupportPaiement.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: ({ data }) => {
         const temps = data.fetchSupportPaiement;
         if (temps.length) {
