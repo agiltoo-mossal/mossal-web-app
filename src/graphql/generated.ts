@@ -439,7 +439,7 @@ export type QueryFetchPaginatedOrganizationCollaboratorsArgs = {
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
-export type QueryFetchPaginatedOrganizationDemandesArgs = {
+export type QueryFetchPaginatedOrganisationAdminsArgs = {
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
