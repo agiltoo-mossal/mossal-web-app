@@ -35,6 +35,9 @@
             class="form-control"
             placeholder="75"
           />
+          <span class="color-danger" *ngIf="form.get('amountPercent')?.invalid && form.get('amountPercent')?.touched">
+            Le pourcentage doit etre superieur a 1 et inferieur a 100
+          </span>
         </div>
         <div fxLayout="column" fxLayoutGap="15px">
           <label for="address"
@@ -50,6 +53,9 @@
             class="form-control"
             placeholder="1000000"
           />
+          <span class="color-danger" *ngIf="form.get('maxDemandeAmount')?.invalid && form.get('maxDemandeAmount')?.touched">
+            Le montant maximum doit etre superieur a 5000
+          </span>
         </div>
       </form>
     </div>
@@ -83,6 +89,9 @@
           </ul>
         </div>
       </form>
+      <p style="text-align: justify; padding: 8px;">
+        <span style="width: 25px; height: 25px; padding: 5px; border-radius: 50%;display: inline-flex ;justify-content: center;align-items: center; background-color: gray;" ><i class="fa-solid fa-info" style="color: white;"></i></span>
+        Veuillez sélectionner la date du mois à partir de laquelle le collaborateur ne pourra plus soumettre de demande d'avance pour le mois en cours</p>
     </div>
   </div>
   <div fxLayout="row" fxLayoutGap="32px" style="width: 100%;">

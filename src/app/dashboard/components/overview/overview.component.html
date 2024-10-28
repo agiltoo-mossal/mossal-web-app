@@ -126,75 +126,110 @@
           </div>
         </div>
       </div>
-      <table class="table">
-        <tr class="titles-container" fxLayout="row">
-          <th class="title" fxFlex="20" fxLayoutAlign="start center">
-            Identifiant
-          </th>
-          <th class="title" fxFlex="20" fxLayoutAlign="center center">
-            Collaborateur
-          </th>
-          <th class="title" fxFlex="20" fxLayoutAlign="center center">Solde</th>
-          <th class="title" fxFlex="20" fxLayoutAlign="center center">Date</th>
-          <th class="title" fxFlex="20" fxLayoutAlign="center center">
-            Avance sur salaire
-          </th>
-        </tr>
-        <tr
-          class="user"
-          fxLayout="row"
-          *ngFor="let req of collaborators; let i = index"
+      <div class="example-table-container">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="example-table"
+          matSort
         >
-          <td
-            class="radio-container"
-            fxFlex="20"
-            fxLayoutAlign="start center"
-            fxLayout="row"
-            fxLayoutGap="16px"
-          >
-            <span
-              (click)="selectCollab(req)"
-              class="radio {{ selectedCollab?.id === req.id ? 'active' : '' }}"
-              fxLayoutAlign="center center"
-            ></span>
-            <span>{{ req?.uniqueIdentifier }}</span>
-          </td>
-          <td
-            class="name"
-            fxFlex="20"
-            fxLayoutAlign="start center"
-            fxLayoutGap="8px"
-          >
-            <div class="circle" fxLayoutAlign="center center">
-              {{ req?.firstName[0] }}{{ req?.lastName[0] }}
-            </div>
-            <span>{{ req?.firstName }} {{ req?.lastName }}</span>
-          </td>
-          <td class="solde" fxFlex="20" fxLayoutAlign="center center">
-            XOF {{ req?.balance | number : "1.0-0" }}
-          </td>
-          <td class="date" fxFlex="20" fxLayoutAlign="center center">
-            {{ req?.createdAt | frenchDate }}
-          </td>
-          <td
-            class="advance"
-            fxFlex="20"
-            fxLayout="row"
-            fxLayoutGap="8px"
-            fxLayoutAlign="center center"
-          >
-            <span
-              class="statut statut--{{
-                getLastRequest(req)?.status | lowercase
-              }}"
-            ></span
-            ><span
-              >{{ getLastRequest(req)?.amount ? "XOF" : "" }}
-              {{ getLastRequest(req)?.amount | number : "1.0-0" || "__" }}</span
-            >
-          </td>
-        </tr>
-      </table>
+          <!-- matSortActive="uniqueIdentifier"
+        matSortDisableClear
+        matSortDirection="desc" -->
+          <!-- Number Column -->
+          <ng-container matColumnDef="numero">
+            <th mat-header-cell *matHeaderCellDef class="title">Identifiant</th>
+            <td mat-cell *matCellDef="let row">
+              <div
+                class="radio-container"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="8px"
+               
+              >
+                <span
+                  (click)="selectCollab(row)"
+                  class="radio {{
+                    selectedCollab?.id === row.id ? 'active' : ''
+                  }}"
+                  fxLayoutAlign="center center"
+                ></span>
+
+                <span>{{ row?.uniqueIdentifier }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Title Column -->
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef class="title">
+              Collaborateur
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <div
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="8px"
+              >
+                <div class="circle" fxLayoutAlign="center center">
+                  {{ row?.firstName?.charAt(0) }}{{ row?.lastName?.charAt(0) }}
+                </div>
+                <span>{{ row?.firstName }} {{ row?.lastName }}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="solde">
+            <th mat-header-cell *matHeaderCellDef class="title">
+                          Solde
+            </th>
+            <td class="solde" mat-cell *matCellDef="let row" style="width: 15%">
+              XOF {{ row?.balance | number : "1.0-0" }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef class="title" disableClear>
+              Date
+            </th>
+            <td mat-cell *matCellDef="let row" style="width: 17%">
+              {{ row.createdAt | date : "dd-MM-YYYY" }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="AvanceSalaire">
+            <th mat-header-cell *matHeaderCellDef class="title">
+                          Avance sur salaire
+            </th>
+            <td class="solde" mat-cell *matCellDef="let row" style="width: 15%">
+              <div
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="8px"
+              >
+                <span
+                  class="statut statut--{{
+                    getLastRequest(row)?.status | lowercase
+                  }}"
+                ></span>
+                <span
+                  >{{ getLastRequest(row)?.amount ? "XOF" : "" }}
+
+                               
+                  {{
+                    getLastRequest(row)?.amount | number : "1.0-0" || "__"
+                  }}</span
+                >
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [length]="resultsLength"
+          aria-label=""
+        ></mat-paginator>
+      </div>
       <div
         class="legends"
         fxLayout="row"
@@ -208,7 +243,7 @@
           fxLayoutGap="8px"
         >
           <span class="color"></span>
-          <div class="nbr">Validé ({{ nbValid }})</div>
+          <div class="nbr">Validé ({{ fetchStatus?.validated }})</div>
         </div>
         <div
           class="rejected"
@@ -217,7 +252,7 @@
           fxLayoutGap="8px"
         >
           <span class="color"></span>
-          <div class="nbr">Rejeté ({{ nbRejected }})</div>
+          <div class="nbr">Rejeté ({{ fetchStatus?.rejected }})</div>
         </div>
         <div
           class="pending"
@@ -226,7 +261,25 @@
           fxLayoutGap="8px"
         >
           <span class="color"></span>
-          <div class="nbr">En attente ({{ nbPending }})</div>
+          <div class="nbr">En attente ({{ fetchStatus?.pending }})</div>
+        </div>
+        <div
+          class="rembourse"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+        >
+          <span class="color"></span>
+          <div class="nbr">Remboursé ({{ fetchStatus?.payed }})</div>
+        </div>
+        <div
+          class="canceled"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+        >
+          <span class="color"></span>
+          <div class="nbr">Annulé ({{ fetchStatus?.rejected }})</div>
         </div>
       </div>
     </div>

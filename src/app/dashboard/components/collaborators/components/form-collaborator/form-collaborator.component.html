@@ -23,7 +23,7 @@
                     <small class="color-danger" *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
                 </div>
                 <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="birthDate">Date de naissance <span class="color-danger">*</span></label>
+                  <label for="birthDate">Date de naissance </label>
                   <input formControlName="birthDate" type="date" id="birthDate" class="form-control">
                 </div>
                 <div fxLayout="column" fxLayoutGap="15px">
@@ -37,7 +37,7 @@
                     <input formControlName="position" type="text" id="fonction" class="form-control">
                 </div>
                 <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="unique-id">Identifiant unique <span class="color-danger">*</span></label>
+                    <label for="unique-id">Matricule <span class="color-danger">*</span></label>
                     <input formControlName="uniqueIdentifier" type="text" id="unique-id" class="form-control">
                     <small class="color-danger" *ngIf="uniqueIdentifierExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
                 </div>
@@ -48,7 +48,7 @@
                 </div>
 
                 <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="nbr-compte">N° Compte Bancaire<span class="color-danger">*</span></label>
+                    <label for="nbr-compte">N° Compte Bancaire</label>
                     <input formControlName="bankAccountNumber" type="text" id="nbr-compte" class="form-control">
                     <small class="color-danger" *ngIf="bankAccountNumberExists">Compte déjà pris par un utilisateur de l'entreprise</small>
                 </div>

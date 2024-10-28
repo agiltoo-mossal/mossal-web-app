@@ -26,3 +26,38 @@ query FetchOrganizationAdmins {
 mutation InviteAdmin($adminInput: InviteCollaboratorInput!) {
   inviteAdmin(admin: $adminInput)
 }
+
+query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput){
+	fetchPaginatedOrganisationAdmins(metricsInput: $metricsInput, queryFilter: $queryFilter){
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results{
+					id
+		firstName
+		lastName
+		email
+		phoneNumber
+		uniqueIdentifier
+		address
+		salary
+    blocked
+    balance
+    totalDemandeAmount
+		wizallAccountNumber
+		bankAccountNumber
+		position
+    authorizedAdvance
+    createdAt
+    updatedAt
+    # organization {
+    #   name
+    # }
+
+		}
+
+	}
+}

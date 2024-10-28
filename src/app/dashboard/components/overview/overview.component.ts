@@ -12,14 +12,27 @@ import {
   Demande,
   DemandesMetrics,
   DemandeStatus,
+  FetchCountStatusGQL,
   FetchDemandesMetricsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
+  FetchPaginatedOrganizationCollaboratorsGQL,
   User,
 } from 'src/graphql/generated';
 import { dataStatic } from 'src/app/shared/types/data-static';
 import { OverviewService } from './overview.service';
-import { lastValueFrom } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  lastValueFrom,
+  map,
+  merge,
+  startWith,
+  switchMap,
+} from 'rxjs';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-overview',
@@ -37,16 +50,28 @@ export class OverviewComponent implements OnInit {
   metricsInput: FormGroup;
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
+  resultsLength = 0;
+  fetchStatus: {
+    pending: number;
+    validated: number;
+    rejected: number;
+    payed: number;
+  };
   sortBy: 'createdAt' | 'hasValidatedDemande' = 'createdAt';
   filterBy = 'createdAt';
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  dataSource = new MatTableDataSource<Demande>();
+  page: number = 1;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
-    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
+    private fetchOrganizationCollaboratorsGQL: FetchPaginatedOrganizationCollaboratorsGQL,
     private snackBarService: SnackBarService,
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
     private fb: FormBuilder,
-    private userCollaboratorService: OverviewService
+    private userCollaboratorService: OverviewService,
+    private fetchCountStatusGQL: FetchCountStatusGQL
   ) {
     const now = new Date('2024-12-31');
     this.metricsInput = this.fb.group({
@@ -63,8 +88,21 @@ export class OverviewComponent implements OnInit {
     });
     this.getData();
   }
-  ngOnInit(): void {}
-
+  ngOnInit(): void {
+    this.fetchCountStatusGQL.fetch().subscribe({
+      next: (value) => {
+        console.log(value);
+        this.fetchStatus = value.data.fectchCountStatus;
+      },
+    });
+  }
+  displayedColumns: string[] = [
+    'numero',
+    'name',
+    'solde',
+    'createdAt',
+    'AvanceSalaire',
+  ];
   private updateStaticData() {
     const infoCount = [
       this.nbAccordedRequest,
@@ -171,15 +209,56 @@ export class OverviewComponent implements OnInit {
       )
     )
       .then((result) => {
-        this.collabs = result.data.fetchOrganizationCollaborators as User[];
+        this.collabs = result.data.fetchPaginatedOrganizationCollaborators
+          .results as User[];
+        console.log(this.collabs);
+        this.dataSource.data = this.collabs;
         this.selectedCollab = this.collabs?.[0];
+        this.resultsLength =
+          result.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
       })
       .catch((error) => {
         console.error('Error fetching collaborators:', error);
         throw error;
       });
   }
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
+    merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.metricsInput.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
+    )
+      .pipe(
+        switchMap(() => {
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+          };
+          return this.fetchOrganizationCollaboratorsGQL.fetch(
+            { queryFilter },
+            { fetchPolicy: 'no-cache' }
+          );
+        }),
+        map((result) => {
+          if (result == null) return [];
+          return result.data;
+        })
+      )
+      .subscribe((data: any) => {
+        console.log(data);
+        this.dataSource.data = data.fetchPaginatedOrganizationCollaborators
+          .results as Demande[];
+        this.selectedCollab = this.collabs?.[0];
+        this.resultsLength =
+          data.fetchOrganizationCollaborators.pagination.totalItems;
+      });
+  }
   setHasValidatedDemande() {
     return this.collabs.map((c) => {
       c.hasValidatedDemande = false;

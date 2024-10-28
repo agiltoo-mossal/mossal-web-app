@@ -1,38 +1,36 @@
-<div style="margin-bottom: 10px">
-  <div class="dropdown" appDropdown="downlod-dropdown">
+<div style="margin-bottom: 10px; width: 100%" fxLayout="row" fxLayoutGap="19px">
+  <div class="dropdown" appDropdown="downlod-dropdown" style="width: 100%">
     <button
       class="btn btn-primary"
-      fxLayoutAlign="center center"
-      fxLayoutGap="8px"
-      style="width: 100%"
+      style="
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
     >
       <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
-      ><span>Importer un fichier</span>
+      ><span style="font-size: 13px">Support de préparation de la paie </span>
     </button>
-    <div class="dropdown-content" id="downlod-dropdown">
-      <form enctype="multipart/form-data">
-        <label
-          for="file_input_demande"
-          class="dropdown-option"
-          fxLayout="column"
-          style="display: flex; flex-direction: column; justify-content: center; align-items: center; "
-        >
-          <div class="icon">
-            <img src="./assets/img/icon-upload.png" alt="" />
-          </div>
-          <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
-            <span class="type">Importer</span>
-            <span class="format">Format accepté : csv</span>
-          </div>
-        </label>
-        <input
-          type="file"
-          (change)="uploadDemande($event)"
-          accept=".csv"
-          style="display: none"
-          id="file_input_demande"
-        />
-      </form>
+    <div class="dropdown-content flex jcs content" id="downlod-dropdown">
+      <button
+        (click)="uploadDemande()"
+        class="dropdown-option"
+        fxLayout="column"
+        fxLayoutGap="16px"
+        fxLayoutAlign="start center"
+      >
+        <div class="icon">
+          <img src="./assets/img/icon-upload.png" alt="" />
+        </div>
+        <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
+          <span class="type">Importer le support</span>
+          <span class="type">de la preparation à la paie</span>
+
+          <span class="format">Format accepté : XLSX</span>
+        </div>
+      </button>
       <button
         (click)="downloadDemande()"
         class="dropdown-option"
@@ -44,8 +42,9 @@
           <img src="./assets/img/icon-download.png" alt="" />
         </div>
         <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center">
-          <span class="type">Télécharger le format</span>
-          <span class="format">template.csv</span>
+          <span class="type">Télécharger le support </span>
+          <span class="type">de la preparation à la paie</span>
+          <span class="format">support-paiement.XLSX</span>
         </div>
       </button>
     </div>

@@ -42,7 +42,7 @@ export class OrganizationComponent {
     private updateOrganizationGQL: UpdateOrganizationGQL
   ) {
     this.form = this.fb.group({
-      name: ['', Validators.required],
+      name: [{ value: '', disabled: true }, Validators.required],
       maxDemandeAmount: [1000000, [Validators.required, Validators.min(5000)]],
       amountPercent: [
         75,
@@ -54,7 +54,9 @@ export class OrganizationComponent {
     this.getCurrentorganization();
     this.generateCardItems();
   }
-
+  get name() {
+    return this.form.get('name');
+  }
   generateCardItems() {
     for (let index = 1; index <= 28; index++) {
       const daySelected = {
@@ -121,6 +123,7 @@ export class OrganizationComponent {
       });
   }
   updateOrganization() {
+    console.log(this.form.invalid);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
