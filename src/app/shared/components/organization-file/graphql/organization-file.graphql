@@ -1,0 +1,11 @@
+query FetchSupportPaiement {
+  fetchSupportPaiement {
+    amount
+    owner
+    firstName
+    lastName
+    phoneNumber 
+    email
+    uniqueIdentifier
+    }
+}

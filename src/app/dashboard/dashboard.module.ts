@@ -6,6 +6,7 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
+
 import { RequestsListComponent } from './components/requests-list/requests-list.component';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { UserDetailsModule } from '../shared/components/user-details/user-details.module';
@@ -28,6 +29,14 @@ import { PropertyMatchPipe } from '../shared/pipes/property-match/property-match
 import { FilterModule } from '../shared/pipes/filter/filter.module';
 import { DemandeStatusModule } from '../shared/pipes/demande-status/demande-status.module';
 import { OrganizationComponent } from './components/organization/organization.component';
+import { ActivitiesComponent } from './components/activities/activities.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
+import { OrganizationFileModule } from '../shared/components/organization-file/organization-file.module';
 
 @NgModule({
   declarations: [
@@ -37,13 +46,16 @@ import { OrganizationComponent } from './components/organization/organization.co
     UserComponent,
     NotificationsComponent,
     RefundChartsComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    ActivitiesComponent,
+    CardDashboardComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     RouterModule,
     FlexLayoutModule,
+
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,
@@ -62,6 +74,12 @@ import { OrganizationComponent } from './components/organization/organization.co
     PropertyMatchPipe,
     FilterModule,
     DemandeStatusModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule,
+    OrganizationFileModule,
   ],
   providers: [NotificationsService],
 })

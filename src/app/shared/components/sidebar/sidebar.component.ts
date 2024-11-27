@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { FetchCurrentAdminGQL, User } from 'src/graphql/generated';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   isSidebarOpened: boolean = true;
   dashboardNav = [
     {
@@ -37,7 +38,6 @@ export class SidebarComponent {
       link: 'user',
       icon: 'person_outline',
     },
-
   ];
   currentUser: User;
 
@@ -46,13 +46,13 @@ export class SidebarComponent {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private keycloakService: KeycloakService,
     private router: Router
-  ) {
+  ) {}
+  ngOnInit(): void {
     this.getCurrentUser();
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
       this.isSidebarOpened = resp;
     });
   }
-
   getCurrentUser() {
     this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
       this.currentUser = result.data.fetchCurrentAdmin as User;
@@ -127,9 +127,14 @@ export class SidebarComponent {
         icon: 'person_outline',
       },
       {
-        label: 'Organization',
+        label: 'Organisation',
         link: 'organization',
         icon: 'business',
+      },
+      {
+        label: 'Activités',
+        link: 'activities',
+        icon: 'feed',
       },
     ];
   }

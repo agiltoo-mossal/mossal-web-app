@@ -7,7 +7,7 @@ import { LoginComponent } from './login/login.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackBarService } from '../shared/services/snackbar.service';
@@ -16,18 +16,20 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { SuccessPageModule } from '../shared/components/success-page/success-page.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { FooterModule } from '../shared/components/footer/footer.module';
-import {MatButtonModule} from '@angular/material/button';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
 
 @NgModule({
   declarations: [
     AuthComponent,
     LoginComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    RequestResetPasswordComponent,
   ],
   imports: [
     CommonModule,
@@ -47,7 +49,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     MatStepperModule,
     TranslateModule,
     FooterModule,
-    MatDialogModule
+    MatDialogModule,
   ],
   providers: [SnackBarService, AuthService],
   exports: [],

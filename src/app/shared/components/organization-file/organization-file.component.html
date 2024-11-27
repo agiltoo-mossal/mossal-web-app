@@ -1,0 +1,52 @@
+<div style="margin-bottom: 10px;">
+      <div class="dropdown"  appDropdown="downlod-dropdown">
+        <button
+          class="btn btn-primary"
+          fxLayoutAlign="center center"
+          fxLayoutGap="8px"
+          style="width: 100%;"
+        >
+          <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
+          ><span>Importer un fichier</span>
+        </button>
+        <div class="dropdown-content" id="downlod-dropdown">
+          <button
+            (click)="uploadDemande()"
+            class="dropdown-option"
+            fxLayout="column"
+            fxLayoutGap="16px"
+            fxLayoutAlign="start center"
+          >
+            <div class="icon">
+              <img src="./assets/img/icon-upload.png" alt="" />
+            </div>
+            <div
+              fxLayout="column"
+              fxLayoutGap="4px"
+              fxLayoutAlign="start center"
+            >
+              <span class="type">Importer</span>
+              <span class="format">Format accepté : XLSX</span>
+            </div>
+          </button>
+          <button (click)="downloadDemande()"
+            class="dropdown-option"
+            fxLayout="column"
+            fxLayoutGap="16px"
+            fxLayoutAlign="start center"
+          >
+            <div class="icon">
+              <img src="./assets/img/icon-download.png" alt="" />
+            </div>
+            <div
+              fxLayout="column"
+              fxLayoutGap="4px"
+              fxLayoutAlign="start center"
+            >
+              <span class="type">Télécharger </span>
+              <span class="format">support-paiement.XLSX</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>

@@ -18,28 +18,25 @@ jobs:
         with:
           node-version: 20.2.0
 
-      - name: Install Yarn
-        run: npm install -g yarn
-
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Build (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          NODE_OPTIONS=--max-old-space-size=4096 yarn run build:dev
+          NODE_OPTIONS=--max-old-space-size=4096 npm run build:dev
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.DATABEEZ_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DATABEEZ_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.MOSSALL_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.MOSSALL_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Deploy to S3 and CloudFront (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
           aws configure list
-          aws s3 sync --acl public-read --delete dist/databeez-jobs s3://databeez-jobs-dev
-          aws cloudfront create-invalidation --distribution-id E3R04AXYPM1FBP --paths '/*'
+          aws s3 sync --acl public-read --delete dist/mossal-web-app s3://mossall-web-dev
+          aws cloudfront create-invalidation --distribution-id E1WXRVLGIQ225S --paths '/*'
 
