@@ -1,9 +1,41 @@
-<div
-  class="page-wrapper form-container form-container-card"
-  fxLayout="column"
-  fxLayoutGap="32px"
->
-  <div fxLayout="row" fxLayoutGap="32px">
+<!-- class="page-wrapper form-container form-container-card" -->
+<div fxLayout="column" class="page-wrapper form-container form-container-card">
+  <mat-tab-group>
+    <mat-tab *ngFor="let service of listServices" [label]="service.title">
+      <div [ngSwitch]="service.title">
+        <div class="container_tab">
+
+        <app-organization-setting-general  *ngSwitchCase="'général'"></app-organization-setting-general>
+        <app-organization-setting-emergency [serviceId]="service.id" *ngSwitchCase="'Dépannage d’urgence'"></app-organization-setting-emergency>
+        <app-organization-setting-event [serviceId]="service.id" *ngSwitchCase="'Avance sur évenement'"></app-organization-setting-event>
+        <app-organization-setting-salary [serviceId]="service.id" *ngSwitchCase="'Avance salariale'"></app-organization-setting-salary>
+        <app-organization-setting-salary-refund [serviceId]="service.id" *ngSwitchCase="'Avance sur plusieurs mois'"></app-organization-setting-salary-refund>
+        <div *ngSwitchDefault>Component not found</div>
+        </div>
+      </div>
+     
+    </mat-tab>
+    <!-- <mat-tab label="Dépannage d'urgence">
+      <div class="container_tab">
+        <app-organization-setting-emergency></app-organization-setting-emergency>
+      </div>
+    </mat-tab>
+    <mat-tab label="Avance sur événement"
+      ><div class="container_tab">
+        <app-organization-setting-event></app-organization-setting-event>
+      </div>
+    </mat-tab>
+    <mat-tab label="Avance sur salaire">
+      <div class="container_tab">
+        <app-organization-setting-salary></app-organization-setting-salary>
+      </div>
+    </mat-tab>
+    <mat-tab label="Avance salaire remboursable mensuellement">
+      <app-organization-setting-salary-refund></app-organization-setting-salary-refund>
+    </mat-tab> -->
+  </mat-tab-group>
+
+  <!-- <div fxLayout="row" fxLayoutGap="32px">
     <div fxFlex="50" fxLayout="column" fxLayoutGap="38px">
       <span class="title">Mon profil</span>
       <form
@@ -105,5 +137,5 @@
         Soumettre
       </button>
     </div>
-  </div>
+  </div> -->
 </div>

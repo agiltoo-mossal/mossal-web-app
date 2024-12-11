@@ -1,0 +1,91 @@
+<div class="container">
+  <div class="container-title-setting">
+    <span>Avance sur événement</span>
+  </div>
+  <div class="avance-evenement-container">
+
+    <!-- Section Activation du service -->
+    <div class="section">
+      <h3>Activation du service</h3>
+      <app-toggle-slide
+        [firstText]="'Actif'"
+        [secondText]="'Inactif'"
+        [uniqueId]="'serviceActivation'"
+      ></app-toggle-slide>
+    </div>
+
+    <!-- Liste des événements prévus -->
+    <div class="section">
+      <h3>Liste des événements prévus</h3>
+      <ul class="event-list">
+        <li *ngFor="let event of events; let i = index" class="event-item">
+          <div class="event-toggle">
+            <app-toggle-slide
+              [firstText]="'Actif'"
+              [secondText]="'Inactif'"
+              [uniqueId]="'event-' + i"
+            ></app-toggle-slide>
+          </div>
+          <div class="event-details">
+            <span>{{ event.name }}</span>
+            <input type="date" [value]="event.startDate" />
+            <input type="date" [value]="event.endDate" />
+            <button class="edit-btn">✏️</button>
+            <button class="delete-btn">🗑️</button>
+          </div>
+        </li>
+      </ul>
+      <button class="add-event-btn">Ajouter un événement</button>
+    </div>
+
+    <!-- Section des paramètres -->
+    <div class="section">
+      <div class="category-selection">
+        <select>
+          <option>Ajouter une catégorie</option>
+        </select>
+      </div>
+
+      <ul class="tab-navigation">
+        <li class="tab-item active">Paramètres Généraux</li>
+        <li class="tab-item">Catégorie Socio Professionnelle 1</li>
+        <li class="tab-item">Catégorie Socio Professionnelle 2</li>
+      </ul>
+
+      <div class="settings">
+        <h3>Activation du service</h3>
+        <app-toggle-slide
+          [firstText]="'On'"
+          [secondText]="'Off'"
+          [uniqueId]="'paramServiceActivation'"
+        ></app-toggle-slide>
+
+        <h3>Pourcentage ou montant fixe</h3>
+        <label>
+          <input type="radio" name="amountType" value="percentage" checked />
+          Pourcentage
+        </label>
+        <label>
+          <input type="radio" name="amountType" value="fixed" /> Montant fixe
+        </label>
+
+        <h3>Montant et durée du remboursement</h3>
+        <div class="input-group">
+          <input type="number" placeholder="30" />
+          <span>%</span>
+        </div>
+        <div class="input-group">
+          <input type="text" placeholder="12 mois" />
+        </div>
+
+        <h3>Validation automatique</h3>
+        <app-toggle-slide
+          [firstText]="'ON'"
+          [secondText]="'OFF'"
+          [uniqueId]="'autoValidation'"
+        ></app-toggle-slide>
+      </div>
+    </div>
+    <button class="validate-btn">Valider</button>
+  </div>
+</div>

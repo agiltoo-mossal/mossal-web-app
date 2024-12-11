@@ -1,0 +1,17 @@
+<div class="switches-container">
+  <!-- Identifiants dynamiques pour chaque radio -->
+  <input type="radio" [id]="firstText+randomId" name="switchPlan" value="First" checked="checked" />
+  <input type="radio" [id]="secondText + randomId" name="switchPlan" value="Second" />
+  
+  <!-- Labels avec références dynamiques -->
+  <label [for]="firstText + randomId">{{ firstText }}</label>
+  <label [for]="secondText + randomId">{{ secondText }}</label>
+  
+  <!-- Switch wrapper pour le background -->
+  <div class="switch-wrapper">
+    <div class="switch">
+      <div>{{ firstText }}</div>
+      <div>{{ secondText }}</div>
+    </div>
+  </div>
+</div>

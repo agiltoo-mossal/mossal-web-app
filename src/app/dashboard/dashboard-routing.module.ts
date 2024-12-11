@@ -9,6 +9,7 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { OrganizationComponent } from './components/organization/organization.component';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ActivitiesComponent } from './components/activities/activities.component';
+import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,10 @@ const routes: Routes = [
           import('./components/admins/admins.module').then(
             (m) => m.AdminsModule
           ),
+      },
+      {
+        path: 'emergency-repair',
+        component: RequestEmergencyComponent,
       },
       {
         path: 'Notifications',

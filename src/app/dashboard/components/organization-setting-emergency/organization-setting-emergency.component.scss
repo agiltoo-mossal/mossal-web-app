@@ -1,0 +1,154 @@
+/* Conteneur principal */
+.service-activation-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Titre */
+.service-activation-container h3 {
+  color: #2d3559;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+
+
+input:checked + .slider {
+  background-color: #0066ff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Date d'activation */
+.activation-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input span {
+  font-size: 14px;
+  color: #2d3559;
+  padding:0 8px;
+}
+
+/* Sélection des catégories */
+.category-selection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.category-selection select {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}
+
+.add-category-button {
+  background-color: #061E5C;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-category-button:hover {
+    background-color: #061E5C;
+
+}
+
+/* Pourcentage ou montant fixe */
+.percentage-or-fixed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.percentage-or-fixed h4 {
+  color: #2d3559;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.percentage-or-fixed label {
+  color: #2d3559;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Remboursement */
+.reimbursement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reimbursement h4 {
+  color: #2d3559;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.percentage-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.percentage-input input {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}
+
+.percentage-input span {
+  color: #2d3559;
+  font-weight: bold;
+}
+
+/* Validation automatique */
+.auto-validation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.auto-validation span {
+  font-size: 14px;
+  color: #2d3559;
+}
+
+/* Bouton Valider */
+.validate-button {
+  align-self: flex-start;
+  background-color: #061E5C;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.validate-button:hover {
+  background-color:#061e5cc1;
+}

@@ -241,7 +241,29 @@ input:focus {
 .End {
   color: #fb6d3a;
 }
+.container-title-setting{
+  text-align: center;
+  font-size: 32px;
+  padding: 12px 0;
+  color: #11167a;
+  span{
+   border-bottom: 3px solid #fcd980 ;
+  }
 
+}
+.container-setting{
+  background-color: #fff;
+  padding: 10px;
+}
+.service-activation-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .form-container {
 
   .form-group {

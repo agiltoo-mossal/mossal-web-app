@@ -1,0 +1,80 @@
+<div class="container">
+  <h2 class="container-title-setting"><span>Dépannage d'urgences</span></h2>
+
+  <div class="service-activation-container">
+    <div class="auto-validation">
+
+    <h3>Activation du service</h3>
+    <!-- Utilisation de votre composant pour le toggle -->
+    <app-toggle-slide
+      [firstText]="'Actif'"
+      [secondText]="'Inactif'"
+    ></app-toggle-slide>
+    </div>
+
+
+    <div class="activation-date">
+      <label for="start-date">Date d'activation</label>
+      <div class="date-input">
+        <span >Début</span>
+        <input type="date" id="start-date" [(ngModel)]="activationDate" />
+      </div>
+    </div>
+
+    <div class="category-selection">
+      <select [(ngModel)]="selectedCategory">
+        <option value="" disabled selected>Toutes les catégories</option>
+        <option *ngFor="let categorie of categories" value="categorie.id">{{categorie.title}}</option>
+        <!-- Ajouter d'autres catégories dynamiquement -->
+      </select>
+      <button class="add-category-button">Ajouter une catégorie</button>
+    </div>
+
+    <div class="percentage-or-fixed">
+      <h4>Pourcentage ou montant fixe</h4>
+      <label>
+        Pourcentage
+        <input
+          type="radio"
+          name="type"
+          value="percentage"
+          [(ngModel)]="isPercentage"
+        />
+      </label>
+      <label>
+        Montant fixe
+        <input
+          type="radio"
+          name="type"
+          value="fixed"
+          [(ngModel)]="isPercentage"
+        />
+      </label>
+    </div>
+
+    <div class="reimbursement">
+      <h4>Montant et durée du remboursement</h4>
+      <div class="percentage-input">
+        <input
+          type="number"
+          [(ngModel)]="reimbursementPercentage"
+          placeholder="30"
+          min="0"
+          max="100"
+        />
+        <span>%</span>
+      </div>
+    </div>
+
+    <div class="auto-validation">
+      <h4>Validation automatique</h4>
+      <!-- Utilisation de votre composant pour le toggle -->
+      <app-toggle-slide
+        [firstText]="'Actif'"
+        [secondText]="'Inactif'"
+      ></app-toggle-slide>
+    </div>
+
+    <button class="validate-button">Valider</button>
+  </div>
+</div>

@@ -37,6 +37,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
 import { OrganizationFileModule } from '../shared/components/organization-file/organization-file.module';
+import { MatTabsModule } from '@angular/material/tabs';
+import { OrganizationSettingGeneralComponent } from './components/organization-setting-general/organization-setting-general.component';
+import { OrganizationSettingEmergencyComponent } from './components/organization-setting-emergency/organization-setting-emergency.component';
+import { ToggleSlideModule } from '../shared/components/toggle-slide/toggle-slide.module';
+import { OrganizationSettingEventComponent } from './components/organization-setting-event/organization-setting-event.component';
+import { OrganizationSettingSalaryComponent } from './components/organization-setting-salary/organization-setting-salary.component';
+import { OrganizationSettingSalaryRefundComponent } from './components/organization-setting-salary-refund/organization-setting-salary-refund.component';
+import { TableSalaryModule } from '../shared/components/table-salary/table-salary.module';
+import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
 
 @NgModule({
   declarations: [
@@ -44,18 +53,24 @@ import { OrganizationFileModule } from '../shared/components/organization-file/o
     OverviewComponent,
     RequestsListComponent,
     UserComponent,
+    RequestEmergencyComponent,
     NotificationsComponent,
     RefundChartsComponent,
     OrganizationComponent,
     ActivitiesComponent,
     CardDashboardComponent,
+    OrganizationSettingGeneralComponent,
+    OrganizationSettingEmergencyComponent,
+    OrganizationSettingEventComponent,
+    OrganizationSettingSalaryComponent,
+    OrganizationSettingSalaryRefundComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     RouterModule,
     FlexLayoutModule,
-
+    MatTabsModule,
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,
@@ -80,6 +95,8 @@ import { OrganizationFileModule } from '../shared/components/organization-file/o
     MatInputModule,
     MatFormFieldModule,
     OrganizationFileModule,
+    ToggleSlideModule,
+    TableSalaryModule,
   ],
   providers: [NotificationsService],
 })

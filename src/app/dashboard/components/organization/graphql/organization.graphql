@@ -1,3 +1,76 @@
-mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
-	updateOrganization(organizationId: $organizationId, organizationInput: $organizationInput)
+mutation UpdateOrganization(
+  $organizationId: ID!
+  $organizationInput: OrganizationUpdateInput!
+) {
+  updateOrganization(
+    organizationId: $organizationId
+    organizationInput: $organizationInput
+  )
+}
+mutation DeleteCategorySociopro($categorySocioproId: ID!) {
+  deleteCategorySociopro(categorySocioproId: $categorySocioproId)
+}
+mutation UpdateCategorySociopro(
+  $categorySocioproInput: CategorySocioproUpdateInput!
+  $categorySocioproId: ID!
+) {
+  updateCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    categorySocioproId: $categorySocioproId
+  )
+}
+
+mutation CreateCategorySociopro(
+  $categorySocioproInput: CategorySocioproInput!
+  $organizationId: ID!
+) {
+  createCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    organizationId: $organizationId
+  ) {
+    id
+    title
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+query FetchCategorySociopros($queryConfig: QueryDataConfigInput!) {
+  fetchCategorySociopros(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+	results{
+	id
+	title
+	organizationId
+	createdAt
+	updatedAt
+	}
+  }
+}
+query FetchServices(
+$queryConfig: QueryDataConfigInput
+){
+fetchServices(queryConfig: $queryConfig){
+  pagination{
+    totalItems
+    pageCount
+    currentPage
+    pageSize
+  }
+  results{
+    id
+    title
+    description
+    createdAt
+    updatedAt
+    identifier
+    refundDurationMonth
+    available
+  }
+}
 }

@@ -46,6 +46,75 @@ export enum ActivityScope {
   Organisation = 'organisation'
 }
 
+export enum AmountUnit {
+  Fixed = 'Fixed',
+  Percentage = 'Percentage'
+}
+
+export type CategorySociopro = {
+  __typename?: 'CategorySociopro';
+  activated?: Maybe<Scalars['Boolean']['output']>;
+  addedBy?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Any']['output'];
+  organisation: Organization;
+  organizationId?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CategorySocioproInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+};
+
+export type CategorySocioproService = {
+  __typename?: 'CategorySocioproService';
+  activated: Scalars['Boolean']['output'];
+  activatedAt?: Maybe<Scalars['DateTime']['output']>;
+  amount: Scalars['Int']['output'];
+  amountUnit: AmountUnit;
+  autoValidate: Scalars['Boolean']['output'];
+  categorySociopro?: Maybe<CategorySociopro>;
+  categorySocioproId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Any']['output'];
+  organisationService?: Maybe<OrganisationService>;
+  organisationServiceId: Scalars['String']['output'];
+  refundDuration: Scalars['Int']['output'];
+  refundDurationUnit: AmountUnit;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CategorySocioproServiceInput = {
+  activated: Scalars['Boolean']['input'];
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  amount: Scalars['Int']['input'];
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
+  refundDuration: Scalars['Int']['input'];
+  refundDurationUnit?: InputMaybe<AmountUnit>;
+};
+
+export type CategorySocioproServiceUpdateInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
+  refundDuration?: InputMaybe<Scalars['Int']['input']>;
+  refundDurationUnit?: InputMaybe<AmountUnit>;
+};
+
+export type CategorySocioproUpdateInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CountStatusDemande = {
   __typename?: 'CountStatusDemande';
   payed: Scalars['Float']['output'];
@@ -63,6 +132,7 @@ export type Demande = {
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
+  organisationService?: Maybe<OrganisationService>;
   rejectedReason?: Maybe<Scalars['String']['output']>;
   status: DemandeStatus;
   statusText?: Maybe<Scalars['String']['output']>;
@@ -101,6 +171,36 @@ export type DemandesMetricsRow = {
   year: Scalars['Float']['output'];
 };
 
+export type Event = {
+  __typename?: 'Event';
+  activated?: Maybe<Scalars['Boolean']['output']>;
+  addedBy?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  endDate: Scalars['DateTime']['output'];
+  id: Scalars['Any']['output'];
+  organisationService: OrganisationService;
+  startDate: Scalars['DateTime']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EventInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  startDate: Scalars['DateTime']['input'];
+  title: Scalars['String']['input'];
+};
+
+export type EventUpdateInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FinalizeForgotPasswordInput = {
   code: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -129,9 +229,29 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  activateCategorySociopro: Scalars['Boolean']['output'];
+  activateCategorySocioproService: Scalars['Boolean']['output'];
+  activateEvent: Scalars['Boolean']['output'];
+  activateOrganisationService: Scalars['Boolean']['output'];
+  activateService: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
+  createCategorySociopro: CategorySociopro;
+  createCategorySocioproService: CategorySocioproService;
+  createEvent: Event;
   createFinancialOrganization: Organization;
+  createOrganisationService: OrganisationService;
   createOrganization: Organization;
+  createService: Service;
+  deactivateCategorySociopro: Scalars['Boolean']['output'];
+  deactivateCategorySocioproService: Scalars['Boolean']['output'];
+  deactivateEvent: Scalars['Boolean']['output'];
+  deactivateOrganisationService: Scalars['Boolean']['output'];
+  deactivateService: Scalars['Boolean']['output'];
+  deleteCategorySociopro: Scalars['Boolean']['output'];
+  deleteCategorySocioproService: Scalars['Boolean']['output'];
+  deleteEvent: Scalars['Boolean']['output'];
+  deleteOrganisationService: Scalars['Boolean']['output'];
+  deleteService: Scalars['Boolean']['output'];
   disableEmailNotification: Scalars['Boolean']['output'];
   enableEmailNotification: Scalars['Boolean']['output'];
   finalizeForgotPassword: Scalars['Boolean']['output'];
@@ -143,13 +263,44 @@ export type Mutation = {
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateCategorySociopro: Scalars['Boolean']['output'];
+  updateCategorySocioproService: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
+  updateEvent: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
+  updateOrganisationService: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
+  updateService: Scalars['Boolean']['output'];
   upladFile: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
+};
+
+
+export type MutationActivateCategorySocioproArgs = {
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  categorySocioproId: Scalars['ID']['input'];
+};
+
+
+export type MutationActivateCategorySocioproServiceArgs = {
+  categorySocioproServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationActivateEventArgs = {
+  eventId: Scalars['ID']['input'];
+};
+
+
+export type MutationActivateOrganisationServiceArgs = {
+  organisationServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationActivateServiceArgs = {
+  serviceId: Scalars['ID']['input'];
 };
 
 
@@ -158,13 +309,94 @@ export type MutationCancelDemandeByAdminArgs = {
 };
 
 
+export type MutationCreateCategorySocioproArgs = {
+  categorySocioproInput: CategorySocioproInput;
+  organizationId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateCategorySocioproServiceArgs = {
+  categorySocioproId: Scalars['ID']['input'];
+  categorySocioproServiceInput: CategorySocioproServiceInput;
+  organisationServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateEventArgs = {
+  eventInput: EventInput;
+  organizationServiceId: Scalars['ID']['input'];
+};
+
+
 export type MutationCreateFinancialOrganizationArgs = {
   organizationInput: OrganizationInput;
 };
 
 
+export type MutationCreateOrganisationServiceArgs = {
+  organisationId: Scalars['ID']['input'];
+  organisationServiceInput: OrganisationServiceInput;
+  serviceId: Scalars['ID']['input'];
+};
+
+
 export type MutationCreateOrganizationArgs = {
   organizationInput: OrganizationInput;
+};
+
+
+export type MutationCreateServiceArgs = {
+  serviceInput: ServiceInput;
+};
+
+
+export type MutationDeactivateCategorySocioproArgs = {
+  categorySocioproId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeactivateCategorySocioproServiceArgs = {
+  categorySocioproServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeactivateEventArgs = {
+  eventId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeactivateOrganisationServiceArgs = {
+  organisationServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeactivateServiceArgs = {
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteCategorySocioproArgs = {
+  categorySocioproId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteCategorySocioproServiceArgs = {
+  categorySocioproServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteEventArgs = {
+  eventId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteOrganisationServiceArgs = {
+  organisationServiceId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteServiceArgs = {
+  serviceId: Scalars['ID']['input'];
 };
 
 
@@ -224,9 +456,27 @@ export type MutationUnlockUserArgs = {
 };
 
 
+export type MutationUpdateCategorySocioproArgs = {
+  categorySocioproId: Scalars['ID']['input'];
+  categorySocioproInput: CategorySocioproUpdateInput;
+};
+
+
+export type MutationUpdateCategorySocioproServiceArgs = {
+  categorySocioproServiceId: Scalars['ID']['input'];
+  categorySocioproServiceInput: CategorySocioproServiceUpdateInput;
+};
+
+
 export type MutationUpdateCollaboratorArgs = {
   collaborator: UpdateCollaboratorInput;
   collaboratorId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateEventArgs = {
+  eventId: Scalars['ID']['input'];
+  eventInput: EventUpdateInput;
 };
 
 
@@ -241,9 +491,21 @@ export type MutationUpdateMyAdminProfileArgs = {
 };
 
 
+export type MutationUpdateOrganisationServiceArgs = {
+  organisationServiceId: Scalars['ID']['input'];
+  organisationServiceInput: OrganisationServiceUpdateInput;
+};
+
+
 export type MutationUpdateOrganizationArgs = {
   organizationId: Scalars['ID']['input'];
   organizationInput: OrganizationUpdateInput;
+};
+
+
+export type MutationUpdateServiceArgs = {
+  serviceId: Scalars['ID']['input'];
+  serviceInput: ServiceUpdateInput;
 };
 
 
@@ -278,6 +540,49 @@ export enum OrderByDirection {
 export type OrderByInput = {
   direction: OrderByDirection;
   property: Scalars['String']['input'];
+};
+
+export type OrganisationService = {
+  __typename?: 'OrganisationService';
+  activated: Scalars['Boolean']['output'];
+  activatedAt?: Maybe<Scalars['DateTime']['output']>;
+  activationDurationDay: Scalars['Int']['output'];
+  amount: Scalars['Int']['output'];
+  amountUnit: AmountUnit;
+  autoValidate: Scalars['Boolean']['output'];
+  categoriesociopro?: Maybe<Array<CategorySociopro>>;
+  createdAt: Scalars['DateTime']['output'];
+  events?: Maybe<Array<Event>>;
+  id: Scalars['Any']['output'];
+  organization: Organization;
+  organizationId: Scalars['String']['output'];
+  refundDuration: Scalars['Int']['output'];
+  refundDurationUnit: AmountUnit;
+  service: Service;
+  serviceId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OrganisationServiceInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  activationDurationDay: Scalars['Int']['input'];
+  amount: Scalars['Int']['input'];
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
+  refundDuration?: InputMaybe<Scalars['Int']['input']>;
+  refundDurationUnit?: InputMaybe<AmountUnit>;
+};
+
+export type OrganisationServiceUpdateInput = {
+  activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  activationDurationDay?: InputMaybe<Scalars['Int']['input']>;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
+  refundDuration?: InputMaybe<Scalars['Int']['input']>;
+  refundDurationUnit?: InputMaybe<AmountUnit>;
 };
 
 export type Organization = {
@@ -322,16 +627,46 @@ export type PaginatedActivityResult = {
   results: Array<Activity>;
 };
 
+export type PaginatedCategorySocioproResult = {
+  __typename?: 'PaginatedCategorySocioproResult';
+  pagination: PaginationInfo;
+  results: Array<CategorySociopro>;
+};
+
+export type PaginatedCategorySocioproServiceResult = {
+  __typename?: 'PaginatedCategorySocioproServiceResult';
+  pagination: PaginationInfo;
+  results: Array<CategorySocioproService>;
+};
+
 export type PaginatedDemandeResult = {
   __typename?: 'PaginatedDemandeResult';
   pagination: PaginationInfo;
   results: Array<Demande>;
 };
 
+export type PaginatedEventResult = {
+  __typename?: 'PaginatedEventResult';
+  pagination: PaginationInfo;
+  results: Array<Event>;
+};
+
 export type PaginatedNotificationResult = {
   __typename?: 'PaginatedNotificationResult';
   pagination: PaginationInfo;
   results: Array<Notification>;
+};
+
+export type PaginatedOrganisationServiceResult = {
+  __typename?: 'PaginatedOrganisationServiceResult';
+  pagination: PaginationInfo;
+  results: Array<OrganisationService>;
+};
+
+export type PaginatedServiceResult = {
+  __typename?: 'PaginatedServiceResult';
+  pagination: PaginationInfo;
+  results: Array<Service>;
 };
 
 export type PaginatedUserResult = {
@@ -361,8 +696,21 @@ export type Query = {
   emailExists: Scalars['Boolean']['output'];
   fectchCountStatus: CountStatusDemande;
   fetchActivity: Activity;
+  fetchAllCategorySocioproServices: CategorySocioproService;
+  fetchAllCategorySociopros: CategorySociopro;
+  fetchAllEvents: Event;
+  fetchAllOrganisationServices: OrganisationService;
+  fetchAllServices: Service;
+  fetchCategorySociopro: CategorySociopro;
+  fetchCategorySocioproService: CategorySocioproService;
+  fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
+  fetchCategorySociopros: PaginatedCategorySocioproResult;
   fetchCurrentAdmin: User;
   fetchDemandesMetrics: DemandesMetrics;
+  fetchEvent: Event;
+  fetchEvents: PaginatedEventResult;
+  fetchOrganisationService: OrganisationService;
+  fetchOrganisationServices: PaginatedOrganisationServiceResult;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
   fetchOrganizationCollaborator: User;
@@ -378,6 +726,10 @@ export type Query = {
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
   fetchPayments: Array<Payment>;
+  fetchService: Service;
+  fetchServicePub: Service;
+  fetchServices: PaginatedServiceResult;
+  fetchServicesPub: PaginatedServiceResult;
   fetchSupportPaiement: Array<SupportPaiement>;
   loginAdmin: Session;
   phoneNumberExists: Scalars['Boolean']['output'];
@@ -409,8 +761,73 @@ export type QueryFetchActivityArgs = {
 };
 
 
+export type QueryFetchAllCategorySocioproServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchAllCategorySocioprosArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchAllEventsArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchAllOrganisationServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchAllServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchCategorySocioproArgs = {
+  categorySocioproId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchCategorySocioproServiceArgs = {
+  categorySocioproServiceId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchCategorySocioproServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchCategorySocioprosArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
 export type QueryFetchDemandesMetricsArgs = {
   metricsInput: DemandesMetricsInput;
+};
+
+
+export type QueryFetchEventArgs = {
+  eventId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchEventsArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchOrganisationServiceArgs = {
+  organisationServiceId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchOrganisationServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
 
@@ -473,6 +890,26 @@ export type QueryFetchPaymentArgs = {
 };
 
 
+export type QueryFetchServiceArgs = {
+  serviceId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchServicePubArgs = {
+  serviceId: Scalars['String']['input'];
+};
+
+
+export type QueryFetchServicesArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchServicesPubArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
 };
@@ -501,6 +938,36 @@ export type QueryDataConfigInput = {
 export type ResetPasswordInput = {
   password: Scalars['String']['input'];
   token: Scalars['String']['input'];
+};
+
+export type Service = {
+  __typename?: 'Service';
+  addedBy?: Maybe<Scalars['String']['output']>;
+  available: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Any']['output'];
+  identifier: Scalars['String']['output'];
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  refundDurationMonth: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ServiceInput = {
+  available: Scalars['Boolean']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  identifier: Scalars['String']['input'];
+  refundDurationMonth: Scalars['Int']['input'];
+  title: Scalars['String']['input'];
+};
+
+export type ServiceUpdateInput = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  identifier?: InputMaybe<Scalars['String']['input']>;
+  refundDurationMonth?: InputMaybe<Scalars['Float']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Session = {
@@ -725,6 +1192,43 @@ export type UpdateOrganizationMutationVariables = Exact<{
 
 
 export type UpdateOrganizationMutation = { __typename?: 'Mutation', updateOrganization: boolean };
+
+export type DeleteCategorySocioproMutationVariables = Exact<{
+  categorySocioproId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteCategorySocioproMutation = { __typename?: 'Mutation', deleteCategorySociopro: boolean };
+
+export type UpdateCategorySocioproMutationVariables = Exact<{
+  categorySocioproInput: CategorySocioproUpdateInput;
+  categorySocioproId: Scalars['ID']['input'];
+}>;
+
+
+export type UpdateCategorySocioproMutation = { __typename?: 'Mutation', updateCategorySociopro: boolean };
+
+export type CreateCategorySocioproMutationVariables = Exact<{
+  categorySocioproInput: CategorySocioproInput;
+  organizationId: Scalars['ID']['input'];
+}>;
+
+
+export type CreateCategorySocioproMutation = { __typename?: 'Mutation', createCategorySociopro: { __typename?: 'CategorySociopro', id: any, title: string, organizationId?: string | null, createdAt: any, updatedAt: any } };
+
+export type FetchCategorySocioprosQueryVariables = Exact<{
+  queryConfig: QueryDataConfigInput;
+}>;
+
+
+export type FetchCategorySocioprosQuery = { __typename?: 'Query', fetchCategorySociopros: { __typename?: 'PaginatedCategorySocioproResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'CategorySociopro', id: any, title: string, organizationId?: string | null, createdAt: any, updatedAt: any }> } };
+
+export type FetchServicesQueryVariables = Exact<{
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchServicesQuery = { __typename?: 'Query', fetchServices: { __typename?: 'PaginatedServiceResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Service', id: any, title: string, description?: string | null, createdAt: any, updatedAt: any, identifier: string, refundDurationMonth: number, available: boolean }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -1332,6 +1836,129 @@ export const UpdateOrganizationDocument = gql`
   })
   export class UpdateOrganizationGQL extends Apollo.Mutation<UpdateOrganizationMutation, UpdateOrganizationMutationVariables> {
     document = UpdateOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeleteCategorySocioproDocument = gql`
+    mutation DeleteCategorySociopro($categorySocioproId: ID!) {
+  deleteCategorySociopro(categorySocioproId: $categorySocioproId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeleteCategorySocioproGQL extends Apollo.Mutation<DeleteCategorySocioproMutation, DeleteCategorySocioproMutationVariables> {
+    document = DeleteCategorySocioproDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateCategorySocioproDocument = gql`
+    mutation UpdateCategorySociopro($categorySocioproInput: CategorySocioproUpdateInput!, $categorySocioproId: ID!) {
+  updateCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    categorySocioproId: $categorySocioproId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateCategorySocioproGQL extends Apollo.Mutation<UpdateCategorySocioproMutation, UpdateCategorySocioproMutationVariables> {
+    document = UpdateCategorySocioproDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateCategorySocioproDocument = gql`
+    mutation CreateCategorySociopro($categorySocioproInput: CategorySocioproInput!, $organizationId: ID!) {
+  createCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    organizationId: $organizationId
+  ) {
+    id
+    title
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateCategorySocioproGQL extends Apollo.Mutation<CreateCategorySocioproMutation, CreateCategorySocioproMutationVariables> {
+    document = CreateCategorySocioproDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchCategorySocioprosDocument = gql`
+    query FetchCategorySociopros($queryConfig: QueryDataConfigInput!) {
+  fetchCategorySociopros(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      organizationId
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchCategorySocioprosGQL extends Apollo.Query<FetchCategorySocioprosQuery, FetchCategorySocioprosQueryVariables> {
+    document = FetchCategorySocioprosDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchServicesDocument = gql`
+    query FetchServices($queryConfig: QueryDataConfigInput) {
+  fetchServices(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      createdAt
+      updatedAt
+      identifier
+      refundDurationMonth
+      available
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchServicesGQL extends Apollo.Query<FetchServicesQuery, FetchServicesQueryVariables> {
+    document = FetchServicesDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
