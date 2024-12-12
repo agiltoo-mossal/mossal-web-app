@@ -8,45 +8,53 @@
       (toggleChange)="onServiceActivationChange($event)"
     ></app-toggle-slide>
   </div>
-  <div class="percentage">
-    <h3>Pourcentage ou montant fixe</h3>
-    <label>
-      Pourcentage
-      <input
-        type="radio"
-        name="amountType"
-        value="percentage"
-        checked
-        class="custom-radio"
-        (change)="onAmountTypeChange($event)"
-      />
-    </label>
-  </div>
-  <div class="percentage">
-    <label>
-      Montant fixe
-      <input
-        class="custom-radio"
-        type="radio"
-        name="amountType"
-        value="fixed"
-        (change)="onAmountTypeChange($event)"
-      />
-    </label>
-  </div>
+</div>
 
-  <h3>Montant et durée du remboursement</h3>
-  <div class="input-group">
+<div class="percentage">
+  <h3>Pourcentage ou montant fixe</h3>
+  <label>
+    Pourcentage
     <input
-      type="number"
-      placeholder="30"
-      (input)="onReimbursementChange($event)"
+      type="radio"
+      name="amountType"
+      value="percentage"
+      checked
+      class="custom-radio"
+      (change)="onAmountTypeChange($event)"
     />
-    <span>%</span>
+  </label>
+</div>
+<div class="percentage">
+  <label>
+    Montant fixe
+    <input
+      type="radio"
+      name="amountType2"
+      value="fixed"
+      class="custom-radio"
+      (change)="onAmountTypeChange($event)"
+    />
+  </label>
+</div>
+
+<div class="reimbursement">
+  <h3>Montant et durée du remboursement</h3>
+  <div class="plafond-content">
+    <label for="amount-input">Montant</label>
+    <div class="percentage-input-group">
+      <input type="number" id="amount-input" placeholder="20000" min="0" />
+      <span class="currency-symbol">€</span>
+    </div>
   </div>
-  <div class="input-group">
-    <input type="text" placeholder="12 mois" />
+  <div class="plafond-content">
+    <label for="duration-input">Durée du remboursement</label>
+    <div class="percentage-input-group">
+      <input type="text" id="duration-input" placeholder="12 mois" />
+    </div>
   </div>
+</div>
+
+<div class="container-setting">
 
   <h3>Validation automatique</h3>
   <app-toggle-slide

@@ -48,6 +48,9 @@ import { TableSalaryModule } from '../shared/components/table-salary/table-salar
 import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
 import { CreateEventModule } from '../shared/components/create-event/create-event.module';
 import { SettingModule } from '../shared/components/settings/settings.module';
+import { RequestEventComponent } from './components/request-event/request-event.component';
+import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
+import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +69,9 @@ import { SettingModule } from '../shared/components/settings/settings.module';
     OrganizationSettingEventComponent,
     OrganizationSettingSalaryComponent,
     OrganizationSettingSalaryRefundComponent,
+    RequestEventComponent,
+    RequestSalaryComponent,
+    RequestMonthlyRepayableAdvanceComponent,
   ],
   imports: [
     CreateEventModule,

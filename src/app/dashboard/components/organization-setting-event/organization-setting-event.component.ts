@@ -1,10 +1,17 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { lastValueFrom, switchMap } from 'rxjs';
 import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
 import {
   CategorySociopro,
+  CreateEventGQL,
+  EventInput,
   FetchCategorySocioprosGQL,
+  FetchCurrentAdminGQL,
+  FetchEventsGQL,
+  FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchServicesGQL,
+  Organization,
   Service,
 } from 'src/graphql/generated';
 
@@ -18,23 +25,21 @@ export class OrganizationSettingEventComponent {
   @Input() serviceId: string;
   constructor(
     private dialog: MatDialog,
-    private listCategorieGQL: FetchCategorySocioprosGQL
-  ) {}
+    private listCategorieGQL: FetchCategorySocioprosGQL,
+    private createEventGQL: CreateEventGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fetchAllEvents: FetchEventsGQL,
 
-  events = [
-    {
-      name: 'Événement 1',
-      startDate: '2024-10-10',
-      endDate: '2024-10-10',
-      isActive: true,
-    },
-    {
-      name: 'Événement 2',
-      startDate: '2024-10-10',
-      endDate: '2024-10-10',
-      isActive: false,
-    },
-  ];
+    private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
+  ) {}
+  newEvents: {
+    title: string;
+    startDate: string;
+    endDate: string;
+    description?: string;
+    isActive?: boolean;
+  }[] = [];
+  events = [];
 
   // Onglet actif
   activeTab: string = 'Paramètres Généraux';
@@ -48,10 +53,62 @@ export class OrganizationSettingEventComponent {
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
   newCategory: string = '';
+  isActive: boolean = false;
+  amountType: string = '';
+  reimbursement: number = 0;
+  organization: Organization;
+  autoValidate: boolean = false;
+  organisationServiceId: string;
 
   ngOnInit() {
-    console.log('fetching');
-
+    this.fetchCurrentAdminGQL
+      .fetch()
+      .pipe(
+        switchMap((response) => {
+          this.organization = response.data.fetchCurrentAdmin
+            .organization as Organization;
+          console.log('fetching organizationServiceId');
+          return this.fetchOrganisationServiceByOrganisationIdAndServiceIdGQL.fetch(
+            {
+              organisationId: this.organization.id,
+              serviceId: '67518fe7ee9f8e91151fe4a3',
+            }
+          );
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('orgServiceId', response);
+          console.log('hello');
+          this.organisationServiceId =
+            response.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id;
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
+    this.fetchAllEvents
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('events', response);
+          this.events = response.data.fetchEvents.results.map((event) => {
+            return {
+              title: event.title,
+              startDate: new Date(event.startDate).toISOString().split('T')[0],
+              endDate: new Date(event.endDate).toISOString().split('T')[0],
+              // isActive: event.isActive,
+            };
+          });
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     this.listCategorieGQL
       .fetch({
         queryConfig: {
@@ -158,19 +215,35 @@ export class OrganizationSettingEventComponent {
           .toISOString()
           .split('T')[0];
 
-        console.log('Nouvel événement :', result);
-        console.log({
-          name: result.name,
+        this.newEvents.push({
+          title: result.name,
           startDate: formattedStartDate,
           endDate: formattedEndDate,
-          isActive: false,
+          isActive: true,
         });
+        this.createEventGQL
+          .mutate({
+            eventInput: {
+              title: result?.name,
+              startDate: new Date(result.startDate),
+              endDate: new Date(result.endDate),
+            },
+            organizationServiceId: this.organisationServiceId,
+          })
+          .subscribe({
+            next: (response) => {
+              console.log(response);
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
 
         this.events.push({
           name: result.name,
           startDate: formattedStartDate,
           endDate: formattedEndDate,
-          isActive: false,
+          isActive: true,
         });
       }
     });
@@ -178,7 +251,7 @@ export class OrganizationSettingEventComponent {
   addCategory(): void {
     if (this.newCategory && this.newCategory.trim()) {
     } else {
-      alert('Le nom de la catégorie ne peut pas être vide.');
+      // alert('Le nom de la catégorie ne peut pas être vide.');
     }
   }
   handleServiceActivationChange(isActive: boolean) {
@@ -196,4 +269,6 @@ export class OrganizationSettingEventComponent {
   handleValidationChange(isActive: boolean) {
     console.log('Validation:', isActive);
   }
+
+  createOrganizationService() {}
 }

@@ -16,7 +16,7 @@
         fxLayoutAlign="start center"
         fxLayoutGap="12px"
         class="nav-item"
-        
+        (click)="handleClick(item)"
         [routerLink]="!item.children ? item.link : null"
         routerLinkActive="active"
       >

@@ -28,7 +28,7 @@ mutation CreateCategorySocioproService(
     categorySocioproServiceInput: $categorySocioproServiceInput
     categorySocioproId: $categorySocioproId
     organisationServiceId: $organisationServiceId
-  ){
+  ) {
     id
   }
 }
@@ -93,7 +93,7 @@ mutation CreateOrganistionService(
 ) {
   createOrganisationService(
     organisationServiceInput: $organisationServiceInput
-    organisationId: $organisationId,
+    organisationId: $organisationId
     serviceId: $serviceId
   ) {
     createdAt
@@ -127,8 +127,7 @@ mutation CreateOrganistionService(
   }
 }
 
-query 
-FetchOrganisationServiceByOrganisationIdAndServiceId(
+query FetchOrganisationServiceByOrganisationIdAndServiceId(
   $organisationId: ID!
   $serviceId: ID!
 ) {
@@ -161,6 +160,46 @@ FetchOrganisationServiceByOrganisationIdAndServiceId(
     categoriesociopro {
       id
       title
+    }
+  }
+}
+mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
+  createEvent(
+    eventInput: $eventInput
+    organizationServiceId: $organizationServiceId
+  ) {
+    id
+    title
+    description
+    startDate
+    endDate
+    organisationService {
+      id
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+query FetchEvents($queryConfig: QueryDataConfigInput) {
+  fetchEvents(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      startDate
+      endDate
+      organisationService {
+        id
+      }
+      createdAt
+      updatedAt
     }
   }
 }

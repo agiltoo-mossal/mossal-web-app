@@ -10,6 +10,9 @@ import { OrganizationComponent } from './components/organization/organization.co
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ActivitiesComponent } from './components/activities/activities.component';
 import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
+import { RequestEventComponent } from './components/request-event/request-event.component';
+import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
+import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 
 const routes: Routes = [
   {
@@ -47,6 +50,18 @@ const routes: Routes = [
       {
         path: 'emergency-repair',
         component: RequestEmergencyComponent,
+      },
+      {
+        path: 'event-advance',
+        component: RequestEventComponent,
+      },
+      {
+        path: 'salary-advance',
+        component: RequestSalaryComponent,
+      },
+      {
+        path: 'monthly-repayable-advance',
+        component: RequestMonthlyRepayableAdvanceComponent,
       },
       {
         path: 'Notifications',

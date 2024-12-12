@@ -1,6 +1,82 @@
 <div class="container">
-    <div class="container-title-setting">
-        <span>Avance sur salaire</span>
+  <div class="container-title-setting">
+    <span>Avance sur salaire</span>
+  </div>
+  <div class="avance-evenement-container">
+    <!-- Section Activation du service -->
+    <div class="section flex-center">
+      <h3>Activation du service</h3>
+      <app-toggle-slide
+        [firstText]="'Actif'"
+        [secondText]="'Inactif'"
+        [uniqueId]="'serviceActivation'"
+      ></app-toggle-slide>
     </div>
 
+ 
+
+    <!-- Section des paramètres -->
+    <div class="section">
+      <div class="category-input-group">
+        <input
+          type="text"
+          class="category-input"
+          [(ngModel)]="newCategory"
+          placeholder="Nom de la catégorie"
+        />
+        <button class="category-btn" (click)="addCategory()">
+          Ajouter une catégorie
+        </button>
+      </div>
+
+      <mat-tab-group animationDuration="0ms">
+        <mat-tab
+          *ngFor="let categorie of categories"
+          [label]="categorie?.title"
+        >
+          <app-setting
+            [categorie]="categorie"
+            (serviceActivationChange)="handleServiceActivationChange($event)"
+            (amountTypeChange)="handleAmountTypeChange($event)"
+            (reimbursementChange)="handleReimbursementChange($event)"
+            (validationChange)="handleValidationChange($event)"
+          ></app-setting>
+        </mat-tab>
+      </mat-tab-group>
+      <!-- <div class="settings">
+        <h3>Activation du service</h3>
+        <app-toggle-slide
+          [firstText]="'On'"
+          [secondText]="'Off'"
+          [uniqueId]="'paramServiceActivation'"
+        ></app-toggle-slide>
+
+        <h3>Pourcentage ou montant fixe</h3>
+        <label>
+          <input type="radio" name="amountType" value="percentage" checked />
+          Pourcentage
+        </label>
+        <label>
+          <input type="radio" name="amountType" value="fixed" /> Montant fixe
+        </label>
+
+        <h3>Montant et durée du remboursement</h3>
+        <div class="input-group">
+          <input type="number" placeholder="30" />
+          <span>%</span>
+        </div>
+        <div class="input-group">
+          <input type="text" placeholder="12 mois" />
+        </div>
+
+        <h3>Validation automatique</h3>
+        <app-toggle-slide
+          [firstText]="'ON'"
+          [secondText]="'OFF'"
+          [uniqueId]="'autoValidation'"
+        ></app-toggle-slide>
+      </div> -->
+    </div>
+    <button class="validate-btn">Valider</button>
+  </div>
 </div>

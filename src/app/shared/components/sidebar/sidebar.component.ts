@@ -108,33 +108,33 @@ export class SidebarComponent implements OnInit {
       },
       {
         label: 'Administrateurs',
-        link: 'admins',
+        link: '/dashboard/admins',
         icon: 'person',
       },
       {
         label: 'Collaborateurs',
-        link: 'collaborators',
+        link: '/dashboard/collaborators',
         icon: 'people',
       },
 
       {
         label: 'Notifications',
-        link: 'Notifications',
+        link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
       {
         label: 'Mon Compte',
-        link: 'user',
+        link: '/dashboard/user',
         icon: 'person_outline',
       },
       {
         label: 'Organisation',
-        link: 'organization',
+        link: '/dashboard/organization',
         icon: 'business',
       },
       {
         label: 'Activités',
-        link: 'activities',
+        link: '/dashboard/activities',
         icon: 'feed',
       },
     ];

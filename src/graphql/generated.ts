@@ -426,6 +426,7 @@ export type MutationInviteAdminArgs = {
 
 
 export type MutationInviteCollaboratorArgs = {
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
   collaborator: InviteCollaboratorInput;
 };
 
@@ -703,11 +704,11 @@ export type Query = {
   emailExists: Scalars['Boolean']['output'];
   fectchCountStatus: CountStatusDemande;
   fetchActivity: Activity;
-  fetchAllCategorySocioproServices: CategorySocioproService;
-  fetchAllCategorySociopros: CategorySociopro;
-  fetchAllEvents: Event;
-  fetchAllOrganisationServices: OrganisationService;
-  fetchAllServices: Service;
+  fetchAllCategorySocioproServices: Array<CategorySocioproService>;
+  fetchAllCategorySociopros: Array<CategorySociopro>;
+  fetchAllEvents: Array<Event>;
+  fetchAllOrganisationServices: Array<OrganisationService>;
+  fetchAllServices: Array<Service>;
   fetchCategorySociopro: CategorySociopro;
   fetchCategorySocioproService: CategorySocioproService;
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
@@ -770,6 +771,7 @@ export type QueryFetchActivityArgs = {
 
 
 export type QueryFetchAllCategorySocioproServicesArgs = {
+  organisationServiceId: Scalars['ID']['input'];
   queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -780,6 +782,7 @@ export type QueryFetchAllCategorySocioprosArgs = {
 
 
 export type QueryFetchAllEventsArgs = {
+  organizationServiceId: Scalars['ID']['input'];
   queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -1269,6 +1272,21 @@ export type FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables =
 
 
 export type FetchOrganisationServiceByOrganisationIdAndServiceIdQuery = { __typename?: 'Query', fetchOrganisationServiceByOrganisationIdAndServiceId: { __typename?: 'OrganisationService', id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesociopro?: Array<{ __typename?: 'CategorySociopro', id: any, title: string }> | null } };
+
+export type CreateEventMutationVariables = Exact<{
+  eventInput: EventInput;
+  organizationServiceId: Scalars['ID']['input'];
+}>;
+
+
+export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, createdAt: any, updatedAt: any, organisationService: { __typename?: 'OrganisationService', id: any } } };
+
+export type FetchEventsQueryVariables = Exact<{
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchEventsQuery = { __typename?: 'Query', fetchEvents: { __typename?: 'PaginatedEventResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, createdAt: any, updatedAt: any, organisationService: { __typename?: 'OrganisationService', id: any } }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2116,6 +2134,71 @@ export const FetchOrganisationServiceByOrganisationIdAndServiceIdDocument = gql`
   })
   export class FetchOrganisationServiceByOrganisationIdAndServiceIdGQL extends Apollo.Query<FetchOrganisationServiceByOrganisationIdAndServiceIdQuery, FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables> {
     document = FetchOrganisationServiceByOrganisationIdAndServiceIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateEventDocument = gql`
+    mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
+  createEvent(
+    eventInput: $eventInput
+    organizationServiceId: $organizationServiceId
+  ) {
+    id
+    title
+    description
+    startDate
+    endDate
+    organisationService {
+      id
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateEventGQL extends Apollo.Mutation<CreateEventMutation, CreateEventMutationVariables> {
+    document = CreateEventDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchEventsDocument = gql`
+    query FetchEvents($queryConfig: QueryDataConfigInput) {
+  fetchEvents(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      startDate
+      endDate
+      organisationService {
+        id
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchEventsGQL extends Apollo.Query<FetchEventsQuery, FetchEventsQueryVariables> {
+    document = FetchEventsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -5,10 +5,14 @@
   color: #2d3559;
   margin-bottom: 10px;
 }
+h3{
+    margin: 10px 0;
+}
 .container-setting{
     display: flex;
     gap:8px;
     align-items: center;
+    margin: 10px 0;
 }
 .input-group {
   display: flex;
@@ -19,7 +23,9 @@
 .custom-radio {
   width: 20px;
   height: 20px;
-  accent-color:#2d3559; /* Change the color */
+  accent-color:#4caf50;
+   /* Change the color */
+  border: 1px solid #dcdcdc;
 }
 .percentage{
     margin-bottom: 8px;
@@ -28,10 +34,11 @@
   display: flex;
   align-items: center;
   font-size: 16px;
+  margin:20px 0px;
 }
 
 .percentage input[type="radio"] {
-  margin:0 10px;
+  margin:0 20px;
 }
 .input-group input {
   flex: 1;
@@ -60,4 +67,46 @@
 
 .validate-btn:hover {
   background-color: #061e5c63;
+}
+.percentage-input-group input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2d3559; /* Couleur du texte */
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+/* Symbole de pourcentage */
+.percentage-input-group .percentage-symbol,
+.percentage-input-group .currency-symbol {
+  color: #2d3559; /* Couleur principale */
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 8px;
+}
+.plafond-content {
+  display: flex;
+  width: 40%;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.plafond-content label {
+  color: #2d3559; /* Couleur principale */
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Conteneur de l'entrée pourcentage */
+.percentage-input-group {
+  display: flex;
+  align-items: center;
+  background: #f4f6fa; /* Fond gris clair */
+  border: 1px solid #dcdcdc; /* Bordure fine */
+  border-radius: 8px;
+  padding: 8px 12px; /* Espacement interne */
 }

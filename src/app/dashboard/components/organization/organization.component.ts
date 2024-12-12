@@ -66,7 +66,6 @@ export class OrganizationComponent {
           { id: 'djkkdsj', title: 'général', description: 'général' },
           ...this.listServices,
         ];
-        console.log(this.listServices);
       },
       error: (err) => {},
     });

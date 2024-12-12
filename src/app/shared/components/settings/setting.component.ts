@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-setting',
@@ -10,6 +10,7 @@ export class SettingComponent {
   @Output() amountTypeChange = new EventEmitter<string>();
   @Output() reimbursementChange = new EventEmitter<number>();
   @Output() validationChange = new EventEmitter<boolean>();
+  @Input() categorie: any;
 
   onServiceActivationChange(isActive: boolean) {
     this.serviceActivationChange.emit(isActive);
