@@ -1,0 +1,39 @@
+.modal-container {
+  padding: 24px;
+  max-width: 600px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #3f51b5;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button {
+  min-width: 100px;
+}

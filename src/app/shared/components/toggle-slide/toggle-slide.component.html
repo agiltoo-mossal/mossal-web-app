@@ -1,8 +1,7 @@
 <div class="switches-container">
   <!-- Identifiants dynamiques pour chaque radio -->
-  <input type="radio" [id]="firstText+randomId" name="switchPlan" value="First" checked="checked" />
-  <input type="radio" [id]="secondText + randomId" name="switchPlan" value="Second" />
-  
+<input type="radio" [id]="firstText + randomId" name="switchPlan" value="First" checked="checked" (change)="onToggleChange($event)" />
+<input type="radio" [id]="secondText + randomId" name="switchPlan" value="Second" (change)="onToggleChange($event)" />  
   <!-- Labels avec références dynamiques -->
   <label [for]="firstText + randomId">{{ firstText }}</label>
   <label [for]="secondText + randomId">{{ secondText }}</label>

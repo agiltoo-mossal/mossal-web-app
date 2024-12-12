@@ -1,0 +1,56 @@
+<div class="modal-container">
+  <h2 class="modal-title">Créer un nouvel événement</h2>
+
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="form-container">
+    <!-- Champ Nom de l'événement -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Nom de l'événement</mat-label>
+      <input matInput formControlName="name" placeholder="Ex : Lancement produit" required />
+      <mat-error *ngIf="eventForm.get('name')?.invalid && eventForm.get('name')?.touched">
+        Veuillez entrer un nom valide (min. 3 caractères).
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Champ Date de début -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Date de début</mat-label>
+      <input
+        matInput
+        [matDatepicker]="startPicker"
+        formControlName="startDate"
+        placeholder="Choisir une date"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+      <mat-error *ngIf="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched">
+        La date de début est requise.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Champ Date de fin -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Date de fin</mat-label>
+      <input
+        matInput
+        [matDatepicker]="endPicker"
+        formControlName="endDate"
+        placeholder="Choisir une date"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+      <mat-error *ngIf="eventForm.get('endDate')?.invalid && eventForm.get('endDate')?.touched">
+        La date de fin est requise.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Boutons d'action -->
+    <div class="action-buttons">
+      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Annuler</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
+        Créer
+      </button>
+    </div>
+  </form>
+</div>

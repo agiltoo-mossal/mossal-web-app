@@ -20,6 +20,11 @@ query FetchCurrentAdmin {
       amountPercent
       fees
       demandeDeadlineDay
+      organisationService{
+        id
+        serviceId
+      }
+      
     }
   }
 

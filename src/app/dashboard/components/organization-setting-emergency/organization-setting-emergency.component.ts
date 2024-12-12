@@ -1,7 +1,18 @@
 import { Component, Input } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { lastValueFrom } from 'rxjs';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
+  AmountUnit,
   CategorySociopro,
+  CreateCategorySocioproServiceGQL,
+  CreateOrganistionServiceGQL,
   FetchCategorySocioprosGQL,
+  FetchCurrentAdminGQL,
+  FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
+  FetchServicesGQL,
+  Organization,
+  Service,
 } from 'src/graphql/generated';
 
 @Component({
@@ -10,6 +21,8 @@ import {
   styleUrl: './organization-setting-emergency.component.scss',
 })
 export class OrganizationSettingEmergencyComponent {
+  emergencyForm: FormGroup;
+
   // Variables pour l'état des bascules
   isServiceActive: boolean = false; // Par défaut, le service est inactif
   isAutoValidation: boolean = false; // Par défaut, la validation automatique est inactive
@@ -24,14 +37,76 @@ export class OrganizationSettingEmergencyComponent {
   // Pourcentage ou montant fixe
   isPercentage: boolean = true; // Par défaut, "Pourcentage" est sélectionné
   reimbursementPercentage: number = 30; // Valeur par défaut pour le pourcentage
+  organization: Organization;
+  @Input() service: Partial<Service>;
 
-  @Input() serviceId: string;
   /**
    * Méthode appelée pour ajouter une nouvelle catégorie
    */
-  constructor(private listCategorieGQL: FetchCategorySocioprosGQL) {}
+  constructor(
+    private listCategorieGQL: FetchCategorySocioprosGQL,
+    private defineService: CreateOrganistionServiceGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fb: FormBuilder,
+    private snackBarService: SnackBarService,
+    private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
+    private listService: FetchServicesGQL,
+    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.emergencyForm = this.fb.group({
+      activated: [true],
+      activatedAt: ['', Validators.required],
+      selectedCategory: ['', Validators.required],
+      isPercentage: [true],
+      isFixed: [false],
+      reimbursementPercentage: [30, [, Validators.min(0), Validators.max(100)]],
+      autoValidate: [false],
+    });
+    this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
+      .data.fetchCurrentAdmin.organization as Organization;
+
+    this.fetchCurrentAdminGQL.fetch().subscribe({
+      next: (response) => {
+        if (response.data.fetchCurrentAdmin) {
+          this.organization = response.data.fetchCurrentAdmin
+            .organization as Organization;
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+    this.organizationService
+      .fetch({
+        organisationId: this.organization.id,
+        serviceId: this.service.id,
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+
+          if (
+            response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
+          ) {
+            const data =
+              response.data
+                .fetchOrganisationServiceByOrganisationIdAndServiceId;
+            // this.emergencyForm.patchValue({
+            //   activated: data.activated,
+            //   activatedAt: data.activatedAt,
+            //   isPercentage: data.amountUnit === AmountUnit.Percentage,
+            //   isFixed: data.amountUnit === AmountUnit.Fixed,
+            //   reimbursementPercentage: data.amount / 20000,
+            //   autoValidate: data.autoValidate,
+            // });
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     this.listCategorieGQL
       .fetch({
         queryConfig: {
@@ -40,6 +115,7 @@ export class OrganizationSettingEmergencyComponent {
       })
       .subscribe((result) => {
         this.categories = result.data.fetchCategorySociopros.results;
+        console.log('list', this.categories);
       });
   }
   addCategory(): void {
@@ -53,27 +129,83 @@ export class OrganizationSettingEmergencyComponent {
   /**
    * Méthode pour sauvegarder les paramètres de plafond
    */
-  savePlafond(): void {
-    if (!this.activationDate) {
-      alert('Veuillez sélectionner une date d’activation.');
-      return;
-    }
+  onSubmit(): void {
+    console.log(this.emergencyForm.value);
 
-    if (
-      this.isPercentage &&
-      (this.reimbursementPercentage < 0 || this.reimbursementPercentage > 100)
-    ) {
-      alert('Le pourcentage doit être compris entre 0 et 100.');
-      return;
-    }
+    if (this.emergencyForm.valid) {
+      const data = {
+        ...this.emergencyForm.value,
+        amountUnit: this.isPercentage
+          ? EAmountUnit.Percentage
+          : EAmountUnit.Fixed,
+        amount: this.emergencyForm.value.reimbursementPercentage * 20000,
+        activationDurationDay: 30,
+        refundDurationUnit: ERrefundDurationUnit.Day,
+        refundDuration: this.service.refundDurationMonth,
+      };
+      delete data.isPercentage;
+      delete data.isFixed;
+      delete data.reimbursementPercentage;
+      if (data.selectedCategory) {
+        this.createCategorySocioproServiceGQL
+          .mutate({
+            categorySocioproId: data.selectedCategory,
+            categorySocioproServiceInput: {
+              amount: 200000,
+              amountUnit: data.amountUnit,
+              // refundDurationUnit: ERrefundDurationUnit.Day,
+              refundDuration: this.service.refundDurationMonth,
+              autoValidate: data.autoValidate,
+              activated: data.activated,
+            },
+            organisationServiceId: this.organization.organisationService.find(
+              (item) => item.serviceId === this.service.id
+            )?.id,
+          })
+          .subscribe({
+            next: (response) => {
+              console.log(response);
+              this.snackBarService.showSnackBar(
+                'Paramètres de plafond enregistrés'
+              );
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar('Une erreur est survenue');
+              console.log(err);
+            },
+          });
 
-    // Simulation d'une sauvegarde
-    console.log('Service activé:', this.isServiceActive);
-    console.log('Date d’activation:', this.activationDate);
-    console.log('Catégorie sélectionnée:', this.selectedCategory);
-    console.log('Mode:', this.isPercentage ? 'Pourcentage' : 'Montant fixe');
-    console.log('Pourcentage de remboursement:', this.reimbursementPercentage);
-    console.log('Validation automatique:', this.isAutoValidation);
-    alert('Paramètres sauvegardés avec succès.');
+        delete data.selectedCategory;
+      }
+      console.log(data);
+
+      this.defineService
+        .mutate({
+          organisationId: this.organization.id,
+          serviceId: this.service.id,
+          organisationServiceInput: data,
+        })
+        .subscribe({
+          next: (response) => {
+            console.log(response);
+            this.snackBarService.showSnackBar(
+              'Paramètres de plafond enregistrés'
+            );
+          },
+          error: (err) => {
+            this.snackBarService.showSnackBar('Une erreur est survenue');
+            console.log(err);
+          },
+        });
+      console.log(this.emergencyForm.value);
+    }
   }
+}
+export enum EAmountUnit {
+  Fixed = 'Fixed',
+  Percentage = 'Percentage',
+}
+export enum ERrefundDurationUnit {
+  Day = 'Day',
+  Month = 'Month',
 }

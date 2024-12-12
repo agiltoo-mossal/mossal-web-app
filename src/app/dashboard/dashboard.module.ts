@@ -46,6 +46,8 @@ import { OrganizationSettingSalaryComponent } from './components/organization-se
 import { OrganizationSettingSalaryRefundComponent } from './components/organization-setting-salary-refund/organization-setting-salary-refund.component';
 import { TableSalaryModule } from '../shared/components/table-salary/table-salary.module';
 import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
+import { CreateEventModule } from '../shared/components/create-event/create-event.module';
+import { SettingModule } from '../shared/components/settings/settings.module';
 
 @NgModule({
   declarations: [
@@ -66,6 +68,7 @@ import { RequestEmergencyComponent } from './components/request-emergency/reques
     OrganizationSettingSalaryRefundComponent,
   ],
   imports: [
+    CreateEventModule,
     CommonModule,
     DashboardRoutingModule,
     RouterModule,
@@ -97,6 +100,7 @@ import { RequestEmergencyComponent } from './components/request-emergency/reques
     OrganizationFileModule,
     ToggleSlideModule,
     TableSalaryModule,
+    SettingModule,
   ],
   providers: [NotificationsService],
 })

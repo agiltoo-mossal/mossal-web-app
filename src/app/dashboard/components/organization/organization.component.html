@@ -4,16 +4,28 @@
     <mat-tab *ngFor="let service of listServices" [label]="service.title">
       <div [ngSwitch]="service.title">
         <div class="container_tab">
-
-        <app-organization-setting-general  *ngSwitchCase="'général'"></app-organization-setting-general>
-        <app-organization-setting-emergency [serviceId]="service.id" *ngSwitchCase="'Dépannage d’urgence'"></app-organization-setting-emergency>
-        <app-organization-setting-event [serviceId]="service.id" *ngSwitchCase="'Avance sur évenement'"></app-organization-setting-event>
-        <app-organization-setting-salary [serviceId]="service.id" *ngSwitchCase="'Avance salariale'"></app-organization-setting-salary>
-        <app-organization-setting-salary-refund [serviceId]="service.id" *ngSwitchCase="'Avance sur plusieurs mois'"></app-organization-setting-salary-refund>
-        <div *ngSwitchDefault>Component not found</div>
+          <app-organization-setting-general
+            *ngSwitchCase="'général'"
+          ></app-organization-setting-general>
+          <app-organization-setting-emergency
+            [service]="service"
+            *ngSwitchCase="'Dépannage d’urgence'"
+          ></app-organization-setting-emergency>
+          <app-organization-setting-event
+            [serviceId]="service.id"
+            *ngSwitchCase="'Avance sur évenement'"
+          ></app-organization-setting-event>
+          <app-organization-setting-salary
+            [serviceId]="service.id"
+            *ngSwitchCase="'Avance salariale'"
+          ></app-organization-setting-salary>
+          <app-organization-setting-salary-refund
+            [serviceId]="service.id"
+            *ngSwitchCase="'Avance sur plusieurs mois'"
+          ></app-organization-setting-salary-refund>
+          <div *ngSwitchDefault>Component not found</div>
         </div>
       </div>
-     
     </mat-tab>
     <!-- <mat-tab label="Dépannage d'urgence">
       <div class="container_tab">

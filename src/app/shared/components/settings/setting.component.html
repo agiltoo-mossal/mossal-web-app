@@ -1,0 +1,58 @@
+<div class="settings">
+  <div class="container-setting">
+    <h3>Activation du service</h3>
+    <app-toggle-slide
+      [firstText]="'On'"
+      [secondText]="'Off'"
+      [uniqueId]="'paramServiceActivation'"
+      (toggleChange)="onServiceActivationChange($event)"
+    ></app-toggle-slide>
+  </div>
+  <div class="percentage">
+    <h3>Pourcentage ou montant fixe</h3>
+    <label>
+      Pourcentage
+      <input
+        type="radio"
+        name="amountType"
+        value="percentage"
+        checked
+        class="custom-radio"
+        (change)="onAmountTypeChange($event)"
+      />
+    </label>
+  </div>
+  <div class="percentage">
+    <label>
+      Montant fixe
+      <input
+        class="custom-radio"
+        type="radio"
+        name="amountType"
+        value="fixed"
+        (change)="onAmountTypeChange($event)"
+      />
+    </label>
+  </div>
+
+  <h3>Montant et durée du remboursement</h3>
+  <div class="input-group">
+    <input
+      type="number"
+      placeholder="30"
+      (input)="onReimbursementChange($event)"
+    />
+    <span>%</span>
+  </div>
+  <div class="input-group">
+    <input type="text" placeholder="12 mois" />
+  </div>
+
+  <h3>Validation automatique</h3>
+  <app-toggle-slide
+    [firstText]="'ON'"
+    [secondText]="'OFF'"
+    [uniqueId]="'autoValidation'"
+    (toggleChange)="onValidationChange($event)"
+  ></app-toggle-slide>
+</div>

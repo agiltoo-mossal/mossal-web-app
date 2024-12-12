@@ -1,0 +1,63 @@
+
+/* Paramètres */
+.settings h3 {
+  font-size: 16px;
+  color: #2d3559;
+  margin-bottom: 10px;
+}
+.container-setting{
+    display: flex;
+    gap:8px;
+    align-items: center;
+}
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  accent-color:#2d3559; /* Change the color */
+}
+.percentage{
+    margin-bottom: 8px;
+}
+.percentage label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.percentage input[type="radio"] {
+  margin:0 10px;
+}
+.input-group input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+}
+
+.input-group span {
+  font-size: 14px;
+  color: #2d3559;
+}
+
+/* Bouton Valider */
+.validate-btn {
+  display: block;
+  margin: 20px auto 0;
+  background-color: #061E5C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.validate-btn:hover {
+  background-color: #061e5c63;
+}

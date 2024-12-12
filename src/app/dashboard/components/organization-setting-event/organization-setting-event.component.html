@@ -3,9 +3,8 @@
     <span>Avance sur événement</span>
   </div>
   <div class="avance-evenement-container">
-
     <!-- Section Activation du service -->
-    <div class="section">
+    <div class="section flex-center">
       <h3>Activation du service</h3>
       <app-toggle-slide
         [firstText]="'Actif'"
@@ -28,31 +27,52 @@
           </div>
           <div class="event-details">
             <span>{{ event.name }}</span>
-            <input type="date" [value]="event.startDate" />
-            <input type="date" [value]="event.endDate" />
-            <button class="edit-btn">✏️</button>
-            <button class="delete-btn">🗑️</button>
+            <div class="event-details-date">
+              <input type="date" [value]="event.startDate" />
+              <input type="date" [value]="event.endDate" />
+            </div>
+            <div>
+              <button class="edit-btn">✏️</button>
+              <button class="delete-btn">🗑️</button>
+            </div>
           </div>
         </li>
       </ul>
-      <button class="add-event-btn">Ajouter un événement</button>
+      <div class="container-button">
+        <button class="add-event-btn" (click)="createEvent()">
+          Ajouter un événement
+        </button>
+      </div>
     </div>
 
     <!-- Section des paramètres -->
     <div class="section">
-      <div class="category-selection">
-        <select>
-          <option>Ajouter une catégorie</option>
-        </select>
+      <div class="category-input-group">
+        <input
+          type="text"
+          class="category-input"
+          [(ngModel)]="newCategory"
+          placeholder="Nom de la catégorie"
+        />
+        <button class="category-btn" (click)="addCategory()">
+          Ajouter une catégorie
+        </button>
       </div>
 
-      <ul class="tab-navigation">
-        <li class="tab-item active">Paramètres Généraux</li>
-        <li class="tab-item">Catégorie Socio Professionnelle 1</li>
-        <li class="tab-item">Catégorie Socio Professionnelle 2</li>
-      </ul>
-
-      <div class="settings">
+      <mat-tab-group animationDuration="0ms">
+        <mat-tab
+          *ngFor="let categorie of categories"
+          [label]="categorie?.title"
+          >{{ categorie?.title }}</mat-tab
+        >
+      </mat-tab-group>
+      <app-setting
+        (serviceActivationChange)="handleServiceActivationChange($event)"
+        (amountTypeChange)="handleAmountTypeChange($event)"
+        (reimbursementChange)="handleReimbursementChange($event)"
+        (validationChange)="handleValidationChange($event)"
+      ></app-setting>
+      <!-- <div class="settings">
         <h3>Activation du service</h3>
         <app-toggle-slide
           [firstText]="'On'"
@@ -84,7 +104,7 @@
           [secondText]="'OFF'"
           [uniqueId]="'autoValidation'"
         ></app-toggle-slide>
-      </div>
+      </div> -->
     </div>
     <button class="validate-btn">Valider</button>
   </div>

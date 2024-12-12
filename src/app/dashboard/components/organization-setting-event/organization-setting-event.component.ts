@@ -1,4 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
+import {
+  CategorySociopro,
+  FetchCategorySocioprosGQL,
+  FetchServicesGQL,
+  Service,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-organization-setting-event',
@@ -8,6 +16,10 @@ import { Component, Input } from '@angular/core';
 export class OrganizationSettingEventComponent {
   // Données pour les événements
   @Input() serviceId: string;
+  constructor(
+    private dialog: MatDialog,
+    private listCategorieGQL: FetchCategorySocioprosGQL
+  ) {}
 
   events = [
     {
@@ -33,6 +45,38 @@ export class OrganizationSettingEventComponent {
   reimbursementPercentage: number = 30;
   reimbursementDuration: string = '12 mois';
   isAutoValidation: boolean = false;
+  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
+
+  newCategory: string = '';
+
+  ngOnInit() {
+    console.log('fetching');
+
+    this.listCategorieGQL
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe({
+        next: (resp) => {
+          this.categories = resp.data.fetchCategorySociopros.results;
+          this.categories = [
+            {
+              id: 'djkkdsj',
+              title: 'Paramètres généraux',
+              description: 'général',
+            },
+            ,
+            ...this.categories,
+          ];
+          console.log('list', this.categories);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
 
   /**
    * Permet de basculer entre les onglets
@@ -97,5 +141,59 @@ export class OrganizationSettingEventComponent {
     console.log('Durée :', this.reimbursementDuration);
     console.log('Validation automatique :', this.isAutoValidation);
     alert('Paramètres sauvegardés avec succès.');
+  }
+
+  createEvent() {
+    const dialogRef = this.dialog.open(CreateEventComponent, {
+      width: '800px',
+      data: {}, // Si des données initiales sont nécessaires
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const formattedStartDate = new Date(result.startDate)
+          .toISOString()
+          .split('T')[0];
+        const formattedEndDate = new Date(result.endDate)
+          .toISOString()
+          .split('T')[0];
+
+        console.log('Nouvel événement :', result);
+        console.log({
+          name: result.name,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          isActive: false,
+        });
+
+        this.events.push({
+          name: result.name,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          isActive: false,
+        });
+      }
+    });
+  }
+  addCategory(): void {
+    if (this.newCategory && this.newCategory.trim()) {
+    } else {
+      alert('Le nom de la catégorie ne peut pas être vide.');
+    }
+  }
+  handleServiceActivationChange(isActive: boolean) {
+    console.log('Service Activation:', isActive);
+  }
+
+  handleAmountTypeChange(amountType: string) {
+    console.log('Amount Type:', amountType);
+  }
+
+  handleReimbursementChange(reimbursement: number) {
+    console.log('Reimbursement:', reimbursement);
+  }
+
+  handleValidationChange(isActive: boolean) {
+    console.log('Validation:', isActive);
   }
 }

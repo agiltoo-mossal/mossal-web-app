@@ -19,6 +19,19 @@ mutation UpdateCategorySociopro(
     categorySocioproId: $categorySocioproId
   )
 }
+mutation CreateCategorySocioproService(
+  $categorySocioproServiceInput: CategorySocioproServiceInput!
+  $categorySocioproId: ID!
+  $organisationServiceId: ID!
+) {
+  createCategorySocioproService(
+    categorySocioproServiceInput: $categorySocioproServiceInput
+    categorySocioproId: $categorySocioproId
+    organisationServiceId: $organisationServiceId
+  ){
+    id
+  }
+}
 
 mutation CreateCategorySociopro(
   $categorySocioproInput: CategorySocioproInput!
@@ -43,34 +56,111 @@ query FetchCategorySociopros($queryConfig: QueryDataConfigInput!) {
       currentPage
       pageSize
     }
-	results{
-	id
-	title
-	organizationId
-	createdAt
-	updatedAt
-	}
+    results {
+      id
+      title
+      organizationId
+      createdAt
+      updatedAt
+    }
   }
 }
-query FetchServices(
-$queryConfig: QueryDataConfigInput
-){
-fetchServices(queryConfig: $queryConfig){
-  pagination{
-    totalItems
-    pageCount
-    currentPage
-    pageSize
+query FetchServices($queryConfig: QueryDataConfigInput) {
+  fetchServices(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      createdAt
+      updatedAt
+      identifier
+      refundDurationMonth
+      available
+    }
   }
-  results{
-    id
-    title
-    description
+}
+
+mutation CreateOrganistionService(
+  $organisationServiceInput: OrganisationServiceInput!
+  $organisationId: ID!
+  $serviceId: ID!
+) {
+  createOrganisationService(
+    organisationServiceInput: $organisationServiceInput
+    organisationId: $organisationId,
+    serviceId: $serviceId
+  ) {
     createdAt
     updatedAt
-    identifier
-    refundDurationMonth
-    available
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    organization {
+      id
+    }
+    service {
+      id
+      title
+    }
+    events {
+      id
+      title
+    }
+    categoriesociopro {
+      id
+      title
+    }
   }
 }
+
+query 
+FetchOrganisationServiceByOrganisationIdAndServiceId(
+  $organisationId: ID!
+  $serviceId: ID!
+) {
+  fetchOrganisationServiceByOrganisationIdAndServiceId(
+    organisationId: $organisationId
+    serviceId: $serviceId
+  ) {
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    organization {
+      id
+    }
+    service {
+      id
+      title
+    }
+    events {
+      id
+      title
+    }
+    categoriesociopro {
+      id
+      title
+    }
+  }
 }
