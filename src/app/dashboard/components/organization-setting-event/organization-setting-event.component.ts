@@ -3,8 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, switchMap } from 'rxjs';
 import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
 import {
+  AmountUnit,
   CategorySociopro,
+  CreateCategorySocioproServiceGQL,
   CreateEventGQL,
+  CreateOrganistionServiceGQL,
+  DurationUnit,
   EventInput,
   FetchCategorySocioprosGQL,
   FetchCurrentAdminGQL,
@@ -14,6 +18,12 @@ import {
   Organization,
   Service,
 } from 'src/graphql/generated';
+import {
+  EAmountUnit,
+  ERrefundDurationUnit,
+} from '../organization-setting-emergency/organization-setting-emergency.component';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-organization-setting-event',
@@ -22,13 +32,17 @@ import {
 })
 export class OrganizationSettingEventComponent {
   // Données pour les événements
-  @Input() serviceId: string;
+  @Input() service: Partial<Service>;
+
   constructor(
     private dialog: MatDialog,
     private listCategorieGQL: FetchCategorySocioprosGQL,
     private createEventGQL: CreateEventGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private fetchAllEvents: FetchEventsGQL,
+    private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
+    private snackBarService: SnackBarService,
+    private defineService: CreateOrganistionServiceGQL,
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
   ) {}
@@ -48,10 +62,10 @@ export class OrganizationSettingEventComponent {
   isServiceActive: boolean = true;
   isPercentage: boolean = true;
   reimbursementPercentage: number = 30;
-  reimbursementDuration: string = '12 mois';
+  reimbursementDuration: string = '12';
   isAutoValidation: boolean = false;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
-
+  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
   newCategory: string = '';
   isActive: boolean = false;
   amountType: string = '';
@@ -60,7 +74,9 @@ export class OrganizationSettingEventComponent {
   autoValidate: boolean = false;
   organisationServiceId: string;
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
+      .data.fetchCurrentAdmin.organization as Organization;
     this.fetchCurrentAdminGQL
       .fetch()
       .pipe(
@@ -184,20 +200,31 @@ export class OrganizationSettingEventComponent {
       this.isPercentage &&
       (this.reimbursementPercentage < 0 || this.reimbursementPercentage > 100)
     ) {
-      alert('Le pourcentage doit être compris entre 0 et 100.');
       return;
     }
 
-    // Afficher un message de confirmation
-    console.log('Service activé :', this.isServiceActive);
-    console.log(
-      'Type de remboursement :',
-      this.isPercentage ? 'Pourcentage' : 'Montant fixe'
-    );
-    console.log('Pourcentage :', this.reimbursementPercentage);
-    console.log('Durée :', this.reimbursementDuration);
-    console.log('Validation automatique :', this.isAutoValidation);
-    alert('Paramètres sauvegardés avec succès.');
+    this.defineService
+      .mutate({
+        organisationId: this.organization.id,
+        serviceId: this.service.id,
+        organisationServiceInput: {
+          activated: this.isServiceActive,
+          amount: this.reimbursement,
+          amountUnit: this.isPercentage
+            ? AmountUnit.Percentage
+            : AmountUnit.Fixed,
+        },
+      })
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+          this.snackBarService.showSnackBar('Paramètres enregistrés');
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar('Une erreur est survenue');
+        },
+      });
   }
 
   createEvent() {
@@ -256,19 +283,27 @@ export class OrganizationSettingEventComponent {
   }
   handleServiceActivationChange(isActive: boolean) {
     console.log('Service Activation:', isActive);
+    this.isActive = isActive;
   }
 
   handleAmountTypeChange(amountType: string) {
     console.log('Amount Type:', amountType);
+    this.amountType = amountType;
   }
 
   handleReimbursementChange(reimbursement: number) {
     console.log('Reimbursement:', reimbursement);
+    this.reimbursement = reimbursement;
   }
 
   handleValidationChange(isActive: boolean) {
     console.log('Validation:', isActive);
+    this.autoValidate = isActive;
   }
 
   createOrganizationService() {}
+
+  onTabChange(event: MatTabChangeEvent) {
+    this.selectedCategorie = this.categories[event.index];
+  }
 }

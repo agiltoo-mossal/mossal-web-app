@@ -12,11 +12,11 @@
             *ngSwitchCase="'Dépannage d’urgence'"
           ></app-organization-setting-emergency>
           <app-organization-setting-event
-            [serviceId]="service.id"
+            [service]="service"
             *ngSwitchCase="'Avance sur évenement'"
           ></app-organization-setting-event>
           <app-organization-setting-salary
-            [serviceId]="service.id"
+            [service]="service"
             *ngSwitchCase="'Avance salariale'"
           ></app-organization-setting-salary>
           <app-organization-setting-salary-refund

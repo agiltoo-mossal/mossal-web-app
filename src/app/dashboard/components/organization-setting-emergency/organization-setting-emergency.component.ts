@@ -93,6 +93,8 @@ export class OrganizationSettingEmergencyComponent {
             const data =
               response.data
                 .fetchOrganisationServiceByOrganisationIdAndServiceId;
+            console.log('data', data);
+
             // this.emergencyForm.patchValue({
             //   activated: data.activated,
             //   activatedAt: data.activatedAt,

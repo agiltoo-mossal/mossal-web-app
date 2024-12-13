@@ -1,5 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { CategorySociopro, Organization } from 'src/graphql/generated';
+import {
+  CategorySociopro,
+  FetchCategorySocioprosGQL,
+  Organization,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-organization-setting-salary-refund',
@@ -20,8 +24,34 @@ export class OrganizationSettingSalaryRefundComponent {
   reimbursement: number = 0;
   organization: Organization;
   autoValidate: boolean = false;
-
   @Input() serviceId: string;
+  constructor(private listCategorieGQL: FetchCategorySocioprosGQL) {}
+
+  ngOnInit() {
+    this.listCategorieGQL
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe({
+        next: (resp) => {
+          this.categories = resp.data.fetchCategorySociopros.results;
+          this.categories = [
+            {
+              id: 'djkkdsj',
+              title: 'Paramètres généraux',
+              description: 'général',
+            },
+            ...this.categories,
+          ];
+          console.log('list', this.categories);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
 
   addCategory(): void {
     if (this.newCategory && this.newCategory.trim()) {
