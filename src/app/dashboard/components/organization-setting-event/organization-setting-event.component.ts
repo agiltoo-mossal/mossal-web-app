@@ -15,6 +15,7 @@ import {
   FetchEventsGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchServicesGQL,
+  OrganisationService,
   Organization,
   Service,
 } from 'src/graphql/generated';
@@ -59,7 +60,7 @@ export class OrganizationSettingEventComponent {
   activeTab: string = 'Paramètres Généraux';
 
   // Données pour les paramètres
-  isServiceActive: boolean = true;
+  activated: boolean = true;
   isPercentage: boolean = true;
   reimbursementPercentage: number = 30;
   reimbursementDuration: string = '12';
@@ -73,31 +74,35 @@ export class OrganizationSettingEventComponent {
   organization: Organization;
   autoValidate: boolean = false;
   organisationServiceId: string;
+  info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
-    this.fetchCurrentAdminGQL
-      .fetch()
-      .pipe(
-        switchMap((response) => {
-          this.organization = response.data.fetchCurrentAdmin
-            .organization as Organization;
-          console.log('fetching organizationServiceId');
-          return this.fetchOrganisationServiceByOrganisationIdAndServiceIdGQL.fetch(
-            {
-              organisationId: this.organization.id,
-              serviceId: '67518fe7ee9f8e91151fe4a3',
-            }
-          );
-        })
-      )
+    console.log('this.organization', this.organization.id);
+    console.log('this.service', this.service.id);
+
+    this.fetchOrganisationServiceByOrganisationIdAndServiceIdGQL
+      .fetch({
+        organisationId: this.organization.id,
+        serviceId: this.service.id,
+      })
       .subscribe({
         next: (response) => {
-          console.log('orgServiceId', response);
-          console.log('hello');
           this.organisationServiceId =
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id;
+          console.log('organisationServiceId', this.organisationServiceId);
+
+          this.info = response.data
+            .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
+            OrganisationService & { categorySociopro: CategorySociopro[] }
+          >;
+          this.isActive = this.info.activated;
+          this.amountType = this.info.amountUnit;
+          this.reimbursement = this.info.amount;
+          this.autoValidate = this.info.autoValidate;
+          this.reimbursementPercentage = this.info.amount;
+          this.selectedCategorie = this.info?.categorySociopro?.[0];
         },
         error: (error) => {
           console.error(error);
@@ -108,10 +113,12 @@ export class OrganizationSettingEventComponent {
         queryConfig: {
           limit: 10,
         },
+        organizationServiceId: '675b3086d059abbe573a5c16',
       })
       .subscribe({
         next: (response) => {
-          console.log('events', response);
+          console.log('events', response.data.fetchEvents.results);
+
           this.events = response.data.fetchEvents.results.map((event) => {
             return {
               title: event.title,
@@ -143,7 +150,6 @@ export class OrganizationSettingEventComponent {
             ,
             ...this.categories,
           ];
-          console.log('list', this.categories);
         },
         error: (err) => {
           console.log(err);
@@ -208,7 +214,7 @@ export class OrganizationSettingEventComponent {
         organisationId: this.organization.id,
         serviceId: this.service.id,
         organisationServiceInput: {
-          activated: this.isServiceActive,
+          activated: this.activated,
           amount: this.reimbursement,
           amountUnit: this.isPercentage
             ? AmountUnit.Percentage
@@ -222,12 +228,22 @@ export class OrganizationSettingEventComponent {
         },
         error: (err) => {
           console.log(err);
-          this.snackBarService.showSnackBar('Une erreur est survenue');
+          this.snackBarService.showSnackBar(
+            'Une configuration est deja mise en place'
+          );
         },
       });
   }
-
+  onServiceActivationChange($event) {
+    this.activated = $event;
+  }
   createEvent() {
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        "Veuillez d'abord créer la configuration"
+      );
+      return;
+    }
     const dialogRef = this.dialog.open(CreateEventComponent, {
       width: '800px',
       data: {}, // Si des données initiales sont nécessaires
@@ -242,16 +258,12 @@ export class OrganizationSettingEventComponent {
           .toISOString()
           .split('T')[0];
 
-        this.newEvents.push({
-          title: result.name,
-          startDate: formattedStartDate,
-          endDate: formattedEndDate,
-          isActive: true,
-        });
+        console.log(result);
+
         this.createEventGQL
           .mutate({
             eventInput: {
-              title: result?.name,
+              title: result?.title,
               startDate: new Date(result.startDate),
               endDate: new Date(result.endDate),
             },
@@ -259,19 +271,20 @@ export class OrganizationSettingEventComponent {
           })
           .subscribe({
             next: (response) => {
-              console.log(response);
+              this.snackBarService.showSnackBar('Événement créé avec succès');
+
+              this.events.push({
+                title: result.title,
+                startDate: formattedStartDate,
+                endDate: formattedEndDate,
+                isActive: true,
+              });
             },
             error: (err) => {
+              this.snackBarService.showSnackBar('Une erreur est survenue');
               console.log(err);
             },
           });
-
-        this.events.push({
-          name: result.name,
-          startDate: formattedStartDate,
-          endDate: formattedEndDate,
-          isActive: true,
-        });
       }
     });
   }

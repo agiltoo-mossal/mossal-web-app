@@ -59,9 +59,8 @@ export class OrganizationSettingEmergencyComponent {
       activated: [true],
       activatedAt: ['', Validators.required],
       selectedCategory: ['', Validators.required],
-      isPercentage: [true],
-      isFixed: [false],
-      reimbursementPercentage: [30, [, Validators.min(0), Validators.max(100)]],
+      amountUnit: [AmountUnit.Percentage],
+      reimbursementPercentage: [0, [, Validators.min(0), Validators.max(100)]],
       autoValidate: [false],
     });
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -90,19 +89,22 @@ export class OrganizationSettingEmergencyComponent {
           if (
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
           ) {
-            const data =
-              response.data
-                .fetchOrganisationServiceByOrganisationIdAndServiceId;
+            const data = response.data
+              .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             console.log('data', data);
 
-            // this.emergencyForm.patchValue({
-            //   activated: data.activated,
-            //   activatedAt: data.activatedAt,
-            //   isPercentage: data.amountUnit === AmountUnit.Percentage,
-            //   isFixed: data.amountUnit === AmountUnit.Fixed,
-            //   reimbursementPercentage: data.amount / 20000,
-            //   autoValidate: data.autoValidate,
-            // });
+            this.emergencyForm.patchValue({
+              activated: data.activated,
+              activatedAt: data.activatedAt,
+              amountUnit: data.amountUnit,
+              //A enlever apres les tests
+              reimbursementPercentage: 30,
+              autoValidate: data.autoValidate,
+              // amountType: data?.amountUnit || AmountUnit.Percentage,
+              // selectedCategory: data.categorySociopro.id,
+            });
+            this.emergencyForm.get('reimbursementPercentage').setValue(30);
+            console.log('dataForm', this.emergencyForm.getRawValue());
           }
         },
         error: (err) => {
@@ -201,6 +203,13 @@ export class OrganizationSettingEmergencyComponent {
         });
       console.log(this.emergencyForm.value);
     }
+  }
+  onToggle(event) {
+    console.log('event', event);
+    this.emergencyForm.get('autoValidate').setValue(event);
+  }
+  onServiceActivationChange(isActive: boolean) {
+    this.emergencyForm.get('activated').setValue(isActive);
   }
 }
 export enum EAmountUnit {

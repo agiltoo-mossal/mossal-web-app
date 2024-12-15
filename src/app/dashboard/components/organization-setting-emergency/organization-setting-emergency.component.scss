@@ -32,13 +32,19 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.date-input span {
-  font-size: 14px;
+  label{
   color: #2d3559;
+  font-size: 20px;
+  font-weight: bolder;
+
+  }
+  color: #2d3559;
+.date-input span {
+  font-weight: bolder;
   padding:0 8px;
 }
+}
+
 
 /* Sélection des catégories */
 .category-selection {
@@ -52,6 +58,16 @@ input:checked + .slider:before {
   border: 1px solid #dcdcdc;
   border-radius: 8px;
   background: #f4f6fa;
+  color: #2d3559;
+}/* Validation automatique */
+.auto-validation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.auto-validation span {
+  font-size: 14px;
   color: #2d3559;
 }
 
@@ -70,72 +86,6 @@ input:checked + .slider:before {
     background-color: #061E5C;
 
 }
-
-/* Pourcentage ou montant fixe */
-.percentage-or-fixed {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.percentage-or-fixed h4 {
-  color: #2d3559;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.percentage-or-fixed label {
-  color: #2d3559;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* Remboursement */
-.reimbursement {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.reimbursement h4 {
-  color: #2d3559;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.percentage-input {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.percentage-input input {
-  padding: 8px;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  background: #f4f6fa;
-  color: #2d3559;
-}
-
-.percentage-input span {
-  color: #2d3559;
-  font-weight: bold;
-}
-
-/* Validation automatique */
-.auto-validation {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.auto-validation span {
-  font-size: 14px;
-  color: #2d3559;
-}
-
 /* Bouton Valider */
 .validate-button {
   align-self: flex-start;
@@ -152,3 +102,112 @@ input:checked + .slider:before {
 .validate-button:hover {
   background-color:#061e5cc1;
 }
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  accent-color:#4caf50;
+   /* Change the color */
+  border: 1px solid #dcdcdc;
+}
+.percentage{
+    margin-bottom: 8px;
+}
+.percentage label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin:20px 0px;
+}
+
+.percentage input[type="radio"] {
+  margin:0 20px;
+}
+.input-group input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+}
+
+.input-group span {
+  font-size: 14px;
+  color: #2d3559;
+}
+
+/* Bouton Valider */
+.validate-btn {
+  display: block;
+  margin: 20px auto 0;
+  background-color: #061E5C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.validate-btn:hover {
+  background-color: #061e5c63;
+}
+.percentage-input-group input {
+  width: 80px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2d3559; /* Couleur du texte */
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+/* Symbole de pourcentage */
+.percentage-input-group .percentage-symbol,
+.percentage-input-group .currency-symbol {
+  color: #2d3559; /* Couleur principale */
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 8px;
+}
+.plafond-content {
+  display: flex;
+  width: 24%;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.plafond-content label {
+  color: #2d3559; /* Couleur principale */
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Conteneur de l'entrée pourcentage */
+.percentage-input-group {
+  display: flex;
+  align-items: center;
+  background: #f4f6fa; /* Fond gris clair */
+  border: 1px solid #dcdcdc; /* Bordure fine */
+  border-radius: 8px;
+  padding: 8px 12px; /* Espacement interne */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

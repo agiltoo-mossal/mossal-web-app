@@ -133,6 +133,7 @@ export type Demande = {
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
   organisationService?: Maybe<OrganisationService>;
+  refundDuration: Scalars['Float']['output'];
   rejectedReason?: Maybe<Scalars['String']['output']>;
   status: DemandeStatus;
   statusText?: Maybe<Scalars['String']['output']>;
@@ -553,7 +554,7 @@ export type OrganisationService = {
   activated: Scalars['Boolean']['output'];
   activatedAt?: Maybe<Scalars['DateTime']['output']>;
   activationDurationDay: Scalars['Int']['output'];
-  amount: Scalars['Int']['output'];
+  amount?: Maybe<Scalars['Int']['output']>;
   amountUnit: AmountUnit;
   autoValidate: Scalars['Boolean']['output'];
   categoriesociopro?: Maybe<Array<CategorySociopro>>;
@@ -828,6 +829,7 @@ export type QueryFetchEventArgs = {
 
 
 export type QueryFetchEventsArgs = {
+  organizationServiceId: Scalars['ID']['input'];
   queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -1263,7 +1265,7 @@ export type CreateOrganistionServiceMutationVariables = Exact<{
 }>;
 
 
-export type CreateOrganistionServiceMutation = { __typename?: 'Mutation', createOrganisationService: { __typename?: 'OrganisationService', createdAt: any, updatedAt: any, id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesociopro?: Array<{ __typename?: 'CategorySociopro', id: any, title: string }> | null } };
+export type CreateOrganistionServiceMutation = { __typename?: 'Mutation', createOrganisationService: { __typename?: 'OrganisationService', createdAt: any, updatedAt: any, id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesociopro?: Array<{ __typename?: 'CategorySociopro', id: any, title: string }> | null } };
 
 export type FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables = Exact<{
   organisationId: Scalars['ID']['input'];
@@ -1271,7 +1273,7 @@ export type FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables =
 }>;
 
 
-export type FetchOrganisationServiceByOrganisationIdAndServiceIdQuery = { __typename?: 'Query', fetchOrganisationServiceByOrganisationIdAndServiceId: { __typename?: 'OrganisationService', id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesociopro?: Array<{ __typename?: 'CategorySociopro', id: any, title: string }> | null } };
+export type FetchOrganisationServiceByOrganisationIdAndServiceIdQuery = { __typename?: 'Query', fetchOrganisationServiceByOrganisationIdAndServiceId: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesociopro?: Array<{ __typename?: 'CategorySociopro', id: any, title: string }> | null } };
 
 export type CreateEventMutationVariables = Exact<{
   eventInput: EventInput;
@@ -1283,6 +1285,7 @@ export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __ty
 
 export type FetchEventsQueryVariables = Exact<{
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+  organizationServiceId: Scalars['ID']['input'];
 }>;
 
 
@@ -1343,6 +1346,13 @@ export type FetchCountStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type FetchCountStatusQuery = { __typename?: 'Query', fectchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number } };
+
+export type FetchOrganisationServiceQueryVariables = Exact<{
+  organisationServiceId: Scalars['ID']['input'];
+}>;
+
+
+export type FetchOrganisationServiceQuery = { __typename?: 'Query', fetchOrganisationService: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, demandes?: Array<{ __typename?: 'Demande', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees: number, status: DemandeStatus, rejectedReason?: string | null, statusText?: string | null, collaborator: { __typename?: 'User', createdAt: any, updatedAt: any, id: string, email: string, firstName: string, lastName: string, phoneNumber?: string | null, address?: string | null, position?: string | null, uniqueIdentifier?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, totalDemandeAmount: number, role?: string | null, blocked?: boolean | null, birthDate?: any | null, favoriteWallet?: Wallet | null, enableEmailNotification?: boolean | null, status?: number | null, authorizedAdvance: number } }> | null } };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -2170,8 +2180,11 @@ export const CreateEventDocument = gql`
     }
   }
 export const FetchEventsDocument = gql`
-    query FetchEvents($queryConfig: QueryDataConfigInput) {
-  fetchEvents(queryConfig: $queryConfig) {
+    query FetchEvents($queryConfig: QueryDataConfigInput, $organizationServiceId: ID!) {
+  fetchEvents(
+    queryConfig: $queryConfig
+    organizationServiceId: $organizationServiceId
+  ) {
     pagination {
       totalItems
       pageCount
@@ -2392,6 +2405,69 @@ export const FetchCountStatusDocument = gql`
   })
   export class FetchCountStatusGQL extends Apollo.Query<FetchCountStatusQuery, FetchCountStatusQueryVariables> {
     document = FetchCountStatusDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganisationServiceDocument = gql`
+    query FetchOrganisationService($organisationServiceId: ID!) {
+  fetchOrganisationService(organisationServiceId: $organisationServiceId) {
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    demandes {
+      createdAt
+      updatedAt
+      id
+      amount
+      number
+      fees
+      status
+      collaborator {
+        createdAt
+        updatedAt
+        id
+        email
+        firstName
+        lastName
+        phoneNumber
+        address
+        position
+        uniqueIdentifier
+        salary
+        balance
+        wizallAccountNumber
+        bankAccountNumber
+        totalDemandeAmount
+        role
+        blocked
+        birthDate
+        favoriteWallet
+        enableEmailNotification
+        status
+        authorizedAdvance
+      }
+      rejectedReason
+      statusText
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganisationServiceGQL extends Apollo.Query<FetchOrganisationServiceQuery, FetchOrganisationServiceQueryVariables> {
+    document = FetchOrganisationServiceDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

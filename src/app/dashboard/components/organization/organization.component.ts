@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   FetchCurrentAdminGQL,
@@ -26,6 +27,7 @@ export class OrganizationComponent {
     0
   );
   listServices: Partial<Service>[] = [];
+  selectedService: Partial<Service> = {};
   itemsCardDate: { day: number; active: boolean; pending: boolean }[] = [];
   password: boolean = true;
   newPassword: boolean = true;
@@ -45,15 +47,15 @@ export class OrganizationComponent {
     private updateOrganizationGQL: UpdateOrganizationGQL,
     private listService: FetchServicesGQL
   ) {
-    this.form = this.fb.group({
-      name: [{ value: '', disabled: true }, Validators.required],
-      maxDemandeAmount: [1000000, [Validators.required, Validators.min(5000)]],
-      amountPercent: [
-        75,
-        [Validators.required, Validators.min(1), Validators.max(100)],
-      ],
-      fees: [0],
-    });
+    // this.form = this.fb.group({
+    //   name: [{ value: '', disabled: true }, Validators.required],
+    //   maxDemandeAmount: [1000000, [Validators.required, Validators.min(5000)]],
+    //   amountPercent: [
+    //     75,
+    //     [Validators.required, Validators.min(1), Validators.max(100)],
+    //   ],
+    //   fees: [0],
+    // });
 
     this.getCurrentorganization();
     this.generateCardItems();
@@ -66,6 +68,7 @@ export class OrganizationComponent {
           { id: 'djkkdsj', title: 'général', description: 'général' },
           ...this.listServices,
         ];
+        this.selectedService = this.listServices[0];
       },
       error: (err) => {},
     });
@@ -167,5 +170,8 @@ export class OrganizationComponent {
 
       this.itemsCardDate.push(daySelected);
     }
+  }
+  onTabChange(event: MatTabChangeEvent) {
+    this.selectedService = this.listServices[event.index];
   }
 }

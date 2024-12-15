@@ -10,10 +10,13 @@ export class ToggleSlideComponent {
   @Input() firstText: string = 'Off';
   @Input() secondText: string = 'On';
   @Input() uniqueId: string;
+  @Input() value: boolean = false;
   @Output() toggleChange = new EventEmitter<boolean>();
 
   onToggleChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
+    console.log(value);
+
     this.toggleChange.emit(value === 'First');
   }
 }

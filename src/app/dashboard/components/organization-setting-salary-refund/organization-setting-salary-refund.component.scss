@@ -39,6 +39,30 @@
   max-width: 400px;
   margin-bottom: 20px;
 }
+.activation-date {
+  margin-bottom: 20px;
+  display: flex;
+  gap:10;
+  align-items: center;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  label{
+    margin: 0 10px;
+  }
+}
+
+.date-input {
+  flex: 1;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
 
 .category-input {
   flex: 1;

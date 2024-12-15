@@ -51,6 +51,9 @@ import { SettingModule } from '../shared/components/settings/settings.module';
 import { RequestEventComponent } from './components/request-event/request-event.component';
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -107,6 +110,13 @@ import { RequestMonthlyRepayableAdvanceComponent } from './components/request-mo
     ToggleSlideModule,
     TableSalaryModule,
     SettingModule,
+    MatDialogModule, // Pour la gestion des dialogues (modales)
+    MatFormFieldModule, // Pour les champs de formulaire stylés
+    MatInputModule, // Pour les champs d'entrée
+    MatButtonModule, // Pour les boutons
+    MatDatepickerModule, // Pour le sélecteur de dates
+    MatNativeDateModule, // Fournit la gestion des dates natives
+    MatIconModule,
   ],
   providers: [NotificationsService],
 })

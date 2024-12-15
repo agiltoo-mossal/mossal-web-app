@@ -74,15 +74,26 @@ export class TableSalaryComponent {
   @Input() supportLabel: string = 'Support de paie'; // Label du bouton
 
   // Les filtres et données du tableau sont également des inputs
-  @Input() data: any[] = []; // Données dynamiques du tableau
+  //utiliser un set pour mettre à jour les données du tableau
+  @Input() set data(value: any[]) {
+    this.requests = value;
+    this.dataSource.data = value;
+    console.log({ value });
+  } // Données dynamiques du tableau
 
   // Filtres
-  filters = {
+  private _filters = {
     search: '',
     status: '',
     amountRange: [0, 10000],
     date: '',
   };
+  public get filters() {
+    return this._filters;
+  }
+  public set filters(value) {
+    this._filters = value;
+  }
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
     private validateDemandeGQL: ValidateDemandeGQL,
@@ -126,87 +137,89 @@ export class TableSalaryComponent {
       average: [''],
     });
   }
-  ngAfterViewInit(): void {
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-    this.searchForm
-      .get('search')
-      .valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        startWith('')
-      )
-      .subscribe((r) => {
-        this.paginator.firstPage();
-      });
+  // ngAfterViewInit(): void {
+  //   this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+  //   this.searchForm
+  //     .get('search')
+  //     .valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       startWith('')
+  //     )
+  //     .subscribe((r) => {
+  //       this.paginator.firstPage();
+  //     });
 
-    merge(
-      this.sort.sortChange,
-      this.paginator.page,
-      this.searchForm.get('search').valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
+  //   merge(
+  //     this.sort.sortChange,
+  //     this.paginator.page,
+  //     this.searchForm.get('search').valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
 
-        // startWith('')
-      ),
-      this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
-      this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
-    )
-      .pipe(
-        startWith({}),
-        switchMap(() => {
-          this.isLoadingResults = true;
+  //       // startWith('')
+  //     ),
+  //     this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
+  //     this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
+  //   )
+  //     .pipe(
+  //       startWith({}),
+  //       switchMap(() => {
+  //         this.isLoadingResults = true;
 
-          const queryFilter = {
-            limit: this.paginator.pageSize,
-            page: this.paginator.pageIndex + 1,
-            // sortField: this.sort.active,
-            // sortOrder: this.sort.direction,
-            search: this.searchForm?.value?.search,
-          };
-          const metricsInput = {};
+  //         const queryFilter = {
+  //           limit: this.paginator.pageSize,
+  //           page: this.paginator.pageIndex + 1,
+  //           // sortField: this.sort.active,
+  //           // sortOrder: this.sort.direction,
+  //           search: this.searchForm?.value?.search,
+  //         };
+  //         const metricsInput = {};
 
-          if (this.status) {
-            metricsInput['status'] = this.status;
-          }
-          if (this.searchForm.get('average').value) {
-            metricsInput['minimum'] = this.searchForm
-              .get('average')
-              .getRawValue().min;
-            metricsInput['maximum'] = this.searchForm
-              .get('average')
-              .getRawValue().max;
-          }
+  //         if (this.status) {
+  //           metricsInput['status'] = this.status;
+  //         }
+  //         if (this.searchForm.get('average').value) {
+  //           metricsInput['minimum'] = this.searchForm
+  //             .get('average')
+  //             .getRawValue().min;
+  //           metricsInput['maximum'] = this.searchForm
+  //             .get('average')
+  //             .getRawValue().max;
+  //         }
 
-          return this.paginatedRequestGQL.fetch(
-            { queryFilter, metricsInput },
-            { fetchPolicy: 'no-cache' }
-          );
-        }),
-        map((result) => {
-          // Flip flag to show that loading has finished.
-          this.isLoadingResults = false;
-          this.isRateLimitReached = result === null;
+  //         return this.paginatedRequestGQL.fetch(
+  //           { queryFilter, metricsInput },
+  //           { fetchPolicy: 'no-cache' }
+  //         );
+  //       }),
+  //       map((result) => {
+  //         // Flip flag to show that loading has finished.
+  //         this.isLoadingResults = false;
+  //         this.isRateLimitReached = result === null;
 
-          if (result === null) {
-            return [];
-          }
+  //         if (result === null) {
+  //           return [];
+  //         }
 
-          // Only refresh the result length if there is new data. In case of rate
-          // limit errors, we do not want to reset the paginator to zero, as that
-          // would prevent users from re-triggering requests
-          return result.data;
-        })
-      )
-      .subscribe((data: any) => {
-        this.requests = data.fetchPaginatedOrganizationDemandes.results;
-        this.dataSource.data = this.requests as any;
-        this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
-        this.resultsLength =
-          data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
-        // this.selectedAdmin = this.data?.[0];
-      });
-  }
+  //         // Only refresh the result length if there is new data. In case of rate
+  //         // limit errors, we do not want to reset the paginator to zero, as that
+  //         // would prevent users from re-triggering requests
+  //         return result.data;
+  //       })
+  //     )
+  //     .subscribe((data: any) => {
+  //       this.requests = data.fetchPaginatedOrganizationDemandes.results;
+  //       console.log(data);
+
+  //       this.dataSource.data = data;
+  //       this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
+  //       this.resultsLength =
+  //         data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
+  //       // this.selectedAdmin = this.data?.[0];
+  //     });
+  // }
   isMenuFilterOpen: boolean = false;
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;

@@ -10,7 +10,7 @@
 
 /* Titres principaux */
 .avance-evenement-container h2 {
-  font-size: 24px;
+  font-size: 26px; /* Augmenté pour un titre principal */
   color: #2d3559;
   margin-bottom: 20px;
   text-align: center;
@@ -28,7 +28,7 @@
   gap: 8px;
 }
 .section h3 {
-  font-size: 18px;
+  font-size: 20px; /* Augmenté pour les sous-titres */
   color: #2d3559;
   margin-bottom: 10px;
 }
@@ -43,7 +43,7 @@
 .category-input {
   flex: 1;
   padding: 10px;
-  font-size: 14px;
+  font-size: 16px; /* Augmenté pour les champs de saisie */
   border: 1px solid #ccc;
   border-right: none;
   border-radius: 4px 0 0 4px;
@@ -57,7 +57,7 @@
 }
 .category-btn {
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 14px; /* Augmenté pour les boutons */
   background-color: #061E5C;
   color: white;
   border: 1px solid #061E5C;
@@ -104,6 +104,7 @@
   padding: 8px;
   border: 1px solid #dcdcdc;
   border-radius: 4px;
+  font-size: 14px; /* Taille de police pour les champs de date */
 }
 
 .edit-btn,
@@ -111,7 +112,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px; /* Augmenté pour les icônes de boutons */
 }
 
 .edit-btn:hover {
@@ -130,7 +131,7 @@
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px; /* Augmenté pour le bouton */
   align-self: flex-end;
 }
 .container-button{
@@ -155,7 +156,7 @@
   background: #f4f6fa;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px; /* Augmenté pour les onglets */
   color: #2d3559;
 }
 
@@ -166,7 +167,7 @@
 
 /* Paramètres */
 .settings h3 {
-  font-size: 16px;
+  font-size: 18px; /* Augmenté pour les titres des paramètres */
   color: #2d3559;
   margin-bottom: 10px;
 }
@@ -183,10 +184,11 @@
   padding: 8px;
   border: 1px solid #dcdcdc;
   border-radius: 4px;
+  font-size: 16px; /* Augmenté pour les champs de saisie */
 }
 
 .input-group span {
-  font-size: 14px;
+  font-size: 16px; /* Augmenté pour les labels */
   color: #2d3559;
 }
 
@@ -198,7 +200,7 @@
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 16px; /* Augmenté pour le bouton */
   cursor: pointer;
 }
 

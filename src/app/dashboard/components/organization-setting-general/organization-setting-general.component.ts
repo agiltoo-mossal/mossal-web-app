@@ -35,7 +35,6 @@ export class OrganizationSettingGeneralComponent {
   organization: Organization;
 
   constructor(
-    private fb: FormBuilder,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
@@ -138,7 +137,7 @@ export class OrganizationSettingGeneralComponent {
             .organization as Organization;
           console.log({ org: this.organization });
           this.maxPercentage = this.organization.amountPercent;
-          this.form.patchValue(this.organization);
+          // this.form.patchValue(this.organization);
           this.itemsCardDate.forEach((element) => {
             element.active = false;
             if (element.day === this.organization.demandeDeadlineDay) {

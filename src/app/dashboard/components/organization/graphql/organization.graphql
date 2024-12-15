@@ -181,8 +181,9 @@ mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
   }
 }
 
-query FetchEvents($queryConfig: QueryDataConfigInput) {
-  fetchEvents(queryConfig: $queryConfig) {
+query FetchEvents($queryConfig: QueryDataConfigInput,$organizationServiceId: ID!
+) {
+  fetchEvents(queryConfig: $queryConfig,organizationServiceId: $organizationServiceId) {
     pagination {
       totalItems
       pageCount

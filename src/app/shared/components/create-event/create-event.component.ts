@@ -15,7 +15,7 @@ export class CreateEventComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.eventForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
     });

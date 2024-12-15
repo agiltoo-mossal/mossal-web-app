@@ -5,8 +5,8 @@
     <!-- Champ Nom de l'événement -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Nom de l'événement</mat-label>
-      <input matInput formControlName="name" placeholder="Ex : Lancement produit" required />
-      <mat-error *ngIf="eventForm.get('name')?.invalid && eventForm.get('name')?.touched">
+      <input matInput formControlName="title" placeholder="Ex : Lancement produit" required />
+      <mat-error *ngIf="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
         Veuillez entrer un nom valide (min. 3 caractères).
       </mat-error>
     </mat-form-field>

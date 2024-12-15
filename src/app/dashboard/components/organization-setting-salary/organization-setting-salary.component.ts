@@ -26,11 +26,14 @@ export class OrganizationSettingSalaryComponent {
 
   newCategory: string = '';
   isActive: boolean = false;
-  amountType: string = '';
+  amountUnit: string = '';
   reimbursement: number = 0;
   organization: Organization;
   autoValidate: boolean = false;
   organisationServiceId: string;
+  startDate: Date;
+  endDate: Date;
+  activated: boolean = true;
   @Input() service: Partial<Service>;
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -76,12 +79,12 @@ export class OrganizationSettingSalaryComponent {
   }
   handleServiceActivationChange(isActive: boolean) {
     console.log('Service Activation:', isActive);
-    this.isActive = isActive;
+    this.isActive = this.activated;
   }
 
   handleAmountTypeChange(amountType: string) {
     console.log('Amount Type:', amountType);
-    this.amountType = amountType;
+    this.amountUnit = amountType;
   }
 
   handleReimbursementChange(reimbursement: number) {

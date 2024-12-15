@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FetchOrganisationServiceGQL } from 'src/graphql/generated';
 
 @Component({
   selector: 'app-request-monthly-repayable-advance',
@@ -7,46 +8,19 @@ import { Component } from '@angular/core';
 })
 export class RequestMonthlyRepayableAdvanceComponent {
   title: string = "Dépannage d'urgence"; // Titre dynamique
-  data = [
-    {
-      id: 215,
-      collaborateur: 'Laurent Diop',
-      solde: '475 000 XOF',
-      date: '06-06-2022',
-      montant: '100 000 XOF',
-      status: 'En attente',
-    },
-    {
-      id: 215,
-      collaborateur: 'Laurent Diop',
-      solde: '475 000 XOF',
-      date: '06-06-2022',
-      montant: '100 000 XOF',
-      status: 'Validé',
-    },
-    {
-      id: 215,
-      collaborateur: 'Laurent Diop',
-      solde: '475 000 XOF',
-      date: '06-06-2022',
-      montant: '100 000 XOF',
-      status: 'Rejeté',
-    },
-    {
-      id: 215,
-      collaborateur: 'Laurent Diop',
-      solde: '475 000 XOF',
-      date: '06-06-2022',
-      montant: '100 000 XOF',
-      status: 'Remboursé',
-    },
-    {
-      id: 215,
-      collaborateur: 'Laurent Diop',
-      solde: '475 000 XOF',
-      date: '06-06-2022',
-      montant: '100 000 XOF',
-      status: 'En attente',
-    },
-  ];
+  data = [];
+  constructor(private listRequest: FetchOrganisationServiceGQL) {}
+
+  ngOnInit() {
+    this.listRequest
+      .fetch({
+        organisationServiceId: '675b331dd059abbe573a5c1c',
+      })
+      .subscribe({
+        next: (resp) => {
+          console.log('list', resp.data.fetchOrganisationService);
+          this.data = resp.data.fetchOrganisationService.demandes;
+        },
+      });
+  }
 }

@@ -8,59 +8,69 @@
       (toggleChange)="onServiceActivationChange($event)"
     ></app-toggle-slide>
   </div>
-</div>
 
-<div class="percentage">
-  <h3>Pourcentage ou montant fixe</h3>
-  <label>
-    Pourcentage
-    <input
-      type="radio"
-      name="amountType"
-      value="percentage"
-      checked
-      class="custom-radio"
-      (change)="onAmountTypeChange($event)"
-    />
-  </label>
-</div>
-<div class="percentage">
-  <label>
-    Montant fixe
-    <input
-      type="radio"
-      name="amountType2"
-      value="fixed"
-      class="custom-radio"
-      (change)="onAmountTypeChange($event)"
-    />
-  </label>
-</div>
+  <div class="percentage">
+    <h3>Pourcentage ou montant fixe</h3>
+    <label>
+      Pourcentage
+      <input
+        type="radio"
+        name="amountType"
+        value="percentage"
+        class="custom-radio"
+        (change)="onAmountTypeChange($event)"
+      />
+        <!-- [(ngModel)]="data.amountType" -->
+    </label>
+    <label>
+      Montant fixe
+      <input
+        type="radio"
+        name="amountType"
+        value="fixed"
+        class="custom-radio"
+        (change)="onAmountTypeChange($event)"
+      />
+        <!-- [(ngModel)]="data.amountUnit" -->
+    </label>
+  </div>
 
-<div class="reimbursement">
-  <h3>Montant et durée du remboursement</h3>
-  <div class="plafond-content">
-    <label for="amount-input">Montant</label>
-    <div class="percentage-input-group">
-      <input type="number" id="amount-input" placeholder="20000" min="0" />
-      <span class="currency-symbol">€</span>
+  <div class="reimbursement">
+    <h3>Montant et durée du remboursement</h3>
+    <div class="plafond-content">
+      <label for="amount-input">Montant</label>
+      <div class="percentage-input-group">
+        <input
+          type="number"
+          id="amount-input"
+          placeholder="20000"
+          min="0"
+        />
+          <!-- [(ngModel)]="data.amount" -->
+        <span class="currency-symbol">€</span>
+      </div>
+    </div>
+    <div class="plafond-content">
+      <label for="duration-input">Durée du remboursement</label>
+      <div class="percentage-input-group">
+        <input
+          type="text"
+          id="duration-input"
+          placeholder="12 mois"
+        />
+          <!-- [(ngModel)]="data.refundDuration" -->
+      </div>
     </div>
   </div>
-  <div class="plafond-content">
-    <label for="duration-input">Durée du remboursement</label>
-    <div class="percentage-input-group">
-      <input type="text" id="duration-input" placeholder="12 mois" />
-    </div>
+
+  <div class="container-setting">
+    <h3>Validation automatique</h3>
+      <!-- [(ngModel)]="data.autoValidation" -->
+    <app-toggle-slide
+      [firstText]="'ON'"
+      [secondText]="'OFF'"
+      [uniqueId]="'autoValidation'"
+      (toggleChange)="onValidationChange($event)"
+    ></app-toggle-slide>
   </div>
-</div>
-
-<div class="container-setting">
-
-  <h3>Validation automatique</h3>
-  <app-toggle-slide
-    [firstText]="'ON'"
-    [secondText]="'OFF'"
-    [uniqueId]="'autoValidation'"
-    (toggleChange)="onValidationChange($event)"
-  ></app-toggle-slide>
 </div>

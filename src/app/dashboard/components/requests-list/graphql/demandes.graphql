@@ -82,10 +82,60 @@ mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
 }
 
 query FetchCountStatus {
-  fectchCountStatus{
+  fectchCountStatus {
     pending
     validated
     rejected
     payed
+  }
+}
+query FetchOrganisationService($organisationServiceId: ID!) {
+  fetchOrganisationService(organisationServiceId: $organisationServiceId) {
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    demandes {
+      createdAt
+      updatedAt
+      id
+      amount
+      number
+      fees
+      status
+      collaborator {
+        createdAt
+        updatedAt
+        id
+        email
+        firstName
+        lastName
+        phoneNumber
+        address
+        position
+        uniqueIdentifier
+        salary
+        balance
+        wizallAccountNumber
+        bankAccountNumber
+        totalDemandeAmount
+        role
+        blocked
+        birthDate
+        favoriteWallet
+        enableEmailNotification
+        status
+        authorizedAdvance
+      }
+      rejectedReason
+      statusText
+    }
   }
 }

@@ -9,7 +9,9 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        [uniqueId]="'serviceActivation'"
+        (value)="activated ?? false"
+        [uniqueId]="'serviceActivationEvent'"
+        (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
 
@@ -59,12 +61,16 @@
         </button>
       </div>
 
-      <mat-tab-group animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+      <mat-tab-group
+        animationDuration="0ms"
+        (selectedTabChange)="onTabChange($event)"
+      >
         <mat-tab
           *ngFor="let categorie of categories"
           [label]="categorie?.title"
         >
           <app-setting
+            [data]="info"
             [categorie]="categorie"
             (serviceActivationChange)="handleServiceActivationChange($event)"
             (amountTypeChange)="handleAmountTypeChange($event)"
@@ -73,7 +79,6 @@
           ></app-setting>
         </mat-tab>
       </mat-tab-group>
-     
     </div>
     <button (click)="saveSettings()" class="validate-btn">Valider</button>
   </div>
