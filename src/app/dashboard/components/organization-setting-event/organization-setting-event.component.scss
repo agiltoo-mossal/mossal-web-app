@@ -53,14 +53,14 @@
 }
 
 .category-input:focus {
-  border-color: #061E5C;
+  border-color: #061e5c;
 }
 .category-btn {
   padding: 10px 16px;
   font-size: 14px; /* Augmenté pour les boutons */
-  background-color: #061E5C;
+  background-color: #061e5c;
   color: white;
-  border: 1px solid #061E5C;
+  border: 1px solid #061e5c;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.2s;
@@ -116,7 +116,7 @@
 }
 
 .edit-btn:hover {
-  color: #061E5C;
+  color: #061e5c;
 }
 
 .delete-btn:hover {
@@ -125,7 +125,7 @@
 
 /* Bouton Ajouter un événement */
 .add-event-btn {
-  background-color: #061E5C;
+  background-color: #061e5c;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -134,7 +134,7 @@
   font-size: 16px; /* Augmenté pour le bouton */
   align-self: flex-end;
 }
-.container-button{
+.container-button {
   display: flex;
   justify-content: flex-end;
 }
@@ -159,9 +159,27 @@
   font-size: 16px; /* Augmenté pour les onglets */
   color: #2d3559;
 }
+.toggle-side {
+  padding: 6px;
+}
+.toggle-side.grise {
+  position: relative;
+}
+.toggle-side.grise::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.815);
+}
 
 .tab-item.active {
-  background: #061E5C;
+  background: #061e5c;
   color: white;
 }
 
@@ -195,7 +213,7 @@
 /* Bouton Valider */
 .validate-btn {
   display: block;
-  background-color: #061E5C;
+  background-color: #061e5c;
   color: white;
   border: none;
   padding: 10px 20px;

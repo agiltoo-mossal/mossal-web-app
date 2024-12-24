@@ -12,85 +12,88 @@
         [uniqueId]="'serviceActivation'"
       ></app-toggle-slide>
     </div>
-
-    <!-- Liste des événements prévus -->
-       <div class="activation-date">
-      <label style="margin-bottom: 19px; padding: 0 12px"
-        >Date d'activation</label
-      >
-      <div class="date-inputs">
-          <label style="margin-bottom: 19px; padding: 0 12px" for="">Date de début</label>
-        <div class="date-input">
-          <mat-form-field appearance="outline" class="form-field">
-            <input
-              matInput
-              [matDatepicker]="startPicker"
-              [(ngModel)]="startDate"
-              placeholder="Date de début"
-              required
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="startPicker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
-            <mat-error *ngIf="startDate === null">
-              La date de début est requise.
-            </mat-error>
-          </mat-form-field>
-        </div>
-          <label style="margin-bottom: 19px; padding: 0 12px" for="">Date de fin</label>
-        <div class="date-input">
-          <mat-form-field appearance="outline" class="form-field">
-            <input
-              matInput
-              [matDatepicker]="endPicker"
-              [(ngModel)]="endDate"
-              placeholder="Date de fin"
-              required
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="endPicker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
-            <mat-error *ngIf="endDate === null">
-              La date de fin est requise.
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section des paramètres -->
-    <div class="section">
-      <div class="category-input-group">
-        <input
-          type="text"
-          class="category-input"
-          [(ngModel)]="newCategory"
-          placeholder="Nom de la catégorie"
-        />
-        <button class="category-btn" (click)="addCategory()">
-          Ajouter une catégorie
-        </button>
-      </div>
-
-      <mat-tab-group animationDuration="0ms">
-        <mat-tab
-          *ngFor="let categorie of categories"
-          [label]="categorie?.title"
+    <div class="toggle-side" [ngClass]="{ grise: !activated }">
+      <div class="activation-date">
+        <label style="margin-bottom: 19px; padding: 0 12px"
+          >Date d'activation</label
         >
-          <app-setting
-            [categorie]="categorie"
-            (serviceActivationChange)="handleServiceActivationChange($event)"
-            (amountTypeChange)="handleAmountTypeChange($event)"
-            (reimbursementChange)="handleReimbursementChange($event)"
-            (validationChange)="handleValidationChange($event)"
-          ></app-setting>
-        </mat-tab>
-      </mat-tab-group>
-      <!-- <div class="settings">
+        <div class="date-inputs">
+          <label style="margin-bottom: 19px; padding: 0 12px" for=""
+            >Date de début</label
+          >
+          <div class="date-input">
+            <mat-form-field appearance="outline" class="form-field">
+              <input
+                matInput
+                [matDatepicker]="startPicker"
+                [(ngModel)]="startDate"
+                placeholder="Date de début"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-error *ngIf="startDate === null">
+                La date de début est requise.
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <label style="margin-bottom: 19px; padding: 0 12px" for=""
+            >Date de fin</label
+          >
+          <div class="date-input">
+            <mat-form-field appearance="outline" class="form-field">
+              <input
+                matInput
+                [matDatepicker]="endPicker"
+                [(ngModel)]="endDate"
+                placeholder="Date de fin"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="endPicker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+              <mat-error *ngIf="endDate === null">
+                La date de fin est requise.
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section des paramètres -->
+      <div class="section">
+        <div class="category-input-group">
+          <input
+            type="text"
+            class="category-input"
+            [(ngModel)]="newCategory"
+            placeholder="Nom de la catégorie"
+          />
+          <button class="category-btn" (click)="addCategory()">
+            Ajouter une catégorie
+          </button>
+        </div>
+
+        <mat-tab-group animationDuration="0ms">
+          <mat-tab
+            *ngFor="let categorie of categories"
+            [label]="categorie?.title"
+          >
+            <app-setting
+              [categorie]="categorie"
+              (serviceActivationChange)="handleServiceActivationChange($event)"
+              (amountTypeChange)="handleAmountTypeChange($event)"
+              (reimbursementChange)="handleReimbursementChange($event)"
+              (validationChange)="handleValidationChange($event)"
+            ></app-setting>
+          </mat-tab>
+        </mat-tab-group>
+        <!-- <div class="settings">
         <h3>Activation du service</h3>
         <app-toggle-slide
           [firstText]="'On'"
@@ -123,7 +126,9 @@
           [uniqueId]="'autoValidation'"
         ></app-toggle-slide>
       </div> -->
+      </div>
+      <button (click)="saveSettings()" class="validate-btn">Valider</button>
     </div>
-    <button (click)="saveSettings()" class="validate-btn">Valider</button>
+    <!-- Liste des événements prévus -->
   </div>
 </div>

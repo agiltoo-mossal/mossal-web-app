@@ -9,77 +9,78 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        (value)="activated ?? false"
+        (value)="(activated ?? false)"
         [uniqueId]="'serviceActivationEvent'"
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
-
-    <!-- Liste des événements prévus -->
-    <div class="section">
-      <h3>Liste des événements prévus</h3>
-      <ul class="event-list">
-        <li *ngFor="let event of events; let i = index" class="event-item">
-          <div class="event-toggle">
-            <app-toggle-slide
-              [firstText]="'Actif'"
-              [secondText]="'Inactif'"
-              [uniqueId]="'event-' + i"
-            ></app-toggle-slide>
-          </div>
-          <div class="event-details">
-            <span>{{ event.title }}</span>
-            <div class="event-details-date">
-              <input type="date" [value]="event.startDate" />
-              <input type="date" [value]="event.endDate" />
+    <div class="toggle-side" [ngClass]="{ grise: !activated }">
+      <!-- Liste des événements prévus -->
+      <div class="section">
+        <h3>Liste des événements prévus</h3>
+        <ul class="event-list">
+          <li *ngFor="let event of events; let i = index" class="event-item">
+            <div class="event-toggle">
+              <app-toggle-slide
+                [firstText]="'Actif'"
+                [secondText]="'Inactif'"
+                [uniqueId]="'event-' + i"
+              ></app-toggle-slide>
             </div>
-            <div>
-              <button class="edit-btn">✏️</button>
-              <button class="delete-btn">🗑️</button>
+            <div class="event-details">
+              <span>{{ event.title }}</span>
+              <div class="event-details-date">
+                <input type="date" [value]="event.startDate" />
+                <input type="date" [value]="event.endDate" />
+              </div>
+              <div>
+                <button class="edit-btn">✏️</button>
+                <button class="delete-btn">🗑️</button>
+              </div>
             </div>
-          </div>
-        </li>
-      </ul>
-      <div class="container-button">
-        <button class="add-event-btn" (click)="createEvent()">
-          Ajouter un événement
-        </button>
-      </div>
-    </div>
-
-    <!-- Section des paramètres -->
-    <div class="section">
-      <div class="category-input-group">
-        <input
-          type="text"
-          class="category-input"
-          [(ngModel)]="newCategory"
-          placeholder="Nom de la catégorie"
-        />
-        <button class="category-btn" (click)="addCategory()">
-          Ajouter une catégorie
-        </button>
+          </li>
+        </ul>
+        <div class="container-button">
+          <button class="add-event-btn" (click)="createEvent()">
+            Ajouter un événement
+          </button>
+        </div>
       </div>
 
-      <mat-tab-group
-        animationDuration="0ms"
-        (selectedTabChange)="onTabChange($event)"
-      >
-        <mat-tab
-          *ngFor="let categorie of categories"
-          [label]="categorie?.title"
+      <!-- Section des paramètres -->
+      <div class="section">
+        <div class="category-input-group">
+          <input
+            type="text"
+            class="category-input"
+            [(ngModel)]="newCategory"
+            placeholder="Nom de la catégorie"
+          />
+          <button class="category-btn" (click)="addCategory()">
+            Ajouter une catégorie
+          </button>
+        </div>
+
+        <mat-tab-group
+          animationDuration="0ms"
+          (selectedTabChange)="onTabChange($event)"
         >
-          <app-setting
-            [data]="info"
-            [categorie]="categorie"
-            (serviceActivationChange)="handleServiceActivationChange($event)"
-            (amountTypeChange)="handleAmountTypeChange($event)"
-            (reimbursementChange)="handleReimbursementChange($event)"
-            (validationChange)="handleValidationChange($event)"
-          ></app-setting>
-        </mat-tab>
-      </mat-tab-group>
+          <mat-tab
+            *ngFor="let categorie of categories"
+            [label]="categorie?.title"
+          >
+            <app-setting
+              [data]="info"
+              [categorie]="categorie"
+              (serviceActivationChange)="handleServiceActivationChange($event)"
+              (amountTypeChange)="handleAmountTypeChange($event)"
+              (reimbursementChange)="handleReimbursementChange($event)"
+              (validationChange)="handleValidationChange($event)"
+            ></app-setting>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <button (click)="saveSettings()" class="validate-btn">Valider</button>
     </div>
-    <button (click)="saveSettings()" class="validate-btn">Valider</button>
   </div>
 </div>

@@ -32,6 +32,7 @@ export class OrganizationSettingSalaryRefundComponent {
   autoValidate: boolean = false;
   startDate: Date;
   endDate: Date;
+  activated: boolean = true;
   @Input() service: Partial<Service>;
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -76,6 +77,7 @@ export class OrganizationSettingSalaryRefundComponent {
   handleServiceActivationChange(isActive: boolean) {
     console.log('Service Activation:', isActive);
     this.isActive = isActive;
+    this.activated = isActive;
   }
 
   handleAmountTypeChange(amountType: string) {

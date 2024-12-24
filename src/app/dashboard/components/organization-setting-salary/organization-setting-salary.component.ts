@@ -79,7 +79,8 @@ export class OrganizationSettingSalaryComponent {
   }
   handleServiceActivationChange(isActive: boolean) {
     console.log('Service Activation:', isActive);
-    this.isActive = this.activated;
+    this.isActive = isActive;
+    this.activated = isActive;
   }
 
   handleAmountTypeChange(amountType: string) {

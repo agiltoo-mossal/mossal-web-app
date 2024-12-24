@@ -15,7 +15,7 @@ export class ToggleSlideComponent {
 
   onToggleChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
-    console.log(value);
+    console.log(value, 'value');
 
     this.toggleChange.emit(value === 'First');
   }

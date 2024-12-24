@@ -7,6 +7,40 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+.toggle-side {
+  padding: 6px;
+}
+.toggle-side.grise{
+  position: relative;
+}
+.toggle-side.grise::after{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.815);
+
+}
+/* Sélection des catégories */
+.category-selection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.category-selection select {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}/* 
+
 
 /* Titres principaux */
 .avance-evenement-container h2 {

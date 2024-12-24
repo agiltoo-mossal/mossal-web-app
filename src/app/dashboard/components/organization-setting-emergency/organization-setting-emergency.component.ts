@@ -209,6 +209,8 @@ export class OrganizationSettingEmergencyComponent {
     this.emergencyForm.get('autoValidate').setValue(event);
   }
   onServiceActivationChange(isActive: boolean) {
+    console.log('isActive', isActive);
+
     this.emergencyForm.get('activated').setValue(isActive);
   }
 }

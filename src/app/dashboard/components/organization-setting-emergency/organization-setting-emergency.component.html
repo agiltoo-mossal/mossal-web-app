@@ -13,101 +13,102 @@
           (toggleChange)="onServiceActivationChange($event)"
         ></app-toggle-slide>
       </div>
-
-      <div class="activation-date">
-        <label for="start-date">Date d'activation Début</label>
-        <div class="date-input">
-          <mat-form-field appearance="outline" class="form-field">
-            <input
-              matInput
-              [matDatepicker]="startPicker"
-              formControlName="activatedAt"
-              placeholder="Choisir une date"
-              required
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="startPicker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
-            <mat-error
-              *ngIf="
-                emergencyForm.get('activedAt')?.invalid &&
-                emergencyForm.get('activatedAt')?.touched
-              "
-            >
-              La date de début est requise.
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="category-selection">
-        <select formControlName="selectedCategory">
-          <option value="" disabled selected>Toutes les catégories</option>
-          <option *ngFor="let categorie of categories" [value]="categorie.id">
-            {{ categorie.title }}
-          </option>
-        </select>
-        <button class="add-category-button" type="button">
-          Ajouter une catégorie
-        </button>
-      </div>
-
-
-      <div class="percentage">
-        <h3>Pourcentage ou montant fixe</h3>
-        <label>
-          Pourcentage
-          <input
-            type="radio"
-            name="amountUnit"
-            class="custom-radio"
-            value="Percentage"
-            formControlName="amountUnit"
-          />
-        </label>
-        <label>
-          Montant fixe
-          <input
-            type="radio"
-            name="amountUnit"
-            value="fixed"
-            class="custom-radio"
-            value="Fixed"
-            formControlName="amountUnit"
-          />
-        </label>
-      </div>
-
-      <div class="reimbursement">
-        <h3>Montant et durée du remboursement</h3>
-        <div class="plafond-content">
-          <label for="amount-input">Pourcentage</label>
-          <div class="percentage-input-group">
-            <input
-              type="number"
-              id="amount-input"
-              placeholder="20"
-              min="0"
-              type="number"
-              formControlName="reimbursementPercentage"
-            />
-            <span class="currency-symbol">%</span>
+      <div
+        class="toggle-side"
+        [ngClass]="{ grise: !emergencyForm.get('activated').value }"
+      >
+        <div class="activation-date">
+          <label for="start-date">Date limite de préparation de la paie</label>
+          <div class="date-input">
+            <mat-form-field appearance="outline" class="form-field">
+              <input
+                matInput
+                [matDatepicker]="startPicker"
+                formControlName="activatedAt"
+                placeholder="Choisir une date"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-error
+                *ngIf="
+                  emergencyForm.get('activedAt')?.invalid &&
+                  emergencyForm.get('activatedAt')?.touched
+                "
+              >
+                La date de début est requise.
+              </mat-error>
+            </mat-form-field>
           </div>
         </div>
-      </div>
-      <div class="auto-validation">
-        <h4>Validation automatique</h4>
-        <app-toggle-slide
-          [firstText]="'Actif'"
-          [secondText]="'Inactif'"
-          [uniqueId]="'autoValidation'"
-          (toggleChange)="onToggle($event)"
-        ></app-toggle-slide>
-      </div>
 
-      <button class="validate-button" type="submit">Valider</button>
+        <div class="category-selection">
+          <select formControlName="selectedCategory">
+            <option value="" disabled selected>Toutes les catégories</option>
+            <option *ngFor="let categorie of categories" [value]="categorie.id">
+              {{ categorie.title }}
+            </option>
+          </select>
+          <button class="add-category-button" type="button">
+            Ajouter une catégorie
+          </button>
+        </div>
+        <div class="percentage">
+          <h3>Pourcentage ou montant fixe</h3>
+          <label>
+            Pourcentage
+            <input
+              type="radio"
+              name="amountUnit"
+              class="custom-radio"
+              value="Percentage"
+              formControlName="amountUnit"
+            />
+          </label>
+          <label>
+            Montant fixe
+            <input
+              type="radio"
+              name="amountUnit"
+              value="fixed"
+              class="custom-radio"
+              value="Fixed"
+              formControlName="amountUnit"
+            />
+          </label>
+        </div>
+        <div class="reimbursement">
+          <h3>Montant et durée du remboursement</h3>
+          <div class="plafond-content">
+            <label for="amount-input">Pourcentage</label>
+            <div class="percentage-input-group">
+              <input
+                type="number"
+                id="amount-input"
+                placeholder="20"
+                min="0"
+                type="number"
+                formControlName="reimbursementPercentage"
+              />
+              <span class="currency-symbol">%</span>
+            </div>
+          </div>
+        </div>
+        <div class="auto-validation">
+          <h4>Validation automatique</h4>
+          <app-toggle-slide
+            [firstText]="'Actif'"
+            [secondText]="'Inactif'"
+            [uniqueId]="'autoValidation'"
+            (toggleChange)="onToggle($event)"
+          ></app-toggle-slide>
+        </div>
+
+        <button class="validate-button" type="submit">Valider</button>
+      </div>
     </div>
   </form>
 </div>
