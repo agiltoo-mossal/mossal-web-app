@@ -204,3 +204,33 @@ query FetchEvents($queryConfig: QueryDataConfigInput,$organizationServiceId: ID!
     }
   }
 }
+
+mutation DesactivateOrganisationService(
+$organisationServiceId: ID!
+) {
+  deactivateOrganisationService(
+    organisationServiceId: $organisationServiceId
+  )
+}
+mutation ActivateOrganisationService($organisationServiceId: ID!) {
+  activateOrganisationService(organisationServiceId: $organisationServiceId)
+}
+
+mutation DeleteEvent($eventId: ID!) {
+  deleteEvent(eventId: $eventId)
+}
+mutation DesactiveEvent($eventId: ID!) {
+  deactivateEvent(eventId: $eventId)
+}
+mutation ActivateEvent($eventId: ID!) {
+  activateEvent(eventId: $eventId)
+}
+mutation UpdateEvent(
+  $eventInput: EventUpdateInput!
+  $eventId: ID!
+) {
+  updateEvent(
+    eventInput: $eventInput
+    eventId: $eventId
+  )
+}

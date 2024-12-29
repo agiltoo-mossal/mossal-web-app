@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
+  ActivateOrganisationServiceGQL,
+  DesactivateOrganisationServiceGQL,
   FetchCurrentAdminGQL,
   FetchServicesGQL,
   Organization,
@@ -45,7 +47,9 @@ export class OrganizationComponent {
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
-    private listService: FetchServicesGQL
+    private listService: FetchServicesGQL,
+    private activeOrganizationService: ActivateOrganisationServiceGQL,
+    private desactiveOrganizationService: DesactivateOrganisationServiceGQL
   ) {
     // this.form = this.fb.group({
     //   name: [{ value: '', disabled: true }, Validators.required],
@@ -94,6 +98,46 @@ export class OrganizationComponent {
           });
         }
       });
+  }
+  onServiceActivationChange(data: {
+    isActive: boolean;
+    organisationServiceId: string;
+  }) {
+    if (data.isActive) {
+      this.activeOrganizationService
+        .mutate({ organisationServiceId: data.organisationServiceId })
+        .subscribe({
+          next: (result) => {
+            if (result.data.activateOrganisationService) {
+              this.snackBarService.showSuccessSnackBar(
+                'Service activé avec succès'
+              );
+            } else {
+              this.snackBarService.showErrorSnackBar();
+            }
+          },
+          error: (error) => {
+            this.snackBarService.showErrorSnackBar();
+          },
+        });
+    } else {
+      this.desactiveOrganizationService
+        .mutate({ organisationServiceId: data.organisationServiceId })
+        .subscribe({
+          next: (result) => {
+            if (result.data.deactivateOrganisationService) {
+              this.snackBarService.showSuccessSnackBar(
+                'Service désactivé avec succès'
+              );
+            } else {
+              this.snackBarService.showErrorSnackBar();
+            }
+          },
+          error: (error) => {
+            this.snackBarService.showErrorSnackBar();
+          },
+        });
+    }
   }
 
   updateOrganization() {

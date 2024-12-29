@@ -1,13 +1,16 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, switchMap } from 'rxjs';
 import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
 import {
+  ActivateEventGQL,
   AmountUnit,
   CategorySociopro,
   CreateCategorySocioproServiceGQL,
   CreateEventGQL,
   CreateOrganistionServiceGQL,
+  DeleteEventGQL,
+  DesactiveEventGQL,
   DurationUnit,
   EventInput,
   FetchCategorySocioprosGQL,
@@ -18,6 +21,7 @@ import {
   OrganisationService,
   Organization,
   Service,
+  UpdateEventGQL,
 } from 'src/graphql/generated';
 import {
   EAmountUnit,
@@ -25,6 +29,7 @@ import {
 } from '../organization-setting-emergency/organization-setting-emergency.component';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-organization-setting-event',
@@ -34,6 +39,13 @@ import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 export class OrganizationSettingEventComponent {
   // Données pour les événements
   @Input() service: Partial<Service>;
+  @Output() activeService: EventEmitter<{
+    isActive: boolean;
+    organisationServiceId: string;
+  }> = new EventEmitter<{
+    isActive: boolean;
+    organisationServiceId: string;
+  }>();
 
   constructor(
     private dialog: MatDialog,
@@ -44,6 +56,10 @@ export class OrganizationSettingEventComponent {
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
     private snackBarService: SnackBarService,
     private defineService: CreateOrganistionServiceGQL,
+    private deleteEventGQL: DeleteEventGQL,
+    private activateEvent: ActivateEventGQL,
+    private desactiveEvent: DesactiveEventGQL,
+    private updateEventGQL: UpdateEventGQL,
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
   ) {}
@@ -125,6 +141,7 @@ export class OrganizationSettingEventComponent {
               startDate: new Date(event.startDate).toISOString().split('T')[0],
               endDate: new Date(event.endDate).toISOString().split('T')[0],
               // isActive: event.isActive,
+              id: event.id,
             };
           });
         },
@@ -168,24 +185,100 @@ export class OrganizationSettingEventComponent {
   /**
    * Ajoute un nouvel événement à la liste
    */
-  addEvent(): void {
-    const newEvent = {
-      name: `Événement ${this.events.length + 1}`,
-      startDate: '',
-      endDate: '',
-      isActive: false,
-    };
-    this.events.push(newEvent);
-  }
 
   /**
    * Supprime un événement de la liste
    * @param index Index de l'événement à supprimer
    */
-  deleteEvent(index: number): void {
-    if (confirm('Voulez-vous vraiment supprimer cet événement ?')) {
-      this.events.splice(index, 1);
-    }
+  deleteEvent(event: {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+  }): void {
+    Swal.fire({
+      title:
+        "Êtes-vous sûr de vouloir supprimer l'événement " + event.title + ' ?',
+      showCancelButton: true,
+      confirmButtonText: `Supprimer`,
+      cancelButtonText: `Annuler`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteEventGQL.mutate({ eventId: event.id }).subscribe({
+          next: (response) => {
+            this.snackBarService.showSnackBar('Événement supprimé avec succès');
+            const eventId = event.id;
+            this.events = this.events.filter(
+              (event, i) => event.id !== eventId
+            );
+          },
+          error: (err) => {
+            this.snackBarService.showSnackBar('Une erreur est survenue');
+            console.log(err);
+          },
+        });
+      }
+    });
+  }
+  updateEvent(event: {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+  }): void {
+    const dialogRef = this.dialog.open(CreateEventComponent, {
+      width: '700px',
+      data: {
+        title: event.title,
+        startDate: new Date(event.startDate),
+        endDate: new Date(event.endDate),
+      }, // Si des données initiales sont nécessaires
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const formattedStartDate = new Date(result.startDate)
+          .toISOString()
+          .split('T')[0];
+        const formattedEndDate = new Date(result.endDate)
+          .toISOString()
+          .split('T')[0];
+
+        console.log(result);
+        this.updateEventGQL
+          .mutate({
+            eventInput: {
+              title: result?.title,
+              startDate: new Date(result.startDate),
+              endDate: new Date(result.endDate),
+            },
+            eventId: event.id,
+          })
+          .subscribe({
+            next: (response) => {
+              this.snackBarService.showSnackBar(
+                'Événement modifié avec succès'
+              );
+              const eventId = event.id;
+              this.events = this.events.map((event) => {
+                if (event.id === eventId) {
+                  return {
+                    ...event,
+                    title: result.title,
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate,
+                  };
+                }
+                return event;
+              });
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar('Une erreur est survenue');
+              console.log(err);
+            },
+          });
+      }
+    });
   }
 
   /**
@@ -236,6 +329,11 @@ export class OrganizationSettingEventComponent {
   }
   onServiceActivationChange($event) {
     this.activated = $event;
+
+    this.activeService.emit({
+      isActive: this.activated,
+      organisationServiceId: this.organisationServiceId,
+    });
   }
   createEvent() {
     if (!this.organisationServiceId) {
@@ -245,8 +343,7 @@ export class OrganizationSettingEventComponent {
       return;
     }
     const dialogRef = this.dialog.open(CreateEventComponent, {
-      width: '800px',
-      data: {}, // Si des données initiales sont nécessaires
+      width: '700px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {

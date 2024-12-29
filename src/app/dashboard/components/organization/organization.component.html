@@ -8,10 +8,13 @@
             *ngSwitchCase="'général'"
           ></app-organization-setting-general>
           <app-organization-setting-emergency
+            (serviceActivationChange)="onServiceActivationChange($event)"
             [service]="service"
             *ngSwitchCase="'Dépannage d’urgence'"
           ></app-organization-setting-emergency>
           <app-organization-setting-event
+            (activeService)="onServiceActivationChange($event)"
+
             [service]="service"
             *ngSwitchCase="'Avance sur évenement'"
           ></app-organization-setting-event>

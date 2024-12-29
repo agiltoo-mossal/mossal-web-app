@@ -77,14 +77,27 @@
 }
 
 .event-item {
-  display: flex;
-  align-items: center;
+  display: grid;
   gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
   background: #ffffff;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
+}
+.event-title{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+
+}
+.event-item:nth-child(odd) {
+    background-color: #F1F7FF;
+}
+.event-item:nth-child(even) {
+    background-color: white;
 }
 
 .event-details {
@@ -94,10 +107,16 @@
   gap: 10px;
   flex: 1;
 }
-.event-details-date {
+.event-date {
   display: flex;
-  align-items: center;
+  justify-content: center;
+
   gap: 5px;
+}
+.event-action{
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
 }
 
 .event-details input[type="date"] {
@@ -177,7 +196,20 @@
   border-radius: 13px;
   background: rgba(255, 255, 255, 0.815);
 }
+/* Sélection des catégories */
+.category-selection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 
+.category-selection select {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}/* 
 .tab-item.active {
   background: #061e5c;
   color: white;

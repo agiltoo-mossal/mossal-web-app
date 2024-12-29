@@ -1,5 +1,5 @@
 <div class="modal-container">
-  <h2 class="modal-title">Créer un nouvel événement</h2>
+  <h2 class="modal-title">{{ title}}</h2>
 
   <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="form-container">
     <!-- Champ Nom de l'événement -->
@@ -49,7 +49,7 @@
     <div class="action-buttons">
       <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Annuler</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
-        Créer
+        {{ action }}
       </button>
     </div>
   </form>

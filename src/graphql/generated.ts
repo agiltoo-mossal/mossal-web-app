@@ -1291,6 +1291,49 @@ export type FetchEventsQueryVariables = Exact<{
 
 export type FetchEventsQuery = { __typename?: 'Query', fetchEvents: { __typename?: 'PaginatedEventResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, createdAt: any, updatedAt: any, organisationService: { __typename?: 'OrganisationService', id: any } }> } };
 
+export type DesactivateOrganisationServiceMutationVariables = Exact<{
+  organisationServiceId: Scalars['ID']['input'];
+}>;
+
+
+export type DesactivateOrganisationServiceMutation = { __typename?: 'Mutation', deactivateOrganisationService: boolean };
+
+export type ActivateOrganisationServiceMutationVariables = Exact<{
+  organisationServiceId: Scalars['ID']['input'];
+}>;
+
+
+export type ActivateOrganisationServiceMutation = { __typename?: 'Mutation', activateOrganisationService: boolean };
+
+export type DeleteEventMutationVariables = Exact<{
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteEventMutation = { __typename?: 'Mutation', deleteEvent: boolean };
+
+export type DesactiveEventMutationVariables = Exact<{
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type DesactiveEventMutation = { __typename?: 'Mutation', deactivateEvent: boolean };
+
+export type ActivateEventMutationVariables = Exact<{
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type ActivateEventMutation = { __typename?: 'Mutation', activateEvent: boolean };
+
+export type UpdateEventMutationVariables = Exact<{
+  eventInput: EventUpdateInput;
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type UpdateEventMutation = { __typename?: 'Mutation', updateEvent: boolean };
+
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
 }>;
@@ -2212,6 +2255,102 @@ export const FetchEventsDocument = gql`
   })
   export class FetchEventsGQL extends Apollo.Query<FetchEventsQuery, FetchEventsQueryVariables> {
     document = FetchEventsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DesactivateOrganisationServiceDocument = gql`
+    mutation DesactivateOrganisationService($organisationServiceId: ID!) {
+  deactivateOrganisationService(organisationServiceId: $organisationServiceId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DesactivateOrganisationServiceGQL extends Apollo.Mutation<DesactivateOrganisationServiceMutation, DesactivateOrganisationServiceMutationVariables> {
+    document = DesactivateOrganisationServiceDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ActivateOrganisationServiceDocument = gql`
+    mutation ActivateOrganisationService($organisationServiceId: ID!) {
+  activateOrganisationService(organisationServiceId: $organisationServiceId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ActivateOrganisationServiceGQL extends Apollo.Mutation<ActivateOrganisationServiceMutation, ActivateOrganisationServiceMutationVariables> {
+    document = ActivateOrganisationServiceDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeleteEventDocument = gql`
+    mutation DeleteEvent($eventId: ID!) {
+  deleteEvent(eventId: $eventId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeleteEventGQL extends Apollo.Mutation<DeleteEventMutation, DeleteEventMutationVariables> {
+    document = DeleteEventDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DesactiveEventDocument = gql`
+    mutation DesactiveEvent($eventId: ID!) {
+  deactivateEvent(eventId: $eventId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DesactiveEventGQL extends Apollo.Mutation<DesactiveEventMutation, DesactiveEventMutationVariables> {
+    document = DesactiveEventDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ActivateEventDocument = gql`
+    mutation ActivateEvent($eventId: ID!) {
+  activateEvent(eventId: $eventId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ActivateEventGQL extends Apollo.Mutation<ActivateEventMutation, ActivateEventMutationVariables> {
+    document = ActivateEventDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateEventDocument = gql`
+    mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
+  updateEvent(eventInput: $eventInput, eventId: $eventId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateEventGQL extends Apollo.Mutation<UpdateEventMutation, UpdateEventMutationVariables> {
+    document = UpdateEventDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

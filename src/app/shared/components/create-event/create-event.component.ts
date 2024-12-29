@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
@@ -6,8 +6,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.scss',
 })
-export class CreateEventComponent {
+export class CreateEventComponent implements OnInit {
   eventForm: FormGroup;
+  title: string;
+  action: string = 'Créer';
 
   constructor(
     private fb: FormBuilder,
@@ -18,12 +20,21 @@ export class CreateEventComponent {
       title: ['', [Validators.required, Validators.minLength(3)]],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
+      id: [null],
     });
+  }
+  ngOnInit(): void {
+    this.title = 'Créer un  nouvel événement';
+    if (this.data) {
+      this.eventForm.patchValue(this.data);
+      this.title = 'Modifier un événement';
+      this.action = 'Modifier';
+    }
   }
 
   onSubmit(): void {
     if (this.eventForm.valid) {
-      this.dialogRef.close(this.eventForm.value);
+      this.dialogRef.close(this.eventForm.getRawValue());
     }
   }
 

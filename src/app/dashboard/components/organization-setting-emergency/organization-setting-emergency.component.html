@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Dépannage d'urgences</span></h2>
 
-  <form [formGroup]="emergencyForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="emergencyForm" (ngSubmit)="saveSettings()">
     <div class="service-activation-container">
       <div class="auto-validation">
         <h3>Activation du service</h3>
@@ -18,7 +18,12 @@
         [ngClass]="{ grise: !emergencyForm.get('activated').value }"
       >
         <div class="activation-date">
-          <label for="start-date">Date limite de préparation de la paie</label>
+          <label for="start-date"
+            >Date d'activation
+            <span style="text-transform: capitalize; padding: 0 8px"
+              >début</span
+            ></label
+          >
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
               <input
@@ -44,7 +49,17 @@
             </mat-form-field>
           </div>
         </div>
-
+        <!-- Ajout d'un message d'erreur général -->
+        <div
+          *ngIf="
+            emergencyForm.invalid &&
+            (emergencyForm.touched || emergencyForm.dirty)
+          "
+          class="error-message"
+        >
+          Un ou plusieurs champs sont invalides. Veuillez vérifier les champs en
+          surbrillance.
+        </div>
         <div class="category-selection">
           <select formControlName="selectedCategory">
             <option value="" disabled selected>Toutes les catégories</option>
@@ -80,9 +95,12 @@
             />
           </label>
         </div>
-        <div class="reimbursement">
+        <div class="reimbursement" style="margin-top: 25px">
           <h3>Montant et durée du remboursement</h3>
-          <div class="plafond-content">
+          <div
+            *ngIf="amountUnit?.value === 'Percentage'"
+            class="plafond-content"
+          >
             <label for="amount-input">Pourcentage</label>
             <div class="percentage-input-group">
               <input
@@ -90,10 +108,25 @@
                 id="amount-input"
                 placeholder="20"
                 min="0"
+                max="100"
                 type="number"
-                formControlName="reimbursementPercentage"
+                formControlName="amountPercentage"
               />
               <span class="currency-symbol">%</span>
+            </div>
+          </div>
+          <div *ngIf="amountUnit?.value === 'Fixed'" class="plafond-content">
+            <label for="amount-input">Montant</label>
+            <div class="percentage-input-group">
+              <input
+                type="number"
+                id="amount-input"
+                placeholder="20"
+                min="0"
+                type="number"
+                formControlName="amount"
+              />
+              <span class="currency-symbol">FCFA</span>
             </div>
           </div>
         </div>

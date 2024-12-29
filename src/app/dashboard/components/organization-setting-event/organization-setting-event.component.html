@@ -20,23 +20,21 @@
         <h3>Liste des événements prévus</h3>
         <ul class="event-list">
           <li *ngFor="let event of events; let i = index" class="event-item">
-            <div class="event-toggle">
+            <div class="event-title">
               <app-toggle-slide
                 [firstText]="'Actif'"
                 [secondText]="'Inactif'"
                 [uniqueId]="'event-' + i"
               ></app-toggle-slide>
-            </div>
-            <div class="event-details">
               <span>{{ event.title }}</span>
-              <div class="event-details-date">
-                <input type="date" [value]="event.startDate" />
-                <input type="date" [value]="event.endDate" />
-              </div>
-              <div>
-                <button class="edit-btn">✏️</button>
-                <button class="delete-btn">🗑️</button>
-              </div>
+            </div>
+            <div class="event-date">
+              <input type="date" [value]="event.startDate" disabled/>
+              <input type="date" [value]="event.endDate" disabled/>
+            </div>
+            <div class="event-action">
+              <button class="edit-btn" (click)="updateEvent(event)">✏️</button>
+              <button class="delete-btn" (click)="deleteEvent(event)">  🗑️</button>
             </div>
           </li>
         </ul>
@@ -49,16 +47,16 @@
 
       <!-- Section des paramètres -->
       <div class="section">
-        <div class="category-input-group">
-          <input
-            type="text"
-            class="category-input"
-            [(ngModel)]="newCategory"
-            placeholder="Nom de la catégorie"
-          />
-          <button class="category-btn" (click)="addCategory()">
-            Ajouter une catégorie
-          </button>
+        <div class="category-selection">
+          <select formControlName="selectedCategory">
+            <option value="" disabled selected>Toutes les catégories</option>
+            <option
+              *ngFor="let categorie of categories"
+              [value]="categorie?.id"
+            >
+              {{ categorie?.title }}
+            </option>
+          </select>
         </div>
 
         <mat-tab-group
