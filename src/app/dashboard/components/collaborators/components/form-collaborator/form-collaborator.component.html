@@ -1,94 +1,74 @@
-<form *ngIf="collaboratorForm" [formGroup]="collaboratorForm" class="form-container form-container-card" fxLayout="column" fxLayoutGap="57px">
-    <span class="title">{{formText}}</span>
-    <div fxLayout="column" fxLayoutGap="38px">
-        <div fxLayout="row" fxLayoutGap="32px">
-            <div class="wrapper" fxFlex="50" fxLayout="column" fxLayoutGap="38px">
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="prenom">Prénom <span class="color-danger">*</span></label>
-                    <input formControlName="firstName" type="text" id="prenom" class="form-control" placeholder="John">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="nom">Nom <span class="color-danger">*</span></label>
-                    <input formControlName="lastName" type="text" id="nom" class="form-control" placeholder="Doe">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="address">Adresse mail <span class="color-danger">*</span></label>
-                    <input formControlName="email" type="text" id="address" class="form-control" placeholder="john@gmail.com">
-                    <small class="color-danger" *ngIf="emailExists">Email déjà pris</small>
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="phone">Téléphone <span class="color-danger">*</span></label>
-                    <input formControlName="phoneNumber" type="text" id="phone" class="form-control" placeholder="770000000">
-                    <small class="color-danger" *ngIf="phoneNumber.touched && phoneNumber.invalid">Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</small>
-                    <small class="color-danger" *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="birthDate">Date de naissance </label>
-                  <input formControlName="birthDate" type="date" id="birthDate" class="form-control">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="code-postal">Adresse</label>
-                    <input formControlName="address" type="text" id="code-postal" class="form-control" placeholder="">
-                </div>
-            </div>
-            <div class="wrapper" fxFlex="50" fxLayout="column" fxLayoutGap="38px">
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="fonction">Fonction <span class="color-danger">*</span></label>
-                    <input formControlName="position" type="text" id="fonction" class="form-control">
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="unique-id">Matricule <span class="color-danger">*</span></label>
-                    <input formControlName="uniqueIdentifier" type="text" id="unique-id" class="form-control">
-                    <small class="color-danger" *ngIf="uniqueIdentifierExists">Numéro déjà pris par un utilisateur de l'entreprise</small>
-                </div>
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="salary">Salaire <span class="color-danger">*</span></label>
-                    <input formControlName="salary" type="number" id="salary" class="form-control">
-                     <small class="color-danger" *ngIf="salary.touched && salary.hasError('min')">Salaire minimum est 50,000 FCFA</small>
-                </div>
+<div style="display: flex;gap:5px;  color: #11167a;font-size: 16px;">
+    
+    <a routerLink="/dashboard/collaborators" > <span>{{"<"}}</span>retour</a>
+</div>
 
-                <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="nbr-compte">N° Compte Bancaire</label>
-                    <input formControlName="bankAccountNumber" type="text" id="nbr-compte" class="form-control">
-                    <small class="color-danger" *ngIf="bankAccountNumberExists">Compte déjà pris par un utilisateur de l'entreprise</small>
-                </div>
-                <!-- <div fxLayout="column" fxLayoutGap="15px">
-                    <label for="nbr-wizzal">N° Compte Wizall</label>
-                    <input formControlName="wizallAccountNumber" type="text" id="nbr-wizzal" class="form-control">
-                </div> -->
-                <div fxLayout="column" fxLayoutGap="15px">
-                  <label for="favoriteWallet">Mobile money favoris <span class="color-danger">*</span></label>
-                  <select formControlName="favoriteWallet" id="favoriteWallet" class="form-control">
-                    <option *ngFor="let wallet of MobileMoney" [value]="wallet">{{ wallet }}</option>
-                  </select>
-                </div>
+<h2 class="container-title-setting"><span>{{title}}</span></h2>
 
-            </div>
+<div class="creation-compte">
+  <form class="form" [formGroup]="collaboratorForm" (ngSubmit)="submitForm()">
+    <div class="form-row">
+      <div class="form-row" style="width: 49%">
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" formControlName="firstName"  placeholder="Nom" />
         </div>
-        <div fxLayout="row" fxLayoutGap="38px" *ngIf="formType=='edit'">
-            <button fxFlex="50" class="btn btn-primary" (click)="edit()">Sauvegarder</button>
-            <button
-            *ngIf="!collaborator?.blocked"
-            fxFlex="50"
-            class="btn btn-form-default"
-            requiresConfirmation
-            [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
-            [confirmCallbackParam]="collaborator?.id">
-            Suspendre
-          </button>
-
-          <button
-            *ngIf="collaborator?.blocked"
-            fxFlex="50"
-            class="btn btn-form-default"
-            requiresConfirmation
-            [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
-            [confirmCallbackParam]="collaborator?.id">
-            Débloquer
-          </button>
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" formControlName="lastName" placeholder="Prénom" />
         </div>
-        <div *ngIf="formType=='create'">
-            <button class="submit" fxFlex="50" (click)="submitForm()">Envoyé</button>
+      </div>
+      <div class="form-group">
+        <label for="matricule">Matricule</label>
+        <input type="text" id="matricule" formControlName="uniqueIdentifier" value="215789" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="date-naissance" formControlName="birthDate">Date de naissance</label>
+        <input type="date" id="date-naissance" value="1978-09-12" />
+      </div>
+      <div class="form-group">
+        <label for="salaire">Salaire</label>
+        <input type="text" formControlName="salary" id="salaire" value="175000" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email">Adresse mail</label>
+        <input type="email" id="email" formControlName="email" placeholder="adresse@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="categorie">Choisir la catégorie socioprofessionnelle</label>
+        <select id="categorie" formControlName="categorySocioProId">
+          <option value="">choisir une Catégorie socioprofessionnelle</option>
+            <option *ngFor="let category of categories" [value]="category.id">{{category.title}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="telephone">Téléphone</label>
+        <input type="tel" id="telephone" formControlName="phoneNumber" placeholder="+221 77 000 0000" />
+      </div>
+      <div class="form-group">
+        <label for="mobile-money">Mobile money favori</label>
+        <select id="mobile-money" formControlName="favoriteWallet">
+            <option value="" disabled selected>Mobile money favori</option>
+            <option *ngFor="let wallet of MobileMoney" [value]="wallet">{{wallet}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="width: 50%">
+      <label for="adresse">Adresse postale</label>
+      <input formControlName="address" type="text" id="adresse" placeholder="Adresse postale" />
+    </div>
+    <div class="form-group">
+        <div class="form-row">
+
+      <button type="submit" class="submit-button">Enregistrer</button>
+      <button *ngIf="collaboratorId" class="submit-button">Suspendre</button>
         </div>
     </div>
-</form>
+  </form>
+</div>

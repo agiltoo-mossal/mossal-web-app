@@ -6,6 +6,7 @@ import {
   AmountUnit,
   CategorySociopro,
   CategorySocioproServiceInput,
+  CategorySocioproServiceUpdateInput,
   CreateCategorySocioproServiceGQL,
   CreateOrganistionServiceGQL,
   DurationUnit,
@@ -13,8 +14,12 @@ import {
   FetchCurrentAdminGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchServicesGQL,
+  OrganisationServiceInput,
+  OrganisationServiceUpdateInput,
   Organization,
   Service,
+  UpdateCategorySocioproServiceGQL,
+  UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
 
 @Component({
@@ -36,8 +41,8 @@ export class OrganizationSettingEmergencyComponent {
   selectedCategory: string = 'all'; // Catégorie par défaut
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   organisationServiceId!: string;
+  categorySocioproServiceId: string = '';
   // Pourcentage ou montant fixe
-  isPercentage: boolean = true; // Par défaut, "Pourcentage" est sélectionné
   organization: Organization;
   @Input() service: Partial<Service>;
   @Output() serviceActivationChange = new EventEmitter<{
@@ -50,11 +55,13 @@ export class OrganizationSettingEmergencyComponent {
    */
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
+    private updateService: UpdateOrganisationServiceGQL,
     private defineService: CreateOrganistionServiceGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private fb: FormBuilder,
     private snackBarService: SnackBarService,
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
+    private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
     private listService: FetchServicesGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
   ) {}
@@ -77,17 +84,6 @@ export class OrganizationSettingEmergencyComponent {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
 
-    this.fetchCurrentAdminGQL.fetch().subscribe({
-      next: (response) => {
-        if (response.data.fetchCurrentAdmin) {
-          this.organization = response.data.fetchCurrentAdmin
-            .organization as Organization;
-        }
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
     this.organizationService
       .fetch({
         organisationId: this.organization.id,
@@ -95,14 +91,11 @@ export class OrganizationSettingEmergencyComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('response', response);
-
           if (
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
           ) {
             const data = response.data
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
-            console.log('data', data);
             this.organisationServiceId = data.id;
             this.emergencyForm.patchValue({
               activated: data.activated,
@@ -132,9 +125,7 @@ export class OrganizationSettingEmergencyComponent {
         this.categories = result.data.fetchCategorySociopros.results;
         console.log('list', this.categories);
       });
-    this.emergencyForm.valueChanges.subscribe((value) => {
-      console.log(value);
-    });
+
     this.amountUnit.valueChanges.subscribe((value) => {
       if (value == AmountUnit.Percentage) {
         this.emergencyForm.removeControl('amount');
@@ -163,8 +154,6 @@ export class OrganizationSettingEmergencyComponent {
    * Méthode pour sauvegarder les paramètres de plafond
    */
   async saveSettings(): Promise<void> {
-    console.log('this.emergencyForm.errors', this.emergencyForm.errors);
-
     if (this.emergencyForm.invalid) {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
@@ -183,8 +172,14 @@ export class OrganizationSettingEmergencyComponent {
       this.snackBarService.showSnackBar('Vous devez renseigner le montant');
       return;
     }
-
     const formData = this.emergencyForm.getRawValue();
+    if (
+      this.emergencyForm.get('amountUnit').value === EAmountUnit.Percentage &&
+      this.emergencyForm.get('amountPercentage').value
+    ) {
+      formData['amount'] = this.emergencyForm.get('amountPercentage').value;
+      delete formData['amountPercentage'];
+    }
     const data = {
       ...formData,
       activationDurationDay: 30,
@@ -202,13 +197,8 @@ export class OrganizationSettingEmergencyComponent {
         autoValidate: data.autoValidate,
         activated: data.activated,
         activatedAt: data.activatedAt,
+        amount: data.amount,
       };
-
-      if (data.amountUnit === EAmountUnit.Percentage) {
-        categoryInput.amountPercentage = data.amountPercentage;
-      } else {
-        categoryInput.amount = data.amount;
-      }
 
       try {
         const response = await lastValueFrom(
@@ -232,22 +222,116 @@ export class OrganizationSettingEmergencyComponent {
       delete data.selectedCategory;
     }
 
-    try {
-      const response = await lastValueFrom(
-        this.defineService.mutate({
-          organisationId: this.organization.id,
-          serviceId: this.service.id,
-          organisationServiceInput: data,
-        })
+    if (this.organisationServiceId) {
+      this.updateOrganisationService(this.organisationServiceId, data);
+    } else {
+      this.createOrganisationService(
+        data,
+        this.organization.id,
+        this.service.id
       );
-      console.log(response);
-      this.snackBarService.showSnackBar('Paramètres de plafond enregistrés');
-    } catch (err) {
-      this.snackBarService.showSnackBar(
-        "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
-      );
-      console.log(err);
     }
+  }
+  createOrganisationService(
+    organisationServiceInput: OrganisationServiceInput,
+    organisationId: string,
+    serviceId: string
+  ) {
+    this.defineService
+      .mutate({
+        organisationId,
+        serviceId,
+        organisationServiceInput,
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+          this.snackBarService.showSnackBar(
+            'Paramètres de plafond enregistrés'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar(
+            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+          );
+        },
+      });
+  }
+  updateOrganisationService(
+    organisationServiceId: string,
+    organisationServiceInput: OrganisationServiceUpdateInput
+  ) {
+    this.updateService
+      .mutate({
+        organisationServiceId,
+        organisationServiceInput,
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+          this.snackBarService.showSnackBar(
+            'Paramètres de plafond enregistrés'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar(
+            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+          );
+        },
+      });
+  }
+
+  createCategorySocioproService(
+    categorySocioproId: string,
+    categorySocioproServiceInput: CategorySocioproServiceInput,
+    organisationServiceId: string
+  ) {
+    this.createCategorySocioproServiceGQL
+      .mutate({
+        categorySocioproId,
+        categorySocioproServiceInput,
+        organisationServiceId,
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+          this.snackBarService.showSnackBar(
+            'Paramètres de plafond enregistrés'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar(
+            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+          );
+        },
+      });
+  }
+  updateCategorySocioproService(
+    categorySocioproServiceId: string,
+    categorySocioproServiceInput: CategorySocioproServiceUpdateInput
+  ) {
+    this.updateCategorySocioproServiceGQL
+      .mutate({
+        categorySocioproServiceId,
+        categorySocioproServiceInput,
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+          this.snackBarService.showSnackBar(
+            'Paramètres de plafond enregistrés'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar(
+            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+          );
+        },
+      });
   }
 
   onToggle(event) {

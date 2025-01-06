@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AmountUnit } from 'src/graphql/generated';
 
 @Component({
@@ -6,11 +7,8 @@ import { AmountUnit } from 'src/graphql/generated';
   templateUrl: './setting.component.html',
   styleUrl: './setting.component.scss',
 })
-export class SettingComponent {
-  @Output() serviceActivationChange = new EventEmitter<boolean>();
-  @Output() amountTypeChange = new EventEmitter<string>();
-  @Output() reimbursementChange = new EventEmitter<number>();
-  @Output() validationChange = new EventEmitter<boolean>();
+export class SettingComponent implements OnInit {
+  @Output() settingChange = new EventEmitter<any>();
   @Input() categorie: any;
   @Input() data: any = {
     activated: false,
@@ -19,22 +17,66 @@ export class SettingComponent {
     refundDuration: 0,
     autoValidate: false,
   };
+  settingForm: FormGroup;
+  constructor(private _fb: FormBuilder) {}
 
+  ngOnInit(): void {
+    this.settingForm = this._fb.group({
+      activated: [false],
+      amountUnit: [AmountUnit.Percentage, [Validators.required]],
+      // amount: [],
+      refundDuration: [null, [Validators.required, Validators.min(1)]],
+      autoValidate: [false],
+      // amountPercentage: [],
+    });
+    this.settingForm.addControl(
+      'amountPercentage',
+      this._fb.control(null, [
+        Validators.min(0),
+        Validators.max(100),
+        Validators.required,
+      ])
+    );
+    if (this.data) {
+      this.settingForm.patchValue({ ...this.data });
+    }
+    this.settingForm.valueChanges.subscribe((value) => {
+      console.log('status', this.settingForm.valid);
+      console.log('errors', this.settingForm.errors);
+
+      if (this.settingForm.valid) {
+        this.settingChange.emit({ dataForm: value, categorie: this.categorie });
+      }
+    });
+    this.amountUnit.valueChanges.subscribe((value) => {
+      if (value == AmountUnit.Percentage) {
+        this.settingForm.removeControl('amount');
+        this.settingForm.addControl(
+          'amountPercentage',
+          this._fb.control(null, [
+            Validators.min(1),
+            Validators.max(100),
+            Validators.required,
+          ])
+        );
+      } else {
+        this.settingForm.removeControl('amountPercentage');
+        this.settingForm.addControl(
+          'amount',
+          this._fb.control(null, [Validators.required])
+        );
+      }
+    });
+  }
   onServiceActivationChange(isActive: boolean) {
-    this.serviceActivationChange.emit(isActive);
+    this.settingForm.patchValue({ activated: isActive });
   }
 
-  onAmountTypeChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.amountTypeChange.emit(value);
-  }
-
-  onReimbursementChange(event: Event) {
-    const value = parseInt((event.target as HTMLInputElement).value, 10);
-    this.reimbursementChange.emit(value);
+  get amountUnit() {
+    return this.settingForm.get('amountUnit');
   }
 
   onValidationChange(isActive: boolean) {
-    this.validationChange.emit(isActive);
+    this.settingForm.patchValue({ autoValidate: isActive });
   }
 }

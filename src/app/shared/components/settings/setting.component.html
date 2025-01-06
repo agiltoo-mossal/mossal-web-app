@@ -1,4 +1,4 @@
-<div class="settings">
+<form class="settings" [formGroup]="settingForm">
   <div class="container-setting">
     <h3>Activation du service</h3>
     <app-toggle-slide
@@ -15,62 +15,108 @@
       Pourcentage
       <input
         type="radio"
-        name="amountType"
-        value="percentage"
+        value="Percentage"
         class="custom-radio"
-        (change)="onAmountTypeChange($event)"
+        formControlName="amountUnit"
       />
-        <!-- [(ngModel)]="data.amountType" -->
+      <!-- [(ngModel)]="data.amountType" -->
     </label>
     <label>
       Montant fixe
       <input
         type="radio"
-        name="amountType"
-        value="fixed"
+        formControlName="amountUnit"
+        value="Fixed"
         class="custom-radio"
-        (change)="onAmountTypeChange($event)"
       />
-        <!-- [(ngModel)]="data.amountUnit" -->
+      <!-- [(ngModel)]="data.amountUnit" -->
     </label>
   </div>
 
   <div class="reimbursement">
     <h3>Montant et durée du remboursement</h3>
     <div class="plafond-content">
-      <label for="amount-input">Montant</label>
-      <div class="percentage-input-group">
-        <input
-          type="number"
-          id="amount-input"
-          placeholder="20000"
-          min="0"
-        />
+      <ng-container *ngIf="amountUnit?.value === 'Fixed'">
+        <label for="amount-input">Montant</label>
+        <div class="percentage-input-group">
+          <input
+            type="number"
+            id="amount-input"
+            placeholder="20000"
+            formControlName="amount"
+            min="0"
+          />
           <!-- [(ngModel)]="data.amount" -->
-        <span class="currency-symbol">€</span>
-      </div>
+          <span class="currency-symbol">FCFA</span>
+        </div>
+        <div>
+          <mat-error
+            *ngIf="settingForm.get('amount').invalid && settingForm.get('amount').touched"
+          >
+            Le montant est requis et doit être supérieur à 0.
+          </mat-error>
+        </div>
+     
+      </ng-container>
+      <ng-container *ngIf="amountUnit?.value === 'Percentage'">
+        <label for="amount-input">Pourcentage</label>
+        <div class="percentage-input-group">
+          <input
+            type="number"
+            id="amount-input"
+            placeholder="20"
+            formControlName="amountPercentage"
+            min="0"
+            max="100"
+          />
+          <!-- [(ngModel)]="data.amountPercentage" -->
+          <span class="currency-symbol">%</span>
+        </div>
+        <div>
+          <mat-error
+            *ngIf="
+              settingForm.get('amountPercentage').invalid &&
+              settingForm.get('amountPercentage').touched
+            "
+          >
+            La pourcentage est requise.
+          </mat-error>
+        </div>
+      </ng-container>
     </div>
     <div class="plafond-content">
       <label for="duration-input">Durée du remboursement</label>
       <div class="percentage-input-group">
         <input
-          type="text"
+          type="number"
           id="duration-input"
           placeholder="12 mois"
+          formControlName="refundDuration"
         />
-          <!-- [(ngModel)]="data.refundDuration" -->
+        <!-- [(ngModel)]="data.refundDuration" -->
       </div>
+    </div>
+    <div>
+    <mat-error
+      *ngIf="
+        settingForm.get('refundDuration').invalid &&
+        settingForm.get('refundDuration').touched
+      "
+    >
+      La durée du remboursement est requise.
+    </mat-error>
+
     </div>
   </div>
 
   <div class="container-setting">
     <h3>Validation automatique</h3>
-      <!-- [(ngModel)]="data.autoValidation" -->
+    <!-- [(ngModel)]="data.autoValidation" -->
     <app-toggle-slide
       [firstText]="'ON'"
       [secondText]="'OFF'"
-      [uniqueId]="'autoValidation'"
+      [uniqueId]="'autoValidationSetting'"
       (toggleChange)="onValidationChange($event)"
     ></app-toggle-slide>
   </div>
-</div>
+</form>

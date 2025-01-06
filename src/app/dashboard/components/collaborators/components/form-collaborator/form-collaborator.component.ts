@@ -12,6 +12,8 @@ import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { dateToString } from 'src/app/shared/utils/time';
 import {
+  CategorySociopro,
+  FetchCategorySocioprosGQL,
   FetchOrganizationCollaboratorGQL,
   InviteCollaboratorGQL,
   LockUserGQL,
@@ -38,6 +40,8 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   uniqueIdentifierExists: boolean = false;
   emailExists: boolean = false;
   MobileMoney = Object.values(Wallet);
+  title = 'Création compte collaborateur';
+  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +52,8 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL
+    private unlockUserGQL: UnlockUserGQL,
+    private listCategorieGQL: FetchCategorySocioprosGQL
   ) {
     this.collaboratorForm = this.fb.group({
       email: ['', [Validators.required]],
@@ -66,6 +71,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       bankAccountNumber: [''],
       birthDate: [null],
       favoriteWallet: [Wallet.Wave],
+      categorySocioProId: ['', Validators.required],
     });
   }
 
@@ -82,6 +88,16 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       this.formType == 'edit'
         ? 'Modifier les infos du collaborateur '
         : 'Création compte collaborateur';
+    this.listCategorieGQL
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe((result) => {
+        this.categories = result.data.fetchCategorySociopros.results;
+        console.log('list', this.categories);
+      });
     this.initSearch();
   }
 
@@ -148,6 +164,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   getCollab() {
     if (this.collaboratorId) {
+      this.title = 'Modification compte collaborateur';
       this.fetchOrganizationCollaboratorGQL
         .fetch(
           { collaboratorId: this.collaboratorId },

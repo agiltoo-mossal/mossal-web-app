@@ -2,20 +2,20 @@
   <div class="container-title-setting">
     <span>Avance sur salaire</span>
   </div>
-  <div class="avance-evenement-container">
+  <form class="avance-evenement-container" [formGroup]="salaryForm" (ngSubmit)="saveSettings()">
     <!-- Section Activation du service -->
     <div class="section flex-center">
       <h3>Activation du service</h3>
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        [uniqueId]="'serviceActivation'"
-        [(ngModel)]="activated"
+        (value)="(activated ?? false)"
+        [uniqueId]="'serviceActivationSalary'"
         (toggleChange)="handleServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
     
-    <div class="toggle-side" [ngClass]="{ grise: !isActive }">
+    <div class="toggle-side"  [ngClass]="{ grise: !activated }" >
       <div class="activation-date">
         <label style="margin-bottom: 19px; padding: 0 12px"
           >Date d'activation</label
@@ -29,7 +29,7 @@
               <input
                 matInput
                 [matDatepicker]="startPicker"
-                [(ngModel)]="startDate"
+                formControlName="startDate"
                 placeholder="Date de début"
                 required
               />
@@ -51,7 +51,7 @@
               <input
                 matInput
                 [matDatepicker]="endPicker"
-                [(ngModel)]="endDate"
+                formControlName="endDate"
                 placeholder="Date de fin"
                 required
               />
@@ -80,22 +80,22 @@
           
         </div>
 
-        <mat-tab-group animationDuration="0ms">
+        <mat-tab-group animationDuration="0ms"
+          (selectedTabChange)="onTabChange($event)"
+        >
+          
           <mat-tab
             *ngFor="let categorie of categories"
             [label]="categorie?.title"
           >
             <app-setting
               [categorie]="categorie"
-              (serviceActivationChange)="handleValidationChange($event)"
-              (amountTypeChange)="handleAmountTypeChange($event)"
-              (reimbursementChange)="handleReimbursementChange($event)"
-              (validationChange)="handleValidationChange($event)"
+              (settingChange)="onSettingChange($event)"
             ></app-setting>
           </mat-tab>
         </mat-tab-group>
       </div>
       <button (click)="saveSettings()" class="validate-btn">Valider</button>
     </div>
-  </div>
+  </form>
 </div>

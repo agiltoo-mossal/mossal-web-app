@@ -19,10 +19,12 @@
             *ngSwitchCase="'Avance sur évenement'"
           ></app-organization-setting-event>
           <app-organization-setting-salary
+            (activeService)="onServiceActivationChange($event)"
             [service]="service"
             *ngSwitchCase="'Avance salariale'"
           ></app-organization-setting-salary>
           <app-organization-setting-salary-refund
+            (activeService)="onServiceActivationChange($event)"
             [service]="service"
             *ngSwitchCase="'Avance sur plusieurs mois'"
           ></app-organization-setting-salary-refund>

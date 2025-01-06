@@ -24,9 +24,11 @@
               <app-toggle-slide
                 [firstText]="'Actif'"
                 [secondText]="'Inactif'"
+                [value]="!(event?.activated) || false"
                 [uniqueId]="'event-' + i"
+                (toggleChange)="changeStatusEvent($event,event)"
               ></app-toggle-slide>
-              <span>{{ event.title }}</span>
+              <span>{{ event.title }} {{event?.activated}}</span>
             </div>
             <div class="event-date">
               <input type="date" [value]="event.startDate" disabled/>
@@ -48,7 +50,7 @@
       <!-- Section des paramètres -->
       <div class="section">
         <div class="category-selection">
-          <select formControlName="selectedCategory">
+          <select  [(ngModel)]="selectedCategory"  class="custom-select">
             <option value="" disabled selected>Toutes les catégories</option>
             <option
               *ngFor="let categorie of categories"
@@ -68,12 +70,9 @@
             [label]="categorie?.title"
           >
             <app-setting
-              [data]="info"
+              [data]="dataForm"
               [categorie]="categorie"
-              (serviceActivationChange)="handleServiceActivationChange($event)"
-              (amountTypeChange)="handleAmountTypeChange($event)"
-              (reimbursementChange)="handleReimbursementChange($event)"
-              (validationChange)="handleValidationChange($event)"
+              (settingChange)="onSettingChange($event)"
             ></app-setting>
           </mat-tab>
         </mat-tab-group>

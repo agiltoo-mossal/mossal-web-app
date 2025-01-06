@@ -46,6 +46,23 @@ export class OrganizationSettingEventComponent {
     isActive: boolean;
     organisationServiceId: string;
   }>();
+  events = [];
+
+  // Onglet actif
+  activeTab: string = 'Paramètres Généraux';
+
+  // Données pour les paramètres
+
+  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
+  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
+
+  organization: Organization;
+
+  organisationServiceId: string;
+  info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
+  dataForm: any;
+  activated: boolean = true;
+  selectedCategory: string;
 
   constructor(
     private dialog: MatDialog,
@@ -63,34 +80,6 @@ export class OrganizationSettingEventComponent {
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
   ) {}
-  newEvents: {
-    title: string;
-    startDate: string;
-    endDate: string;
-    description?: string;
-    isActive?: boolean;
-  }[] = [];
-  events = [];
-
-  // Onglet actif
-  activeTab: string = 'Paramètres Généraux';
-
-  // Données pour les paramètres
-  activated: boolean = true;
-  isPercentage: boolean = true;
-  reimbursementPercentage: number = 30;
-  reimbursementDuration: string = '12';
-  isAutoValidation: boolean = false;
-  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
-  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
-  newCategory: string = '';
-  isActive: boolean = false;
-  amountType: string = '';
-  reimbursement: number = 0;
-  organization: Organization;
-  autoValidate: boolean = false;
-  organisationServiceId: string;
-  info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -113,11 +102,7 @@ export class OrganizationSettingEventComponent {
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
             OrganisationService & { categorySociopro: CategorySociopro[] }
           >;
-          this.isActive = this.info.activated;
-          this.amountType = this.info.amountUnit;
-          this.reimbursement = this.info.amount;
-          this.autoValidate = this.info.autoValidate;
-          this.reimbursementPercentage = this.info.amount;
+          this.dataForm = this.info;
           this.selectedCategorie = this.info?.categorySociopro?.[0];
         },
         error: (error) => {
@@ -137,11 +122,9 @@ export class OrganizationSettingEventComponent {
 
           this.events = response.data.fetchEvents.results.map((event) => {
             return {
-              title: event.title,
+              ...event,
               startDate: new Date(event.startDate).toISOString().split('T')[0],
               endDate: new Date(event.endDate).toISOString().split('T')[0],
-              // isActive: event.isActive,
-              id: event.id,
             };
           });
         },
@@ -282,23 +265,12 @@ export class OrganizationSettingEventComponent {
   }
 
   /**
-   * Met à jour l'état actif/inactif d'un événement
-   * @param index Index de l'événement à mettre à jour
-   * @param isActive Nouveau statut actif/inactif
-   */
-  toggleEventStatus(index: number, isActive: boolean): void {
-    this.events[index].isActive = isActive;
-  }
-
-  /**
    * Sauvegarde les paramètres globaux
    */
   saveSettings(): void {
     // Valider les données avant de sauvegarder
-    if (
-      this.isPercentage &&
-      (this.reimbursementPercentage < 0 || this.reimbursementPercentage > 100)
-    ) {
+
+    if (!this.dataForm) {
       return;
     }
 
@@ -307,11 +279,7 @@ export class OrganizationSettingEventComponent {
         organisationId: this.organization.id,
         serviceId: this.service.id,
         organisationServiceInput: {
-          activated: this.activated,
-          amount: this.reimbursement,
-          amountUnit: this.isPercentage
-            ? AmountUnit.Percentage
-            : AmountUnit.Fixed,
+          ...this.dataForm,
         },
       })
       .subscribe({
@@ -328,10 +296,12 @@ export class OrganizationSettingEventComponent {
       });
   }
   onServiceActivationChange($event) {
-    this.activated = $event;
+    // this.dataForm.activated = $event;
+    console.log('activated', $event);
 
+    this.activated = $event;
     this.activeService.emit({
-      isActive: this.activated,
+      isActive: $event,
       organisationServiceId: this.organisationServiceId,
     });
   }
@@ -385,35 +355,64 @@ export class OrganizationSettingEventComponent {
       }
     });
   }
-  addCategory(): void {
-    if (this.newCategory && this.newCategory.trim()) {
-    } else {
-      // alert('Le nom de la catégorie ne peut pas être vide.');
+
+  changeStatusEvent(
+    status: boolean,
+    event: {
+      id: string;
+      title: string;
     }
-  }
-  handleServiceActivationChange(isActive: boolean) {
-    console.log('Service Activation:', isActive);
-    this.isActive = isActive;
-  }
+  ) {
+    if (status) {
+      this.activateEvent.mutate({ eventId: event.id }).subscribe({
+        next: (response) => {
+          this.snackBarService.showSnackBar('Événement activé avec succès');
+          this.events = this.events.map((e) => {
+            if (e.id === event.id) {
+              return {
+                ...e,
+                activated: true,
+              };
+            }
+            return e;
+          });
+        },
+        error: (err) => {
+          this.snackBarService.showSnackBar('Une erreur est survenue');
+          console.log(err);
+        },
+      });
+    } else {
+      this.desactiveEvent.mutate({ eventId: event.id }).subscribe({
+        next: (response) => {
+          this.snackBarService.showSnackBar('Événement désactivé avec succès');
+          this.events = this.events.map((e) => {
+            if (e.id === event.id) {
+              console.log('event', e);
 
-  handleAmountTypeChange(amountType: string) {
-    console.log('Amount Type:', amountType);
-    this.amountType = amountType;
-  }
-
-  handleReimbursementChange(reimbursement: number) {
-    console.log('Reimbursement:', reimbursement);
-    this.reimbursement = reimbursement;
-  }
-
-  handleValidationChange(isActive: boolean) {
-    console.log('Validation:', isActive);
-    this.autoValidate = isActive;
+              return {
+                ...e,
+                activated: false,
+              };
+            }
+            return e;
+          });
+        },
+        error: (err) => {
+          this.snackBarService.showSnackBar('Une erreur est survenue');
+          console.log(err);
+        },
+      });
+    }
   }
 
   createOrganizationService() {}
 
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.categories[event.index];
+  }
+  onSettingChange($event) {
+    console.log('settingForms', $event);
+    this.dataForm = $event.dataForm;
   }
 }

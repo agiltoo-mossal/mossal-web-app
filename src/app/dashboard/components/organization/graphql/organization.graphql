@@ -120,11 +120,46 @@ mutation CreateOrganistionService(
       id
       title
     }
-    categoriesociopro {
+    categoriesocioproservices {
+      createdAt
+      updatedAt
       id
-      title
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+      organisationServiceId
+      categorySocioproId
+      categorySociopro {
+        id
+        title
+        organizationId
+        createdAt
+        updatedAt
+      }
     }
   }
+}
+mutation UpdateOrganisationService(
+  $organisationServiceInput: OrganisationServiceUpdateInput!
+  $organisationServiceId: ID!
+) {
+  updateOrganisationService(
+    organisationServiceInput: $organisationServiceInput
+    organisationServiceId: $organisationServiceId
+  )
+}
+mutation UpdateCategorySocioproService(
+  $categorySocioproServiceInput: CategorySocioproServiceUpdateInput!
+  $categorySocioproServiceId: ID!
+) {
+  updateCategorySocioproService(
+    categorySocioproServiceInput: $categorySocioproServiceInput
+    categorySocioproServiceId: $categorySocioproServiceId
+  )
 }
 
 query FetchOrganisationServiceByOrganisationIdAndServiceId(
@@ -157,9 +192,26 @@ query FetchOrganisationServiceByOrganisationIdAndServiceId(
       id
       title
     }
-    categoriesociopro {
+    categoriesocioproservices {
+      createdAt
+      updatedAt
       id
-      title
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+      organisationServiceId
+      categorySocioproId
+      categorySociopro {
+        id
+        title
+        organizationId
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -181,9 +233,14 @@ mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
   }
 }
 
-query FetchEvents($queryConfig: QueryDataConfigInput,$organizationServiceId: ID!
+query FetchEvents(
+  $queryConfig: QueryDataConfigInput
+  $organizationServiceId: ID!
 ) {
-  fetchEvents(queryConfig: $queryConfig,organizationServiceId: $organizationServiceId) {
+  fetchEvents(
+    queryConfig: $queryConfig
+    organizationServiceId: $organizationServiceId
+  ) {
     pagination {
       totalItems
       pageCount
@@ -196,6 +253,7 @@ query FetchEvents($queryConfig: QueryDataConfigInput,$organizationServiceId: ID!
       description
       startDate
       endDate
+      activated
       organisationService {
         id
       }
@@ -205,12 +263,8 @@ query FetchEvents($queryConfig: QueryDataConfigInput,$organizationServiceId: ID!
   }
 }
 
-mutation DesactivateOrganisationService(
-$organisationServiceId: ID!
-) {
-  deactivateOrganisationService(
-    organisationServiceId: $organisationServiceId
-  )
+mutation DesactivateOrganisationService($organisationServiceId: ID!) {
+  deactivateOrganisationService(organisationServiceId: $organisationServiceId)
 }
 mutation ActivateOrganisationService($organisationServiceId: ID!) {
   activateOrganisationService(organisationServiceId: $organisationServiceId)
@@ -225,12 +279,6 @@ mutation DesactiveEvent($eventId: ID!) {
 mutation ActivateEvent($eventId: ID!) {
   activateEvent(eventId: $eventId)
 }
-mutation UpdateEvent(
-  $eventInput: EventUpdateInput!
-  $eventId: ID!
-) {
-  updateEvent(
-    eventInput: $eventInput
-    eventId: $eventId
-  )
+mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
+  updateEvent(eventInput: $eventInput, eventId: $eventId)
 }

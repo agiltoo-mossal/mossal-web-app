@@ -1,12 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { differenceInDays, differenceInMonths } from 'date-fns';
 import { lastValueFrom } from 'rxjs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   AmountUnit,
   CategorySociopro,
   CreateOrganistionServiceGQL,
+  DurationUnit,
   FetchCategorySocioprosGQL,
   FetchCurrentAdminGQL,
+  FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   Organization,
   Service,
 } from 'src/graphql/generated';
@@ -22,6 +27,8 @@ export class OrganizationSettingSalaryRefundComponent {
   reimbursementPercentage: number = 30;
   reimbursementDuration: string = '12 mois';
   isAutoValidation: boolean = false;
+  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
+  salaryForm: FormGroup;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
   newCategory: string = '';
@@ -30,19 +37,54 @@ export class OrganizationSettingSalaryRefundComponent {
   reimbursement: number = 0;
   organization: Organization;
   autoValidate: boolean = false;
-  startDate: Date;
-  endDate: Date;
   activated: boolean = true;
+  organisationServiceId!: string;
+
   @Input() service: Partial<Service>;
+  @Output() activeService = new EventEmitter<{
+    isActive: boolean;
+    organisationServiceId: string;
+  }>();
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
     private defineService: CreateOrganistionServiceGQL,
     private snackBarService: SnackBarService,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fb: FormBuilder,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
   ) {}
   async ngOnInit() {
+    this.salaryForm = this.fb.group({
+      activated: [true],
+      amountUnit: ['', Validators.required],
+      autoValidate: [true],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      refundDurationUnit: [DurationUnit.Month, Validators.required],
+      refundDuration: [0, Validators.required],
+      selectedCategory: [''],
+    });
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
+    this.organizationService
+      .fetch({
+        organisationId: this.organization.id,
+        serviceId: this.service.id,
+      })
+      .subscribe({
+        next: (response) => {
+          if (
+            response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
+          ) {
+            const data = response.data
+              .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
+            this.organisationServiceId = data.id;
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     this.listCategorieGQL
       .fetch({
         queryConfig: {
@@ -66,6 +108,34 @@ export class OrganizationSettingSalaryRefundComponent {
           console.log(err);
         },
       });
+    this.startDate.valueChanges.subscribe((startDate) => {
+      const endDate = this.endDate.value;
+      if (startDate && endDate) {
+        this.calculateRefundDuration(startDate, endDate);
+      }
+    });
+
+    this.endDate.valueChanges.subscribe((endDate) => {
+      const startDate = this.startDate.value;
+
+      if (startDate && endDate) {
+        this.calculateRefundDuration(startDate, endDate);
+      }
+    });
+  }
+  calculateRefundDuration(startDate: string, endDate: string) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (start <= end) {
+      const duration =
+        differenceInMonths(end, start) +
+        (differenceInDays(end, start) % 30) / 30;
+
+      // approximate month difference
+      this.salaryForm.get('refundDuration').setValue(duration);
+    } else {
+      this.salaryForm.get('refundDuration').setValue(0);
+    }
   }
 
   addCategory(): void {
@@ -74,25 +144,15 @@ export class OrganizationSettingSalaryRefundComponent {
       // alert('Le nom de la catégorie ne peut pas être vide.');
     }
   }
-  handleServiceActivationChange(isActive: boolean) {
-    console.log('Service Activation:', isActive);
-    this.isActive = isActive;
-    this.activated = isActive;
+  get startDate() {
+    return this.salaryForm.get('startDate');
   }
-
-  handleAmountTypeChange(amountType: string) {
-    console.log('Amount Type:', amountType);
-    this.amountType = amountType;
+  get endDate() {
+    return this.salaryForm.get('endDate');
   }
-
-  handleReimbursementChange(reimbursement: number) {
-    this.reimbursement = reimbursement;
-    console.log('Reimbursement:', reimbursement);
-  }
-
-  handleValidationChange(isActive: boolean) {
-    this.autoValidate = isActive;
-    console.log('Validation:', isActive);
+  onSettingChange(event: any) {
+    console.log('event', event);
+    const tempForm = event?.dataForm;
   }
   saveSettings() {
     this.defineService
@@ -119,5 +179,22 @@ export class OrganizationSettingSalaryRefundComponent {
           );
         },
       });
+  }
+  onServiceActivationChange(isActive: boolean) {
+    this.activated = isActive;
+    if (this.organisationServiceId) {
+      this.activeService.emit({
+        isActive,
+        organisationServiceId: this.organisationServiceId,
+      });
+    } else {
+      this.snackBarService.showSnackBar(
+        "Veuillez enregistrer les paramètres de plafond avant d'activer le service"
+      );
+    }
+    // this.emergencyForm.get('activated').setValue(isActive);
+  }
+  onTabChange(event: MatTabChangeEvent) {
+    this.selectedCategorie = this.categories[event.index];
   }
 }
