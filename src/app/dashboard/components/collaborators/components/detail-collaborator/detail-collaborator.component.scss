@@ -23,7 +23,15 @@
  h2 {
   color: #11167a;
 }
-
+.finance-section {
+  display: flex;
+  justify-content: space-between;
+  p{
+    color: #061E5C;
+    font-size: 18px;
+    padding: 8px;
+  }
+}
 .profile-actions .btn {
   margin-right: 10px;
   padding: 10px 15px;
@@ -51,6 +59,11 @@
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+.profile-section{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .profile-actions{

@@ -15,6 +15,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { OrganizationFileModule } from '../organization-file/organization-file.module';
 import { UserDetailsModule } from '../user-details/user-details.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { DropdownModule } from '../../directives/dropdown/dropdown.module';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     OrganizationFileModule,
     UserDetailsModule,
     FlexLayoutModule,
+    DropdownModule,
   ],
   declarations: [TableSalaryComponent],
   exports: [TableSalaryComponent],

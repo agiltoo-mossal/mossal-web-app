@@ -27,7 +27,7 @@
               <input
                 matInput
                 [matDatepicker]="startPicker"
-                [(ngModel)]="startDate"
+                formControlName="startDate"
                 placeholder="Date de début"
                 required
               />
@@ -49,7 +49,7 @@
               <input
                 matInput
                 [matDatepicker]="endPicker"
-                [(ngModel)]="endDate"
+                formControlName="endDate"
                 placeholder="Date de fin"
                 required
               />

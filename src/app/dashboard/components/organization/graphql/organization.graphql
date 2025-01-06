@@ -282,3 +282,37 @@ mutation ActivateEvent($eventId: ID!) {
 mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
   updateEvent(eventInput: $eventInput, eventId: $eventId)
 }
+
+query  FetchDemandesByCollaborator(
+  $collaboratorId: ID!
+  $status: DemandeStatus
+){
+  fetchDemandesByCollaborator(
+    collaboratorId: $collaboratorId
+    status: $status
+  ){
+    id
+    status
+    amount
+    number
+    refundDuration
+    rejectedReason
+    statusText
+    fees
+    createdAt
+    updatedAt
+    collaborator {
+      id
+      firstName
+      lastName
+    }
+    organisationService {
+      service{
+        id
+        title
+      }
+    
+     
+    }
+  }
+}

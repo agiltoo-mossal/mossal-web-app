@@ -476,6 +476,7 @@ export type MutationUpdateCategorySocioproServiceArgs = {
 
 
 export type MutationUpdateCollaboratorArgs = {
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
   collaborator: UpdateCollaboratorInput;
   collaboratorId: Scalars['String']['input'];
 };
@@ -715,6 +716,7 @@ export type Query = {
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
   fetchCategorySociopros: PaginatedCategorySocioproResult;
   fetchCurrentAdmin: User;
+  fetchDemandesByCollaborator: Array<Demande>;
   fetchDemandesMetrics: DemandesMetrics;
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
@@ -815,6 +817,12 @@ export type QueryFetchCategorySocioproServicesArgs = {
 
 export type QueryFetchCategorySocioprosArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchDemandesByCollaboratorArgs = {
+  collaboratorId: Scalars['ID']['input'];
+  status?: InputMaybe<DemandeStatus>;
 };
 
 
@@ -1349,6 +1357,14 @@ export type UpdateEventMutationVariables = Exact<{
 
 
 export type UpdateEventMutation = { __typename?: 'Mutation', updateEvent: boolean };
+
+export type FetchDemandesByCollaboratorQueryVariables = Exact<{
+  collaboratorId: Scalars['ID']['input'];
+  status?: InputMaybe<DemandeStatus>;
+}>;
+
+
+export type FetchDemandesByCollaboratorQuery = { __typename?: 'Query', fetchDemandesByCollaborator: Array<{ __typename?: 'Demande', id: string, status: DemandeStatus, amount: number, number: number, refundDuration: number, rejectedReason?: string | null, statusText?: string | null, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', id: any, title: string } } | null }> };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2440,6 +2456,44 @@ export const UpdateEventDocument = gql`
   })
   export class UpdateEventGQL extends Apollo.Mutation<UpdateEventMutation, UpdateEventMutationVariables> {
     document = UpdateEventDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchDemandesByCollaboratorDocument = gql`
+    query FetchDemandesByCollaborator($collaboratorId: ID!, $status: DemandeStatus) {
+  fetchDemandesByCollaborator(collaboratorId: $collaboratorId, status: $status) {
+    id
+    status
+    amount
+    number
+    refundDuration
+    rejectedReason
+    statusText
+    fees
+    createdAt
+    updatedAt
+    collaborator {
+      id
+      firstName
+      lastName
+    }
+    organisationService {
+      service {
+        id
+        title
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchDemandesByCollaboratorGQL extends Apollo.Query<FetchDemandesByCollaboratorQuery, FetchDemandesByCollaboratorQueryVariables> {
+    document = FetchDemandesByCollaboratorDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
