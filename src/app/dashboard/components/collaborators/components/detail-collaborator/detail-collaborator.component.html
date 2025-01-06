@@ -1,0 +1,104 @@
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+  <a routerLink="/dashboard/collaborators"
+    ><span>{{ "<" }}</span
+    >retour</a
+  >
+</div>
+
+<h2 class="container-title-setting">
+  <span>Information Collaborateur</span>
+</h2>
+<div class="container">
+  <!-- Section gauche : Profil collaborateur -->
+  <div class="profile-section">
+    <h2>{{collaborator?.firstName}} {{collaborator?.lastName}}</h2>
+    <p><strong>Matricule :</strong> {{collaborator?.uniqueIdentifier}}</p>
+    <p>Catégorie socioprofessionnelle 1</p>
+    <p><strong>Email:</strong> {{collaborator?.email}}</p>
+    <p> <strong>Téléphone:</strong>{{collaborator?.phoneNumber}}</p>
+    <p><strong>Date de naissance :</strong> {{collaborator?.birthDate | date}}</p>
+    <p><strong>Adresse :</strong> {{collaborator?.address}}</p>
+    <p><strong>Mobile money favori :</strong> {{collaborator?.favoriteWallet}}</p>
+    <div class="profile-actions">
+      <button [routerLink]="'/dashboard/collaborators/'+collaboratorId"  >
+        <span><mat-icon>edit</mat-icon></span>
+        Modifier</button>
+      <button class="suspend">
+        <span><mat-icon>lock</mat-icon></span>
+        Suspendre</button>
+    </div>
+  </div>
+
+  <!-- Section droite : Informations financières -->
+  <div class="finance-section">
+    <p><strong>Salaire net mensuel :</strong> 150 000 XOF</p>
+    <p><strong>Acompte autorisé :</strong> 50 000 XOF</p>
+    <p><strong>Total demandé :</strong> 25 000 XOF</p>
+    <p><strong>Balance :</strong> 25 000 XOF</p>
+    <canvas id="financeChart" width="150" height="150"></canvas>
+  </div>
+</div>
+
+  <!-- Section centrale : Demande en attente -->
+  <div class="request-section">
+    <h2>Demande en attente</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>N° de la demande</th>
+          <th>Nom du service</th>
+          <th>Montant</th>
+          <th>Date</th>
+          <th>Solde</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>215</td>
+          <td>Avance sur salaire</td>
+          <td>475 000 XOF</td>
+          <td>06-06-2022</td>
+          <td>100 000 XOF</td>
+          <td><button class="dropdown-btn">Action ▼</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Section inférieure : Demande en cours -->
+  <div class="current-request-section">
+    <h2>Demande en cours</h2>
+    <p>Avance salariale remboursable mensuellement</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Montant demandé</th>
+          <th>Mensualité</th>
+          <th>Frais</th>
+          <th>Reliquat</th>
+          <th>État</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>03/06/2024</td>
+          <td>1 500 XOF</td>
+          <td>500 XOF</td>
+          <td>10 XOF</td>
+          <td>650 XOF</td>
+          <td><span class="status success">✔</span></td>
+        </tr>
+        <tr>
+          <td>03/09/2024</td>
+          <td>1 500 XOF</td>
+          <td>500 XOF</td>
+          <td>10 XOF</td>
+          <td>650 XOF</td>
+          <td><span class="status failure">✘</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+

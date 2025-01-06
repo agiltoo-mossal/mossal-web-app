@@ -64,7 +64,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
       ],
       address: [''],
-      position: ['', Validators.required],
+      // position: ['', Validators.required],
       uniqueIdentifier: [''],
       salary: [500000, [Validators.required, Validators.min(50000)]],
       wizallAccountNumber: [''],
@@ -72,6 +72,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       birthDate: [null],
       favoriteWallet: [Wallet.Wave],
       categorySocioProId: ['', Validators.required],
+      position: ['TESTEUR'],
     });
   }
 
@@ -114,11 +115,22 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       this.collaboratorForm.markAllAsTouched();
       return;
     }
+    if (this.collaboratorId) {
+      this.edit();
+      return;
+    }
     this.isLoading = true;
     this.inviteCollaboratorGQL
-      .mutate({ collaboratorInput: this.collaboratorForm.value })
+      .mutate({
+        collaboratorInput: {
+          ...this.collaboratorForm.getRawValue(),
+          position: 'TESTEUR',
+        },
+      })
       .subscribe(
         (result) => {
+          console.log('result', result);
+
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/collaborators']);
@@ -140,9 +152,11 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     }
     this.isLoading = true;
     const value = {
-      ...this.collaboratorForm.value,
+      ...this.collaboratorForm.getRawValue(),
       salary: Number(this.collaboratorForm.value.salary || 0),
+      position: 'TESTEUR',
     };
+
     delete value.email;
     this.updateCollaboratorGQL
       .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })

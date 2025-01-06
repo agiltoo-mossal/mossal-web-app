@@ -154,6 +154,16 @@
                   <span>Editer</span>
                 </div>
                 <div
+                  class="dropdown-option"
+                  fxLayout="row"
+                  fxLayoutAlign="start center"
+                  fxLayoutGap="12px"
+                  routerLink="/dashboard/collaborators/details/{{ row.id ?? row?._id }}"
+                >
+                  <span><mat-icon>info</mat-icon></span>
+                  <span>Details</span>
+                </div>
+                <div
                   *ngIf="!row.blocked"
                   class="dropdown-option color-danger"
                   fxLayout="row"
