@@ -51,7 +51,7 @@
         </div>
         <div>
           <mat-error
-            *ngIf="settingForm.get('amount').invalid && settingForm.get('amount').touched"
+            *ngIf="settingForm?.get('amount')?.invalid && settingForm?.get('amount').touched"
           >
             Le montant est requis et doit être supérieur à 0.
           </mat-error>
@@ -75,8 +75,8 @@
         <div>
           <mat-error
             *ngIf="
-              settingForm.get('amountPercentage').invalid &&
-              settingForm.get('amountPercentage').touched
+              settingForm?.get('amountPercentage').invalid &&
+              settingForm?.get('amountPercentage').touched
             "
           >
             La pourcentage est requise.
@@ -99,8 +99,8 @@
     <div>
     <mat-error
       *ngIf="
-        settingForm.get('refundDuration').invalid &&
-        settingForm.get('refundDuration').touched
+        settingForm?.get('refundDuration').invalid &&
+        settingForm?.get('refundDuration').touched
       "
     >
       La durée du remboursement est requise.

@@ -38,6 +38,26 @@ export class SettingComponent implements OnInit {
       ])
     );
     if (this.data) {
+      console.log('dataInput', this.data);
+
+      if (this.data.amountUnit == 'Fixed') {
+        this.settingForm.removeControl('amountPercentage');
+        this.settingForm.addControl(
+          'amount',
+          this._fb.control(null, [Validators.required])
+        );
+      } else {
+        this.settingForm.removeControl('amount');
+        this.settingForm.addControl(
+          'amountPercentage',
+          this._fb.control(null, [
+            Validators.min(1),
+            Validators.max(100),
+            Validators.required,
+          ])
+        );
+      }
+
       this.settingForm.patchValue({ ...this.data });
     }
     this.settingForm.valueChanges.subscribe((value) => {

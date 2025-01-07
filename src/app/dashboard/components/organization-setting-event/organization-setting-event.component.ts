@@ -6,6 +6,7 @@ import {
   ActivateEventGQL,
   AmountUnit,
   CategorySociopro,
+  CategorySocioproService,
   CreateCategorySocioproServiceGQL,
   CreateEventGQL,
   CreateOrganistionServiceGQL,
@@ -19,9 +20,12 @@ import {
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchServicesGQL,
   OrganisationService,
+  OrganisationServiceInput,
   Organization,
   Service,
+  UpdateCategorySocioproServiceGQL,
   UpdateEventGQL,
+  UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
 import {
   EAmountUnit,
@@ -50,11 +54,12 @@ export class OrganizationSettingEventComponent {
 
   // Onglet actif
   activeTab: string = 'Paramètres Généraux';
+  listCategorieService: Partial<CategorySocioproService>[] = [];
 
   // Données pour les paramètres
 
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
-  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
+  selectedCategorie: any;
 
   organization: Organization;
 
@@ -73,10 +78,12 @@ export class OrganizationSettingEventComponent {
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
     private snackBarService: SnackBarService,
     private defineService: CreateOrganistionServiceGQL,
+    private updateDefineService: UpdateOrganisationServiceGQL,
     private deleteEventGQL: DeleteEventGQL,
     private activateEvent: ActivateEventGQL,
     private desactiveEvent: DesactiveEventGQL,
     private updateEventGQL: UpdateEventGQL,
+    private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
   ) {}
@@ -84,8 +91,6 @@ export class OrganizationSettingEventComponent {
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
-    console.log('this.organization', this.organization.id);
-    console.log('this.service', this.service.id);
 
     this.fetchOrganisationServiceByOrganisationIdAndServiceIdGQL
       .fetch({
@@ -96,14 +101,31 @@ export class OrganizationSettingEventComponent {
         next: (response) => {
           this.organisationServiceId =
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id;
-          console.log('organisationServiceId', this.organisationServiceId);
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
             OrganisationService & { categorySociopro: CategorySociopro[] }
           >;
           this.dataForm = this.info;
-          this.selectedCategorie = this.info?.categorySociopro?.[0];
+          this.listCategorieService = [
+            {
+              amount: this.info.amount,
+              amountUnit: this.info.amountUnit,
+              refundDuration: this.info.refundDuration,
+              refundDurationUnit: this.info.refundDurationUnit,
+              activated: this.info.activated,
+              activatedAt: this.info.activatedAt,
+              autoValidate: this.info.autoValidate,
+              categorySociopro: {
+                title: 'Paramètres généraux',
+              } as any,
+            },
+          ];
+          this.selectedCategorie = this.listCategorieService[0] as any;
+          this.listCategorieService = [
+            ...this.listCategorieService,
+            ...(this.info?.categoriesocioproservices || []),
+          ];
         },
         error: (error) => {
           console.error(error);
@@ -141,15 +163,9 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
-          this.categories = [
-            {
-              id: 'djkkdsj',
-              title: 'Paramètres généraux',
-              description: 'général',
-            },
-            ,
-            ...this.categories,
-          ];
+          console.log(this.categories);
+
+          this.categories = [...this.categories];
         },
         error: (err) => {
           console.log(err);
@@ -202,6 +218,37 @@ export class OrganizationSettingEventComponent {
         });
       }
     });
+  }
+  onChangeCategorie(event: Event) {
+    const temp = [...this.listCategorieService];
+    const cate = this.categories.find(
+      (item) => item?.id == this.selectedCategory
+    );
+    if (
+      this.listCategorieService.some(
+        (item) => item.categorySociopro?.title === cate.title
+      )
+    ) {
+      this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    temp.push({
+      activated: true,
+      amount: 0,
+      amountUnit: AmountUnit.Fixed,
+      autoValidate: true,
+      organisationServiceId: this.organisationServiceId,
+      categorySocioproId:
+        this.categories.find((item) => item?.id == this.selectedCategory)?.id ||
+        '',
+      categorySociopro: this.categories.find(
+        (item) => item?.id == this.selectedCategory
+      ),
+      refundDuration: 1,
+      refundDurationUnit: DurationUnit.Month,
+      activatedAt: null,
+    } as any);
+    this.listCategorieService = temp;
   }
   updateEvent(event: {
     id: string;
@@ -269,18 +316,84 @@ export class OrganizationSettingEventComponent {
    */
   saveSettings(): void {
     // Valider les données avant de sauvegarder
-
+    console.log(this.selectedCategorie);
     if (!this.dataForm) {
       return;
     }
+    if (
+      this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
+    ) {
+      if (this.organisationServiceId) {
+        this.updateSettingOrganistion(this.organisationServiceId, {
+          ...this.dataForm,
+        });
+      } else {
+        this.createSettingOrganisation(
+          this.organization.id,
+          {
+            ...this.dataForm,
+          },
+          this.service.id
+        );
+      }
+    } else {
+      let selectedUpdate = this.listCategorieService.find(
+        (item) =>
+          item?.id === this.selectedCategorie?.id &&
+          item?.id &&
+          this.selectedCategorie?.id
+      );
+      console.log(selectedUpdate);
+      if (!selectedUpdate) {
+        this.createCategorySocioproServiceGQL
+          .mutate({
+            categorySocioproId: this.selectedCategorie.categorySocioproId,
+            categorySocioproServiceInput: {
+              ...this.dataForm,
+            },
+            organisationServiceId: this.organisationServiceId,
+          })
+          .subscribe({
+            next: (response) => {
+              this.snackBarService.showSnackBar('Paramètres enregistrés');
+            },
+            error: (err) => {
+              this.snackBarService.showErrorSnackBar();
+            },
+          });
+      } else {
+        this.updateCategorySocioproServiceGQL
+          .mutate({
+            categorySocioproServiceId: selectedUpdate.id,
+            categorySocioproServiceInput: {
+              ...this.dataForm,
+            },
+          })
+          .subscribe({
+            next: (response) => {
+              this.snackBarService.showSnackBar('Paramètres enregistrés');
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar(
+                'Une configuration est deja mise en place'
+              );
+            },
+          });
+      }
 
+      // creer les categories socio pro service
+    }
+  }
+  createSettingOrganisation(
+    organisationId: string,
+    organisationServiceInput: OrganisationServiceInput,
+    serviceId: string
+  ) {
     this.defineService
       .mutate({
-        organisationId: this.organization.id,
-        serviceId: this.service.id,
-        organisationServiceInput: {
-          ...this.dataForm,
-        },
+        organisationId,
+        organisationServiceInput,
+        serviceId,
       })
       .subscribe({
         next: (response) => {
@@ -295,6 +408,33 @@ export class OrganizationSettingEventComponent {
         },
       });
   }
+  updateSettingOrganistion(
+    organisationServiceId: string,
+    organisationServiceInput: OrganisationServiceInput
+  ) {
+    this.updateDefineService
+      .mutate({
+        organisationServiceId: this.organisationServiceId,
+        organisationServiceInput: {
+          ...this.dataForm,
+        },
+      })
+      .subscribe({
+        next: (response) => {
+          console.log('response', response);
+          this.snackBarService.showSnackBar(
+            'Paramètres de plafond enregistrés'
+          );
+        },
+        error: (err) => {
+          console.log(err);
+          this.snackBarService.showSnackBar(
+            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+          );
+        },
+      });
+  }
+
   onServiceActivationChange($event) {
     // this.dataForm.activated = $event;
     console.log('activated', $event);
@@ -409,7 +549,9 @@ export class OrganizationSettingEventComponent {
   createOrganizationService() {}
 
   onTabChange(event: MatTabChangeEvent) {
-    this.selectedCategorie = this.categories[event.index];
+    this.selectedCategorie = this.listCategorieService[event.index];
+
+    console.log(this.selectedCategorie);
   }
   onSettingChange($event) {
     console.log('settingForms', $event);

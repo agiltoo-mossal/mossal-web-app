@@ -6,6 +6,8 @@ import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   AmountUnit,
   CategorySociopro,
+  CategorySocioproService,
+  CreateCategorySocioproServiceGQL,
   CreateOrganistionServiceGQL,
   DurationUnit,
   FetchCategorySocioprosGQL,
@@ -15,6 +17,7 @@ import {
   OrganisationServiceUpdateInput,
   Organization,
   Service,
+  UpdateCategorySocioproServiceGQL,
   UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
 import Swal from 'sweetalert2';
@@ -29,13 +32,14 @@ export class OrganizationSettingSalaryComponent {
   salaryForm: FormGroup;
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
+  listCategorieService: Partial<CategorySocioproService>[] = [];
 
   newCategory: string = '';
   isActive: boolean = false;
   organization: Organization;
   organisationServiceId: string;
   activated: boolean = true;
-  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
+  selectedCategorie: any;
   @Output() activeService: EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
@@ -49,6 +53,9 @@ export class OrganizationSettingSalaryComponent {
     private defineService: CreateOrganistionServiceGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
+    private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
+
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
   ) {}
 
@@ -72,12 +79,35 @@ export class OrganizationSettingSalaryComponent {
       })
       .subscribe({
         next: (response) => {
+          console.log('response', response);
+
           if (
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
           ) {
             const data = response.data
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
+            this.listCategorieService = [
+              {
+                amount: data.amount,
+                amountUnit: data.amountUnit,
+                refundDuration: data.refundDuration,
+                refundDurationUnit: data.refundDurationUnit,
+                activated: data.activated,
+                activatedAt: data.activatedAt,
+                autoValidate: data.autoValidate,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+            this.selectedCategorie = this.listCategorieService[0];
+            console.log(this.selectedCategorie);
+
+            this.listCategorieService = [
+              ...this.listCategorieService,
+              ...(data?.categoriesocioproservices || []),
+            ];
           }
         },
         error: (err) => {
@@ -93,15 +123,7 @@ export class OrganizationSettingSalaryComponent {
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
-          this.categories = [
-            {
-              id: 'djkkdsj',
-              title: 'Paramètres généraux',
-              description: 'général',
-            },
-            ,
-            ...this.categories,
-          ];
+          this.categories = [...this.categories];
         },
         error: (err) => {
           console.log(err);
@@ -119,6 +141,37 @@ export class OrganizationSettingSalaryComponent {
 
       if (startDate && endDate) {
         this.calculateRefundDuration(startDate, endDate);
+      }
+    });
+    this.selectedCategorieSociopro.valueChanges.subscribe((cate) => {
+      console.log(cate);
+      if (cate) {
+        const temp = [...this.listCategorieService];
+        const category = this.categories.find((item) => item?.id == cate);
+        if (
+          this.listCategorieService.some(
+            (item) => item.categorySociopro?.title === category?.title
+          )
+        ) {
+          this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+          return;
+        }
+        this.selectedCategorie = category;
+
+        temp.push({
+          activated: true,
+          amount: 0,
+          amountUnit: AmountUnit.Fixed,
+          autoValidate: true,
+          organisationServiceId: this.organisationServiceId,
+          categorySocioproId:
+            this.categories.find((item) => item?.id == cate)?.id || '',
+          categorySociopro: this.categories.find((item) => item?.id == cate),
+          refundDuration: 1,
+          refundDurationUnit: DurationUnit.Month,
+          activatedAt: null,
+        } as any);
+        this.listCategorieService = temp;
       }
     });
   }
@@ -160,9 +213,11 @@ export class OrganizationSettingSalaryComponent {
   get endDate() {
     return this.salaryForm.get('endDate');
   }
+  get selectedCategorieSociopro() {
+    return this.salaryForm.get('selectedCategory');
+  }
 
   saveSettings() {
-    console.log(this.salaryForm.getRawValue());
     if (this.salaryForm.invalid) {
       return;
     }
@@ -177,14 +232,66 @@ export class OrganizationSettingSalaryComponent {
         delete dataForm.selectedCategory;
         delete dataForm.startDate;
         delete dataForm.endDate;
-        if (this.organisationServiceId) {
-          this.updateOrganisationService(this.organisationServiceId, dataForm);
+        console.log(this.selectedCategorie);
+
+        if (
+          this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
+        ) {
+          if (this.organisationServiceId) {
+            this.updateOrganisationService(
+              this.organisationServiceId,
+              dataForm
+            );
+          } else {
+            this.createOrganisationService(
+              dataForm,
+              this.organization.id,
+              this.service.id
+            );
+          }
         } else {
-          this.createOrganisationService(
-            dataForm,
-            this.organization.id,
-            this.service.id
+          let selectedUpdate = this.listCategorieService.find(
+            (item) =>
+              item?.id === this.selectedCategorie?.id &&
+              item?.id &&
+              this.selectedCategorie?.id
           );
+          if (!selectedUpdate) {
+            this.createCategorySocioproServiceGQL
+              .mutate({
+                categorySocioproId: this.selectedCategorie.categorySocioproId,
+                categorySocioproServiceInput: {
+                  ...this.salaryForm.getRawValue(),
+                },
+                organisationServiceId: this.organisationServiceId,
+              })
+              .subscribe({
+                next: (response) => {
+                  this.snackBarService.showSnackBar('Paramètres enregistrés');
+                },
+                error: (err) => {
+                  this.snackBarService.showErrorSnackBar();
+                },
+              });
+          } else {
+            this.updateCategorySocioproServiceGQL
+              .mutate({
+                categorySocioproServiceId: selectedUpdate.id,
+                categorySocioproServiceInput: {
+                  ...this.salaryForm.getRawValue(),
+                },
+              })
+              .subscribe({
+                next: (response) => {
+                  this.snackBarService.showSnackBar('Paramètres enregistrés');
+                },
+                error: (err) => {
+                  this.snackBarService.showSnackBar(
+                    'Une configuration est deja mise en place'
+                  );
+                },
+              });
+          }
         }
       }
     });
@@ -254,6 +361,6 @@ export class OrganizationSettingSalaryComponent {
     console.log('form', this.salaryForm.getRawValue());
   }
   onTabChange(event: MatTabChangeEvent) {
-    this.selectedCategorie = this.categories[event.index];
+    this.selectedCategorie = this.listCategorieService[event.index];
   }
 }

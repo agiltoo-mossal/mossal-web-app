@@ -85,11 +85,12 @@
         >
           
           <mat-tab
-            *ngFor="let categorie of categories"
-            [label]="categorie?.title"
+            *ngFor="let categorie of listCategorieService"
+            [label]="categorie?.categorySociopro?.title"
           >
             <app-setting
-              [categorie]="categorie"
+              [data]="categorie"
+              [categorie]="categorie.categorySociopro"
               (settingChange)="onSettingChange($event)"
             ></app-setting>
           </mat-tab>
