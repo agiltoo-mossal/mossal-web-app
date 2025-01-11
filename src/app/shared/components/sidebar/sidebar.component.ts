@@ -42,7 +42,7 @@ export class SidebarComponent implements OnInit {
     return [
       {
         label: 'Tableau de bord',
-        link: 'overview',
+        link: '/overview',
         icon: 'dashboard',
       },
       {
@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit {
     return [
       {
         label: 'Tableau de bord',
-        link: 'overview',
+        link: '/dashboard/overview',
         icon: 'dashboard',
       },
       {

@@ -61,11 +61,14 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       lastName: ['', Validators.required],
       phoneNumber: [
         '',
-        [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
+        [
+          Validators.required,
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+        ],
       ],
       address: [''],
       // position: ['', Validators.required],
-      uniqueIdentifier: [''],
+      uniqueIdentifier: ['', [Validators.required]],
       salary: [500000, [Validators.required, Validators.min(50000)]],
       wizallAccountNumber: [''],
       bankAccountNumber: [''],
@@ -140,6 +143,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           }
         },
         (error) => {
+          this.snackBarService.showErrorSnackBar();
           this.isLoading = false;
         }
       );
@@ -171,6 +175,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           }
         },
         (error) => {
+          this.snackBarService.showErrorSnackBar();
           this.isLoading = false;
         }
       );
