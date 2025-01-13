@@ -123,11 +123,12 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       return;
     }
     this.isLoading = true;
-    delete this.collaboratorForm.value.categorySocioProId;
+    const temp = this.collaboratorForm.getRawValue();
+    delete temp.categorySocioProId;
     this.inviteCollaboratorGQL
       .mutate({
         collaboratorInput: {
-          ...this.collaboratorForm.getRawValue(),
+          ...temp,
           position: 'TESTEUR',
         },
         categorySocioProId: this.collaboratorForm.value.categorySocioProId,
