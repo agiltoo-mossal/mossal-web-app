@@ -1064,6 +1064,7 @@ export type User = {
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['DateTime']['output']>;
   blocked?: Maybe<Scalars['Boolean']['output']>;
+  categorySociopro: CategorySociopro;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   enableEmailNotification?: Maybe<Scalars['Boolean']['output']>;
@@ -1174,6 +1175,7 @@ export type FetchPaginatedOrganizationCollaboratorsQuery = { __typename?: 'Query
 
 export type InviteCollaboratorMutationVariables = Exact<{
   collaboratorInput: InviteCollaboratorInput;
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -1184,11 +1186,12 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string } } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string }, categorySociopro: { __typename?: 'CategorySociopro', id: any, title?: string | null } } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;
   collaboratorId: Scalars['String']['input'];
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -1815,8 +1818,11 @@ export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
     }
   }
 export const InviteCollaboratorDocument = gql`
-    mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
-  inviteCollaborator(collaborator: $collaboratorInput)
+    mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!, $categorySocioProId: String) {
+  inviteCollaborator(
+    collaborator: $collaboratorInput
+    categorySocioProId: $categorySocioProId
+  )
 }
     `;
 
@@ -1851,6 +1857,10 @@ export const FetchOrganizationCollaboratorDocument = gql`
     organization {
       name
     }
+    categorySociopro {
+      id
+      title
+    }
   }
 }
     `;
@@ -1866,10 +1876,11 @@ export const FetchOrganizationCollaboratorDocument = gql`
     }
   }
 export const UpdateCollaboratorDocument = gql`
-    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!) {
+    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!, $categorySocioProId: String) {
   updateCollaborator(
     collaborator: $collaboratorInput
     collaboratorId: $collaboratorId
+    categorySocioProId: $categorySocioProId
   )
 }
     `;

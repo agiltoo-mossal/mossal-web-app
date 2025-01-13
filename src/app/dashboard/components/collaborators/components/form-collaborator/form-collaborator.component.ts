@@ -123,12 +123,14 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       return;
     }
     this.isLoading = true;
+    delete this.collaboratorForm.value.categorySocioProId;
     this.inviteCollaboratorGQL
       .mutate({
         collaboratorInput: {
           ...this.collaboratorForm.getRawValue(),
           position: 'TESTEUR',
         },
+        categorySocioProId: this.collaboratorForm.value.categorySocioProId,
       })
       .subscribe(
         (result) => {
@@ -160,10 +162,15 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       salary: Number(this.collaboratorForm.value.salary || 0),
       position: 'TESTEUR',
     };
-
+    const categorySocioProId = value.categorySocioProId;
     delete value.email;
+    delete value.categorySocioProId;
     this.updateCollaboratorGQL
-      .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+      .mutate({
+        collaboratorInput: value,
+        collaboratorId: this.collaboratorId,
+        categorySocioProId,
+      })
       .subscribe(
         (result) => {
           this.isLoading = false;
@@ -192,7 +199,11 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         .subscribe((result) => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           const birthDate = dateToString(this.collaborator.birthDate);
-          this.collaboratorForm.patchValue({ ...this.collaborator, birthDate });
+          this.collaboratorForm.patchValue({
+            ...this.collaborator,
+            categorySocioProId: this?.collaborator.categorySociopro.id,
+            birthDate,
+          });
         });
     }
   }

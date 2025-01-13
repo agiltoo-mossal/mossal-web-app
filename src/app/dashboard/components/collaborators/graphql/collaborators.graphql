@@ -64,8 +64,8 @@ query FetchPaginatedOrganizationCollaborators(
   }
 }
 
-mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!) {
-  inviteCollaborator(collaborator: $collaboratorInput)
+mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!, $categorySocioProId: String) {
+  inviteCollaborator(collaborator: $collaboratorInput, categorySocioProId: $categorySocioProId)
 }
 
 query FetchOrganizationCollaborator($collaboratorId: String!) {
@@ -88,15 +88,22 @@ query FetchOrganizationCollaborator($collaboratorId: String!) {
     organization {
       name
     }
+    categorySociopro {
+      id
+      title
+    }
   }
 }
 
 mutation UpdateCollaborator(
   $collaboratorInput: UpdateCollaboratorInput!
   $collaboratorId: String!
+  $categorySocioProId: String
+
 ) {
   updateCollaborator(
     collaborator: $collaboratorInput
     collaboratorId: $collaboratorId
+    categorySocioProId: $categorySocioProId
   )
 }
