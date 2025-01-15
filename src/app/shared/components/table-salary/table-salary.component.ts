@@ -67,6 +67,7 @@ export class TableSalaryComponent {
     'name',
     'balance',
     'createdAt',
+    'avance',
     'action',
   ];
 
