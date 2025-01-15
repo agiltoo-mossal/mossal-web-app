@@ -11,6 +11,7 @@ import {
   UpdateCategorySocioproGQL,
   UpdateOrganizationGQL,
 } from 'src/graphql/generated';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-organization-setting-general',
@@ -46,7 +47,9 @@ export class OrganizationSettingGeneralComponent {
   // Données pour les catégories
   newCategorie: string = '';
   maxPercentage: number = 0;
-  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
+  categories: Partial<
+    CategorySociopro & { error: boolean; isEditing: boolean }
+  >[] = [];
   errorMessage: string = '';
   dayLimite!: number;
 
@@ -77,6 +80,17 @@ export class OrganizationSettingGeneralComponent {
       this.errorMessage = 'Le nom de la catégorie est obligatoire.';
       return;
     }
+    const existingCategory = this.categories.find(
+      (category) => category.title === this.newCategorie
+    );
+    if (existingCategory) {
+      this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
+      this.errorMessage = 'Cette catégorie existe déjà.';
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
+      return;
+    }
     this.categorieGQL
       .mutate({
         categorySocioproInput: {
@@ -104,9 +118,76 @@ export class OrganizationSettingGeneralComponent {
         },
       });
   }
-  savePlafond() {}
+  savePlafond() {
+    if (this.maxPercentage > 100) {
+      this.snackBarService.showSnackBar('Le plafond ne doit pas dépasser 100%');
+      return;
+    }
 
-  editCategorie(index: number): void {
+    this.updateOrganizationGQL
+      .mutate({
+        organizationId: this.organization.id,
+        organizationInput: {
+          amountPercent: this.maxPercentage,
+          demandeDeadlineDay: this.dayLimite,
+        } as any,
+      })
+      .subscribe({
+        next: (result) => {
+          if (result.data.updateOrganization) {
+            this.itemsCardDate.forEach((item) => {
+              item.pending = false;
+              item.active = false;
+            });
+            this.itemsCardDate[this.dayLimite - 1].active = true;
+            this.snackBarService.showSuccessSnackBar('PLAFOND MODIFIE');
+          } else {
+            this.snackBarService.showErrorSnackBar();
+          }
+        },
+        error: (error) => {
+          this.snackBarService.showErrorSnackBar();
+        },
+      });
+  }
+  saveCategorie(index: number): void {
+    // Sauvegarder les modifications et désactiver le mode édition
+    const existingCategory = this.categories.find(
+      (category) =>
+        category.title.toLowerCase() ===
+        this.categories[index].title.toLowerCase()
+    );
+    console.log({ existingCategory });
+    if (existingCategory && existingCategory.id !== this.categories[index].id) {
+      this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
+      this.categories[index].error = true;
+      setTimeout(() => {
+        this.categories[index].error = false;
+      }, 3000);
+      return;
+    }
+    let doublon = false;
+    for (let i = 0; i < this.categories.length; i++) {
+      if (
+        i !== index &&
+        this.categories[i].title.toLowerCase() ===
+          this.categories[index].title.toLowerCase()
+      ) {
+        doublon = true;
+        break;
+      }
+    }
+    if (doublon) {
+      this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
+      this.categories[index].error = true;
+      setTimeout(() => {
+        this.categories[index].error = false;
+      }, 3000);
+      return;
+    }
+
+    this.categories[index].isEditing = false;
+
     const categorie = this.categories[index];
     this.updateCategorieGQL
       .mutate({
@@ -128,6 +209,19 @@ export class OrganizationSettingGeneralComponent {
         },
       });
   }
+
+  cancelEdit(index: number): void {
+    // Annuler les modifications et désactiver le mode édition
+    this.categories[index].isEditing = false;
+
+    // Optionnel : Restaurer l'ancienne valeur si nécessaire
+    // Vous pouvez sauvegarder l'ancienne valeur avant de passer en mode édition
+  }
+
+  editCategorie(index: number): void {
+    // Mettre le mode édition à true pour l'élément sélectionné
+    this.categories[index].isEditing = true;
+  }
   getCurrentorganization(useCache = true) {
     this.fetchCurrentAdminGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
@@ -142,29 +236,41 @@ export class OrganizationSettingGeneralComponent {
             element.active = false;
             if (element.day === this.organization.demandeDeadlineDay) {
               element.active = true;
+              this.dayLimite = element.day;
             }
           });
         }
       });
   }
   deleteCategorie(index: number): void {
-    this.deleteCategoryGQL
-      .mutate({
-        categorySocioproId: this.categories[index].id,
-      })
-      .subscribe({
-        next: (result) => {
-          if (result.data.deleteCategorySociopro) {
-            this.snackBarService.showSuccessSnackBar('CATEGORIE SUPPRIMEE');
-            this.categories.splice(index, 1);
-          } else {
-            this.snackBarService.showErrorSnackBar();
-          }
-        },
-        error: (error) => {
-          this.snackBarService.showErrorSnackBar();
-        },
-      });
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: 'Cette action est irréversible!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteCategoryGQL
+          .mutate({
+            categorySocioproId: this.categories[index].id,
+          })
+          .subscribe({
+            next: (result) => {
+              if (result.data.deleteCategorySociopro) {
+                this.snackBarService.showSuccessSnackBar('CATEGORIE SUPPRIMEE');
+                this.categories.splice(index, 1);
+              } else {
+                this.snackBarService.showErrorSnackBar();
+              }
+            },
+            error: (error) => {
+              this.snackBarService.showErrorSnackBar();
+            },
+          });
+      }
+    });
   }
 
   getDateTime(item: any): string {

@@ -176,6 +176,13 @@ h4 {
     color: #2d3559; /* Couleur du texte des catégories */
     font-size: 14px;
 }
+.categorie-field {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
 
 .categorie-item.error {
     background: #ffe6e6;

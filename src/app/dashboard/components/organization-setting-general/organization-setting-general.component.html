@@ -25,15 +25,32 @@
             [ngClass]="{ error: categorie.error }"
             class="categorie-item"
           >
-            <span>{{ categorie.title }}</span>
-            <div class="actions">
-              <button class="edit-btn" (click)="editCategorie(i)">✏️</button>
-              <button class="delete-btn" (click)="deleteCategorie(i)">
-                🗑️
-              </button>
+            <!-- Affichage conditionnel -->
+            <div class="categorie-field" *ngIf="!categorie.isEditing">
+              <span>{{ categorie.title }}</span>
+              <div class="actions">
+                <button class="edit-btn" (click)="editCategorie(i)">✏️</button>
+                <button class="delete-btn" (click)="deleteCategorie(i)">
+                  🗑️
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode édition -->
+            <div class="categorie-field" *ngIf="categorie.isEditing">
+              <input
+                type="text"
+                [(ngModel)]="categorie.title"
+                class="edit-input"
+              />
+              <div class="actions">
+                <button class="save-btn" (click)="saveCategorie(i)">✔️</button>
+                <button class="cancel-btn" (click)="cancelEdit(i)">❌</button>
+              </div>
             </div>
           </li>
         </ul>
+
         <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
       </div>
 
@@ -81,7 +98,8 @@
             "
             ><i class="fa-solid fa-info" style="color: white"></i
           ></span>
-          Veuillez sélectionner le jour à partir duquel le collaborateur ne pourra plus soumettre de demande
+          Veuillez sélectionner le jour à partir duquel le collaborateur ne
+          pourra plus soumettre de demande
         </p>
       </div>
     </div>
@@ -102,7 +120,9 @@
           <span class="percentage-symbol">%</span>
         </div>
       </div>
-      <button class="validate-button" (click)="savePlafond()">Mettre à jour</button>
+      <button class="validate-button" (click)="savePlafond()">
+        Mettre à jour
+      </button>
     </div>
   </div>
 </div>
