@@ -56,7 +56,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     private listCategorieGQL: FetchCategorySocioprosGQL
   ) {
     this.collaboratorForm = this.fb.group({
-      email: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       phoneNumber: [
@@ -130,6 +130,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         collaboratorInput: {
           ...temp,
           position: 'TESTEUR',
+          bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
         categorySocioProId: this.collaboratorForm.value.categorySocioProId,
       })
@@ -213,18 +214,27 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.collaboratorForm
       .get('phoneNumber')
       .valueChanges.pipe(
-        debounceTime(300),
+        debounceTime(200),
         distinctUntilChanged(),
-        switchMap((value) =>
-          this.searchService.phoneNumberExists(
+        switchMap((value) => {
+          console.log('valuePhoneNumber', value);
+
+          return this.searchService.phoneNumberExists(
             value,
             false,
             this.collaboratorId
-          )
-        )
+          );
+        })
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['phoneNumber'].setErrors(null);
+        this.collaboratorForm.controls['phoneNumber'].updateValueAndValidity();
         this.phoneNumberExists = result;
+        if (result) {
+          this.collaboratorForm.controls['phoneNumber'].setErrors({
+            phoneNumberExists: true,
+          });
+        }
       });
   }
 
@@ -234,12 +244,28 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       .valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((value) =>
-          this.searchService.emailExists(value, false, this.collaboratorId)
-        )
+        switchMap((value) => {
+          console.log('value', value);
+
+          return this.searchService.emailExists(
+            value,
+            false,
+            this.collaboratorId
+          );
+        })
       )
       .subscribe((result) => {
         this.emailExists = result;
+        this.collaboratorForm.controls['email'].setErrors(null);
+        this.collaboratorForm.controls['email'].updateValueAndValidity();
+
+        if (result) {
+          this.collaboratorForm.controls['email'].setErrors({
+            emailExists: true,
+          });
+        }
+
+        console.log('email', this.collaboratorForm.controls['email'].errors);
       });
   }
 
@@ -268,15 +294,24 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       .valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((value) =>
-          this.searchService.uniqueIdentifierExists(
+        switchMap((value) => {
+          return this.searchService.uniqueIdentifierExists(
             value,
             false,
             this.collaboratorId
-          )
-        )
+          );
+        })
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+        this.collaboratorForm.controls[
+          'uniqueIdentifier'
+        ].updateValueAndValidity();
+        if (result) {
+          this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+            uniqueIdentifierExists: true,
+          });
+        }
         this.uniqueIdentifierExists = result;
       });
   }
