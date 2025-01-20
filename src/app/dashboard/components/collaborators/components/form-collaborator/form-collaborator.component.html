@@ -183,7 +183,7 @@
           type="tel"
           id="telephone"
           formControlName="phoneNumber"
-          placeholder="+221 77 000 0000"
+          placeholder="+221770000000"
         />
         <div
           *ngIf="
@@ -197,7 +197,7 @@
             >Le numéro de téléphone est obligatoire.</span
           >
           <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']"
-            >Entrez un numéro au format +221 XX XXX XXXX.</span
+            >Entrez un numéro au format +221XXXXXXXXX.</span
           >
           <span *ngIf="phoneNumberExists"
             >Numéro de téléphone déjà utilisé</span>
