@@ -14,7 +14,7 @@
     <div>
       <h2>{{ collaborator?.firstName }} {{ collaborator?.lastName }}</h2>
       <p><strong>Matricule :</strong> {{ collaborator?.uniqueIdentifier }}</p>
-      <p>Catégorie socioprofessionnelle 1</p>
+      <p>{{collaborator.categorySociopro.title}}</p>
       <p><strong>Email:</strong> {{ collaborator?.email }}</p>
       <p><strong>Téléphone:</strong>{{ collaborator?.phoneNumber }}</p>
       <p>
@@ -67,8 +67,8 @@
         <strong>Acompte autorisé :</strong>
         {{ collaborator?.authorizedAdvance }} XOF
       </p>
-      <p><strong>Total demandé :</strong> 25 000 XOF</p>
-      <p><strong>Balance :</strong> 25 000 XOF</p>
+      <p><strong>Total demandé :</strong> {{collaborator?.totalDemandeAmount}} XOF</p>
+      <p><strong>Balance :</strong>{{collaborator?.balance}} XOF</p>
     </div>
     <app-user-details [user]="collaborator"></app-user-details>
   </div>
