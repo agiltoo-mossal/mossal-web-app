@@ -85,6 +85,8 @@ query FetchOrganizationCollaborator($collaboratorId: String!) {
     favoriteWallet
     birthDate
     blocked
+    balance
+    totalDemandeAmount
     organization {
       name
     }

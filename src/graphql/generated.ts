@@ -1186,7 +1186,7 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, organization: { __typename?: 'Organization', name: string }, categorySociopro: { __typename?: 'CategorySociopro', id: any, title?: string | null } } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, organization: { __typename?: 'Organization', name: string }, categorySociopro: { __typename?: 'CategorySociopro', id: any, title?: string | null } } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;
@@ -1854,6 +1854,8 @@ export const FetchOrganizationCollaboratorDocument = gql`
     favoriteWallet
     birthDate
     blocked
+    balance
+    totalDemandeAmount
     organization {
       name
     }
