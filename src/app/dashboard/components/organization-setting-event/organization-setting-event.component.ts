@@ -248,6 +248,8 @@ export class OrganizationSettingEventComponent {
       refundDurationUnit: DurationUnit.Month,
       activatedAt: null,
     } as any);
+    console.log(temp);
+
     this.listCategorieService = temp;
   }
   updateEvent(event: {
