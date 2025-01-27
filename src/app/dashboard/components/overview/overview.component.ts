@@ -74,13 +74,25 @@ export class OverviewComponent implements OnInit {
     private fetchCountStatusGQL: FetchCountStatusGQL
   ) {
     const now = new Date('2024-12-31');
+    const today = new Date();
+    const startDateOfCurrentYear = new Date(today.getFullYear(), 0, 1);
+    const endDateOfCurrentYear = new Date(today.getFullYear(), 11, 31);
     this.metricsInput = this.fb.group({
-      startDate: ['2024-01-01'],
-      endDate: [
-        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      startDate: [
+        `${startDateOfCurrentYear.getFullYear()}-${String(
+          startDateOfCurrentYear.getMonth() + 1
+        ).padStart(2, '0')}-${String(startDateOfCurrentYear.getDate()).padStart(
           2,
           '0'
-        )}-${String(now.getDate()).padStart(2, '0')}`,
+        )}`,
+      ],
+      endDate: [
+        `${endDateOfCurrentYear.getFullYear()}-${String(
+          endDateOfCurrentYear.getMonth() + 1
+        ).padStart(2, '0')}-${String(endDateOfCurrentYear.getDate()).padStart(
+          2,
+          '0'
+        )}`,
       ],
     });
     this.metricsInput.valueChanges.subscribe((r) => {
