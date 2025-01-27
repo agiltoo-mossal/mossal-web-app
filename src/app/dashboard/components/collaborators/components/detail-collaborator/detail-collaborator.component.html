@@ -14,7 +14,7 @@
     <div>
       <h2>{{ collaborator?.firstName }} {{ collaborator?.lastName }}</h2>
       <p><strong>Matricule :</strong> {{ collaborator?.uniqueIdentifier }}</p>
-      <p>{{collaborator.categorySociopro.title}}</p>
+      <p>{{collaborator?.categorySociopro?.title}}</p>
       <p><strong>Email:</strong> {{ collaborator?.email }}</p>
       <p><strong>Téléphone:</strong>{{ collaborator?.phoneNumber }}</p>
       <p>

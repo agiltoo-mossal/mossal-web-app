@@ -1,6 +1,6 @@
 export const environment = {
-  GRAPHQL_URI: 'https://mossal.dev.melentaan.com/graphql',
-  API_URI: 'https://mossal.dev.melentaan.com',
+  GRAPHQL_URI: 'https://mossall-enterprise-service-kzgs.onrender.com/graphql',
+  API_URI: 'https://mossall-enterprise-service-kzgs.onrender.com/',
   ENTERPRISE_URI: 'https://mossal.dev.melentaan.com/graphql',
 
   // GRAPHQL_URI: 'http://51.20.69.167:3003/graphql',
