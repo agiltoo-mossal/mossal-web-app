@@ -64,7 +64,6 @@ export class OrganizationSettingGeneralComponent {
       })
       .subscribe({
         next: (result) => {
-          console.log(result.data.fetchCategorySociopros);
           this.categories = result.data.fetchCategorySociopros.results.map(
             (categorie) => ({
               ...categorie,
@@ -157,7 +156,6 @@ export class OrganizationSettingGeneralComponent {
         category.title.toLowerCase() ===
         this.categories[index].title.toLowerCase()
     );
-    console.log({ existingCategory });
     if (existingCategory && existingCategory.id !== this.categories[index].id) {
       this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
       this.categories[index].error = true;
@@ -229,7 +227,6 @@ export class OrganizationSettingGeneralComponent {
         if (result.data) {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
-          console.log({ org: this.organization });
           this.maxPercentage = this.organization.amountPercent;
           // this.form.patchValue(this.organization);
           this.itemsCardDate.forEach((element) => {

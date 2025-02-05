@@ -102,7 +102,6 @@ export class OrganizationSettingSalaryRefundComponent {
             },
             ...this.categories,
           ];
-          console.log('list', this.categories);
         },
         error: (err) => {
           console.log(err);

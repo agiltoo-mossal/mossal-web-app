@@ -215,6 +215,7 @@ export class OrganizationComponent {
       this.itemsCardDate.push(daySelected);
     }
   }
+
   onTabChange(event: MatTabChangeEvent) {
     this.selectedService = this.listServices[event.index];
   }

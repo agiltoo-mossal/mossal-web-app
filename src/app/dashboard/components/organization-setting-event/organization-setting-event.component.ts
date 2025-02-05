@@ -101,7 +101,8 @@ export class OrganizationSettingEventComponent {
         next: (response) => {
           this.organisationServiceId =
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id;
-
+          this.activated =
+            response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
             OrganisationService & { categorySociopro: CategorySociopro[] }
@@ -140,8 +141,6 @@ export class OrganizationSettingEventComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('events', response.data.fetchEvents.results);
-
           this.events = response.data.fetchEvents.results.map((event) => {
             return {
               ...event,
@@ -163,7 +162,6 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
-          console.log(this.categories);
 
           this.categories = [...this.categories];
         },
@@ -248,7 +246,6 @@ export class OrganizationSettingEventComponent {
       refundDurationUnit: DurationUnit.Month,
       activatedAt: null,
     } as any);
-    console.log(temp);
 
     this.listCategorieService = temp;
   }
@@ -276,7 +273,6 @@ export class OrganizationSettingEventComponent {
           .toISOString()
           .split('T')[0];
 
-        console.log(result);
         this.updateEventGQL
           .mutate({
             eventInput: {
@@ -318,7 +314,6 @@ export class OrganizationSettingEventComponent {
    */
   saveSettings(): void {
     // Valider les données avant de sauvegarder
-    console.log(this.selectedCategorie);
     if (!this.dataForm) {
       return;
     }
@@ -345,7 +340,6 @@ export class OrganizationSettingEventComponent {
           item?.id &&
           this.selectedCategorie?.id
       );
-      console.log(selectedUpdate);
       if (!selectedUpdate) {
         this.createCategorySocioproServiceGQL
           .mutate({
@@ -399,7 +393,6 @@ export class OrganizationSettingEventComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log(response);
           this.snackBarService.showSnackBar('Paramètres enregistrés');
         },
         error: (err) => {
@@ -423,7 +416,6 @@ export class OrganizationSettingEventComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('response', response);
           this.snackBarService.showSnackBar(
             'Paramètres de plafond enregistrés'
           );
@@ -439,7 +431,6 @@ export class OrganizationSettingEventComponent {
 
   onServiceActivationChange($event) {
     // this.dataForm.activated = $event;
-    console.log('activated', $event);
 
     this.activated = $event;
     this.activeService.emit({
@@ -466,8 +457,6 @@ export class OrganizationSettingEventComponent {
         const formattedEndDate = new Date(result.endDate)
           .toISOString()
           .split('T')[0];
-
-        console.log(result);
 
         this.createEventGQL
           .mutate({
@@ -530,8 +519,6 @@ export class OrganizationSettingEventComponent {
           this.snackBarService.showSnackBar('Événement désactivé avec succès');
           this.events = this.events.map((e) => {
             if (e.id === event.id) {
-              console.log('event', e);
-
               return {
                 ...e,
                 activated: false,
@@ -552,11 +539,10 @@ export class OrganizationSettingEventComponent {
 
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
-
-    console.log(this.selectedCategorie);
   }
   onSettingChange($event) {
-    console.log('settingForms', $event);
+    console.log($event);
+
     this.dataForm = $event.dataForm;
   }
 }

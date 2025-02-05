@@ -103,8 +103,10 @@ h3{
 
 /* Conteneur de l'entrée pourcentage */
 .percentage-input-group {
+  justify-content: space-between;
   display: flex;
   align-items: center;
+  flex: 0 1 auto;
   background: #f4f6fa; /* Fond gris clair */
   border: 1px solid #dcdcdc; /* Bordure fine */
   border-radius: 8px;

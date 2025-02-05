@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { lastValueFrom } from 'rxjs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   AmountUnit,
   CategorySociopro,
+  CategorySocioproService,
   CategorySocioproServiceInput,
   CategorySocioproServiceUpdateInput,
   CreateCategorySocioproServiceGQL,
@@ -29,6 +32,10 @@ import {
 })
 export class OrganizationSettingEmergencyComponent {
   emergencyForm: FormGroup;
+  dataForm: any;
+  activatedAt: string;
+  listCategorieService: Partial<CategorySocioproService>[] = [];
+  selectedCategorie: any;
 
   // Variables pour l'état des bascules
   isServiceActive: boolean = false; // Par défaut, le service est inactif
@@ -38,7 +45,7 @@ export class OrganizationSettingEmergencyComponent {
   activationDate: string = ''; // Format ISO (AAAA-MM-JJ)
 
   // Gestion des catégories
-  selectedCategory: string = 'all'; // Catégorie par défaut
+  selectedCategory: string; // Catégorie par défaut
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   organisationServiceId!: string;
   categorySocioproServiceId: string = '';
@@ -70,7 +77,7 @@ export class OrganizationSettingEmergencyComponent {
     this.emergencyForm = this.fb.group({
       activated: [true],
       activatedAt: ['', Validators.required],
-      selectedCategory: ['', Validators.required],
+      selectedCategory: [''],
       amountUnit: [AmountUnit.Percentage],
       // amountPercentage: [0, [, Validators.min(0), Validators.max(100)]],
       autoValidate: [true],
@@ -97,6 +104,32 @@ export class OrganizationSettingEmergencyComponent {
             const data = response.data
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
+            this.dataForm = data;
+            console.log('emergency', data);
+            this.listCategorieService = [
+              {
+                amount: this.dataForm.amount,
+                amountUnit: this.dataForm.amountUnit,
+                refundDuration: this.dataForm.refundDuration,
+                refundDurationUnit: this.dataForm.refundDurationUnit,
+                activated: this.dataForm.activated,
+                activatedAt: this.dataForm.activatedAt,
+                autoValidate: this.dataForm.autoValidate,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+            this.selectedCategorie = this.listCategorieService[0];
+            console.log('data', this.dataForm.categoriesocioproservices);
+            this.dataForm?.categoriesocioproservices.forEach((item) => {
+              this.listCategorieService.push({
+                ...item,
+              });
+            });
+
+            console.log('listCategorieService', this.listCategorieService);
+
             this.emergencyForm.patchValue({
               activated: data.activated,
               activatedAt: data.activatedAt,
@@ -107,8 +140,6 @@ export class OrganizationSettingEmergencyComponent {
               // amountType: data?.amountUnit || AmountUnit.Percentage,
               selectedCategory: data.categorySociopro?.id,
             });
-            this.emergencyForm.get('amountPercentage').setValue(30);
-            console.log('dataForm', this.emergencyForm.getRawValue());
           }
         },
         error: (err) => {
@@ -123,7 +154,6 @@ export class OrganizationSettingEmergencyComponent {
       })
       .subscribe((result) => {
         this.categories = result.data.fetchCategorySociopros.results;
-        console.log('list', this.categories);
       });
 
     this.amountUnit.valueChanges.subscribe((value) => {
@@ -142,18 +172,14 @@ export class OrganizationSettingEmergencyComponent {
       }
     });
   }
-  addCategory(): void {
-    const newCategory = prompt('Entrez le nom de la nouvelle catégorie :');
-    if (newCategory && newCategory.trim()) {
-    } else {
-      alert('Le nom de la catégorie ne peut pas être vide.');
-    }
-  }
 
   /**
    * Méthode pour sauvegarder les paramètres de plafond
    */
   async saveSettings(): Promise<void> {
+    console.log('formErrors', this.emergencyForm.errors);
+    console.log('formValue', this.emergencyForm.getRawValue());
+
     if (this.emergencyForm.invalid) {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
@@ -187,49 +213,86 @@ export class OrganizationSettingEmergencyComponent {
       refundDuration: this.service.refundDurationMonth,
     };
 
-    if (data.selectedCategory) {
+    if (
+      this.selectedCategorie.categorySociopro?.title === 'Paramètres généraux'
+    ) {
+      if (this.organisationServiceId) {
+        this.updateOrganisationService(this.organisationServiceId, data);
+      } else {
+        this.createOrganisationService(
+          data,
+          this.organization.id,
+          this.service.id
+        );
+      }
+    } else {
+      const temp = this.listCategorieService.filter(
+        (item) => item.categorySociopro?.title !== 'Paramètres généraux'
+      );
+      console.log('liste', this.listCategorieService);
+      console.log('selectedCategorie', this.selectedCategorie);
+      console.log('temp', temp);
+      let selectedUpdate = temp.find(
+        (item) =>
+          item?.categorySocioproId &&
+          this.selectedCategorie?.categorySocioproId &&
+          item?.categorySocioproId ===
+            this.selectedCategorie?.categorySocioproId
+      );
+
       const categoryInput: CategorySocioproServiceInput & {
         amountPercentage?: number;
       } = {
-        amountUnit: data.amountUnit,
+        amountUnit: selectedUpdate?.amountUnit,
         refundDurationUnit: DurationUnit.Month,
         refundDuration: this.service.refundDurationMonth,
-        autoValidate: data.autoValidate,
-        activated: data.activated,
-        activatedAt: data.activatedAt,
-        amount: data.amount,
+        autoValidate: selectedUpdate.autoValidate,
+        activated: selectedUpdate.activated,
+        activatedAt: selectedUpdate.activatedAt,
+        amount: selectedUpdate.amount,
       };
-
-      try {
-        const response = await lastValueFrom(
-          this.createCategorySocioproServiceGQL.mutate({
-            categorySocioproId: data.selectedCategory,
+      if (!selectedUpdate?.id) {
+        this.createCategorySocioproServiceGQL
+          .mutate({
+            categorySocioproId: this.selectedCategorie?.categorySocioproId,
             categorySocioproServiceInput: categoryInput,
-            organisationServiceId: this.organization.organisationService.find(
-              (item) => item.serviceId === this.service.id
-            )?.id,
+            organisationServiceId: this.organisationServiceId,
           })
-        );
-        console.log(response);
-        this.snackBarService.showSnackBar('Paramètres de plafond enregistrés');
-      } catch (err) {
-        this.snackBarService.showSnackBar(
-          "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
-        );
-        console.log(err);
+          .subscribe({
+            next: (response) => {
+              console.log(response);
+              this.snackBarService.showSnackBar(
+                `Nouvelles Paramètragres de plafond enregistrés sur le service ${this.selectedCategorie.categorySociopro?.title}`
+              );
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar(
+                "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+              );
+              console.log(err);
+            },
+          });
+      } else {
+        this.updateCategorySocioproServiceGQL
+          .mutate({
+            categorySocioproServiceId: selectedUpdate.id,
+            categorySocioproServiceInput: categoryInput,
+          })
+          .subscribe({
+            next: (response) => {
+              console.log(response);
+              this.snackBarService.showSnackBar(
+                `Mise à jour des paramètres de plafond enregistrée sur le service ${this.selectedCategorie.categorySociopro?.title}`
+              );
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar(
+                "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+              );
+              console.log(err);
+            },
+          });
       }
-
-      delete data.selectedCategory;
-    }
-
-    if (this.organisationServiceId) {
-      this.updateOrganisationService(this.organisationServiceId, data);
-    } else {
-      this.createOrganisationService(
-        data,
-        this.organization.id,
-        this.service.id
-      );
     }
   }
   createOrganisationService(
@@ -247,7 +310,7 @@ export class OrganizationSettingEmergencyComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Nouvelles Paramètres enregistrées avec succès'
           );
         },
         error: (err) => {
@@ -271,7 +334,7 @@ export class OrganizationSettingEmergencyComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Mise à jour des paramètres de plafond enregistrée avec succès'
           );
         },
         error: (err) => {
@@ -335,7 +398,6 @@ export class OrganizationSettingEmergencyComponent {
   }
 
   onToggle(event) {
-    console.log('event', event);
     this.autoValidate.setValue(event);
   }
   onServiceActivationChange(isActive: boolean) {
@@ -352,7 +414,10 @@ export class OrganizationSettingEmergencyComponent {
     }
     this.emergencyForm.get('activated').setValue(isActive);
   }
-
+  onTabChange(event: MatTabChangeEvent) {
+    this.selectedCategorie = this.listCategorieService[event.index];
+    this.activatedAt = this.selectedCategorie.activatedAt;
+  }
   get amountUnit() {
     return this.emergencyForm.get('amountUnit');
   }
@@ -361,6 +426,59 @@ export class OrganizationSettingEmergencyComponent {
   }
   get amountPercentage() {
     return this.emergencyForm.get('amountPercentage');
+  }
+  onSettingChange($event) {
+    console.log($event);
+
+    this.dataForm = $event.dataForm;
+    this.emergencyForm.patchValue({
+      activated: this.dataForm.activated,
+      // activatedAt: this.dataForm.activatedAt,
+      amountUnit: this.dataForm.amountUnit,
+      amount: this.dataForm.amount,
+      autoValidate: this.dataForm.autoValidate,
+      amountPercentage: this.dataForm.amountPercentage,
+    });
+  }
+  onDateChange(event: MatDatepickerInputEvent<Date>) {
+    console.log('event', event.value);
+    const date = new Date(event.value);
+    const formattedDate = date.toISOString().split('T')[0];
+    console.log('formattedDate', formattedDate);
+    this.emergencyForm.get('activatedAt').setValue(formattedDate);
+    console.log('activatedAt', this.emergencyForm.get('activatedAt').value);
+  }
+  onChangeCategorie(event: Event) {
+    console.log('rvent', (event.target as any).value);
+    const targetValue = (event.target as any).value;
+    console.log('selectedCategory', this.selectedCategory);
+
+    const temp = [...this.listCategorieService];
+    const cate = this.categories.find((item) => item?.id == targetValue);
+
+    if (
+      this.listCategorieService.some(
+        (item) => item.categorySociopro?.title === cate.title
+      )
+    ) {
+      this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    temp.push({
+      activated: true,
+      amount: 0,
+      amountUnit: AmountUnit.Fixed,
+      autoValidate: true,
+      organisationServiceId: this.organisationServiceId,
+      categorySocioproId:
+        this.categories.find((item) => item?.id == targetValue)?.id || '',
+      categorySociopro: this.categories.find((item) => item?.id == targetValue),
+      refundDuration: 1,
+      refundDurationUnit: DurationUnit.Month,
+      activatedAt: null,
+    } as any);
+
+    this.listCategorieService = temp;
   }
 }
 export enum EAmountUnit {

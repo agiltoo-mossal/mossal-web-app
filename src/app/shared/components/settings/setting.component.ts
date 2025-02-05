@@ -11,43 +11,40 @@ export class SettingComponent implements OnInit {
   @Output() settingChange = new EventEmitter<any>();
   @Input() categorie: any;
   @Input() data: any = {
-    activated: false,
+    activated: true,
     AmountUnit: 'Percentage',
     amount: 0,
     refundDuration: 0,
-    autoValidate: false,
+    autoValidate: true,
   };
   settingForm: FormGroup;
   constructor(private _fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.settingForm = this._fb.group({
-      activated: [false],
+      activated: [true],
       amountUnit: [AmountUnit.Percentage, [Validators.required]],
       // amount: [],
       refundDuration: [null, [Validators.required, Validators.min(1)]],
-      autoValidate: [false],
+      autoValidate: [true],
+      amountPercentage: [
+        null,
+        [Validators.min(1), Validators.max(100), Validators.required],
+      ],
       // amountPercentage: [],
     });
-    this.settingForm.addControl(
-      'amountPercentage',
-      this._fb.control(null, [
-        Validators.min(0),
-        Validators.max(100),
-        Validators.required,
-      ])
-    );
-    if (this.data) {
-      console.log('dataInput', this.data);
 
-      if (this.data.amountUnit == 'Fixed') {
+    if (this.data) {
+      if (this.data.amountUnit === 'Fixed') {
         this.settingForm.removeControl('amountPercentage');
         this.settingForm.addControl(
           'amount',
           this._fb.control(null, [Validators.required])
         );
+        this.settingForm.get('amount').setValue(this.data.amount);
       } else {
         this.settingForm.removeControl('amount');
+
         this.settingForm.addControl(
           'amountPercentage',
           this._fb.control(null, [
@@ -56,19 +53,24 @@ export class SettingComponent implements OnInit {
             Validators.required,
           ])
         );
+        this.settingForm.get('amountPercentage').setValue(this.data.amount);
       }
 
-      this.settingForm.patchValue({ ...this.data });
+      this.settingForm.get('activated').setValue(this.data.activated);
+      this.settingForm.get('amountUnit').setValue(this.data.amountUnit);
+      this.settingForm.get('refundDuration').setValue(this.data.refundDuration);
+      this.settingForm.get('autoValidate').setValue(this.data.autoValidate);
+
+      this.settingForm.updateValueAndValidity();
     }
     this.settingForm.valueChanges.subscribe((value) => {
-      console.log('status', this.settingForm.valid);
-      console.log('errors', this.settingForm.errors);
-
       if (this.settingForm.valid) {
         this.settingChange.emit({ dataForm: value, categorie: this.categorie });
       }
     });
     this.amountUnit.valueChanges.subscribe((value) => {
+      console.log('value', value);
+
       if (value == AmountUnit.Percentage) {
         this.settingForm.removeControl('amount');
         this.settingForm.addControl(
@@ -79,12 +81,18 @@ export class SettingComponent implements OnInit {
             Validators.required,
           ])
         );
+        if (this.data && this.data.amountUnit == AmountUnit.Percentage) {
+          this.settingForm.get('amountPercentage').setValue(this.data.amount);
+        }
       } else {
         this.settingForm.removeControl('amountPercentage');
         this.settingForm.addControl(
           'amount',
           this._fb.control(null, [Validators.required])
         );
+        if (this.data && this.data.amountUnit == AmountUnit.Fixed) {
+          this.settingForm.get('amount').setValue(this.data.amount);
+        }
       }
     });
   }

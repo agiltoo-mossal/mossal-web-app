@@ -105,7 +105,7 @@ export type CategorySocioproServiceUpdateInput = {
   amountUnit?: InputMaybe<AmountUnit>;
   autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
   refundDuration?: InputMaybe<Scalars['Int']['input']>;
-  refundDurationUnit?: InputMaybe<AmountUnit>;
+  refundDurationUnit?: InputMaybe<DurationUnit>;
 };
 
 export type CategorySocioproUpdateInput = {
@@ -1064,7 +1064,7 @@ export type User = {
   bankAccountNumber?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['DateTime']['output']>;
   blocked?: Maybe<Scalars['Boolean']['output']>;
-  categorySociopro: CategorySociopro;
+  categorySociopro?: Maybe<CategorySociopro>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   enableEmailNotification?: Maybe<Scalars['Boolean']['output']>;
@@ -1186,7 +1186,7 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, organization: { __typename?: 'Organization', name: string }, categorySociopro: { __typename?: 'CategorySociopro', id: any, title?: string | null } } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, organization: { __typename?: 'Organization', name: string }, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null } | null } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;

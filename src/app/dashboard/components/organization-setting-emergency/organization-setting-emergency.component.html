@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Dépannage d'urgences</span></h2>
 
-  <form [formGroup]="emergencyForm" (ngSubmit)="saveSettings()">
+  <form >
     <div class="service-activation-container">
       <div class="auto-validation">
         <h3>Activation du service</h3>
@@ -26,11 +26,14 @@
           >
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
+                <!-- formControlName="activatedAt" -->
               <input
                 matInput
+                [(ngModel)]="activatedAt"
                 [matDatepicker]="startPicker"
-                formControlName="activatedAt"
+                name="activatedAt"
                 placeholder="Choisir une date"
+                (dateChange)="onDateChange($event)"
                 required
               />
               <mat-datepicker-toggle
@@ -61,17 +64,16 @@
           surbrillance.
         </div>
         <div class="category-selection">
-          <select formControlName="selectedCategory">
+          <label for="category-selection">Sélectionnez une catégorie</label>
+          <select  [(ngModel)]="selectedCategory" name="selectedCategory" (change)="onChangeCategorie($event)">
             <option value="" disabled selected>Toutes les catégories</option>
-            <option *ngFor="let categorie of categories" [value]="categorie.id">
+            <option *ngFor="let categorie of categories" [value]="categorie.id" >
               {{ categorie.title }}
             </option>
           </select>
-          <button class="add-category-button" type="button">
-            Ajouter une catégorie
-          </button>
+         
         </div>
-        <div class="percentage">
+        <!-- <div class="percentage">
           <h3>Pourcentage ou montant fixe</h3>
           <label>
             Pourcentage
@@ -138,9 +140,23 @@
             [uniqueId]="'autoValidation'"
             (toggleChange)="onToggle($event)"
           ></app-toggle-slide>
-        </div>
-
-        <button class="validate-button" type="submit">Valider</button>
+        </div> -->
+        <mat-tab-group
+          animationDuration="0ms"
+          (selectedTabChange)="onTabChange($event)"
+        >
+          <mat-tab
+            *ngFor="let categorie of listCategorieService; let i = index"
+            [label]="categorie?.categorySociopro?.title"
+          >
+            <app-setting
+              [data]="categorie"
+              [categorie]="categorie.categorySociopro"
+              (settingChange)="onSettingChange($event)"
+            ></app-setting>
+          </mat-tab>
+        </mat-tab-group>
+        <button (click)="saveSettings()" class="validate-button">Valider</button>
       </div>
     </div>
   </form>

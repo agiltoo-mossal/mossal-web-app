@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { lastValueFrom } from 'rxjs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
@@ -29,7 +28,8 @@ import { differenceInMonths, differenceInDays } from 'date-fns';
   styleUrl: './organization-setting-salary.component.scss',
 })
 export class OrganizationSettingSalaryComponent {
-  salaryForm: FormGroup;
+  startDate: Date;
+  endDate: Date;
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
@@ -40,13 +40,15 @@ export class OrganizationSettingSalaryComponent {
   organisationServiceId: string;
   activated: boolean = true;
   selectedCategorie: any;
+  selectedCategorieId: string;
+
+  dataForm: any;
   @Output() activeService: EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
   }> = new EventEmitter();
   @Input() service: Partial<Service>;
   constructor(
-    private fb: FormBuilder,
     private updateService: UpdateOrganisationServiceGQL,
 
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -60,16 +62,6 @@ export class OrganizationSettingSalaryComponent {
   ) {}
 
   async ngOnInit() {
-    this.salaryForm = this.fb.group({
-      activated: [true],
-      amountUnit: ['', Validators.required],
-      autoValidate: [true],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
-      refundDurationUnit: [DurationUnit.Month, Validators.required],
-      refundDuration: [0, Validators.required],
-      selectedCategory: [''],
-    });
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
     this.organizationService
@@ -79,14 +71,16 @@ export class OrganizationSettingSalaryComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('response', response);
-
           if (
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
           ) {
             const data = response.data
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
+            this.dataForm = data;
+            console.log('dataForm', this.dataForm);
+
+            this.activated = data?.activated;
             this.listCategorieService = [
               {
                 amount: data.amount,
@@ -102,7 +96,6 @@ export class OrganizationSettingSalaryComponent {
               },
             ];
             this.selectedCategorie = this.listCategorieService[0];
-            console.log(this.selectedCategorie);
 
             this.listCategorieService = [
               ...this.listCategorieService,
@@ -129,66 +122,65 @@ export class OrganizationSettingSalaryComponent {
           console.log(err);
         },
       });
-    this.startDate.valueChanges.subscribe((startDate) => {
-      const endDate = this.endDate.value;
-      if (startDate && endDate) {
-        this.calculateRefundDuration(startDate, endDate);
-      }
-    });
-
-    this.endDate.valueChanges.subscribe((endDate) => {
-      const startDate = this.startDate.value;
-
-      if (startDate && endDate) {
-        this.calculateRefundDuration(startDate, endDate);
-      }
-    });
-    this.selectedCategorieSociopro.valueChanges.subscribe((cate) => {
-      console.log(cate);
-      if (cate) {
-        const temp = [...this.listCategorieService];
-        const category = this.categories.find((item) => item?.id == cate);
-        if (
-          this.listCategorieService.some(
-            (item) => item.categorySociopro?.title === category?.title
-          )
-        ) {
-          this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
-          return;
-        }
-        this.selectedCategorie = category;
-
-        temp.push({
-          activated: true,
-          amount: 0,
-          amountUnit: AmountUnit.Fixed,
-          autoValidate: true,
-          organisationServiceId: this.organisationServiceId,
-          categorySocioproId:
-            this.categories.find((item) => item?.id == cate)?.id || '',
-          categorySociopro: this.categories.find((item) => item?.id == cate),
-          refundDuration: 1,
-          refundDurationUnit: DurationUnit.Month,
-          activatedAt: null,
-        } as any);
-        this.listCategorieService = temp;
-      }
-    });
+  }
+  onDateChange($event: Event) {
+    if (this.startDate && this.endDate) {
+      this.calculateRefundDuration(this.startDate, this.endDate);
+    }
   }
 
-  calculateRefundDuration(startDate: string, endDate: string) {
+  onChangeCategorie(event: Event) {
+    const temp = [...this.listCategorieService];
+    console.table(temp);
+    const cate = this.categories.find(
+      (item) => item?.id == this.selectedCategorieId
+    );
+    if (
+      this.listCategorieService.some(
+        (item) => item.categorySociopro?.title === cate.title
+      )
+    ) {
+      this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    temp.push({
+      activated: true,
+      amount: 0,
+      amountUnit: AmountUnit.Fixed,
+      autoValidate: true,
+      organisationServiceId: this.organisationServiceId,
+      categorySocioproId:
+        this.categories.find((item) => item?.id == this.selectedCategorieId)
+          ?.id || '',
+      categorySociopro: this.categories.find(
+        (item) => item?.id == this.selectedCategorieId
+      ),
+      refundDuration: 1,
+      refundDurationUnit: DurationUnit.Month,
+      activatedAt: null,
+    } as any);
+    console.log(temp);
+
+    this.listCategorieService = temp;
+  }
+
+  calculateRefundDuration(startDate: Date, endDate: Date) {
     const start = new Date(startDate);
     const end = new Date(endDate);
+
     if (start <= end) {
       const duration =
         differenceInMonths(end, start) +
         (differenceInDays(end, start) % 30) / 30;
 
       // approximate month difference
-      this.salaryForm.get('refundDuration').setValue(duration);
+      this.dataForm['refundDuration'] = duration;
+      // this.salaryForm.get('refundDuration').setValue(duration);
     } else {
-      this.salaryForm.get('refundDuration').setValue(0);
+      this.dataForm['refundDuration'] = 0;
+      // this.salaryForm.get('refundDuration').setValue(0);
     }
+    console.log(this.dataForm);
   }
 
   addCategory(): void {
@@ -207,20 +199,10 @@ export class OrganizationSettingSalaryComponent {
     });
   }
 
-  get startDate() {
-    return this.salaryForm.get('startDate');
-  }
-  get endDate() {
-    return this.salaryForm.get('endDate');
-  }
-  get selectedCategorieSociopro() {
-    return this.salaryForm.get('selectedCategory');
-  }
-
   saveSettings() {
-    if (this.salaryForm.invalid) {
-      return;
-    }
+    // if (this.salaryForm.invalid) {
+    //   return;
+    // }
     Swal.fire({
       title: 'Voulez-vous enregistrer les modifications?',
       showCancelButton: true,
@@ -228,23 +210,42 @@ export class OrganizationSettingSalaryComponent {
       cancelButtonText: 'Non',
     }).then((result) => {
       if (result.isConfirmed) {
-        const dataForm = this.salaryForm.getRawValue();
-        delete dataForm.selectedCategory;
-        delete dataForm.startDate;
-        delete dataForm.endDate;
-        console.log(this.selectedCategorie);
+        console.log('dataForm', this.dataForm);
 
+        // delete this.dataForm.selectedCategory;
+        // delete this.dataForm.startDate;
+        // delete this.dataForm.endDate;
+        // delete this.dataForm.__typename;
+        let {
+          selectedCategory,
+          startDate,
+          endDate,
+          __typename,
+          organizationId,
+          serviceId,
+          amountPercentage,
+          categoriesocioproservices,
+          events,
+          service,
+          organization,
+          id,
+          ...dataForm
+        } = this.dataForm;
+        this.dataForm = dataForm;
+
+        // delete this.dataForm?.id;
+        //   console.log(this.selectedCategorie);
         if (
           this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
         ) {
           if (this.organisationServiceId) {
             this.updateOrganisationService(
               this.organisationServiceId,
-              dataForm
+              this.dataForm
             );
           } else {
             this.createOrganisationService(
-              dataForm,
+              this.dataForm,
               this.organization.id,
               this.service.id
             );
@@ -261,7 +262,7 @@ export class OrganizationSettingSalaryComponent {
               .mutate({
                 categorySocioproId: this.selectedCategorie.categorySocioproId,
                 categorySocioproServiceInput: {
-                  ...this.salaryForm.getRawValue(),
+                  ...this.dataForm,
                 },
                 organisationServiceId: this.organisationServiceId,
               })
@@ -278,7 +279,7 @@ export class OrganizationSettingSalaryComponent {
               .mutate({
                 categorySocioproServiceId: selectedUpdate.id,
                 categorySocioproServiceInput: {
-                  ...this.salaryForm.getRawValue(),
+                  ...this.dataForm,
                 },
               })
               .subscribe({
@@ -349,16 +350,13 @@ export class OrganizationSettingSalaryComponent {
   onSettingChange(event: any) {
     console.log('event', event);
     const tempForm = event?.dataForm;
+    this.dataForm = { ...this.dataForm, ...tempForm };
 
     if (event.dataForm.amountPercentage === AmountUnit.Percentage) {
-      this.salaryForm.get('amount').setValue(event.dataForm.amountPercentage);
-      delete tempForm.amountPercentage;
+      this.dataForm['amount'] = event.dataForm.amountPercentage;
+      delete this.dataForm.amountPercentage;
     }
-    this.salaryForm.patchValue({
-      ...this.salaryForm.getRawValue(),
-      ...tempForm,
-    });
-    console.log('form', this.salaryForm.getRawValue());
+    console.log('dataForm', this.dataForm);
   }
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
