@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-toggle-slide',
@@ -10,9 +10,12 @@ export class ToggleSlideComponent {
   @Input() firstText: string = 'Off';
   @Input() secondText: string = 'On';
   @Input() uniqueId: string;
-  @Input() value: boolean = false;
+  @Input() value!: boolean;
   @Output() toggleChange = new EventEmitter<boolean>();
-
+  ngAfterViewInit() {
+    console.log('uniqueId', this.uniqueId);
+    console.log('value', this.value);
+  }
   onToggleChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     console.log(value, 'value');

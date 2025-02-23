@@ -24,7 +24,7 @@
               <app-toggle-slide
                 [firstText]="'Actif'"
                 [secondText]="'Inactif'"
-                [value]="!(event?.activated) || false"
+                [value]="(event?.activated) || false"
                 [uniqueId]="'event-' + i"
                 (toggleChange)="changeStatusEvent($event,event)"
               ></app-toggle-slide>

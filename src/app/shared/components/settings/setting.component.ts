@@ -69,8 +69,6 @@ export class SettingComponent implements OnInit {
       }
     });
     this.amountUnit.valueChanges.subscribe((value) => {
-      console.log('value', value);
-
       if (value == AmountUnit.Percentage) {
         this.settingForm.removeControl('amount');
         this.settingForm.addControl(
@@ -92,6 +90,8 @@ export class SettingComponent implements OnInit {
         );
         if (this.data && this.data.amountUnit == AmountUnit.Fixed) {
           this.settingForm.get('amount').setValue(this.data.amount);
+        } else {
+          this.settingForm.get('amount').setValue(null);
         }
       }
     });

@@ -105,7 +105,6 @@ export class OrganizationSettingEmergencyComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.dataForm = data;
-            console.log('emergency', data);
             this.listCategorieService = [
               {
                 amount: this.dataForm.amount,
@@ -121,14 +120,11 @@ export class OrganizationSettingEmergencyComponent {
               },
             ];
             this.selectedCategorie = this.listCategorieService[0];
-            console.log('data', this.dataForm.categoriesocioproservices);
             this.dataForm?.categoriesocioproservices.forEach((item) => {
               this.listCategorieService.push({
                 ...item,
               });
             });
-
-            console.log('listCategorieService', this.listCategorieService);
 
             this.emergencyForm.patchValue({
               activated: data.activated,
@@ -177,9 +173,6 @@ export class OrganizationSettingEmergencyComponent {
    * Méthode pour sauvegarder les paramètres de plafond
    */
   async saveSettings(): Promise<void> {
-    console.log('formErrors', this.emergencyForm.errors);
-    console.log('formValue', this.emergencyForm.getRawValue());
-
     if (this.emergencyForm.invalid) {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
@@ -229,9 +222,7 @@ export class OrganizationSettingEmergencyComponent {
       const temp = this.listCategorieService.filter(
         (item) => item.categorySociopro?.title !== 'Paramètres généraux'
       );
-      console.log('liste', this.listCategorieService);
-      console.log('selectedCategorie', this.selectedCategorie);
-      console.log('temp', temp);
+
       let selectedUpdate = temp.find(
         (item) =>
           item?.categorySocioproId &&

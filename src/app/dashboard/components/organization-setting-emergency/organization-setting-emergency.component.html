@@ -8,8 +8,8 @@
         <app-toggle-slide
           [firstText]="'Actif'"
           [secondText]="'Inactif'"
-          (value)="emergencyForm.get('activated').value ?? false"
-          [uniqueId]="'paramServiceActivation'"
+          [value]="emergencyForm.get('activated')?.value "
+          [uniqueId]="'paramServiceActivationEmergency'"
           (toggleChange)="onServiceActivationChange($event)"
         ></app-toggle-slide>
       </div>

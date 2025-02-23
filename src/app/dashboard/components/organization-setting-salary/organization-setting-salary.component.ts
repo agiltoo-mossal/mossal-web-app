@@ -268,10 +268,14 @@ export class OrganizationSettingSalaryComponent {
               })
               .subscribe({
                 next: (response) => {
-                  this.snackBarService.showSnackBar('Paramètres enregistrés');
+                  this.snackBarService.showSnackBar(
+                    `Nouvelles Paramètragres de plafond enregistrés sur le service ${this.selectedCategorie.categorySociopro?.title}`
+                  );
                 },
                 error: (err) => {
-                  this.snackBarService.showErrorSnackBar();
+                  this.snackBarService.showSnackBar(
+                    "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+                  );
                 },
               });
           } else {
