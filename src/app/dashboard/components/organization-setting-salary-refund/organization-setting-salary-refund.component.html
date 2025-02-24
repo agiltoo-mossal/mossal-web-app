@@ -9,6 +9,7 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
+        [value]="(activated ?? false)"
         [uniqueId]="'serviceActivation'"
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>

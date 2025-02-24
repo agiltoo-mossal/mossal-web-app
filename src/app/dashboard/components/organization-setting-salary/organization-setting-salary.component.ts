@@ -78,7 +78,6 @@ export class OrganizationSettingSalaryComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.dataForm = data;
-            console.log('dataForm', this.dataForm);
 
             this.activated = data?.activated;
             this.listCategorieService = [

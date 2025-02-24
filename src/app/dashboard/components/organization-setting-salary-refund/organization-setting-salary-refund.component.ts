@@ -79,6 +79,7 @@ export class OrganizationSettingSalaryRefundComponent {
             const data = response.data
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
+            this.activated = data.activated;
           }
         },
         error: (err) => {
