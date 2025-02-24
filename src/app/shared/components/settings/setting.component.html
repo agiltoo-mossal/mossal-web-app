@@ -116,6 +116,7 @@
       [firstText]="'ON'"
       [secondText]="'OFF'"
       [uniqueId]="'autoValidationSetting'"
+      [value]="settingForm?.get('autoValidate').value"
       (toggleChange)="onValidationChange($event)"
     ></app-toggle-slide>
   </div>
