@@ -7,6 +7,7 @@ import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   AmountUnit,
   CategorySociopro,
+  CategorySocioproService,
   CreateOrganistionServiceGQL,
   DurationUnit,
   FetchCategorySocioprosGQL,
@@ -27,9 +28,12 @@ export class OrganizationSettingSalaryRefundComponent {
   reimbursementPercentage: number = 30;
   reimbursementDuration: string = '12 mois';
   isAutoValidation: boolean = false;
-  selectedCategorie: Partial<CategorySociopro & { error: boolean }>;
+  selectedCategorie: any;
+  selectedCategorieId: string;
+
   salaryForm: FormGroup;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
+  listCategorieService: Partial<CategorySocioproService>[] = [];
 
   newCategory: string = '';
   isActive: boolean = true;
@@ -80,6 +84,26 @@ export class OrganizationSettingSalaryRefundComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.activated = data.activated;
+            this.listCategorieService = [
+              {
+                amount: data.amount,
+                amountUnit: data.amountUnit,
+                refundDuration: data.refundDuration,
+                refundDurationUnit: data.refundDurationUnit,
+                activated: data.activated,
+                activatedAt: data.activatedAt,
+                autoValidate: data.autoValidate,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+            this.selectedCategorie = this.listCategorieService[0];
+
+            this.listCategorieService = [
+              ...this.listCategorieService,
+              ...(data?.categoriesocioproservices || []),
+            ];
           }
         },
         error: (err) => {
@@ -95,14 +119,6 @@ export class OrganizationSettingSalaryRefundComponent {
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
-          this.categories = [
-            {
-              id: 'djkkdsj',
-              title: 'Paramètres généraux',
-              description: 'général',
-            },
-            ...this.categories,
-          ];
         },
         error: (err) => {
           console.log(err);
@@ -196,5 +212,39 @@ export class OrganizationSettingSalaryRefundComponent {
   }
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.categories[event.index];
+  }
+  onChangeCategorie(event: Event) {
+    const temp = [...this.listCategorieService];
+    console.table(temp);
+    const cate = this.categories.find(
+      (item) => item?.id == this.selectedCategorieId
+    );
+    if (
+      this.listCategorieService.some(
+        (item) => item.categorySociopro?.title === cate.title
+      )
+    ) {
+      this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    temp.push({
+      activated: true,
+      amount: 0,
+      amountUnit: AmountUnit.Fixed,
+      autoValidate: true,
+      organisationServiceId: this.organisationServiceId,
+      categorySocioproId:
+        this.categories.find((item) => item?.id == this.selectedCategorieId)
+          ?.id || '',
+      categorySociopro: this.categories.find(
+        (item) => item?.id == this.selectedCategorieId
+      ),
+      refundDuration: 1,
+      refundDurationUnit: DurationUnit.Month,
+      activatedAt: null,
+    } as any);
+    console.log(temp);
+
+    this.listCategorieService = temp;
   }
 }

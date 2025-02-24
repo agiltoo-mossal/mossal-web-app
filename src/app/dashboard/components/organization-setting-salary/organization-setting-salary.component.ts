@@ -130,7 +130,6 @@ export class OrganizationSettingSalaryComponent {
 
   onChangeCategorie(event: Event) {
     const temp = [...this.listCategorieService];
-    console.table(temp);
     const cate = this.categories.find(
       (item) => item?.id == this.selectedCategorieId
     );
