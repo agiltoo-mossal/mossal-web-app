@@ -108,6 +108,8 @@ export class OrganizationSettingEventComponent {
             OrganisationService & { categorySociopro: CategorySociopro[] }
           >;
           this.dataForm = this.info;
+          console.log('event-setting', this.info);
+
           this.listCategorieService = [
             {
               amount: this.info.amount,

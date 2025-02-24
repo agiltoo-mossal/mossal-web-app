@@ -12,10 +12,7 @@ export class ToggleSlideComponent {
   @Input() uniqueId: string;
   @Input() value!: boolean;
   @Output() toggleChange = new EventEmitter<boolean>();
-  ngAfterViewInit() {
-    console.log('uniqueId', this.uniqueId);
-    console.log('value', this.value);
-  }
+
   onToggleChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     console.log(value, 'value');
