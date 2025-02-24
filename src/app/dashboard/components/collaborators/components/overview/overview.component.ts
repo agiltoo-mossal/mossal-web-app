@@ -153,10 +153,12 @@ export class OverviewComponent implements AfterViewInit {
   }
 
   fetchCollabs() {
-    this.fetchOrganizationCollaboratorsGQL
+    this.fetchPaginatedOrganizationCollaboratorsGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
-        this.collabs = result.data.fetchOrganizationCollaborators as User[];
+        this.collabs = result.data.fetchPaginatedOrganizationCollaborators
+          .results as User[];
+        this.dataSource.data = this.collabs;
         this.selectedCollab = this.collabs?.[0];
       });
   }
