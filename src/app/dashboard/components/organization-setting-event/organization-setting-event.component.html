@@ -9,7 +9,7 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        [value]="(activated ?? false)"
+        [value]="activated ?? false"
         [uniqueId]="'serviceActivationEvent'"
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
@@ -24,19 +24,21 @@
               <app-toggle-slide
                 [firstText]="'Actif'"
                 [secondText]="'Inactif'"
-                [value]="(event?.activated) || false"
+                [value]="event?.activated || false"
                 [uniqueId]="'event-' + i"
-                (toggleChange)="changeStatusEvent($event,event)"
+                (toggleChange)="changeStatusEvent($event, event)"
               ></app-toggle-slide>
               <span>{{ event.title }} </span>
             </div>
             <div class="event-date">
-              <input type="date" [value]="event.startDate" disabled/>
-              <input type="date" [value]="event.endDate" disabled/>
+              <input type="date" [value]="event.startDate" disabled />
+              <input type="date" [value]="event.endDate" disabled />
             </div>
             <div class="event-action">
               <button class="edit-btn" (click)="updateEvent(event)">✏️</button>
-              <button class="delete-btn" (click)="deleteEvent(event)">  🗑️</button>
+              <button class="delete-btn" (click)="deleteEvent(event)">
+                🗑️
+              </button>
             </div>
           </li>
         </ul>
@@ -50,7 +52,12 @@
       <!-- Section des paramètres -->
       <div class="section">
         <div class="category-selection">
-          <select  [(ngModel)]="selectedCategory"  class="custom-select" (change)="onChangeCategorie($event)">
+          <label for="category-selection">Sélectionnez une catégorie</label>
+          <select
+            [(ngModel)]="selectedCategory"
+            class="custom-select"
+            (change)="onChangeCategorie($event)"
+          >
             <option value="" disabled selected>Toutes les catégories</option>
             <option
               *ngFor="let categorie of categories"
@@ -66,7 +73,7 @@
           (selectedTabChange)="onTabChange($event)"
         >
           <mat-tab
-          *ngFor="let categorie of listCategorieService; let i = index"
+            *ngFor="let categorie of listCategorieService; let i = index"
             [label]="categorie?.categorySociopro?.title"
           >
             <app-setting

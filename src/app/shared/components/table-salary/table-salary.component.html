@@ -1,9 +1,14 @@
 <div
   class="page-wrapper"
-  fxLayout="row"
-  fxLayoutAlign="none start"
-  fxLayoutGap="25px"
+ style="display: flex;flex-direction: column; background-color: white;padding: 5px;"
 >
+<div style="display: flex;gap:35px ;margin: 20px 0px;">
+
+    <h2 class="container-title-setting" ><span>{{title}}</span></h2>
+        <app-organization-file></app-organization-file>
+
+</div>
+
   <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
     <div fxLayout="column">
       <div class="filters" fxLayout="row" [formGroup]="searchForm">
@@ -458,8 +463,8 @@
       </div>
     </div>
   </div>
-  <div class="info-current-user container_sticky">
+  <!-- <div class="info-current-user container_sticky">
     <app-organization-file></app-organization-file>
     <app-user-details [user]="selectedReq?.collaborator"></app-user-details>
-  </div>
+  </div> -->
 </div>

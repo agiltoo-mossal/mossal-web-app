@@ -908,6 +908,7 @@ export type QueryFetchPaginatedOrganizationCollaboratorsArgs = {
 
 export type QueryFetchPaginatedOrganizationDemandesArgs = {
   metricsInput?: InputMaybe<DemandesMetricsInput>;
+  organizationServiceId?: InputMaybe<Scalars['String']['input']>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -1386,6 +1387,7 @@ export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrgani
 export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
+  organizationServiceId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -2574,10 +2576,11 @@ export const FetchOrganizationDemandesDocument = gql`
     }
   }
 export const FetchPaginatedOrganizationDemandesDocument = gql`
-    query FetchPaginatedOrganizationDemandes($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+    query FetchPaginatedOrganizationDemandes($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $organizationServiceId: String) {
   fetchPaginatedOrganizationDemandes(
     metricsInput: $metricsInput
     queryFilter: $queryFilter
+    organizationServiceId: $organizationServiceId
   ) {
     pagination {
       totalItems

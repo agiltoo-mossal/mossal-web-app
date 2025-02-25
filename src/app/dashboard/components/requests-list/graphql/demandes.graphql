@@ -27,10 +27,12 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
 query FetchPaginatedOrganizationDemandes(
   $metricsInput: DemandesMetricsInput
   $queryFilter: QueryDataConfigInput
+  $organizationServiceId: String
 ) {
   fetchPaginatedOrganizationDemandes(
     metricsInput: $metricsInput
     queryFilter: $queryFilter
+    organizationServiceId: $organizationServiceId
   ) {
     pagination {
       totalItems

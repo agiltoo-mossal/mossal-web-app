@@ -1,8 +1,10 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   HostListener,
   Input,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -38,18 +40,18 @@ import {
   templateUrl: './table-salary.component.html',
   styleUrl: './table-salary.component.scss',
 })
-export class TableSalaryComponent {
+export class TableSalaryComponent implements OnInit, AfterViewInit {
   requests: Demande[] = [];
   selectedReq: Demande;
   min: number = 0;
   max: number = 10000;
-  startDate: string = '2024-01-01';
-  endDate: string = '2024-12-31';
+  startDate: string = '2025-01-01';
+  endDate: string = '2025-12-31';
   status: DemandeStatus = null;
   search: string = '';
   searchForm: FormGroup;
 
-  @ViewChild(MatSort) sort: MatSort;
+  // @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource = new MatTableDataSource<Demande>();
   page: number = 1;
@@ -76,12 +78,8 @@ export class TableSalaryComponent {
 
   // Les filtres et données du tableau sont également des inputs
   //utiliser un set pour mettre à jour les données du tableau
-  @Input() set data(value: any[]) {
-    this.requests = value;
-    this.dataSource.data = value;
-    console.log({ value });
-  } // Données dynamiques du tableau
-
+  // Données dynamiques du tableau
+  @Input() organisationServiceId: string;
   // Filtres
   private _filters = {
     search: '',
@@ -138,89 +136,98 @@ export class TableSalaryComponent {
       average: [''],
     });
   }
-  // ngAfterViewInit(): void {
-  //   this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-  //   this.searchForm
-  //     .get('search')
-  //     .valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged(),
-  //       startWith('')
-  //     )
-  //     .subscribe((r) => {
-  //       this.paginator.firstPage();
-  //     });
+  ngAfterViewInit(): void {
+    // if (!this.sort || !this.paginator) {
+    //   console.error('MatSort or MatPaginator is not initialized');
+    //   return;
+    // }
+    // this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.searchForm
+      .get('search')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
+      .subscribe((r) => {
+        this.paginator.firstPage();
+      });
 
-  //   merge(
-  //     this.sort.sortChange,
-  //     this.paginator.page,
-  //     this.searchForm.get('search').valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged(),
-  //       filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
+    merge(
+      // this.sort.sortChange,
+      this.paginator.page,
+      this.searchForm.get('search').valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
 
-  //       // startWith('')
-  //     ),
-  //     this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
-  //     this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
-  //   )
-  //     .pipe(
-  //       startWith({}),
-  //       switchMap(() => {
-  //         this.isLoadingResults = true;
+        // startWith('')
+      ),
+      this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
+      this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
+    )
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          this.isLoadingResults = true;
 
-  //         const queryFilter = {
-  //           limit: this.paginator.pageSize,
-  //           page: this.paginator.pageIndex + 1,
-  //           // sortField: this.sort.active,
-  //           // sortOrder: this.sort.direction,
-  //           search: this.searchForm?.value?.search,
-  //         };
-  //         const metricsInput = {};
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+            // sortField: this.sort.active,
+            // sortOrder: this.sort.direction,
+            search: this.searchForm?.value?.search,
+          };
+          const metricsInput = {};
+          console.log('status', this.status);
 
-  //         if (this.status) {
-  //           metricsInput['status'] = this.status;
-  //         }
-  //         if (this.searchForm.get('average').value) {
-  //           metricsInput['minimum'] = this.searchForm
-  //             .get('average')
-  //             .getRawValue().min;
-  //           metricsInput['maximum'] = this.searchForm
-  //             .get('average')
-  //             .getRawValue().max;
-  //         }
+          if (this.status) {
+            metricsInput['status'] = this.status;
+          }
+          if (this.searchForm.get('average').value) {
+            metricsInput['minimum'] = this.searchForm
+              .get('average')
+              .getRawValue().min;
+            metricsInput['maximum'] = this.searchForm
+              .get('average')
+              .getRawValue().max;
+          }
 
-  //         return this.paginatedRequestGQL.fetch(
-  //           { queryFilter, metricsInput },
-  //           { fetchPolicy: 'no-cache' }
-  //         );
-  //       }),
-  //       map((result) => {
-  //         // Flip flag to show that loading has finished.
-  //         this.isLoadingResults = false;
-  //         this.isRateLimitReached = result === null;
+          return this.paginatedRequestGQL.fetch(
+            {
+              queryFilter,
+              metricsInput,
+              organizationServiceId: this.organisationServiceId,
+            },
+            { fetchPolicy: 'no-cache' }
+          );
+        }),
+        map((result) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingResults = false;
+          this.isRateLimitReached = result === null;
 
-  //         if (result === null) {
-  //           return [];
-  //         }
+          if (result === null) {
+            return [];
+          }
 
-  //         // Only refresh the result length if there is new data. In case of rate
-  //         // limit errors, we do not want to reset the paginator to zero, as that
-  //         // would prevent users from re-triggering requests
-  //         return result.data;
-  //       })
-  //     )
-  //     .subscribe((data: any) => {
-  //       this.requests = data.fetchPaginatedOrganizationDemandes.results;
-  //       console.log(data);
+          // Only refresh the result length if there is new data. In case of rate
+          // limit errors, we do not want to reset the paginator to zero, as that
+          // would prevent users from re-triggering requests
+          return result.data;
+        })
+      )
+      .subscribe((data: any) => {
+        this.requests = data.fetchPaginatedOrganizationDemandes.results;
+        console.log(data);
+        this.dataSource.data = data.fetchPaginatedOrganizationDemandes.results;
 
-  //       this.dataSource.data = data;
-  //       this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
-  //       this.resultsLength =
-  //         data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
-  //       // this.selectedAdmin = this.data?.[0];
-  //     });
-  // }
+        this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
+        this.resultsLength =
+          data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
+        // this.selectedAdmin = this.data?.[0];
+      });
+  }
   isMenuFilterOpen: boolean = false;
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;
@@ -395,8 +402,8 @@ export class TableSalaryComponent {
   resetFilter() {
     this.min = 0;
     this.max = 10000;
-    this.startDate = '2024-01-01';
-    this.endDate = '2024-12-31';
+    this.startDate = '2025-01-01';
+    this.endDate = '2025-12-31';
     this.status = null;
     this.search = '';
   }
