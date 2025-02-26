@@ -109,7 +109,7 @@ export class OrganizationSettingEventComponent {
           >;
           this.dataForm = this.info;
           console.log('event-setting', this.info);
-
+          this.fetchEvents(this.organisationServiceId);
           this.listCategorieService = [
             {
               amount: this.info.amount,
@@ -134,27 +134,7 @@ export class OrganizationSettingEventComponent {
           console.error(error);
         },
       });
-    this.fetchAllEvents
-      .fetch({
-        queryConfig: {
-          limit: 10,
-        },
-        organizationServiceId: '675b3086d059abbe573a5c16',
-      })
-      .subscribe({
-        next: (response) => {
-          this.events = response.data.fetchEvents.results.map((event) => {
-            return {
-              ...event,
-              startDate: new Date(event.startDate).toISOString().split('T')[0],
-              endDate: new Date(event.endDate).toISOString().split('T')[0],
-            };
-          });
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+
     this.listCategorieGQL
       .fetch({
         queryConfig: {
@@ -181,6 +161,29 @@ export class OrganizationSettingEventComponent {
     this.activeTab = tabName;
   }
 
+  fetchEvents(organizationServiceId: string) {
+    this.fetchAllEvents
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+        organizationServiceId,
+      })
+      .subscribe({
+        next: (response) => {
+          this.events = response.data.fetchEvents.results.map((event) => {
+            return {
+              ...event,
+              startDate: new Date(event.startDate).toISOString().split('T')[0],
+              endDate: new Date(event.endDate).toISOString().split('T')[0],
+            };
+          });
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+  }
   /**
    * Ajoute un nouvel événement à la liste
    */
