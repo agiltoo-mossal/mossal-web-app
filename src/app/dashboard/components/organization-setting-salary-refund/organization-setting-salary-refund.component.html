@@ -11,7 +11,7 @@
         [secondText]="'Inactif'"
         [value]="activated ?? false"
         [uniqueId]="'serviceActivation'"
-        (toggleChange)="onServiceActivationChange($event)"
+        (toggleChange)="handleServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
     <div class="toggle-side" [ngClass]="{ grise: !activated }">

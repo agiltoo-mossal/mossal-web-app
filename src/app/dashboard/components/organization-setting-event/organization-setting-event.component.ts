@@ -480,8 +480,8 @@ export class OrganizationSettingEventComponent {
       this.activated.value = $event;
     } else {
       this.activated.value = true;
-      console.log('activated', this.activated);
       Swal.fire({
+        icon: 'warning',
         title: 'Veuillez enregistrer les paramètres avant d activer le service',
         showCancelButton: false,
       });

@@ -21,6 +21,7 @@ import {
 } from 'src/graphql/generated';
 import Swal from 'sweetalert2';
 import { differenceInMonths, differenceInDays } from 'date-fns';
+import { ActivationService } from '../organization/activation.service';
 
 @Component({
   selector: 'app-organization-setting-salary',
@@ -57,7 +58,7 @@ export class OrganizationSettingSalaryComponent {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
-
+    private activationInformationService: ActivationService,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
   ) {}
 
@@ -181,7 +182,7 @@ export class OrganizationSettingSalaryComponent {
   calculateRefundDuration(startDate: Date, endDate: Date) {
     const start = new Date(startDate);
     const end = new Date(endDate);
-
+    this.dataForm['activeAt'] = start;
     if (start <= end) {
       const duration =
         differenceInMonths(end, start) +
@@ -206,11 +207,22 @@ export class OrganizationSettingSalaryComponent {
   handleServiceActivationChange(isActive: boolean) {
     this.isActive = isActive;
     this.activated = isActive;
-
-    this.activeService.emit({
-      isActive,
-      organisationServiceId: this.organisationServiceId,
-    });
+    if (this.organisationServiceId) {
+      this.activeService.emit({
+        isActive,
+        organisationServiceId: this.organisationServiceId,
+      });
+    } else {
+      this.activated = true;
+      Swal.fire({
+        title: 'Veuillez enregistrer les paramètres avant d activer le service',
+        showCancelButton: false,
+      });
+    }
+    this.activationInformationService.setActivationState(
+      this.service.id,
+      isActive
+    );
   }
 
   saveSettings() {
@@ -370,10 +382,6 @@ export class OrganizationSettingSalaryComponent {
     const tempForm = event?.dataForm;
     this.dataForm = { ...this.dataForm, ...tempForm };
 
-    if (event.dataForm.amountPercentage === AmountUnit.Percentage) {
-      this.dataForm['amount'] = event.dataForm.amountPercentage;
-      delete this.dataForm.amountPercentage;
-    }
     console.log('dataForm', this.dataForm);
   }
   onTabChange(event: MatTabChangeEvent) {

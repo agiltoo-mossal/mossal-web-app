@@ -245,7 +245,6 @@ export class OrganizationSettingEmergencyComponent {
           })
           .subscribe({
             next: (response) => {
-              console.log(response);
               this.snackBarService.showSnackBar(
                 `Nouvelles Paramètragres de plafond enregistrés sur le service ${this.selectedCategorie.categorySociopro?.title}`
               );
