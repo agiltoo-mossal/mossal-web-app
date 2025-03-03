@@ -63,11 +63,13 @@ export class OverviewComponent implements AfterViewInit {
   }
 
   fetchAdmins() {
-    this.fetchOrganizationAdminsGQL
+    this.paginatedAdminsGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
-        this.admins = result.data.fetchOrganizationAdmins as User[];
+        this.admins = result.data.fetchPaginatedOrganisationAdmins
+          .results as User[];
         this.selectedAdmin = this.admins?.[0];
+        this.dataSource.data = this.admins;
       });
   }
   initSearchForm() {
