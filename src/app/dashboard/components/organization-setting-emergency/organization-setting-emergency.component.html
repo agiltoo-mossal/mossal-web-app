@@ -8,6 +8,7 @@
         <app-toggle-slide
           [firstText]="'Actif'"
           [secondText]="'Inactif'"
+          [serviceId]="serviceId"
           [value]="emergencyForm.get('activated')?.value "
           [uniqueId]="'paramServiceActivationEmergency'"
           (toggleChange)="onServiceActivationChange($event)"

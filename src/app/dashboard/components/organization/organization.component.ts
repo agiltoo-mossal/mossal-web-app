@@ -51,15 +51,7 @@ export class OrganizationComponent {
     private activeOrganizationService: ActivateOrganisationServiceGQL,
     private desactiveOrganizationService: DesactivateOrganisationServiceGQL
   ) {
-    // this.form = this.fb.group({
-    //   name: [{ value: '', disabled: true }, Validators.required],
-    //   maxDemandeAmount: [1000000, [Validators.required, Validators.min(5000)]],
-    //   amountPercent: [
-    //     75,
-    //     [Validators.required, Validators.min(1), Validators.max(100)],
-    //   ],
-    //   fees: [0],
-    // });
+   
 
     this.getCurrentorganization();
     this.generateCardItems();

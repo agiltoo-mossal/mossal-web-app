@@ -98,13 +98,28 @@ export class OrganizationSettingSalaryRefundComponent {
                 } as any,
               },
             ];
-            this.selectedCategorie = this.listCategorieService[0];
 
             this.listCategorieService = [
               ...this.listCategorieService,
               ...(data?.categoriesocioproservices || []),
             ];
+          } else {
+            this.listCategorieService = [
+              {
+                amount: 0,
+                amountUnit: AmountUnit.Fixed,
+                refundDuration: 1,
+                refundDurationUnit: DurationUnit.Month,
+                activated: true,
+                activatedAt: null,
+                autoValidate: true,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
           }
+          this.selectedCategorie = this.listCategorieService[0];
         },
         error: (err) => {
           console.log(err);

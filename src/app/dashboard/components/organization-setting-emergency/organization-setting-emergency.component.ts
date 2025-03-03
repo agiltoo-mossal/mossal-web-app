@@ -52,6 +52,7 @@ export class OrganizationSettingEmergencyComponent {
   // Pourcentage ou montant fixe
   organization: Organization;
   @Input() service: Partial<Service>;
+  serviceId: string;
   @Output() serviceActivationChange = new EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
@@ -74,19 +75,17 @@ export class OrganizationSettingEmergencyComponent {
   ) {}
 
   async ngOnInit() {
+    this.serviceId = this.service.id;
     this.emergencyForm = this.fb.group({
       activated: [true],
       activatedAt: ['', Validators.required],
       selectedCategory: [''],
       amountUnit: [AmountUnit.Percentage],
-      // amountPercentage: [0, [, Validators.min(0), Validators.max(100)]],
+      amount: [0, [, Validators.required]],
       autoValidate: [true],
       // amount: [0],
     });
-    this.emergencyForm.addControl(
-      'amountPercentage',
-      this.fb.control(null, [Validators.min(0), Validators.max(100)])
-    );
+
     //ajouter
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
@@ -136,6 +135,22 @@ export class OrganizationSettingEmergencyComponent {
               // amountType: data?.amountUnit || AmountUnit.Percentage,
               selectedCategory: data.categorySociopro?.id,
             });
+          } else {
+            this.listCategorieService = [
+              {
+                amount: 0,
+                amountUnit: AmountUnit.Percentage,
+                refundDuration: 1,
+                refundDurationUnit: DurationUnit.Month,
+                activated: true,
+                activatedAt: null,
+                autoValidate: true,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+            this.selectedCategorie = this.listCategorieService[0];
           }
         },
         error: (err) => {
@@ -151,22 +166,6 @@ export class OrganizationSettingEmergencyComponent {
       .subscribe((result) => {
         this.categories = result.data.fetchCategorySociopros.results;
       });
-
-    this.amountUnit.valueChanges.subscribe((value) => {
-      if (value == AmountUnit.Percentage) {
-        this.emergencyForm.removeControl('amount');
-        this.emergencyForm.addControl(
-          'amountPercentage',
-          this.fb.control(null, [Validators.min(1), Validators.max(100)])
-        );
-      } else {
-        this.emergencyForm.removeControl('amountPercentage');
-        this.emergencyForm.addControl(
-          'amount',
-          this.fb.control(null, [Validators.required])
-        );
-      }
-    });
   }
 
   /**
@@ -177,28 +176,23 @@ export class OrganizationSettingEmergencyComponent {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
     }
+
     if (
-      this.emergencyForm.get('amountUnit').value === EAmountUnit.Percentage &&
-      !this.emergencyForm.get('amountPercentage').value
+      this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Percentage &&
+      !this.emergencyForm.get('amount')?.value
     ) {
       this.snackBarService.showSnackBar('Vous devez renseigner le pourcentage');
       return;
     }
     if (
-      this.emergencyForm.get('amountUnit').value === EAmountUnit.Fixed &&
-      !this.emergencyForm.get('amount').value
+      this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Fixed &&
+      !this.emergencyForm.get('amount')?.value
     ) {
       this.snackBarService.showSnackBar('Vous devez renseigner le montant');
       return;
     }
     const formData = this.emergencyForm.getRawValue();
-    if (
-      this.emergencyForm.get('amountUnit').value === EAmountUnit.Percentage &&
-      this.emergencyForm.get('amountPercentage').value
-    ) {
-      formData['amount'] = this.emergencyForm.get('amountPercentage').value;
-      delete formData['amountPercentage'];
-    }
+
     const data = {
       ...formData,
       activationDurationDay: 30,
@@ -423,12 +417,7 @@ export class OrganizationSettingEmergencyComponent {
 
     this.dataForm = $event.dataForm;
     this.emergencyForm.patchValue({
-      activated: this.dataForm.activated,
-      // activatedAt: this.dataForm.activatedAt,
-      amountUnit: this.dataForm.amountUnit,
-      amount: this.dataForm.amount,
-      autoValidate: this.dataForm.autoValidate,
-      amountPercentage: this.dataForm.amountPercentage,
+      ...$event.dataForm,
     });
   }
   onDateChange(event: MatDatepickerInputEvent<Date>) {

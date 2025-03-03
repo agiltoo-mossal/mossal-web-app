@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, switchMap } from 'rxjs';
 import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
@@ -34,6 +40,7 @@ import {
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import Swal from 'sweetalert2';
+import { ActivationService } from '../organization/activation.service';
 
 @Component({
   selector: 'app-organization-setting-event',
@@ -66,7 +73,7 @@ export class OrganizationSettingEventComponent {
   organisationServiceId: string;
   info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
   dataForm: any;
-  activated: boolean = true;
+  activated: { value?: boolean } = { value: true };
   selectedCategory: string;
 
   constructor(
@@ -84,6 +91,8 @@ export class OrganizationSettingEventComponent {
     private desactiveEvent: DesactiveEventGQL,
     private updateEventGQL: UpdateEventGQL,
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
+    private activatedService: ActivationService,
+    private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
   ) {}
@@ -100,35 +109,60 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (response) => {
           this.organisationServiceId =
-            response.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id;
-          this.activated =
+            response.data.fetchOrganisationServiceByOrganisationIdAndServiceId?.id;
+          this.activated.value =
             response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
+          console.log('service', this.service);
+
+          this.activatedService.setActivationState(
+            this.service.id,
+            this.activated.value
+          );
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
             OrganisationService & { categorySociopro: CategorySociopro[] }
           >;
           this.dataForm = this.info;
-          console.log('event-setting', this.info);
-          this.fetchEvents(this.organisationServiceId);
-          this.listCategorieService = [
-            {
-              amount: this.info.amount,
-              amountUnit: this.info.amountUnit,
-              refundDuration: this.info.refundDuration,
-              refundDurationUnit: this.info.refundDurationUnit,
-              activated: this.info.activated,
-              activatedAt: this.info.activatedAt,
-              autoValidate: this.info.autoValidate,
-              categorySociopro: {
-                title: 'Paramètres généraux',
-              } as any,
-            },
-          ];
+          if (this.info) {
+            console.log('event setting', this.info);
+
+            this.fetchEvents(this.organisationServiceId);
+            this.listCategorieService = [
+              {
+                amount: this.info.amount,
+                amountUnit: this.info.amountUnit,
+                refundDuration: this.info.refundDuration,
+                refundDurationUnit: this.info.refundDurationUnit,
+                activated: this.info.activated,
+                activatedAt: this.info.activatedAt,
+                autoValidate: this.info.autoValidate,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+            this.listCategorieService = [
+              ...this.listCategorieService,
+              ...(this.info?.categoriesocioproservices || []),
+            ];
+          } else {
+            this.activated.value = true;
+            this.listCategorieService = [
+              {
+                amount: 0,
+                amountUnit: AmountUnit.Fixed,
+                refundDuration: 1,
+                refundDurationUnit: DurationUnit.Month,
+                activated: true,
+                activatedAt: null,
+                autoValidate: true,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
+          }
           this.selectedCategorie = this.listCategorieService[0] as any;
-          this.listCategorieService = [
-            ...this.listCategorieService,
-            ...(this.info?.categoriesocioproservices || []),
-          ];
         },
         error: (error) => {
           console.error(error);
@@ -376,7 +410,7 @@ export class OrganizationSettingEventComponent {
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
-                'Une configuration est deja mise en place'
+                err.message || 'Une erreur est survenue'
               );
             },
           });
@@ -403,7 +437,7 @@ export class OrganizationSettingEventComponent {
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            'Une configuration est deja mise en place'
+            err?.message || 'Une erreur est survenue lors de l enregistrement'
           );
         },
       });
@@ -436,12 +470,27 @@ export class OrganizationSettingEventComponent {
 
   onServiceActivationChange($event) {
     // this.dataForm.activated = $event;
+    console.log('$event', $event);
 
-    this.activated = $event;
-    this.activeService.emit({
-      isActive: $event,
-      organisationServiceId: this.organisationServiceId,
-    });
+    if (this.organisationServiceId) {
+      this.activeService.emit({
+        isActive: $event,
+        organisationServiceId: this.organisationServiceId,
+      });
+      this.activated.value = $event;
+    } else {
+      this.activated.value = true;
+      console.log('activated', this.activated);
+      Swal.fire({
+        title: 'Veuillez enregistrer les paramètres avant d activer le service',
+        showCancelButton: false,
+      });
+    }
+    this.activatedService.setActivationState(
+      this.service.id,
+      this.activated.value
+    );
+    this.cdr.detectChanges();
   }
   createEvent() {
     if (!this.organisationServiceId) {

@@ -9,7 +9,8 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        [value]="activated ?? false"
+        [serviceId]="service?.id"
+        [value]="activated.value"
         [uniqueId]="'serviceActivationEvent'"
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
@@ -19,6 +20,14 @@
       <div class="section">
         <h3>Liste des événements prévus</h3>
         <ul class="event-list">
+          <li *ngIf="!events?.length">
+            <div style="display: flex; flex-direction: column;justify-content: center;align-items: center;">
+              <div>
+                <mat-icon style="font-size: 45px;width: 100%;height: 50px;">event_busy</mat-icon>
+              </div>
+              <span>Aucun événement prévu</span>
+            </div>
+          </li>
           <li *ngFor="let event of events; let i = index" class="event-item">
             <div class="event-title">
               <app-toggle-slide

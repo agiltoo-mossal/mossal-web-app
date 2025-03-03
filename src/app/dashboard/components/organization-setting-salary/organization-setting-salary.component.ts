@@ -75,11 +75,12 @@ export class OrganizationSettingSalaryComponent {
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId
           ) {
             const data = response.data
-              .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
-            this.organisationServiceId = data.id;
+              ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
+            this.organisationServiceId = data?.id;
             this.dataForm = data;
 
             this.activated = data?.activated;
+
             this.listCategorieService = [
               {
                 amount: data.amount,
@@ -94,13 +95,28 @@ export class OrganizationSettingSalaryComponent {
                 } as any,
               },
             ];
-            this.selectedCategorie = this.listCategorieService[0];
-
             this.listCategorieService = [
               ...this.listCategorieService,
               ...(data?.categoriesocioproservices || []),
             ];
+          } else {
+            this.activated = true;
+            this.listCategorieService = [
+              {
+                amount: 0,
+                amountUnit: AmountUnit.Fixed,
+                refundDuration: 1,
+                refundDurationUnit: DurationUnit.Month,
+                activated: true,
+                activatedAt: null,
+                autoValidate: true,
+                categorySociopro: {
+                  title: 'Paramètres généraux',
+                } as any,
+              },
+            ];
           }
+          this.selectedCategorie = this.listCategorieService[0];
         },
         error: (err) => {
           console.log(err);

@@ -65,7 +65,12 @@ export class SettingComponent implements OnInit {
     }
     this.settingForm.valueChanges.subscribe((value) => {
       if (this.settingForm.valid) {
-        this.settingChange.emit({ dataForm: value, categorie: this.categorie });
+        const temp = { ...value };
+        if (value.amountUnit === AmountUnit.Percentage) {
+          temp.amount = value.amountPercentage;
+        }
+        delete temp.amountPercentage;
+        this.settingChange.emit({ dataForm: temp, categorie: this.categorie });
       }
     });
     this.amountUnit.valueChanges.subscribe((value) => {

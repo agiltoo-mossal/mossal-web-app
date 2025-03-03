@@ -1,11 +1,25 @@
 <div class="switches-container">
   <!-- Identifiants dynamiques pour chaque radio -->
-<input type="radio" [id]="firstText + uniqueId" [name]="uniqueId" value="First" [checked]="value" (change)="onToggleChange($event)" />
-<input type="radio" [id]="secondText + uniqueId" [name]="uniqueId" value="Second"  [checked]="!value" (change)="onToggleChange($event)" />  
+  <input
+    type="radio"
+    [id]="firstText + uniqueId"
+    [name]="uniqueId"
+    value="First"
+    [checked]="valueChecked==true"
+    (change)="onToggleChange($event)"
+  />
+  <input
+    type="radio"
+    [id]="secondText + uniqueId"
+    [name]="uniqueId"
+    value="Second"
+    [checked]="valueChecked==false"
+    (change)="onToggleChange($event)"
+  />
   <!-- Labels avec références dynamiques -->
   <label [for]="firstText + uniqueId">{{ firstText }}</label>
   <label [for]="secondText + uniqueId">{{ secondText }}</label>
-  
+
   <!-- Switch wrapper pour le background -->
   <div class="switch-wrapper">
     <div class="switch">
