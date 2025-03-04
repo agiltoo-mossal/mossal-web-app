@@ -12,7 +12,10 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { FileUploadService } from 'src/app/shared/services/file-upload.service';
+import {
+  FileUploadService,
+  UserRole,
+} from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   FetchOrganizationCollaboratorsGQL,
@@ -40,6 +43,7 @@ export class OverviewComponent implements AfterViewInit {
     'createdAt',
     'action',
   ];
+  type = UserRole.COLLABORATOR;
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -66,13 +70,6 @@ export class OverviewComponent implements AfterViewInit {
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
       if (tempData) {
-        // this.data = [
-        //   ...tempData.data.filter((item) => item.error == false),
-        //   ...this.data,
-        // ];
-        // this.dataSource.data = this.data;
-        // this.initSearchForm();
-
         this.searchForm.patchValue({
           search: '',
         });

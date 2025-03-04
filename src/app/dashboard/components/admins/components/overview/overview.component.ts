@@ -12,7 +12,10 @@ import {
   switchMap,
 } from 'rxjs';
 import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
-import { FileUploadService } from 'src/app/shared/services/file-upload.service';
+import {
+  FileUploadService,
+  UserRole,
+} from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   FetchOrganizationAdminsGQL,
@@ -49,7 +52,7 @@ export class OverviewComponent implements AfterViewInit {
     'createdAt',
     'action',
   ];
-
+  type = UserRole.ADMIN;
   constructor(
     private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL,
     private paginatedAdminsGQL: FetchPaginatedOrganisationAdminsGQL,
@@ -59,6 +62,14 @@ export class OverviewComponent implements AfterViewInit {
     private fileUploadService: FileUploadService,
     private fb: FormBuilder
   ) {
+    effect(() => {
+      const tempData = this.fileUploadService.getDataResponse();
+      if (tempData) {
+        this.searchForm.patchValue({
+          search: '',
+        });
+      }
+    });
     this.initSearchForm();
   }
 
