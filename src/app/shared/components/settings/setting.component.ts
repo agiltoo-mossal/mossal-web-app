@@ -9,6 +9,7 @@ import { AmountUnit } from 'src/graphql/generated';
 })
 export class SettingComponent implements OnInit {
   @Output() settingChange = new EventEmitter<any>();
+  @Input() serviceId: string;
   @Input() categorie: any;
   @Input() data: any = {
     activated: true,

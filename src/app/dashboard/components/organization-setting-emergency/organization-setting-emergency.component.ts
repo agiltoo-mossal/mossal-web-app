@@ -24,6 +24,7 @@ import {
   UpdateCategorySocioproServiceGQL,
   UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
+import { ActivationService } from '../organization/activation.service';
 
 @Component({
   selector: 'app-organization-setting-emergency',
@@ -67,6 +68,7 @@ export class OrganizationSettingEmergencyComponent {
     private defineService: CreateOrganistionServiceGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private fb: FormBuilder,
+    private activatedService: ActivationService,
     private snackBarService: SnackBarService,
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,

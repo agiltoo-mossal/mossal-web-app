@@ -5,7 +5,7 @@
     [id]="firstText + uniqueId"
     [name]="uniqueId"
     value="First"
-    [checked]="valueChecked==true"
+    [checked]="valueChecked"
     (change)="onToggleChange($event)"
   />
   <input
@@ -13,7 +13,7 @@
     [id]="secondText + uniqueId"
     [name]="uniqueId"
     value="Second"
-    [checked]="valueChecked==false"
+    [checked]="!valueChecked"
     (change)="onToggleChange($event)"
   />
   <!-- Labels avec références dynamiques -->

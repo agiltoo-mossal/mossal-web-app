@@ -13,7 +13,7 @@ import { ActivationService } from 'src/app/dashboard/components/organization/act
   templateUrl: './toggle-slide.component.html',
   styleUrl: './toggle-slide.component.scss',
 })
-export class ToggleSlideComponent implements OnInit {
+export class ToggleSlideComponent {
   randomId = Math.random().toString(36).substring(7);
   valueChecked: boolean;
   @Input() firstText: string = 'Off';
@@ -21,7 +21,14 @@ export class ToggleSlideComponent implements OnInit {
   @Input() uniqueId: string;
   @Input() serviceId: string;
 
-  @Input() value!: boolean;
+  @Input() set value(data: boolean) {
+    console.log({
+      service: this.serviceId,
+      data,
+    });
+
+    this.valueChecked = data;
+  }
   @Output() toggleChange = new EventEmitter<boolean>();
   constructor(private activateService: ActivationService) {}
 
@@ -29,12 +36,5 @@ export class ToggleSlideComponent implements OnInit {
     const value = (event.target as HTMLInputElement).value;
 
     this.toggleChange.emit(value === 'First');
-  }
-  ngOnInit(): void {
-    this.activateService.activationState$.subscribe((state) => {
-      if (state[this.serviceId] !== undefined) {
-        this.valueChecked = state[this.serviceId];
-      }
-    });
   }
 }

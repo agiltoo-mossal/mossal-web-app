@@ -15,7 +15,7 @@
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
-    <div class="toggle-side" [ngClass]="{ grise: !activated }">
+    <div class="toggle-side" [ngClass]="{ grise: !activated.value }">
       <!-- Liste des événements prévus -->
       <div class="section">
         <h3>Liste des événements prévus</h3>

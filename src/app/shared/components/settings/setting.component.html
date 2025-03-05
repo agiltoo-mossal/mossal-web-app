@@ -115,6 +115,7 @@
     <app-toggle-slide
       [firstText]="'ON'"
       [secondText]="'OFF'"
+      [serviceId]="serviceId"
       [uniqueId]="'autoValidationSetting'"
       [value]="settingForm?.get('autoValidate').value"
       (toggleChange)="onValidationChange($event)"

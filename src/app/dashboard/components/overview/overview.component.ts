@@ -268,7 +268,7 @@ export class OverviewComponent implements OnInit {
           .results as Demande[];
         this.selectedCollab = this.collabs?.[0];
         this.resultsLength =
-          data.fetchOrganizationCollaborators.pagination.totalItems;
+          data.fetchOrganizationCollaborators?.pagination?.totalItems;
       });
   }
   setHasValidatedDemande() {

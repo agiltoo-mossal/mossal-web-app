@@ -91,7 +91,6 @@ export class OrganizationSettingEventComponent {
     private desactiveEvent: DesactiveEventGQL,
     private updateEventGQL: UpdateEventGQL,
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
-    private activatedService: ActivationService,
     private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
@@ -114,10 +113,6 @@ export class OrganizationSettingEventComponent {
             response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
           console.log('service', this.service);
 
-          this.activatedService.setActivationState(
-            this.service.id,
-            this.activated.value
-          );
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
             OrganisationService & { categorySociopro: CategorySociopro[] }
@@ -486,11 +481,6 @@ export class OrganizationSettingEventComponent {
         showCancelButton: false,
       });
     }
-    this.activatedService.setActivationState(
-      this.service.id,
-      this.activated.value
-    );
-    this.cdr.detectChanges();
   }
   createEvent() {
     if (!this.organisationServiceId) {
