@@ -263,7 +263,7 @@ export class OrganizationSettingGeneralComponent {
               }
             },
             error: (error) => {
-              this.snackBarService.showErrorSnackBar();
+              this.snackBarService.showSnackBar(error.message);
             },
           });
       }
