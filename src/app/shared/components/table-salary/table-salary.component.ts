@@ -259,6 +259,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       .subscribe((result) => {
         this.requests = result.data.fetchOrganizationDemandes as Demande[];
         this.selectedReq = this.requests?.[0];
+        this.dataSource.data = this.requests;
         // console.log({r: this.requests})
       });
   }
@@ -266,7 +267,14 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   selectReq(selected: Demande) {
     this.selectedReq = selected;
   }
-
+  updateListDemande(demandeId: string, status: DemandeStatus) {
+    this.dataSource.data = this.dataSource.data.map((d: Demande) => {
+      if (d.id === demandeId) {
+        d.status = status;
+      }
+      return d;
+    });
+  }
   cancelDemande = (demandeId: string) => {
     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
       (result) => {
