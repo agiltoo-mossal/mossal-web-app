@@ -111,7 +111,6 @@ export class OrganizationSettingEventComponent {
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId?.id;
           this.activated.value =
             response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
-          console.log('service', this.service);
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
