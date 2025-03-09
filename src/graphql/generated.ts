@@ -721,7 +721,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchOrganisationService: OrganisationService;
-  fetchOrganisationServiceByOrganisationIdAndServiceId: OrganisationService;
+  fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
@@ -1301,7 +1301,7 @@ export type FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables =
 }>;
 
 
-export type FetchOrganisationServiceByOrganisationIdAndServiceIdQuery = { __typename?: 'Query', fetchOrganisationServiceByOrganisationIdAndServiceId: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesocioproservices?: Array<{ __typename?: 'CategorySocioproService', createdAt: any, updatedAt: any, id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, autoValidate: boolean, organisationServiceId: string, categorySocioproId: string, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null, organizationId?: string | null, createdAt: any, updatedAt: any } | null }> | null } };
+export type FetchOrganisationServiceByOrganisationIdAndServiceIdQuery = { __typename?: 'Query', fetchOrganisationServiceByOrganisationIdAndServiceId?: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, organization: { __typename?: 'Organization', id: string }, service: { __typename?: 'Service', id: any, title: string }, events?: Array<{ __typename?: 'Event', id: any, title: string }> | null, categoriesocioproservices?: Array<{ __typename?: 'CategorySocioproService', createdAt: any, updatedAt: any, id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, autoValidate: boolean, organisationServiceId: string, categorySocioproId: string, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null, organizationId?: string | null, createdAt: any, updatedAt: any } | null }> | null } | null };
 
 export type CreateEventMutationVariables = Exact<{
   eventInput: EventInput;

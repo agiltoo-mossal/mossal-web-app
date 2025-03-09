@@ -85,6 +85,7 @@ export class OrganizationSettingEmergencyComponent {
       amountUnit: [AmountUnit.Percentage],
       amount: [0, [, Validators.required]],
       autoValidate: [true],
+      refundDuration: [1, [Validators.required, Validators.min(1)]],
       // amount: [0],
     });
 
@@ -106,6 +107,8 @@ export class OrganizationSettingEmergencyComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.dataForm = data;
+            console.log('dataForm', this.dataForm);
+
             this.listCategorieService = [
               {
                 amount: this.dataForm.amount,
@@ -178,7 +181,7 @@ export class OrganizationSettingEmergencyComponent {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
     }
-
+    console.log('this.emergencyForm', this.emergencyForm.value);
     if (
       this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Percentage &&
       !this.emergencyForm.get('amount')?.value
@@ -197,7 +200,6 @@ export class OrganizationSettingEmergencyComponent {
 
     const data = {
       ...formData,
-      activationDurationDay: 30,
       refundDurationUnit: ERrefundDurationUnit.Month,
       refundDuration: this.service.refundDurationMonth,
     };
@@ -227,22 +229,11 @@ export class OrganizationSettingEmergencyComponent {
             this.selectedCategorie?.categorySocioproId
       );
 
-      const categoryInput: CategorySocioproServiceInput & {
-        amountPercentage?: number;
-      } = {
-        amountUnit: selectedUpdate?.amountUnit,
-        refundDurationUnit: DurationUnit.Month,
-        refundDuration: this.service.refundDurationMonth,
-        autoValidate: selectedUpdate.autoValidate,
-        activated: selectedUpdate.activated,
-        activatedAt: selectedUpdate.activatedAt,
-        amount: selectedUpdate.amount,
-      };
       if (!selectedUpdate?.id) {
         this.createCategorySocioproServiceGQL
           .mutate({
             categorySocioproId: this.selectedCategorie?.categorySocioproId,
-            categorySocioproServiceInput: categoryInput,
+            categorySocioproServiceInput: data,
             organisationServiceId: this.organisationServiceId,
           })
           .subscribe({
@@ -262,7 +253,7 @@ export class OrganizationSettingEmergencyComponent {
         this.updateCategorySocioproServiceGQL
           .mutate({
             categorySocioproServiceId: selectedUpdate.id,
-            categorySocioproServiceInput: categoryInput,
+            categorySocioproServiceInput: data,
           })
           .subscribe({
             next: (response) => {
@@ -420,14 +411,12 @@ export class OrganizationSettingEmergencyComponent {
     this.emergencyForm.patchValue({
       ...$event.dataForm,
     });
+    console.log('dataForm', this.emergencyForm.getRawValue());
   }
   onDateChange(event: MatDatepickerInputEvent<Date>) {
-    console.log('event', event.value);
     const date = new Date(event.value);
     const formattedDate = date.toISOString().split('T')[0];
-    console.log('formattedDate', formattedDate);
     this.emergencyForm.get('activatedAt').setValue(formattedDate);
-    console.log('activatedAt', this.emergencyForm.get('activatedAt').value);
   }
   onChangeCategorie(event: Event) {
     console.log('rvent', (event.target as any).value);

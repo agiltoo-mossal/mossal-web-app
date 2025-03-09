@@ -28,6 +28,7 @@
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
                 <!-- formControlName="activatedAt" -->
+                
               <input
                 matInput
                 [(ngModel)]="activatedAt"
@@ -74,74 +75,6 @@
           </select>
          
         </div>
-        <!-- <div class="percentage">
-          <h3>Pourcentage ou montant fixe</h3>
-          <label>
-            Pourcentage
-            <input
-              type="radio"
-              name="amountUnit"
-              class="custom-radio"
-              value="Percentage"
-              formControlName="amountUnit"
-            />
-          </label>
-          <label>
-            Montant fixe
-            <input
-              type="radio"
-              name="amountUnit"
-              value="fixed"
-              class="custom-radio"
-              value="Fixed"
-              formControlName="amountUnit"
-            />
-          </label>
-        </div>
-        <div class="reimbursement" style="margin-top: 25px">
-          <h3>Montant et durée du remboursement</h3>
-          <div
-            *ngIf="amountUnit?.value === 'Percentage'"
-            class="plafond-content"
-          >
-            <label for="amount-input">Pourcentage</label>
-            <div class="percentage-input-group">
-              <input
-                type="number"
-                id="amount-input"
-                placeholder="20"
-                min="0"
-                max="100"
-                type="number"
-                formControlName="amountPercentage"
-              />
-              <span class="currency-symbol">%</span>
-            </div>
-          </div>
-          <div *ngIf="amountUnit?.value === 'Fixed'" class="plafond-content">
-            <label for="amount-input">Montant</label>
-            <div class="percentage-input-group">
-              <input
-                type="number"
-                id="amount-input"
-                placeholder="20"
-                min="0"
-                type="number"
-                formControlName="amount"
-              />
-              <span class="currency-symbol">FCFA</span>
-            </div>
-          </div>
-        </div>
-        <div class="auto-validation">
-          <h4>Validation automatique</h4>
-          <app-toggle-slide
-            [firstText]="'Actif'"
-            [secondText]="'Inactif'"
-            [uniqueId]="'autoValidation'"
-            (toggleChange)="onToggle($event)"
-          ></app-toggle-slide>
-        </div> -->
         <mat-tab-group
           animationDuration="0ms"
           (selectedTabChange)="onTabChange($event)"

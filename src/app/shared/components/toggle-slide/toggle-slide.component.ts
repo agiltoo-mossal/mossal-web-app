@@ -22,11 +22,6 @@ export class ToggleSlideComponent {
   @Input() serviceId: string;
 
   @Input() set value(data: boolean) {
-    console.log({
-      service: this.serviceId,
-      data,
-    });
-
     this.valueChecked = data;
   }
   @Output() toggleChange = new EventEmitter<boolean>();

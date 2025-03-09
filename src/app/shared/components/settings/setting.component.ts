@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AmountUnit } from 'src/graphql/generated';
+import { SnackBarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-setting',
@@ -8,6 +9,7 @@ import { AmountUnit } from 'src/graphql/generated';
   styleUrl: './setting.component.scss',
 })
 export class SettingComponent implements OnInit {
+  c;
   @Output() settingChange = new EventEmitter<any>();
   @Input() serviceId: string;
   @Input() categorie: any;
@@ -19,7 +21,10 @@ export class SettingComponent implements OnInit {
     autoValidate: true,
   };
   settingForm: FormGroup;
-  constructor(private _fb: FormBuilder) {}
+  constructor(
+    private _fb: FormBuilder,
+    private snackBarService: SnackBarService
+  ) {}
 
   ngOnInit(): void {
     this.settingForm = this._fb.group({
@@ -40,7 +45,7 @@ export class SettingComponent implements OnInit {
         this.settingForm.removeControl('amountPercentage');
         this.settingForm.addControl(
           'amount',
-          this._fb.control(null, [Validators.required])
+          this._fb.control(null, [Validators.required, Validators.min(1000)])
         );
         this.settingForm.get('amount').setValue(this.data.amount);
       } else {
@@ -71,7 +76,14 @@ export class SettingComponent implements OnInit {
           temp.amount = value.amountPercentage;
         }
         delete temp.amountPercentage;
+        console.log('dataForm', temp);
+
         this.settingChange.emit({ dataForm: temp, categorie: this.categorie });
+      } else {
+        this.snackBarService.showErrorSnackBar(
+          1000,
+          'Veuillez remplir tous les champs obligatoires'
+        );
       }
     });
     this.amountUnit.valueChanges.subscribe((value) => {
@@ -108,6 +120,9 @@ export class SettingComponent implements OnInit {
 
   get amountUnit() {
     return this.settingForm.get('amountUnit');
+  }
+  get amount() {
+    return this.settingForm.get('amount');
   }
 
   onValidationChange(isActive: boolean) {
