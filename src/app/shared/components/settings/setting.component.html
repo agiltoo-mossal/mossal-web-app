@@ -105,6 +105,17 @@
           >
             La pourcentage est requise et doit être supérieure à 1 .
           </mat-error>
+          <mat-error
+            *ngIf="
+              settingForm?.get('amountPercentage').invalid &&
+              (settingForm?.get('amountPercentage').touched ||
+              settingForm?.get('amountPercentage').dirty) &&
+
+              settingForm?.get('amountPercentage').value > 100
+            "
+          >
+            La pourcentage est requise et doit être inférieure à 100 .
+          </mat-error>
         </div>
       </ng-container>
     </div>

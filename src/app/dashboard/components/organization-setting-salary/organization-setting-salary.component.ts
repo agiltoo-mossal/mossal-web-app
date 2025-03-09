@@ -255,6 +255,8 @@ export class OrganizationSettingSalaryComponent {
           service,
           organization,
           id,
+          activationDurationDay,
+
           ...dataForm
         } = this.dataForm;
         this.dataForm = dataForm;
@@ -284,6 +286,8 @@ export class OrganizationSettingSalaryComponent {
               this.selectedCategorie?.id
           );
           if (!selectedUpdate) {
+            console.log('dataForm', this.dataForm);
+
             this.createCategorySocioproServiceGQL
               .mutate({
                 categorySocioproId: this.selectedCategorie.categorySocioproId,

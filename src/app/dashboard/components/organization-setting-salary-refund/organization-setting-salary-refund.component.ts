@@ -256,6 +256,7 @@ export class OrganizationSettingSalaryRefundComponent {
           service,
           organization,
           id,
+          activationDurationDay,
           ...dataForm
         } = this.dataForm;
         this.dataForm = dataForm;
