@@ -36,6 +36,7 @@ export class OrganizationSettingEmergencyComponent {
   dataForm: any;
   activatedAt: string;
   listCategorieService: Partial<CategorySocioproService>[] = [];
+  saveData: boolean = false;
   selectedCategorie: any;
 
   // Variables pour l'état des bascules
@@ -177,11 +178,10 @@ export class OrganizationSettingEmergencyComponent {
    * Méthode pour sauvegarder les paramètres de plafond
    */
   async saveSettings(): Promise<void> {
-    if (this.emergencyForm.invalid) {
+    if (this.emergencyForm.invalid && !this.saveData) {
       this.snackBarService.showSnackBar('Veuillez remplir tous les champs');
       return;
     }
-    console.log('this.emergencyForm', this.emergencyForm.value);
     if (
       this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Percentage &&
       !this.emergencyForm.get('amount')?.value
@@ -405,12 +405,15 @@ export class OrganizationSettingEmergencyComponent {
     return this.emergencyForm.get('amountPercentage');
   }
   onSettingChange($event) {
-    console.log($event);
-
     this.dataForm = $event.dataForm;
-    this.emergencyForm.patchValue({
-      ...$event.dataForm,
-    });
+    if ($event.saveData) {
+      this.saveData = true;
+      this.emergencyForm.patchValue({
+        ...$event.dataForm,
+      });
+    } else {
+      this.saveData = false;
+    }
     console.log('dataForm', this.emergencyForm.getRawValue());
   }
   onDateChange(event: MatDatepickerInputEvent<Date>) {

@@ -79,8 +79,10 @@ export class OrganizationSettingGeneralComponent {
       this.errorMessage = 'Le nom de la catégorie est obligatoire.';
       return;
     }
-    const existingCategory = this.categories.find(
-      (category) => category.title === this.newCategorie
+    const existingCategory = this.categories.find((category) =>
+      new RegExp(`^${this.newCategorie.trim()}$`, 'i').test(
+        category.title.trim()
+      )
     );
     if (existingCategory) {
       this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
@@ -153,8 +155,8 @@ export class OrganizationSettingGeneralComponent {
     // Sauvegarder les modifications et désactiver le mode édition
     const existingCategory = this.categories.find(
       (category) =>
-        category.title.toLowerCase() ===
-        this.categories[index].title.toLowerCase()
+        category.title.toLowerCase().trim() ===
+        this.categories[index].title.toLowerCase().trim()
     );
     if (existingCategory && existingCategory.id !== this.categories[index].id) {
       this.snackBarService.showSnackBar('Cette catégorie existe déjà.');

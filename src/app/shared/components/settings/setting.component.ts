@@ -78,8 +78,17 @@ export class SettingComponent implements OnInit {
         delete temp.amountPercentage;
         console.log('dataForm', temp);
 
-        this.settingChange.emit({ dataForm: temp, categorie: this.categorie });
+        this.settingChange.emit({
+          dataForm: temp,
+          categorie: this.categorie,
+          saveData: true,
+        });
       } else {
+        this.settingChange.emit({
+          dataForm: null,
+          categorie: this.categorie,
+          saveData: false,
+        });
         this.snackBarService.showErrorSnackBar(
           1000,
           'Veuillez remplir tous les champs obligatoires'
