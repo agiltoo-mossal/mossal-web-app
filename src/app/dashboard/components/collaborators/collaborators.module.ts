@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upload.module';
 import { DetailCollaboratorComponent } from './components/detail-collaborator/detail-collaborator.component';
+import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande-status.module';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { DetailCollaboratorComponent } from './components/detail-collaborator/de
     MatInputModule,
     MatFormFieldModule,
     FileUploadModule,
+    DemandeStatusModule,
   ],
   exports: [CollaboratorsComponent],
 })

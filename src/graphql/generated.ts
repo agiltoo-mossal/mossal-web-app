@@ -1391,7 +1391,7 @@ export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> } };
+export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, refundDuration: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> } };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -2608,6 +2608,7 @@ export const FetchPaginatedOrganizationDemandesDocument = gql`
       }
       createdAt
       updatedAt
+      refundDuration
     }
   }
 }

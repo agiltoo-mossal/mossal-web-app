@@ -84,6 +84,7 @@
         <th>Nom du service</th>
         <th>Montant</th>
         <th>Date</th>
+        <th>Durée de remboursement</th>
         <th>Solde</th>
         <th>Action</th>
       </tr>
@@ -95,8 +96,93 @@
           <td>{{pending.organisationService.service.title}}</td>
           <td>{{pending.amount}} XOF</td>
           <td>{{pending.createdAt | date}}</td>
+          <td>{{pending?.refundDuration}}</td>
           <td>{{pending.amount}} XOF</td>
-          <td><button class="dropdown-btn">Action ▼</button></td>
+          <td>
+             <div class="dropdown" appDropdown="dropdown-action">
+                <span fxLayout="row" class="btn-edit-statut">
+                  <span
+                    class="text"
+                    fxFlex="auto"
+                    fxLayout="row"
+                    fxLayoutGap="8px"
+                    fxLayoutAlign="center center"
+                    ><span>{{ pending?.status | demandeStatus | titlecase }}</span
+                    ><span
+                      class="statut statut--{{pending?.status | lowercase }}"
+                    ></span
+                  ></span>
+                  <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
+                    >keyboard_arrow_down</mat-icon
+                  >
+                </span>
+                <div
+                  class="dropdown-content dropdown-content-filter"
+                  id="dropdown-action"
+                >
+                  <div
+                    *ngIf="pending.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous valider cette demande?'"
+                    [confirmCallback]="validateDemande"
+                    [confirmCallbackParam]="pending?.id"
+                  >
+                    Validée
+                    <span class="statut statut--valid"></span>
+                  </div>
+                  <div
+                    *ngIf="
+                      pending.status === 'VALIDATED' &&
+                      pending.statusText === 'VALIDATED'
+                    "
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous payer cette demande?'"
+                    [confirmCallback]="payeDemande"
+                    [confirmCallbackParam]="pending?.id"
+                  >
+                    Remboursée
+                    <span class="statut statut--payed"></span>
+                  </div>
+                  <div
+                    *ngIf="pending.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous rejeter cette demande?'"
+                    [confirmCallback]="rejectDemande"
+                    [reasonRequired]="true"
+                    [confirmCallbackParam]="pending?.id"
+                  >
+                    Rejetée
+                    <span class="statut statut--rejected"></span>
+                  </div>
+                  <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
+                                    attente
+                                    <span class="statut statut--pending"></span>
+                                </div> -->
+                  <div
+                    *ngIf="pending.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous annuler cette demande?'"
+                    [confirmCallback]="cancelDemande"
+                    [confirmCallbackParam]="pending?.id"
+                  >
+                    Annulée
+                    <span class="statut statut--cancel"></span>
+                  </div>
+                </div>
+              </div>
+          </td>
         
         
       </tr>
@@ -107,34 +193,21 @@
 <!-- Section inférieure : Demande en cours -->
 <div class="current-request-section">
   <h2>Demande en cours</h2>
-  <p>Avance salariale remboursable mensuellement</p>
   <table>
     <thead>
       <tr>
-        <th>Date</th>
+        <th>N° Demande</th>
+        <th>Nom du service</th>
         <th>Montant demandé</th>
-        <th>Mensualité</th>
         <th>Frais</th>
-        <th>Reliquat</th>
-        <th>État</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>03/06/2024</td>
-        <td>1 500 XOF</td>
-        <td>500 XOF</td>
-        <td>10 XOF</td>
-        <td>650 XOF</td>
-        <td><span class="status success">✔</span></td>
-      </tr>
-      <tr>
-        <td>03/09/2024</td>
-        <td>1 500 XOF</td>
-        <td>500 XOF</td>
-        <td>10 XOF</td>
-        <td>650 XOF</td>
-        <td><span class="status failure">✘</span></td>
+      <tr *ngFor="let validated of validatedDemandes">
+        <td>{{validated.number}}</td>
+        <td>{{validated.organisationService.service.title}}</td>
+        <td>{{validated.amount}} XOF</td>
+        <td>{{validated.fees}} XOF</td>
       </tr>
     </tbody>
   </table>

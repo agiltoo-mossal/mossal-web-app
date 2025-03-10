@@ -259,7 +259,7 @@ export class OrganizationSettingGeneralComponent {
                 this.snackBarService.showSuccessSnackBar('CATEGORIE SUPPRIMEE');
                 this.categories.splice(index, 1);
               } else {
-                this.snackBarService.showErrorSnackBar();
+                this.snackBarService.showSnackBar("Erreur lors de l'opération");
               }
             },
             error: (error) => {

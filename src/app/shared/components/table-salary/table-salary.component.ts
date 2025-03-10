@@ -70,6 +70,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     'balance',
     'createdAt',
     'avance',
+    'refundDuration',
     'action',
   ];
 
