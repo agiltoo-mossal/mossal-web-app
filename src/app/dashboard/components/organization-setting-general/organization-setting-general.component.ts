@@ -75,13 +75,18 @@ export class OrganizationSettingGeneralComponent {
   }
 
   addCategorie(): void {
-    if (this.newCategorie.trim() === '') {
+    const cleanedCategorie = this.newCategorie
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+
+    if (cleanedCategorie === '') {
       this.errorMessage = 'Le nom de la catégorie est obligatoire.';
       return;
     }
     const existingCategory = this.categories.find((category) =>
-      new RegExp(`^${this.newCategorie.trim()}$`, 'i').test(
-        category.title.trim()
+      new RegExp(`^${cleanedCategorie}$`, 'i').test(
+        category.title.trim().replace(/\s+/g, ' ').toLowerCase()
       )
     );
     if (existingCategory) {
