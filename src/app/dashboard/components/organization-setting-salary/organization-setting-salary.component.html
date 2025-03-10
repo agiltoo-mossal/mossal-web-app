@@ -9,7 +9,7 @@
       <app-toggle-slide
         [firstText]="'Actif'"
         [secondText]="'Inactif'"
-        [value]="activated "
+        [value]="activated"
         [uniqueId]="'serviceActivationSalary'"
         (toggleChange)="handleServiceActivationChange($event)"
       ></app-toggle-slide>
@@ -49,6 +49,10 @@
           </div>
         </div>
       </div>
+      <mat-error *ngIf="!validDate">
+        La date de début doit être inférieure à la date de fin.
+      </mat-error>
+
 
       <!-- Section des paramètres -->
       <div class="section">

@@ -19,7 +19,7 @@
         <label style="margin-bottom: 19px; padding: 0 12px"
           >Date d'activation</label
         >
-        <div class="date-inputs">
+        <form class="date-inputs" [formGroup]="formDate">
           <label style="margin-bottom: 19px; padding: 0 12px" for=""
             >Date de début</label
           >
@@ -64,9 +64,11 @@
               </mat-error>
             </mat-form-field>
           </div>
-        </div>
+        </form>
       </div>
-
+      <mat-error *ngIf="!validDate">
+        La date de début doit être inférieure à la date de fin.
+      </mat-error>
       <!-- Section des paramètres -->
       <div class="section">
         <div class="category-selection">

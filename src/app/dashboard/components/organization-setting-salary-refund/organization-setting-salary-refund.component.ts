@@ -43,8 +43,10 @@ export class OrganizationSettingSalaryRefundComponent {
   activated: boolean = true;
   selectedCategorie: any;
   selectedCategorieId: string;
+  formDate: FormGroup;
 
   dataForm: any;
+  validDate: boolean = true;
   @Output() activeService: EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
@@ -60,9 +62,25 @@ export class OrganizationSettingSalaryRefundComponent {
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
     private activationInformationService: ActivationService,
-    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
-  ) {}
-
+    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
+    private formBuilder: FormBuilder
+  ) {
+    this.formDate = this.formBuilder.group({
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+    });
+    this.formDate.valueChanges.subscribe((value) => {
+      if (this.formDate.valid) {
+        this.calculateRefundDuration(value.startDate, value.endDate);
+      }
+    });
+  }
+  get dateStart() {
+    return this.formDate.get('startDate');
+  }
+  get dateEnd() {
+    return this.formDate.get('endDate');
+  }
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
@@ -183,7 +201,10 @@ export class OrganizationSettingSalaryRefundComponent {
   calculateRefundDuration(startDate: Date, endDate: Date) {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    this.dataForm['activeAt'] = start;
+    this.dataForm = {
+      ...this.dataForm,
+      activatedAt: start,
+    };
     if (start <= end) {
       const duration =
         differenceInMonths(end, start) +
@@ -191,10 +212,10 @@ export class OrganizationSettingSalaryRefundComponent {
 
       // approximate month difference
       this.dataForm['refundDuration'] = duration;
-      // this.salaryForm.get('refundDuration').setValue(duration);
+      this.validDate = true;
     } else {
       this.dataForm['refundDuration'] = 0;
-      // this.salaryForm.get('refundDuration').setValue(0);
+      this.validDate = false;
     }
     console.log(this.dataForm);
   }

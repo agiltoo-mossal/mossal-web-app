@@ -42,7 +42,7 @@ export class OrganizationSettingSalaryComponent {
   activated: boolean = true;
   selectedCategorie: any;
   selectedCategorieId: string;
-
+  validDate: boolean = true;
   dataForm: any;
   @Output() activeService: EventEmitter<{
     isActive: boolean;
@@ -182,7 +182,10 @@ export class OrganizationSettingSalaryComponent {
   calculateRefundDuration(startDate: Date, endDate: Date) {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    this.dataForm['activeAt'] = start;
+    this.dataForm = {
+      ...this.dataForm,
+      activatedAt: start,
+    };
     if (start <= end) {
       const duration =
         differenceInMonths(end, start) +
@@ -190,20 +193,16 @@ export class OrganizationSettingSalaryComponent {
 
       // approximate month difference
       this.dataForm['refundDuration'] = duration;
+      this.validDate = true;
       // this.salaryForm.get('refundDuration').setValue(duration);
     } else {
+      this.validDate = false;
       this.dataForm['refundDuration'] = 0;
       // this.salaryForm.get('refundDuration').setValue(0);
     }
     console.log(this.dataForm);
   }
 
-  addCategory(): void {
-    if (this.newCategory && this.newCategory.trim()) {
-    } else {
-      // alert('Le nom de la catégorie ne peut pas être vide.');
-    }
-  }
   handleServiceActivationChange(isActive: boolean) {
     this.isActive = isActive;
     this.activated = isActive;

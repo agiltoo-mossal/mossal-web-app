@@ -9,7 +9,6 @@ import { SnackBarService } from '../../services/snackbar.service';
   styleUrl: './setting.component.scss',
 })
 export class SettingComponent implements OnInit {
-  c;
   @Output() settingChange = new EventEmitter<any>();
   @Input() serviceId: string;
   @Input() categorie: any;
