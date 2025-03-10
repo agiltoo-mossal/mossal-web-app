@@ -157,11 +157,15 @@ export class OrganizationSettingGeneralComponent {
       });
   }
   saveCategorie(index: number): void {
+    const cleanedCategorie = this.categories[index].title
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
     // Sauvegarder les modifications et désactiver le mode édition
-    const existingCategory = this.categories.find(
-      (category) =>
-        category.title.toLowerCase().trim() ===
-        this.categories[index].title.toLowerCase().trim()
+    const existingCategory = this.categories.find((category) =>
+      new RegExp(`^${cleanedCategorie}$`, 'i').test(
+        category.title.trim().replace(/\s+/g, ' ').toLowerCase()
+      )
     );
     if (existingCategory && existingCategory.id !== this.categories[index].id) {
       this.snackBarService.showSnackBar('Cette catégorie existe déjà.');
@@ -175,8 +179,9 @@ export class OrganizationSettingGeneralComponent {
     for (let i = 0; i < this.categories.length; i++) {
       if (
         i !== index &&
-        this.categories[i].title.toLowerCase() ===
-          this.categories[index].title.toLowerCase()
+        new RegExp(`^${cleanedCategorie}$`, 'i').test(
+          this.categories[i].title.trim().replace(/\s+/g, ' ').toLowerCase()
+        )
       ) {
         doublon = true;
         break;
