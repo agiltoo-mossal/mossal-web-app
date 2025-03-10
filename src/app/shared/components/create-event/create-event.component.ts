@@ -31,8 +31,21 @@ export class CreateEventComponent implements OnInit {
       this.action = 'Modifier';
     }
   }
-
+  get startDate() {
+    return this.eventForm.get('startDate');
+  }
+  get endDate() {
+    return this.eventForm.get('endDate');
+  }
   onSubmit(): void {
+    if (
+      new Date(this.startDate?.getRawValue()).getTime() >
+      new Date(this.endDate?.getRawValue()).getTime()
+    ) {
+      this.startDate?.setErrors({ invalidDate: true });
+      this.endDate?.setErrors({ invalidDate: true });
+      return;
+    }
     if (this.eventForm.valid) {
       this.dialogRef.close(this.eventForm.getRawValue());
     }

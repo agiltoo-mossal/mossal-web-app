@@ -1,7 +1,7 @@
-<div class="modal-container">
+<div style="padding: 20px;">
   <h2 class="modal-title">{{ title}}</h2>
 
-  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="form-container">
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" >
     <!-- Champ Nom de l'événement -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Nom de l'événement</mat-label>
@@ -26,6 +26,7 @@
       <mat-error *ngIf="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched">
         La date de début est requise.
       </mat-error>
+      
     </mat-form-field>
 
     <!-- Champ Date de fin -->
