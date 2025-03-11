@@ -53,7 +53,6 @@
         La date de début doit être inférieure à la date de fin.
       </mat-error>
 
-
       <!-- Section des paramètres -->
       <div class="section">
         <div class="category-selection">
@@ -85,6 +84,9 @@
           >
             <app-setting
               [data]="categorie"
+              [hideToggleService]="
+                categorie?.categorySociopro?.title !== 'Paramètres généraux'
+              "
               [categorie]="categorie.categorySociopro"
               (settingChange)="onSettingChange($event)"
             ></app-setting>

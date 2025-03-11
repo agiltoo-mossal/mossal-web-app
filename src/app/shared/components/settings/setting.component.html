@@ -9,151 +9,158 @@
       [value]="settingForm?.get('activated').value"
     ></app-toggle-slide>
   </div>
-
-  <div class="percentage">
-    <h3>Pourcentage ou montant fixe</h3>
-    <label>
-      Pourcentage
-      <input
-        type="radio"
-        value="Percentage"
-        class="custom-radio"
-        formControlName="amountUnit"
-      />
-      <!-- [(ngModel)]="data.amountType" -->
-    </label>
-    <label>
-      Montant fixe
-      <input
-        type="radio"
-        formControlName="amountUnit"
-        value="Fixed"
-        class="custom-radio"
-      />
-      <!-- [(ngModel)]="data.amountUnit" -->
-    </label>
-  </div>
-
-  <div class="reimbursement">
-    <h3>Montant et durée du remboursement</h3>
-    <div class="plafond-content">
-      <ng-container *ngIf="amountUnit?.value === 'Fixed'">
-        <div style="display: flex; flex-direction: column; width: 100%">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-            "
-          >
-            <label for="amount-input">Montant</label>
-            <div class="percentage-input-group">
-              <input
-                type="number"
-                id="amount-input"
-                placeholder="20000"
-                formControlName="amount"
-                min="0"
-              />
-              <!-- [(ngModel)]="data.amount" -->
-              <span class="currency-symbol">FCFA</span>
-            </div>
-          </div>
-          <mat-error
-            *ngIf="amount.invalid && (amount.touched || amount?.dirty) && amount.value < 1000"
-          >
-            Le montant est requis et doit être supérieur à 1000.
-          </mat-error>
-          <mat-error *ngIf="amount.invalid && amount.touched && !amount.value">
-            Le montant est obligatoire.
-          </mat-error>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="amountUnit?.value === 'Percentage'">
-        <div style="display: flex; flex-direction: column; width: 100%">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-            "
-          >
-            <label for="amount-input">Pourcentage</label>
-            <div class="percentage-input-group">
-              <input
-                type="number"
-                id="amount-input"
-                placeholder="20"
-                formControlName="amountPercentage"
-                min="0"
-                max="100"
-              />
-              <!-- [(ngModel)]="data.amountPercentage" -->
-              <span class="currency-symbol">%</span>
-            </div>
-          </div>
-
-          <mat-error
-            *ngIf="
-              settingForm?.get('amountPercentage').invalid &&
-              (settingForm?.get('amountPercentage').touched ||
-              settingForm?.get('amountPercentage').dirty) &&
-
-              settingForm?.get('amountPercentage').value < 1
-            "
-          >
-            La pourcentage est requise et doit être supérieure à 1 .
-          </mat-error>
-          <mat-error
-            *ngIf="
-              settingForm?.get('amountPercentage').invalid &&
-              (settingForm?.get('amountPercentage').touched ||
-              settingForm?.get('amountPercentage').dirty) &&
-
-              settingForm?.get('amountPercentage').value > 100
-            "
-          >
-            La pourcentage est requise et doit être inférieure à 100 .
-          </mat-error>
-        </div>
-      </ng-container>
-    </div>
-    <div class="plafond-content">
-      <label for="duration-input">Durée du remboursement</label>
-      <div class="percentage-input-group">
+  <div class="toggle-side" [ngClass]="{ grise: !settingForm?.get('activated').value }">
+    <div class="percentage">
+      <h3>Pourcentage ou montant fixe</h3>
+      <label>
+        Pourcentage
         <input
-          type="number"
-          id="duration-input"
-          placeholder="12 mois"
-          formControlName="refundDuration"
+          type="radio"
+          value="Percentage"
+          class="custom-radio"
+          formControlName="amountUnit"
         />
-        <!-- [(ngModel)]="data.refundDuration" -->
+        <!-- [(ngModel)]="data.amountType" -->
+      </label>
+      <label>
+        Montant fixe
+        <input
+          type="radio"
+          formControlName="amountUnit"
+          value="Fixed"
+          class="custom-radio"
+        />
+        <!-- [(ngModel)]="data.amountUnit" -->
+      </label>
+    </div>
+
+    <div class="reimbursement">
+      <h3>Montant et durée du remboursement</h3>
+      <div class="plafond-content">
+        <ng-container *ngIf="amountUnit?.value === 'Fixed'">
+          <div style="display: flex; flex-direction: column; width: 100%">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+              "
+            >
+              <label for="amount-input">Montant</label>
+              <div class="percentage-input-group">
+                <input
+                  type="number"
+                  id="amount-input"
+                  placeholder="20000"
+                  formControlName="amount"
+                  min="0"
+                />
+                <!-- [(ngModel)]="data.amount" -->
+                <span class="currency-symbol">FCFA</span>
+              </div>
+            </div>
+            <mat-error
+              *ngIf="
+                amount.invalid &&
+                (amount.touched || amount?.dirty) &&
+                amount.value < 1000
+              "
+            >
+              Le montant est requis et doit être supérieur à 1000.
+            </mat-error>
+            <mat-error
+              *ngIf="amount.invalid && amount.touched && !amount.value"
+            >
+              Le montant est obligatoire.
+            </mat-error>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="amountUnit?.value === 'Percentage'">
+          <div style="display: flex; flex-direction: column; width: 100%">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+              "
+            >
+              <label for="amount-input">Pourcentage</label>
+              <div class="percentage-input-group">
+                <input
+                  type="number"
+                  id="amount-input"
+                  placeholder="20"
+                  formControlName="amountPercentage"
+                  min="0"
+                  max="100"
+                />
+                <!-- [(ngModel)]="data.amountPercentage" -->
+                <span class="currency-symbol">%</span>
+              </div>
+            </div>
+
+            <mat-error
+              *ngIf="
+                settingForm?.get('amountPercentage').invalid &&
+                (settingForm?.get('amountPercentage').touched ||
+                  settingForm?.get('amountPercentage').dirty) &&
+                settingForm?.get('amountPercentage').value < 1
+              "
+            >
+              La pourcentage est requise et doit être supérieure à 1 .
+            </mat-error>
+            <mat-error
+              *ngIf="
+                settingForm?.get('amountPercentage').invalid &&
+                (settingForm?.get('amountPercentage').touched ||
+                  settingForm?.get('amountPercentage').dirty) &&
+                settingForm?.get('amountPercentage').value > 100
+              "
+            >
+              La pourcentage est requise et doit être inférieure à 100 .
+            </mat-error>
+          </div>
+        </ng-container>
+      </div>
+      <div class="plafond-content">
+        <label for="duration-input">Durée du remboursement</label>
+        <div class="percentage-input-group">
+          <input
+            type="number"
+            id="duration-input"
+            placeholder="12 mois"
+            formControlName="refundDuration"
+          />
+          <!-- [(ngModel)]="data.refundDuration" -->
+        </div>
+      </div>
+      <div>
+        <mat-error
+          *ngIf="
+            settingForm?.get('refundDuration').invalid &&
+            (settingForm?.get('refundDuration').touched ||
+              settingForm?.get('refundDuration').dirty) &&
+            settingForm?.get('refundDuration').value < 1
+          "
+        >
+          La durée du remboursement doit être supérieure à 1.
+        </mat-error>
       </div>
     </div>
-    <div>
-      <mat-error
-        *ngIf="
-          settingForm?.get('refundDuration').invalid &&
-          (settingForm?.get('refundDuration').touched || settingForm?.get('refundDuration').dirty) && settingForm?.get('refundDuration').value < 1
-        "
-      >
-        La durée du remboursement doit être supérieure à 1.
-      </mat-error>
-    </div>
-  </div>
 
-  <div class="container-setting">
-    <h3>Validation automatique</h3>
-    <!-- [(ngModel)]="data.autoValidation" -->
-    <app-toggle-slide
-      [firstText]="'ON'"
-      [secondText]="'OFF'"
-      [serviceId]="serviceId"
-      [uniqueId]="'autoValidationSetting'"
-      [value]="settingForm?.get('autoValidate').value"
-      (toggleChange)="onValidationChange($event)"
-    ></app-toggle-slide>
+    <div class="container-setting">
+      <h3>Validation automatique</h3>
+      <!-- [(ngModel)]="data.autoValidation" -->
+      <app-toggle-slide
+        [firstText]="'ON'"
+        [secondText]="'OFF'"
+        [serviceId]="serviceId"
+        [uniqueId]="'autoValidationSetting'"
+        [value]="settingForm?.get('autoValidate').value"
+        (toggleChange)="onValidationChange($event)"
+      ></app-toggle-slide>
+    </div>
   </div>
 </form>
