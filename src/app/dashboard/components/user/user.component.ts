@@ -119,7 +119,7 @@ export class UserComponent {
       cache = 'no-cache';
     }
     this.fetchCurrentAdminGQL
-      .fetch({}, { fetchPolicy: cache as any })
+      .fetch({}, { fetchPolicy: 'no-cache' })
       .subscribe((result) => {
         if (result.data) {
           this.user = result.data.fetchCurrentAdmin as User;
