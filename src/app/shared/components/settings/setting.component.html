@@ -1,11 +1,12 @@
 <form class="settings" [formGroup]="settingForm">
-  <div class="container-setting">
+  <div class="container-setting" *ngIf="hideToggleService">
     <h3>Activation du service</h3>
     <app-toggle-slide
       [firstText]="'On'"
       [secondText]="'Off'"
       [uniqueId]="'paramServiceActivation'"
       (toggleChange)="onServiceActivationChange($event)"
+      [value]="settingForm?.get('activated').value"
     ></app-toggle-slide>
   </div>
 

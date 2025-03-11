@@ -34,6 +34,7 @@ import { ActivationService } from '../organization/activation.service';
 export class OrganizationSettingEmergencyComponent {
   emergencyForm: FormGroup;
   dataForm: any;
+  activated: boolean;
   activatedAt: string;
   listCategorieService: Partial<CategorySocioproService>[] = [];
   saveData: boolean = false;
@@ -130,7 +131,7 @@ export class OrganizationSettingEmergencyComponent {
                 ...item,
               });
             });
-
+            this.activated = data.activated;
             this.emergencyForm.patchValue({
               activated: data.activated,
               activatedAt: data.activatedAt,
@@ -390,6 +391,7 @@ export class OrganizationSettingEmergencyComponent {
       );
     }
     this.emergencyForm.get('activated').setValue(isActive);
+    this.activated = isActive;
   }
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];

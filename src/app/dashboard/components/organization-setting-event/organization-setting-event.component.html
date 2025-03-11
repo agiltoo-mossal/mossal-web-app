@@ -21,9 +21,18 @@
         <h3>Liste des événements prévus</h3>
         <ul class="event-list">
           <li *ngIf="!events?.length">
-            <div style="display: flex; flex-direction: column;justify-content: center;align-items: center;">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+              "
+            >
               <div>
-                <mat-icon style="font-size: 45px;width: 100%;height: 50px;">event_busy</mat-icon>
+                <mat-icon style="font-size: 45px; width: 100%; height: 50px"
+                  >event_busy</mat-icon
+                >
               </div>
               <span>Aucun événement prévu</span>
             </div>
@@ -87,6 +96,9 @@
           >
             <app-setting
               [data]="categorie"
+              [hideToggleService]="
+                categorie?.categorySociopro?.title !== 'Paramètres généraux'
+              "
               [categorie]="categorie.categorySociopro"
               (settingChange)="onSettingChange($event)"
             ></app-setting>

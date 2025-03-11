@@ -11,6 +11,7 @@ import { SnackBarService } from '../../services/snackbar.service';
 export class SettingComponent implements OnInit {
   @Output() settingChange = new EventEmitter<any>();
   @Input() serviceId: string;
+  @Input() hideToggleService: boolean = true;
   @Input() categorie: any;
   @Input() data: any = {
     activated: true,

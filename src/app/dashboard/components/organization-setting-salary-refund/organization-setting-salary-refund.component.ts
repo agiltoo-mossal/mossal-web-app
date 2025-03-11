@@ -288,13 +288,24 @@ export class OrganizationSettingSalaryRefundComponent {
           this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
         ) {
           if (this.organisationServiceId) {
-            this.updateOrganisationService(
-              this.organisationServiceId,
-              this.dataForm
-            );
+            this.updateOrganisationService(this.organisationServiceId, {
+              ...this.dataForm,
+              activatedAt: this.dateStart.getRawValue(),
+              activationDurationDay: differenceInDays(
+                this.dateEnd.getRawValue(),
+                this.dateStart.getRawValue()
+              ),
+            });
           } else {
             this.createOrganisationService(
-              this.dataForm,
+              {
+                ...this.dataForm,
+                activatedAt: this.dateStart.getRawValue(),
+                activationDurationDay: differenceInDays(
+                  this.dateEnd.getRawValue(),
+                  this.dateStart.getRawValue()
+                ),
+              },
               this.organization.id,
               this.service.id
             );
