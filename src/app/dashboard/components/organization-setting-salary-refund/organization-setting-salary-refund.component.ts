@@ -100,7 +100,14 @@ export class OrganizationSettingSalaryRefundComponent {
             this.dataForm = data;
 
             this.activated = data?.activated;
-
+            console.log('salaryForm', this.dataForm);
+            this.dateStart.setValue(new Date(data?.activatedAt));
+            this.dateEnd.setValue(
+              new Date(
+                new Date(data?.activatedAt).getTime() +
+                  data?.activationDurationDay * 24 * 60 * 60 * 1000
+              )
+            );
             this.listCategorieService = [
               {
                 amount: data.amount,
@@ -203,29 +210,20 @@ export class OrganizationSettingSalaryRefundComponent {
     const end = new Date(endDate);
     this.dataForm = {
       ...this.dataForm,
-      activatedAt: start,
+      activatedAt: start.toISOString(),
     };
     if (start <= end) {
-      const duration =
-        differenceInMonths(end, start) +
-        (differenceInDays(end, start) % 30) / 30;
+      const duration = differenceInDays(end, start);
 
       // approximate month difference
-      this.dataForm['refundDuration'] = duration;
+      this.dataForm['activationDurationDay'] = duration;
       this.validDate = true;
     } else {
-      this.dataForm['refundDuration'] = 0;
+      this.dataForm['activationDurationDay'] = 0;
       this.validDate = false;
     }
-    console.log(this.dataForm);
   }
 
-  addCategory(): void {
-    if (this.newCategory && this.newCategory.trim()) {
-    } else {
-      // alert('Le nom de la catégorie ne peut pas être vide.');
-    }
-  }
   handleServiceActivationChange(isActive: boolean) {
     this.isActive = isActive;
     this.activated = isActive;
@@ -290,27 +288,29 @@ export class OrganizationSettingSalaryRefundComponent {
           if (this.organisationServiceId) {
             this.updateOrganisationService(this.organisationServiceId, {
               ...this.dataForm,
-              activatedAt: this.dateStart.getRawValue(),
-              activationDurationDay: differenceInDays(
-                this.dateEnd.getRawValue(),
-                this.dateStart.getRawValue()
-              ),
+              // activatedAt: this.dateStart.getRawValue(),
+              // activationDurationDay: differenceInDays(
+              //   this.dateEnd.getRawValue(),
+              //   this.dateStart.getRawValue()
+              // ),
             });
           } else {
             this.createOrganisationService(
               {
                 ...this.dataForm,
-                activatedAt: this.dateStart.getRawValue(),
-                activationDurationDay: differenceInDays(
-                  this.dateEnd.getRawValue(),
-                  this.dateStart.getRawValue()
-                ),
+                // activatedAt: this.dateStart.getRawValue(),
+                // activationDurationDay: differenceInDays(
+                //   this.dateEnd.getRawValue(),
+                //   this.dateStart.getRawValue()
+                // ),
               },
               this.organization.id,
               this.service.id
             );
           }
         } else {
+          delete this.dataForm?.activatedAt;
+          delete this.dataForm?.activationDurationDay;
           let selectedUpdate = this.listCategorieService.find(
             (item) =>
               item?.id === this.selectedCategorie?.id &&
