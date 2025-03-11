@@ -32,6 +32,7 @@ import { ActivationService } from '../organization/activation.service';
 export class OrganizationSettingSalaryRefundComponent {
   startDate: Date;
   endDate: Date;
+
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
@@ -100,7 +101,6 @@ export class OrganizationSettingSalaryRefundComponent {
             this.dataForm = data;
 
             this.activated = data?.activated;
-            console.log('salaryForm', this.dataForm);
             this.dateStart.setValue(new Date(data?.activatedAt));
             this.dateEnd.setValue(
               new Date(

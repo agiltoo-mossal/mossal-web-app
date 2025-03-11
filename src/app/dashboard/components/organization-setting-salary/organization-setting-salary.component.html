@@ -17,37 +17,55 @@
 
     <div class="toggle-side" [ngClass]="{ grise: !activated }">
       <div class="activation-date">
-        <label style="margin: 0 auto; padding: 0 12px">Date d'activation</label>
-        <div class="date-inputs">
-          <label style="margin: 0 auto; padding: 0 12px" for=""
+        <label style="margin-bottom: 19px; padding: 0 12px"
+          >Date d'activation</label
+        >
+        <form class="date-inputs" [formGroup]="formDate">
+          <label style="margin-bottom: 19px; padding: 0 12px" for=""
             >Date de début</label
           >
           <div class="date-input">
-            <input
-              matInput
-              placeholder="Date de début"
-              type="date"
-              required
-              [(ngModel)]="startDate"
-              name="startDate"
-              (change)="onDateChange($event)"
-            />
+            <mat-form-field appearance="outline" class="form-field">
+              <input
+                matInput
+                [matDatepicker]="startPicker"
+                formControlName="startDate"
+                placeholder="Date de début"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-error *ngIf="startDate === null">
+                La date de début est requise.
+              </mat-error>
+            </mat-form-field>
           </div>
-          <label style="margin: 0 auto; padding: 0 12px" for=""
+          <label style="margin-bottom: 19px; padding: 0 12px" for=""
             >Date de fin</label
           >
           <div class="date-input">
-            <input
-              matInput
-              type="date"
-              placeholder="Date de fin"
-              [(ngModel)]="endDate"
-              name="endDate"
-              (change)="onDateChange($event)"
-              required
-            />
+            <mat-form-field appearance="outline" class="form-field">
+              <input
+                matInput
+                [matDatepicker]="endPicker"
+                formControlName="endDate"
+                placeholder="Date de fin"
+                required
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="endPicker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+              <mat-error *ngIf="endDate === null">
+                La date de fin est requise.
+              </mat-error>
+            </mat-form-field>
           </div>
-        </div>
+        </form>
       </div>
       <mat-error *ngIf="!validDate">
         La date de début doit être inférieure à la date de fin.

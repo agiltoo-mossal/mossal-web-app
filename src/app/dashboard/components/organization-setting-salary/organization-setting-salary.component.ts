@@ -22,6 +22,7 @@ import {
 import Swal from 'sweetalert2';
 import { differenceInMonths, differenceInDays } from 'date-fns';
 import { ActivationService } from '../organization/activation.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-organization-setting-salary',
@@ -34,7 +35,7 @@ export class OrganizationSettingSalaryComponent {
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
-
+  formDate: FormGroup;
   newCategory: string = '';
   isActive: boolean = false;
   organization: Organization;
@@ -59,9 +60,25 @@ export class OrganizationSettingSalaryComponent {
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
     private createCategorySocioproServiceGQL: CreateCategorySocioproServiceGQL,
     private activationInformationService: ActivationService,
-    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
-  ) {}
-
+    private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
+    private formBuilder: FormBuilder
+  ) {
+    this.formDate = this.formBuilder.group({
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+    });
+    this.formDate.valueChanges.subscribe((value) => {
+      if (this.formDate.valid) {
+        this.calculateRefundDuration(value.startDate, value.endDate);
+      }
+    });
+  }
+  get dateStart() {
+    return this.formDate.get('startDate');
+  }
+  get dateEnd() {
+    return this.formDate.get('endDate');
+  }
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
@@ -79,8 +96,16 @@ export class OrganizationSettingSalaryComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
+            console.log('data', data);
 
             this.activated = data?.activated;
+            this.dateStart.setValue(new Date(data?.activatedAt));
+            this.dateEnd.setValue(
+              new Date(
+                new Date(data?.activatedAt).getTime() +
+                  data?.activationDurationDay * 24 * 60 * 60 * 1000
+              )
+            );
 
             this.listCategorieService = [
               {
@@ -184,21 +209,17 @@ export class OrganizationSettingSalaryComponent {
     const end = new Date(endDate);
     this.dataForm = {
       ...this.dataForm,
-      activatedAt: start,
+      activatedAt: start.toISOString(),
     };
     if (start <= end) {
-      const duration =
-        differenceInMonths(end, start) +
-        (differenceInDays(end, start) % 30) / 30;
+      const duration = differenceInDays(end, start);
 
       // approximate month difference
-      this.dataForm['refundDuration'] = duration;
+      this.dataForm['activationDurationDay'] = duration;
       this.validDate = true;
-      // this.salaryForm.get('refundDuration').setValue(duration);
     } else {
       this.validDate = false;
-      this.dataForm['refundDuration'] = 0;
-      // this.salaryForm.get('refundDuration').setValue(0);
+      this.dataForm['activationDurationDay'] = 0;
     }
     console.log(this.dataForm);
   }
@@ -278,6 +299,8 @@ export class OrganizationSettingSalaryComponent {
             );
           }
         } else {
+          delete this.dataForm?.activatedAt;
+          delete this.dataForm?.activationDurationDay;
           let selectedUpdate = this.listCategorieService.find(
             (item) =>
               item?.id === this.selectedCategorie?.id &&
