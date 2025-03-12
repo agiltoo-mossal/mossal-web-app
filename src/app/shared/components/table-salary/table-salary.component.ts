@@ -135,6 +135,8 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       search: [''],
       status: [''],
       average: [''],
+      startDate: ['2025-01-01'],
+      endDate: ['2025-12-31'],
     });
   }
   ngAfterViewInit(): void {
@@ -165,7 +167,9 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         // startWith('')
       ),
       this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
-      this.searchForm.get('average').valueChanges.pipe(debounceTime(300))
+      this.searchForm.get('average').valueChanges.pipe(debounceTime(300)),
+      this.searchForm.get('startDate').valueChanges.pipe(debounceTime(300)),
+      this.searchForm.get('endDate').valueChanges.pipe(debounceTime(300))
     )
       .pipe(
         startWith({}),
@@ -193,7 +197,18 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
               .get('average')
               .getRawValue().max;
           }
+          console.log(
+            this.searchForm.get('startDate').value,
+            this.searchForm.get('endDate').value
+          );
 
+          if (
+            this.searchForm.get('startDate').value &&
+            this.searchForm.get('endDate').value
+          ) {
+            metricsInput['startDate'] = this.startDate;
+            metricsInput['endDate'] = this.endDate;
+          }
           return this.paginatedRequestGQL.fetch(
             {
               queryFilter,
@@ -407,7 +422,12 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.searchForm.get('status').setValue(state);
     console.log(this.searchForm.getRawValue());
   }
-
+  onStartDateChange() {
+    this.searchForm.get('startDate').setValue(this.startDate);
+  }
+  onEndDateChange() {
+    this.searchForm.get('endDate').setValue(this.endDate);
+  }
   resetFilter() {
     this.min = 0;
     this.max = 10000;

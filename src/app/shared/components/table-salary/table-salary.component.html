@@ -176,6 +176,7 @@
                 [(ngModel)]="startDate"
                 type="date"
                 id="debut"
+                (change)="onStartDateChange()"
               />
             </div>
             <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
@@ -185,6 +186,7 @@
                 [(ngModel)]="endDate"
                 type="date"
                 id="fin"
+                (change)="onEndDateChange()"
               />
             </div>
           </div>
