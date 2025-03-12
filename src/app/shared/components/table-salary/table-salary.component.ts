@@ -20,7 +20,7 @@ import {
   ValidateDemandeGQL,
 } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -105,7 +105,8 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
 
     private fetchCountStatusGQL: FetchCountStatusGQL,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.initSearchForm();
     this.activatedRoute.queryParams.subscribe((params) => {
@@ -357,24 +358,25 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   };
 
   payeDemande = (demandeId: string) => {
-    this.payeDemandeGQL.mutate({ demandeId }).subscribe(
-      (result) => {
-        if (result.data.payeDemande) {
-          this.snackBarService.showSuccessSnackBar(
-            'demande payée avec succés!'
-          );
-          this.getDemandes(false);
-        } else {
-          this.snackBarService.showErrorSnackBar();
-        }
-      },
-      (error) => {
-        this.snackBarService.showErrorSnackBar(
-          5000,
-          'Vous ne pouvez pas effectuer cette action.'
-        );
-      }
-    );
+    this.router.navigate(['/dashboard/requests/details', demandeId]);
+    // this.payeDemandeGQL.mutate({ demandeId }).subscribe(
+    //   (result) => {
+    //     if (result.data.payeDemande) {
+    //       this.snackBarService.showSuccessSnackBar(
+    //         'demande payée avec succés!'
+    //       );
+    //       this.getDemandes(false);
+    //     } else {
+    //       this.snackBarService.showErrorSnackBar();
+    //     }
+    //   },
+    //   (error) => {
+    //     this.snackBarService.showErrorSnackBar(
+    //       5000,
+    //       'Vous ne pouvez pas effectuer cette action.'
+    //     );
+    //   }
+    // );
   };
 
   get nbValid() {
