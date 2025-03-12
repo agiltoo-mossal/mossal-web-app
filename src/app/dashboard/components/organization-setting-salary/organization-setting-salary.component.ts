@@ -68,6 +68,8 @@ export class OrganizationSettingSalaryComponent {
       endDate: ['', Validators.required],
     });
     this.formDate.valueChanges.subscribe((value) => {
+      console.log('value', value);
+
       if (this.formDate.valid) {
         this.calculateRefundDuration(value.startDate, value.endDate);
       }
@@ -106,6 +108,7 @@ export class OrganizationSettingSalaryComponent {
                   data?.activationDurationDay * 24 * 60 * 60 * 1000
               )
             );
+            console.log('dateEnd', this.dateEnd.value);
 
             this.listCategorieService = [
               {
@@ -207,6 +210,8 @@ export class OrganizationSettingSalaryComponent {
   calculateRefundDuration(startDate: Date, endDate: Date) {
     const start = new Date(startDate);
     const end = new Date(endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
     this.dataForm = {
       ...this.dataForm,
       activatedAt: start.toISOString(),
@@ -221,7 +226,6 @@ export class OrganizationSettingSalaryComponent {
       this.validDate = false;
       this.dataForm['activationDurationDay'] = 0;
     }
-    console.log(this.dataForm);
   }
 
   handleServiceActivationChange(isActive: boolean) {
@@ -275,7 +279,6 @@ export class OrganizationSettingSalaryComponent {
           service,
           organization,
           id,
-          activationDurationDay,
 
           ...dataForm
         } = this.dataForm;

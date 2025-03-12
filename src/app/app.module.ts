@@ -11,6 +11,8 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './auth/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './auth/interceptors/error.interceptor';
@@ -37,7 +39,10 @@ import {
 } from 'keycloak-angular';
 import { environment } from 'src/environments/environment';
 import { AuthModule } from './auth/auth.module';
+import localeFr from '@angular/common/locales/fr';
+import { registerLocaleData } from '@angular/common';
 
+registerLocaleData(localeFr);
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
@@ -112,6 +117,7 @@ export function createTranslateLoader(http: HttpClient) {
     //   multi: true,
     // },
     // provideHttpClient(withInterceptorsFromDi()),
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }, // Définir la locale en français
   ],
   bootstrap: [AppComponent],
 })
