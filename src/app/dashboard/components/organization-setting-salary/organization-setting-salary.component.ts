@@ -45,6 +45,8 @@ export class OrganizationSettingSalaryComponent {
   selectedCategorieId: string;
   validDate: boolean = true;
   dataForm: any;
+  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
+
   @Output() activeService: EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
@@ -407,9 +409,12 @@ export class OrganizationSettingSalaryComponent {
       });
   }
   onSettingChange(event: any) {
-    console.log('event', event);
-    const tempForm = event?.dataForm;
-    this.dataForm = { ...this.dataForm, ...tempForm };
+    this.disableButton = false;
+    if (event.saveData) {
+      this.disableButton = true;
+      const tempForm = event?.dataForm;
+      this.dataForm = { ...this.dataForm, ...tempForm };
+    }
 
     console.log('dataForm', this.dataForm);
   }

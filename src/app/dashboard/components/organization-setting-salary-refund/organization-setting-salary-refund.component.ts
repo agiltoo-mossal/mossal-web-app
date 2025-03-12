@@ -36,6 +36,7 @@ export class OrganizationSettingSalaryRefundComponent {
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
+  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
 
   newCategory: string = '';
   isActive: boolean = false;
@@ -411,11 +412,12 @@ export class OrganizationSettingSalaryRefundComponent {
       });
   }
   onSettingChange(event: any) {
-    console.log('event', event);
-    const tempForm = event?.dataForm;
-    this.dataForm = { ...this.dataForm, ...tempForm };
-
-    console.log('dataForm', this.dataForm);
+    this.disableButton = false;
+    if (event.saveData) {
+      this.disableButton = true;
+      const tempForm = event?.dataForm;
+      this.dataForm = { ...this.dataForm, ...tempForm };
+    }
   }
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
