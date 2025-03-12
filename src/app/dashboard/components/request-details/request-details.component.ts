@@ -48,6 +48,20 @@ export class RequestDetailsComponent implements OnInit {
       .subscribe({
         next: (res) => {
           console.log(res);
+          this.requestService
+            .fetch(
+              {
+                demandeId: this.demandeId,
+              },
+              {
+                fetchPolicy: 'no-cache',
+              }
+            )
+            .subscribe({
+              next: (res) => {
+                this.listRemboursements = res.data.fetchRemboursementsByDemande;
+              },
+            });
           this.snackBarService.showSnackBar('Demande remboursée avec succès');
         },
       });
