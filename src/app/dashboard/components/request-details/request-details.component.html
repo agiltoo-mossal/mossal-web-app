@@ -1,0 +1,44 @@
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+  <a routerLink="/dashboard/collaborators"
+    ><span>{{ "<" }}</span
+    >retour</a
+  >
+</div>
+
+<h2 class="container-title-setting">
+  <span>Details Demande</span>
+</h2>
+
+
+<!-- Section centrale : Demande en attente -->
+<div class="request-section">
+  <table>
+    <thead>
+      <tr>
+        <th>N° Remboursement</th>
+        <th>Montant</th>
+        <th>Date</th>
+        <th>Frais</th>
+        <th>Statut</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let remboursement of listRemboursements">
+        <td>{{remboursement?.number}}</td>
+        <td>{{remboursement?.amount}}</td>
+        <td>{{remboursement?.createdAt |date }}</td>
+        <td>{{remboursement?.fees}}</td>
+        <td>{{remboursement?.status}}</td>
+        <td style="display: flex;justify-content: end;" >
+            <button class="action" (click)="rembourseDemande(remboursement.id)" [disabled]="remboursement?.status === 'PAYED'">
+                Rembourser
+            </button>
+        </td>
+      </tr>
+        
+    </tbody>
+  </table>
+</div>
+
+

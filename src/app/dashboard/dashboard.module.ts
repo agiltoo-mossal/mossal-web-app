@@ -54,6 +54,7 @@ import { RequestMonthlyRepayableAdvanceComponent } from './components/request-mo
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
+import { RequestDetailsComponent } from './components/request-details/request-details.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
     RequestEventComponent,
     RequestSalaryComponent,
     RequestMonthlyRepayableAdvanceComponent,
+    RequestDetailsComponent,
   ],
   imports: [
     CreateEventModule,

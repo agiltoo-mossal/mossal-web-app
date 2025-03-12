@@ -117,6 +117,7 @@ export type CategorySocioproUpdateInput = {
 
 export type CountStatusDemande = {
   __typename?: 'CountStatusDemande';
+  cancelled: Scalars['Float']['output'];
   payed: Scalars['Float']['output'];
   pending: Scalars['Float']['output'];
   rejected: Scalars['Float']['output'];
@@ -135,6 +136,7 @@ export type Demande = {
   organisationService?: Maybe<OrganisationService>;
   refundDuration: Scalars['Float']['output'];
   rejectedReason?: Maybe<Scalars['String']['output']>;
+  remboursements?: Maybe<Array<Remboursement>>;
   status: DemandeStatus;
   statusText?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -280,6 +282,7 @@ export type Mutation = {
   updateService: Scalars['Boolean']['output'];
   upladFile: Scalars['Boolean']['output'];
   validateDemande: Scalars['Boolean']['output'];
+  validateRemboursement: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
 
@@ -527,6 +530,11 @@ export type MutationValidateDemandeArgs = {
   demandeId: Scalars['ID']['input'];
 };
 
+
+export type MutationValidateRemboursementArgs = {
+  remboursementId: Scalars['ID']['input'];
+};
+
 export type Notification = {
   __typename?: 'Notification';
   author: User;
@@ -709,6 +717,7 @@ export type Query = {
   fetchAllCategorySociopros: Array<CategorySociopro>;
   fetchAllEvents: Array<Event>;
   fetchAllOrganisationServices: Array<OrganisationService>;
+  fetchAllRemboursements: Array<Remboursement>;
   fetchAllServices: Array<Service>;
   fetchCategorySociopro: CategorySociopro;
   fetchCategorySocioproService: CategorySocioproService;
@@ -739,6 +748,8 @@ export type Query = {
   fetchPaginatedOrganizationDemandes: PaginatedDemandeResult;
   fetchPayment: Payment;
   fetchPayments: Array<Payment>;
+  fetchRemboursementByUserId: Array<Remboursement>;
+  fetchRemboursementsByDemande: Array<Remboursement>;
   fetchService: Service;
   fetchServicePub: Service;
   fetchServices: PaginatedServiceResult;
@@ -746,6 +757,7 @@ export type Query = {
   fetchSupportPaiement: Array<SupportPaiement>;
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
+  myRemboursements: Array<Remboursement>;
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
 };
@@ -930,6 +942,16 @@ export type QueryFetchPaymentArgs = {
 };
 
 
+export type QueryFetchRemboursementByUserIdArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchRemboursementsByDemandeArgs = {
+  demandeId: Scalars['ID']['input'];
+};
+
+
 export type QueryFetchServiceArgs = {
   serviceId: Scalars['ID']['input'];
 };
@@ -980,6 +1002,26 @@ export type QueryDataConfigInput = {
   page?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type Remboursement = {
+  __typename?: 'Remboursement';
+  amount: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  demande?: Maybe<Demande>;
+  demandeId: Scalars['String']['output'];
+  fees?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  number: Scalars['Float']['output'];
+  status: RemboursementStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export enum RemboursementStatus {
+  Payed = 'PAYED',
+  Pending = 'PENDING'
+}
 
 export type ResetPasswordInput = {
   password: Scalars['String']['input'];
@@ -1122,7 +1164,7 @@ export enum Wallet {
   Wave = 'WAVE'
 }
 
-export type _Entity = Demande | Organization;
+export type _Entity = Demande | Organization | Remboursement;
 
 export type _Service = {
   __typename?: '_Service';
@@ -1416,6 +1458,18 @@ export type FetchOrganizationDemandesQueryVariables = Exact<{
 
 export type FetchOrganizationDemandesQuery = { __typename?: 'Query', fetchOrganizationDemandes: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> };
 
+export type MyRemboursementsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyRemboursementsQuery = { __typename?: 'Query', myRemboursements: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+
+export type FetchRemboursementByUserIdQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+
 export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
@@ -1423,7 +1477,7 @@ export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, refundDuration: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } }> } };
+export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, refundDuration: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, remboursements?: Array<{ __typename?: 'Remboursement', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null }> | null }> } };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -1454,12 +1508,19 @@ export type RejectDemandeByAdminMutationVariables = Exact<{
 
 export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
 
+export type ValidateRemboursementMutationVariables = Exact<{
+  remboursementId: Scalars['ID']['input'];
+}>;
+
+
+export type ValidateRemboursementMutation = { __typename?: 'Mutation', validateRemboursement: boolean };
+
 export type FetchCountStatusQueryVariables = Exact<{
   filter?: InputMaybe<DemandesMetricsInput>;
 }>;
 
 
-export type FetchCountStatusQuery = { __typename?: 'Query', fetchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number } };
+export type FetchCountStatusQuery = { __typename?: 'Query', fetchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number, cancelled: number } };
 
 export type FetchOrganisationServiceQueryVariables = Exact<{
   organisationServiceId: Scalars['ID']['input'];
@@ -1482,6 +1543,13 @@ export type FetchTotalDemandesAmountQueryVariables = Exact<{
 
 
 export type FetchTotalDemandesAmountQuery = { __typename?: 'Query', fetchTotalDemandesAmount?: number | null };
+
+export type FetchRemboursementsByDemandeQueryVariables = Exact<{
+  demandeId: Scalars['ID']['input'];
+}>;
+
+
+export type FetchRemboursementsByDemandeQuery = { __typename?: 'Query', fetchRemboursementsByDemande: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -2624,6 +2692,100 @@ export const FetchOrganizationDemandesDocument = gql`
       super(apollo);
     }
   }
+export const MyRemboursementsDocument = gql`
+    query MyRemboursements {
+  myRemboursements {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    demande {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class MyRemboursementsGQL extends Apollo.Query<MyRemboursementsQuery, MyRemboursementsQueryVariables> {
+    document = MyRemboursementsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchRemboursementByUserIdDocument = gql`
+    query FetchRemboursementByUserId($userId: ID!) {
+  fetchRemboursementByUserId(userId: $userId) {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    demande {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchRemboursementByUserIdGQL extends Apollo.Query<FetchRemboursementByUserIdQuery, FetchRemboursementByUserIdQueryVariables> {
+    document = FetchRemboursementByUserIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchPaginatedOrganizationDemandesDocument = gql`
     query FetchPaginatedOrganizationDemandes($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $organizationServiceId: String) {
   fetchPaginatedOrganizationDemandes(
@@ -2658,6 +2820,17 @@ export const FetchPaginatedOrganizationDemandesDocument = gql`
       createdAt
       updatedAt
       refundDuration
+      remboursements {
+        createdAt
+        updatedAt
+        id
+        amount
+        number
+        fees
+        status
+        demandeId
+        userId
+      }
     }
   }
 }
@@ -2737,6 +2910,22 @@ export const RejectDemandeByAdminDocument = gql`
       super(apollo);
     }
   }
+export const ValidateRemboursementDocument = gql`
+    mutation ValidateRemboursement($remboursementId: ID!) {
+  validateRemboursement(remboursementId: $remboursementId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ValidateRemboursementGQL extends Apollo.Mutation<ValidateRemboursementMutation, ValidateRemboursementMutationVariables> {
+    document = ValidateRemboursementDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchCountStatusDocument = gql`
     query FetchCountStatus($filter: DemandesMetricsInput) {
   fetchCountStatus(filter: $filter) {
@@ -2744,6 +2933,7 @@ export const FetchCountStatusDocument = gql`
     validated
     rejected
     payed
+    cancelled
   }
 }
     `;
@@ -2848,6 +3038,53 @@ export const FetchTotalDemandesAmountDocument = gql`
   })
   export class FetchTotalDemandesAmountGQL extends Apollo.Query<FetchTotalDemandesAmountQuery, FetchTotalDemandesAmountQueryVariables> {
     document = FetchTotalDemandesAmountDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchRemboursementsByDemandeDocument = gql`
+    query FetchRemboursementsByDemande($demandeId: ID!) {
+  fetchRemboursementsByDemande(demandeId: $demandeId) {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    demande {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchRemboursementsByDemandeGQL extends Apollo.Query<FetchRemboursementsByDemandeQuery, FetchRemboursementsByDemandeQueryVariables> {
+    document = FetchRemboursementsByDemandeDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

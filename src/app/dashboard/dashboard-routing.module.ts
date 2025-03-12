@@ -13,6 +13,7 @@ import { RequestEmergencyComponent } from './components/request-emergency/reques
 import { RequestEventComponent } from './components/request-event/request-event.component';
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
+import { RequestDetailsComponent } from './components/request-details/request-details.component';
 
 const routes: Routes = [
   {
@@ -62,6 +63,10 @@ const routes: Routes = [
       {
         path: 'monthly-repayable-advance',
         component: RequestMonthlyRepayableAdvanceComponent,
+      },
+      {
+        path: 'requests/details/:id',
+        component: RequestDetailsComponent,
       },
       {
         path: 'Notifications',

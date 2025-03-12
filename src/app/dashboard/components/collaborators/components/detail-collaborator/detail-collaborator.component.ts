@@ -8,7 +8,10 @@ import {
   DemandeStatus,
   FetchDemandesByCollaboratorGQL,
   FetchOrganizationCollaboratorGQL,
+  FetchRemboursementByUserIdGQL,
+  FetchRemboursementsByDemandeGQL,
   LockUserGQL,
+  MyRemboursementsGQL,
   PayeDemandeGQL,
   RejectDemandeByAdminGQL,
   UnlockUserGQL,
@@ -25,6 +28,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   collaboratorId: string;
   pendingDemandes: any[] = [];
   validatedDemandes: any[] = [];
+  remboursements: any[] = [];
   constructor(
     private route: ActivatedRoute,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
@@ -35,7 +39,9 @@ export class DetailCollaboratorComponent implements AfterViewInit {
     private validateDemandeGQL: ValidateDemandeGQL,
     private payeDemandeGQL: PayeDemandeGQL,
     private cancelDemandeByAdminGQL: CancelDemandeByAdminGQL,
-    private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL
+    private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL,
+    private requestService: MyRemboursementsGQL,
+    private fetchDemandesByCollaboratorIdGQL: FetchRemboursementByUserIdGQL
   ) {
     this.route.paramMap.subscribe((params) => {
       this.collaboratorId = params.get('id');
@@ -45,6 +51,15 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
     this.fetchDemandesByCollaboratorId(DemandeStatus.Validated);
+    this.fetchDemandesByCollaboratorIdGQL
+      .fetch({ userId: this.collaboratorId })
+      .subscribe({
+        next: (result) => {
+          this.remboursements = result.data.fetchRemboursementByUserId;
+          console.log(this.remboursements);
+        },
+        error: (error) => {},
+      });
   }
   getCollab() {
     if (this.collaboratorId) {

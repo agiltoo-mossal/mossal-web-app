@@ -12,11 +12,13 @@ import {
   Demande,
   DemandesMetrics,
   DemandeStatus,
+  FetchCollaboratorCountGQL,
   FetchCountStatusGQL,
   FetchDemandesMetricsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchTotalDemandesAmountGQL,
   User,
 } from 'src/graphql/generated';
 import { dataStatic } from 'src/app/shared/types/data-static';
@@ -63,6 +65,7 @@ export class OverviewComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource = new MatTableDataSource<Demande>();
   page: number = 1;
+  nbActifUsers: number;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -71,7 +74,9 @@ export class OverviewComponent implements OnInit {
     private fetchDemandesMetricsGQL: FetchDemandesMetricsGQL,
     private fb: FormBuilder,
     private userCollaboratorService: OverviewService,
-    private fetchCountStatusGQL: FetchCountStatusGQL
+    private fetchCountStatusGQL: FetchCountStatusGQL,
+    private fetchCollaboratorCountGQL: FetchCollaboratorCountGQL,
+    private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL
   ) {
     const now = new Date('2024-12-31');
     const today = new Date();
@@ -100,13 +105,24 @@ export class OverviewComponent implements OnInit {
     });
     this.getData();
   }
+
   ngOnInit(): void {
-    this.fetchCountStatusGQL.fetch().subscribe({
-      next: (value) => {
-        console.log(value);
-        this.fetchStatus = value.data.fetchCountStatus;
-      },
-    });
+    this.getFetchCountStatus;
+  }
+  getFetchCountStatus() {
+    this.fetchCountStatusGQL
+      .fetch({
+        filter: {
+          startDate: this.startDate,
+          endDate: this.endDate,
+        },
+      })
+      .subscribe({
+        next: (value) => {
+          console.log(value);
+          this.fetchStatus = value.data.fetchCountStatus;
+        },
+      });
   }
   displayedColumns: string[] = [
     'numero',
@@ -131,15 +147,24 @@ export class OverviewComponent implements OnInit {
   getData() {
     try {
       Promise.all([
+        this.getCollaboratorCount(),
         this.getDemandes(),
         this.fetchCollabs(),
         this.getDemandesMetrics(),
+        this.getTotalDemandeAmount(),
+        this.getTotalDemandeToPay(),
+        this.getFetchCountStatus(),
       ]).then(() => {
         this.updateStaticData();
       });
     } catch (e) {}
   }
-
+  startDateMetric() {
+    return this.metricsInput.controls['startDate'];
+  }
+  endDateMetric() {
+    return this.metricsInput.controls['endDate'];
+  }
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;
   }
@@ -198,6 +223,7 @@ export class OverviewComponent implements OnInit {
     const startDate =
       this.metricsInput.value.startDate || new Date('2024-01-01');
     const endDate = this.metricsInput.value.endDate || new Date();
+    console.log(startDate, endDate);
 
     return lastValueFrom(
       this.fetchDemandesMetricsGQL.fetch({
@@ -301,10 +327,11 @@ export class OverviewComponent implements OnInit {
   }
 
   get nbValid() {
-    return (
-      this?.requests?.filter?.((r) => r.status === DemandeStatus.Validated)
-        ?.length || 0
-    );
+    // return (
+    //   this?.requests?.filter?.((r) => r.status === DemandeStatus.Validated)
+    //     ?.length || 0
+    // );
+    return this.fetchStatus.validated;
   }
 
   get nbAccordedRequest() {
@@ -313,48 +340,64 @@ export class OverviewComponent implements OnInit {
         [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status)
       )?.length || 0
     );
+    // return this.fetchStatus.validated;
   }
 
   get nbRejected() {
-    return (
-      this?.requests?.filter?.((r) => r.status === DemandeStatus.Rejected)
-        ?.length || 0
-    );
+    return this.fetchStatus.rejected;
   }
 
   get nbPending() {
-    return (
-      this?.requests?.filter?.((r) => r.status === DemandeStatus.Pending)
-        ?.length || 0
-    );
+    return this.fetchStatus.pending;
+  }
+  getTotalDemandeAmount() {
+    this.fetchTotalDemandesAmountService
+      .fetch({
+        filter: {
+          startDate: this.startDate,
+          endDate: this.endDate,
+        },
+      })
+      .subscribe({
+        next: (value) => {
+          this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
+        },
+      });
   }
 
-  get totalDemandeAmount() {
-    return (
-      this?.requests
-        ?.filter?.((r) =>
-          [DemandeStatus.Validated, DemandeStatus.Payed].includes(r.status)
-        )
-        ?.reduce((a, b) => a + b.amount, 0) || 0
-    );
+  totalDemandeAmount: number;
+  totalDemandeToPay: number;
+
+  getTotalDemandeToPay() {
+    this.fetchTotalDemandesAmountService
+      .fetch({
+        status: DemandeStatus.Validated,
+        filter: {
+          startDate: this.startDate,
+          endDate: this.endDate,
+        },
+      })
+      .subscribe({
+        next: (value) => {
+          this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
+        },
+      });
   }
 
-  get totalDemandeToPay() {
-    return (
-      this?.requests
-        ?.filter?.((r) => [DemandeStatus.Validated].includes(r.status))
-        ?.reduce((a, b) => a + b.amount, 0) || 0
-    );
-  }
-
-  get nbActifUsers() {
-    const users = [];
-    this?.collabs?.map?.((r) => {
-      if (!users.includes(r.id)) {
-        users.push(r.id);
-      }
-    });
-    return users.length;
+  getCollaboratorCount() {
+    return this.fetchCollaboratorCountGQL
+      .fetch({
+        filter: {
+          startDate: this.startDate,
+          endDate: this.endDate,
+        },
+      })
+      .subscribe({
+        next: (value) => {
+          console.log(value);
+          this.nbActifUsers = value.data.fetchCollaboratorCount;
+        },
+      });
   }
 
   getLastRequest(req: any) {
