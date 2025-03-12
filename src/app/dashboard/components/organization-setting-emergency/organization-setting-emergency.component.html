@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Dépannage d'urgences</span></h2>
 
-  <form >
+  <form>
     <div class="service-activation-container">
       <div class="auto-validation">
         <h3>Activation du service</h3>
@@ -14,10 +14,7 @@
           (toggleChange)="onServiceActivationChange($event)"
         ></app-toggle-slide>
       </div>
-      <div
-        class="toggle-side"
-        [ngClass]="{ grise: !activated }"
-      >
+      <div class="toggle-side" [ngClass]="{ grise: !activated }">
         <div class="activation-date">
           <label for="start-date"
             >Date d'activation
@@ -27,8 +24,8 @@
           >
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
-                <!-- formControlName="activatedAt" -->
-                
+              <!-- formControlName="activatedAt" -->
+
               <input
                 matInput
                 [(ngModel)]="activatedAt"
@@ -67,13 +64,16 @@
         </div>
         <div class="category-selection">
           <label for="category-selection">Sélectionnez une catégorie</label>
-          <select  [(ngModel)]="selectedCategory" name="selectedCategory" (change)="onChangeCategorie($event)">
+          <select
+            [(ngModel)]="selectedCategory"
+            name="selectedCategory"
+            (change)="onChangeCategorie($event)"
+          >
             <option value="" disabled selected>Toutes les catégories</option>
-            <option *ngFor="let categorie of categories" [value]="categorie.id" >
+            <option *ngFor="let categorie of categories" [value]="categorie.id">
               {{ categorie.title }}
             </option>
           </select>
-         
         </div>
         <mat-tab-group
           animationDuration="0ms"
@@ -85,14 +85,27 @@
           >
             <app-setting
               [data]="categorie"
-              [hideToggleService]="categorie?.categorySociopro?.title !== 'Paramètres généraux'"
+              [hideToggleService]="
+                categorie?.categorySociopro?.title !== 'Paramètres généraux'
+              "
               [serviceId]="serviceId"
               [categorie]="categorie.categorySociopro"
               (settingChange)="onSettingChange($event)"
             ></app-setting>
           </mat-tab>
         </mat-tab-group>
-        <button (click)="saveSettings()" class="validate-button">Valider</button>
+
+        <button
+          [ngClass]="{
+            'disable-button': !disableButton,
+            'validate-button': disableButton
+          }"
+          [disabled]="!disableButton"
+          (click)="saveSettings()"
+          class="validate-button"
+        >
+          Valider
+        </button>
       </div>
     </div>
   </form>

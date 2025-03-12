@@ -104,7 +104,7 @@ export class OverviewComponent implements OnInit {
     this.fetchCountStatusGQL.fetch().subscribe({
       next: (value) => {
         console.log(value);
-        this.fetchStatus = value.data.fectchCountStatus;
+        this.fetchStatus = value.data.fetchCountStatus;
       },
     });
   }

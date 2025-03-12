@@ -105,7 +105,16 @@
           </mat-tab>
         </mat-tab-group>
       </div>
-      <button (click)="saveSettings()" class="validate-btn">Valider</button>
+      <button
+        [ngClass]="{
+          'disable-button': disableButton,
+        }"
+        [disabled]="!disableButton"
+        (click)="saveSettings()"
+        class="validate-btn"
+      >
+        Valider
+      </button>
     </div>
   </div>
 </div>

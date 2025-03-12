@@ -1092,3 +1092,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     position: sticky;
     top: 0;
 }
+.disable-button{
+  background-color:#061e5cc1;
+  align-self: flex-start;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}

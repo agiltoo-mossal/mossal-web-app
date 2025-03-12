@@ -69,6 +69,7 @@ export class OrganizationSettingEventComponent {
   selectedCategorie: any;
 
   organization: Organization;
+  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
 
   organisationServiceId: string;
   info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
@@ -584,8 +585,10 @@ export class OrganizationSettingEventComponent {
     this.selectedCategorie = this.listCategorieService[event.index];
   }
   onSettingChange($event) {
-    console.log($event);
-
-    this.dataForm = $event.dataForm;
+    this.disableButton = false;
+    if ($event.saveData) {
+      this.disableButton = true;
+      this.dataForm = $event.dataForm;
+    }
   }
 }

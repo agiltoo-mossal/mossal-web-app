@@ -84,8 +84,8 @@ mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
   rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
 }
 
-query FetchCountStatus {
-  fectchCountStatus {
+query FetchCountStatus($filter:DemandesMetricsInput) {
+  fetchCountStatus(filter:$filter) {
     pending
     validated
     rejected
@@ -141,4 +141,12 @@ query FetchOrganisationService($organisationServiceId: ID!) {
       statusText
     }
   }
+}
+query FetchCollaboratorCount($filter:UserFilterInput) {
+  fetchCollaboratorCount(filter:$filter) 
+}
+query FetchTotalDemandesAmount($status:DemandeStatus,
+$filter:DemandesMetricsInput) {
+  fetchTotalDemandesAmount(status:$status,filter:$filter) 
+
 }

@@ -704,7 +704,6 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
-  fectchCountStatus: CountStatusDemande;
   fetchActivity: Activity;
   fetchAllCategorySocioproServices: Array<CategorySocioproService>;
   fetchAllCategorySociopros: Array<CategorySociopro>;
@@ -715,6 +714,8 @@ export type Query = {
   fetchCategorySocioproService: CategorySocioproService;
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
   fetchCategorySociopros: PaginatedCategorySocioproResult;
+  fetchCollaboratorCount: Scalars['Float']['output'];
+  fetchCountStatus: CountStatusDemande;
   fetchCurrentAdmin: User;
   fetchDemandesByCollaborator: Array<Demande>;
   fetchDemandesMetrics: DemandesMetrics;
@@ -743,6 +744,7 @@ export type Query = {
   fetchServices: PaginatedServiceResult;
   fetchServicesPub: PaginatedServiceResult;
   fetchSupportPaiement: Array<SupportPaiement>;
+  fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
@@ -817,6 +819,16 @@ export type QueryFetchCategorySocioproServicesArgs = {
 
 export type QueryFetchCategorySocioprosArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchCollaboratorCountArgs = {
+  filter?: InputMaybe<UserFilterInput>;
+};
+
+
+export type QueryFetchCountStatusArgs = {
+  filter?: InputMaybe<DemandesMetricsInput>;
 };
 
 
@@ -935,6 +947,12 @@ export type QueryFetchServicesArgs = {
 
 export type QueryFetchServicesPubArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchTotalDemandesAmountArgs = {
+  filter?: InputMaybe<DemandesMetricsInput>;
+  status?: InputMaybe<DemandeStatus>;
 };
 
 
@@ -1084,6 +1102,20 @@ export type User = {
   updatedAt: Scalars['DateTime']['output'];
   wizallAccountNumber?: Maybe<Scalars['String']['output']>;
 };
+
+export type UserFilterInput = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<UserRole>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Possible user role */
+export enum UserRole {
+  Admin = 'ADMIN',
+  Collaborator = 'COLLABORATOR',
+  SuperAdmin = 'SUPER_ADMIN',
+  SuperAdminOrg = 'SUPER_ADMIN_ORG'
+}
 
 /** Possible wallets */
 export enum Wallet {
@@ -1422,10 +1454,12 @@ export type RejectDemandeByAdminMutationVariables = Exact<{
 
 export type RejectDemandeByAdminMutation = { __typename?: 'Mutation', rejectDemandeByAdmin: boolean };
 
-export type FetchCountStatusQueryVariables = Exact<{ [key: string]: never; }>;
+export type FetchCountStatusQueryVariables = Exact<{
+  filter?: InputMaybe<DemandesMetricsInput>;
+}>;
 
 
-export type FetchCountStatusQuery = { __typename?: 'Query', fectchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number } };
+export type FetchCountStatusQuery = { __typename?: 'Query', fetchCountStatus: { __typename?: 'CountStatusDemande', pending: number, validated: number, rejected: number, payed: number } };
 
 export type FetchOrganisationServiceQueryVariables = Exact<{
   organisationServiceId: Scalars['ID']['input'];
@@ -1433,6 +1467,21 @@ export type FetchOrganisationServiceQueryVariables = Exact<{
 
 
 export type FetchOrganisationServiceQuery = { __typename?: 'Query', fetchOrganisationService: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, demandes?: Array<{ __typename?: 'Demande', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees: number, status: DemandeStatus, rejectedReason?: string | null, statusText?: string | null, collaborator: { __typename?: 'User', createdAt: any, updatedAt: any, id: string, email: string, firstName: string, lastName: string, phoneNumber?: string | null, address?: string | null, position?: string | null, uniqueIdentifier?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, totalDemandeAmount: number, role?: string | null, blocked?: boolean | null, birthDate?: any | null, favoriteWallet?: Wallet | null, enableEmailNotification?: boolean | null, status?: number | null, authorizedAdvance: number } }> | null } };
+
+export type FetchCollaboratorCountQueryVariables = Exact<{
+  filter?: InputMaybe<UserFilterInput>;
+}>;
+
+
+export type FetchCollaboratorCountQuery = { __typename?: 'Query', fetchCollaboratorCount: number };
+
+export type FetchTotalDemandesAmountQueryVariables = Exact<{
+  status?: InputMaybe<DemandeStatus>;
+  filter?: InputMaybe<DemandesMetricsInput>;
+}>;
+
+
+export type FetchTotalDemandesAmountQuery = { __typename?: 'Query', fetchTotalDemandesAmount?: number | null };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -2689,8 +2738,8 @@ export const RejectDemandeByAdminDocument = gql`
     }
   }
 export const FetchCountStatusDocument = gql`
-    query FetchCountStatus {
-  fectchCountStatus {
+    query FetchCountStatus($filter: DemandesMetricsInput) {
+  fetchCountStatus(filter: $filter) {
     pending
     validated
     rejected
@@ -2767,6 +2816,38 @@ export const FetchOrganisationServiceDocument = gql`
   })
   export class FetchOrganisationServiceGQL extends Apollo.Query<FetchOrganisationServiceQuery, FetchOrganisationServiceQueryVariables> {
     document = FetchOrganisationServiceDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchCollaboratorCountDocument = gql`
+    query FetchCollaboratorCount($filter: UserFilterInput) {
+  fetchCollaboratorCount(filter: $filter)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchCollaboratorCountGQL extends Apollo.Query<FetchCollaboratorCountQuery, FetchCollaboratorCountQueryVariables> {
+    document = FetchCollaboratorCountDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchTotalDemandesAmountDocument = gql`
+    query FetchTotalDemandesAmount($status: DemandeStatus, $filter: DemandesMetricsInput) {
+  fetchTotalDemandesAmount(status: $status, filter: $filter)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchTotalDemandesAmountGQL extends Apollo.Query<FetchTotalDemandesAmountQuery, FetchTotalDemandesAmountQueryVariables> {
+    document = FetchTotalDemandesAmountDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

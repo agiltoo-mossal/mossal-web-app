@@ -126,7 +126,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.fetchCountStatusGQL.fetch().subscribe({
       next: (value) => {
         console.log(value);
-        this.fetchStatus = value.data.fectchCountStatus;
+        this.fetchStatus = value.data.fetchCountStatus;
       },
     });
   }
