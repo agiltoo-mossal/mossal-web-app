@@ -36,7 +36,7 @@ export class OrganizationSettingSalaryRefundComponent {
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
-  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
+  disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
 
   newCategory: string = '';
   isActive: boolean = false;

@@ -69,7 +69,7 @@ export class OrganizationSettingEventComponent {
   selectedCategorie: any;
 
   organization: Organization;
-  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
+  disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
 
   organisationServiceId: string;
   info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;

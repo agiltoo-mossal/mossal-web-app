@@ -46,7 +46,7 @@ export class OrganizationSettingEmergencyComponent {
 
   // Date d'activation
   activationDate: string = ''; // Format ISO (AAAA-MM-JJ)
-  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
+  disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
   // Gestion des catégories
   selectedCategory: string; // Catégorie par défaut
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];

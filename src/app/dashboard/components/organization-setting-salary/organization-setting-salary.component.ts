@@ -45,7 +45,7 @@ export class OrganizationSettingSalaryComponent {
   selectedCategorieId: string;
   validDate: boolean = true;
   dataForm: any;
-  disableButton: boolean = true; // Par défaut, le bouton de sauvegarde est désactivé
+  disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
 
   @Output() activeService: EventEmitter<{
     isActive: boolean;
