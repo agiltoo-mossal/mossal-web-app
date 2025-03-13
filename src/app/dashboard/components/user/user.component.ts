@@ -38,6 +38,7 @@ export class UserComponent {
     private authService: AuthService
   ) {
     this.updatePasswordForm = this.fb.group({
+      oldPassword: ['', Validators.required],
       newPassword: [
         '',
         [
@@ -45,12 +46,13 @@ export class UserComponent {
           Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
         ],
       ],
-      oldPassword: [
+      confirmPassword: [
         '',
-        Validators.required,
-        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+        [
+          Validators.required,
+          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+        ],
       ],
-      confirmPassword: ['', Validators.required],
     });
 
     this.updateProfileForm = this.fb.group({

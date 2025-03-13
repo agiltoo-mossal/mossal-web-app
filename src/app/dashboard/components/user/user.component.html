@@ -188,8 +188,8 @@
               "
               >Le mot de passe est requis.</mat-error>
           </div>
-          <div fxFill fxLayout="row wrap" fxLayoutAlign="start start">
-            <button (click)="updatePassword()" class="submit" fxFlex="100">
+          <div fxFill fxLayout="row wrap" fxLayoutAlign="start start" >
+            <button (click)="updatePassword()" class="submit" fxFlex="100" [disabled]="updatePasswordForm.invalid">
               Mettre à jour
             </button>
           </div>
@@ -229,7 +229,7 @@
     </div>
   </div>
   <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="32px">
-    <button class="submit" (click)="updateProfile()" fxFlex="50">
+    <button class="submit" (click)="updateProfile()" fxFlex="50" [disabled]="updateProfileForm.invalid">
       Mettre à jour
     </button>
     <div fxFlex="50"></div>
