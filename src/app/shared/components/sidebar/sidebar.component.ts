@@ -29,40 +29,69 @@ export class SidebarComponent implements OnInit {
     });
   }
   getCurrentUser() {
-    this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
-      this.currentUser = result.data.fetchCurrentAdmin as User;
-      this.dashboardNav =
-        this.currentUser.role == 'SUPER_ADMIN_ORG'
-          ? this.menuSuperAdmin
-          : this.menuAdmin;
-      // console.log({ user: this.currentUser });
-    });
+    this.fetchCurrentAdminGQL
+      .fetch(
+        {},
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
+      .subscribe((result) => {
+        this.currentUser = result.data.fetchCurrentAdmin as User;
+        this.dashboardNav =
+          this.currentUser.role == 'SUPER_ADMIN_ORG'
+            ? this.menuSuperAdmin
+            : this.menuAdmin;
+        // console.log({ user: this.currentUser });
+      });
   }
   get menuAdmin() {
     return [
       {
         label: 'Tableau de bord',
-        link: '/overview',
+        link: '/dashboard/overview',
         icon: 'dashboard',
       },
       {
         label: 'Liste des demandes',
         link: 'requests-list',
         icon: 'list_alt',
+        children: [
+          {
+            label: "Dépannage d'urgence",
+            link: 'emergency-repair',
+            icon: 'build', // Icône pour un dépannage ou réparation
+          },
+          {
+            label: 'Avance sur événement',
+            link: 'event-advance',
+            icon: 'event', // Icône pour un événement
+          },
+          {
+            label: 'Avance salariale',
+            link: 'salary-advance',
+            icon: 'attach_money', // Icône pour un paiement/avance d'argent
+          },
+          {
+            label: 'Avance salariale remboursable mensuellement',
+            link: 'monthly-repayable-advance',
+            icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
+          },
+        ],
       },
       {
         label: 'Collaborateurs',
-        link: 'collaborators',
+        link: '/dashboard/collaborators',
         icon: 'people',
       },
       {
         label: 'Notifications',
-        link: 'Notifications',
+        link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
       {
         label: 'Mon Compte',
-        link: 'user',
+        link: '/dashboard/user',
         icon: 'person_outline',
       },
     ];
