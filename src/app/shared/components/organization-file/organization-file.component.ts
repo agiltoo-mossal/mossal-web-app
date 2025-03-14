@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FetchSupportPaiementGQL } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
 import * as XLSX from 'xlsx';
@@ -13,6 +13,7 @@ export class OrganizationFileComponent implements OnInit {
   EXCEL_TYPE =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   EXCEL_EXTENSION = '.xlsx';
+  @Input() organisationServiceId: string;
 
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
@@ -56,15 +57,17 @@ export class OrganizationFileComponent implements OnInit {
               'Email',
               'Identifiant unique',
               'Telephone',
+              'Service',
               'Montant',
               'Avance renboursée',
             ],
             ...temps.map((row) => [
-              row.firstName,
-              row.lastName,
-              row.email,
-              row.uniqueIdentifier,
-              row.phoneNumber,
+              row.collaborator.firstName,
+              row.collaborator.lastName,
+              row.collaborator.email,
+              row.collaborator.uniqueIdentifier,
+              row.collaborator.phoneNumber,
+              row.organisationService.service.title,
               row.amount,
               '',
             ]),

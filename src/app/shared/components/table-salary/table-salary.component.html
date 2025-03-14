@@ -1,13 +1,20 @@
 <div
   class="page-wrapper"
- style="display: flex;flex-direction: column; background-color: white;padding: 5px;"
+  style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  "
 >
-<div style="display: flex;gap:35px ;margin: 20px 0px;">
-
-    <h2 class="container-title-setting" ><span>{{title}}</span></h2>
-        <app-organization-file></app-organization-file>
-
-</div>
+  <div style="display: flex; gap: 35px; margin: 20px 0px">
+    <h2 class="container-title-setting">
+      <span>{{ title }}</span>
+    </h2>
+    <app-organization-file
+      [organisationServiceId]="organisationServiceId"
+    ></app-organization-file>
+  </div>
 
   <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
     <div fxLayout="column">
@@ -273,7 +280,7 @@
               {{ row.createdAt | date : "dd-MM-YYYY" }}
             </td>
           </ng-container>
-           <ng-container matColumnDef="refundDuration">
+          <ng-container matColumnDef="refundDuration">
             <th
               mat-header-cell
               *matHeaderCellDef
@@ -297,12 +304,11 @@
                   gap: 6px;
                 "
               >
-                
                 <span> {{ row?.refundDuration }}</span>
               </div>
             </td>
           </ng-container>
-           <ng-container matColumnDef="avance">
+          <ng-container matColumnDef="avance">
             <th
               mat-header-cell
               *matHeaderCellDef
@@ -333,7 +339,7 @@
               </div>
             </td>
           </ng-container>
-        
+
           <ng-container matColumnDef="action">
             <th
               mat-header-cell

@@ -754,7 +754,7 @@ export type Query = {
   fetchServicePub: Service;
   fetchServices: PaginatedServiceResult;
   fetchServicesPub: PaginatedServiceResult;
-  fetchSupportPaiement: Array<SupportPaiement>;
+  fetchSupportPaiement: Array<Demande>;
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
   myRemboursements: Array<Remboursement>;
@@ -1080,17 +1080,6 @@ export type Session = {
   token_type?: Maybe<Scalars['String']['output']>;
   /** Null if user must reset his password */
   user?: Maybe<User>;
-};
-
-export type SupportPaiement = {
-  __typename?: 'SupportPaiement';
-  amount: Scalars['Float']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
-  owner: Scalars['String']['output'];
-  phoneNumber: Scalars['String']['output'];
-  uniqueIdentifier: Scalars['String']['output'];
 };
 
 export type UpdateCollaboratorInput = {
@@ -1602,7 +1591,7 @@ export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disabl
 export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'SupportPaiement', amount: number, owner: string, firstName: string, lastName: string, phoneNumber: string, email: string, uniqueIdentifier: string }> };
+export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'Demande', amount: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, email: string, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, phoneNumber?: string | null, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null }> };
 
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
@@ -3228,12 +3217,24 @@ export const FetchSupportPaiementDocument = gql`
     query FetchSupportPaiement {
   fetchSupportPaiement {
     amount
-    owner
-    firstName
-    lastName
-    phoneNumber
-    email
-    uniqueIdentifier
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      email
+      totalDemandeAmount
+      salary
+      authorizedAdvance
+      phoneNumber
+      bankAccountNumber
+      uniqueIdentifier
+    }
+    organisationService {
+      service {
+        title
+      }
+    }
   }
 }
     `;
