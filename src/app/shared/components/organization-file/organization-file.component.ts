@@ -31,13 +31,17 @@ export class OrganizationFileComponent implements OnInit {
       reader.onload = () => {
         this.fileService.sendFileEndpoint(file, `demande/upload`).subscribe({
           next: (res) => {
-            if ((res as any).data) {
+            const data = res as any;
+            if (data.errorCount === 0) {
               this.snackBarService.showSnackBar(
                 'Demande de paiement envoyé avec success !'
               );
-              // this.fileService.signalDataOrganisation.set((res as any).data);
             } else {
+              this.snackBarService.showSnackBar(
+                "Une erreur est survenue lors de l'envoi de la demande de paiement !"
+              );
             }
+            this.fileService.signalDataOrganisation.set((res as any).data);
           },
           error: (error) => console.log(error),
         });
