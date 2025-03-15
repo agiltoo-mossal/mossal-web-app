@@ -4,6 +4,7 @@ import {
   FetchCurrentAdminGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchOrganisationServiceGQL,
+  FetchPaginatedOrganizationDemandesGQL,
 } from 'src/graphql/generated';
 
 @Component({
@@ -18,9 +19,9 @@ export class RequestEmergencyComponent {
   title: string = "Dépannage d'urgence"; // Titre dynamique
   data = [];
   constructor(
-    private listRequest: FetchOrganisationServiceGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL
   ) {}
 
   ngOnInit() {
@@ -44,14 +45,14 @@ export class RequestEmergencyComponent {
         ),
         switchMap((organizationServiceId) => {
           this.organizationServiceId = organizationServiceId;
-          return this.listRequest.fetch(
+          return this.paginatedRequestGQL.fetch(
             {
-              organisationServiceId: this.organizationServiceId,
+              organizationServiceId: this.organizationServiceId,
             },
             { fetchPolicy: 'no-cache' }
           );
         }),
-        map((resp) => resp.data.fetchOrganisationService.demandes),
+        map((resp) => resp.data.fetchPaginatedOrganizationDemandes.results),
         catchError((error) => {
           console.error('Error fetching data:', error);
           return of([]);

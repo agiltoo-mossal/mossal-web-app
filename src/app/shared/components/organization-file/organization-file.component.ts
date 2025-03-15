@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, effect, Input, OnInit } from '@angular/core';
 import { FetchSupportPaiementGQL } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
 import * as XLSX from 'xlsx';
@@ -14,12 +14,20 @@ export class OrganizationFileComponent implements OnInit {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   EXCEL_EXTENSION = '.xlsx';
   @Input() organisationServiceId: string;
-
+  showModalOrganisation = false;
+  dataOrganisationFile!: any;
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
     private snackBarService: SnackBarService,
     private fileService: FileUploadService
-  ) {}
+  ) {
+    effect(() => {
+      this.dataOrganisationFile = this.fileService.signalDataOrganisation();
+      if (this.dataOrganisationFile) {
+        this.showModalOrganisation = true;
+      }
+    });
+  }
 
   ngOnInit(): void {}
   async uploadDemande(event: Event) {
@@ -111,5 +119,9 @@ export class OrganizationFileComponent implements OnInit {
     a.click();
     window.URL.revokeObjectURL(url);
     // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+  }
+  closeModal() {
+    this.showModalOrganisation = false;
+    this.fileService.signalDataOrganisation.set(null);
   }
 }

@@ -3,8 +3,11 @@ import {
   FetchCurrentAdminGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchOrganisationServiceGQL,
+  FetchPaginatedOrganizationDemandesGQL,
+  OrderByDirection,
 } from 'src/graphql/generated';
 import { catchError, map, of, switchMap } from 'rxjs';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 @Component({
   selector: 'app-request-event',
@@ -18,9 +21,10 @@ export class RequestEventComponent {
   organizationId: string; // Titre dynamique
   data = [];
   constructor(
-    private listRequest: FetchOrganisationServiceGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
+    private snacbkarService: SnackBarService
   ) {}
 
   ngOnInit() {
@@ -41,25 +45,11 @@ export class RequestEventComponent {
         map(
           (resp) =>
             resp.data.fetchOrganisationServiceByOrganisationIdAndServiceId.id
-        ),
-        switchMap((organizationServiceId) => {
-          this.organizationServiceId = organizationServiceId;
-          return this.listRequest.fetch(
-            {
-              organisationServiceId: this.organizationServiceId,
-            },
-            { fetchPolicy: 'no-cache' }
-          );
-        }),
-        map((resp) => resp.data.fetchOrganisationService.demandes),
-        catchError((error) => {
-          console.error('Error fetching data:', error);
-          return of([]);
-        })
+        )
       )
       .subscribe({
-        next: (demandes) => {
-          this.data = demandes;
+        next: (organisationServiceId) => {
+          this.organizationServiceId = organisationServiceId;
         },
         error: (error) => {
           console.error('Subscription error:', error);

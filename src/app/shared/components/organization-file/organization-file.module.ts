@@ -7,6 +7,7 @@ import { DropdownModule } from '../../directives/dropdown/dropdown.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DialogDemandeModule } from '../dialog-demande/dialog-demande.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [OrganizationFileComponent],
@@ -18,6 +19,7 @@ import { DialogDemandeModule } from '../dialog-demande/dialog-demande.module';
     MatButtonModule,
     MatDialogModule,
     DialogDemandeModule,
+    MatTooltipModule,
   ],
   exports: [OrganizationFileComponent],
 })

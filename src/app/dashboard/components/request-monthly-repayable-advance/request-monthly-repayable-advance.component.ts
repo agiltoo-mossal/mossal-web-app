@@ -3,6 +3,7 @@ import {
   FetchCurrentAdminGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
   FetchOrganisationServiceGQL,
+  FetchPaginatedOrganizationDemandesGQL,
 } from 'src/graphql/generated';
 import { catchError, map, of, switchMap } from 'rxjs';
 @Component({
@@ -18,7 +19,7 @@ export class RequestMonthlyRepayableAdvanceComponent {
   serviceId = '6751908bee9f8e91151fe4b2'; // Titre dynamique
   data = [];
   constructor(
-    private listRequest: FetchOrganisationServiceGQL,
+    private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL
   ) {}
@@ -44,14 +45,14 @@ export class RequestMonthlyRepayableAdvanceComponent {
         ),
         switchMap((organizationServiceId) => {
           this.organizationServiceId = organizationServiceId;
-          return this.listRequest.fetch(
+          return this.paginatedRequestGQL.fetch(
             {
-              organisationServiceId: this.organizationServiceId,
+              organizationServiceId: this.organizationServiceId,
             },
             { fetchPolicy: 'no-cache' }
           );
         }),
-        map((resp) => resp.data.fetchOrganisationService.demandes),
+        map((resp) => resp.data.fetchPaginatedOrganizationDemandes.results),
         catchError((error) => {
           console.error('Error fetching data:', error);
           return of([]);
