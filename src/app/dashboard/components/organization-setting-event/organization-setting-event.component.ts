@@ -209,7 +209,6 @@ export class OrganizationSettingEventComponent {
             });
             this.showLineEvent = true;
             this.showComponent = false;
-            this.eventSelectedId = '';
           },
           error: (err) => {
             this.snackBarService.showSnackBar('Une erreur est survenue');
@@ -345,6 +344,7 @@ export class OrganizationSettingEventComponent {
     this.listCategorieService = temp;
   }
   updateEvent(event: Event): void {
+    // this.eventSelectedId = event.id;
     this.dataEvent = event;
     this.showLineEvent = false;
     this.showComponent = true;
@@ -622,6 +622,7 @@ export class OrganizationSettingEventComponent {
     if (this.eventSelectedId === event.id) {
       this.eventSelectedId = '';
       this.listCategorieService = this.tempListCategoryServices;
+      this.showComponent = false;
       return;
     }
     this.eventSelectedId = event.id;

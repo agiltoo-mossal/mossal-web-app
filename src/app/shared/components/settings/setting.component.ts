@@ -84,6 +84,8 @@ export class SettingComponent implements OnInit {
           saveData: true,
         });
       } else {
+        console.log('dataFormErrors', this.settingForm.errors);
+
         this.settingChange.emit({
           dataForm: null,
           categorie: this.categorie,
@@ -124,7 +126,21 @@ export class SettingComponent implements OnInit {
     });
   }
   onServiceActivationChange(isActive: boolean) {
-    this.settingForm.patchValue({ activated: isActive });
+    this.settingForm.patchValue({
+      activated: isActive,
+      amountUnit: this.settingForm.get('amountUnit').value || AmountUnit.Fixed,
+      refundDuration: this.settingForm.get('refundDuration').value || 1,
+      autoValidate: this.settingForm.get('autoValidate').value || true,
+    });
+    if (this.settingForm.get('amountUnit').value == AmountUnit.Percentage) {
+      this.settingForm
+        .get('amountPercentage')
+        .setValue(this.settingForm.get('amountPercentage').value || 1);
+    } else {
+      this.settingForm
+        .get('amount')
+        .setValue(this.settingForm.get('amount').value || 1000);
+    }
   }
 
   get amountUnit() {
