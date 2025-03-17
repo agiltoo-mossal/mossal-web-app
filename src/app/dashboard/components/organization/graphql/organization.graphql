@@ -232,6 +232,18 @@ mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
     }
     createdAt
     updatedAt
+    activated
+    organisationService {
+      id
+    }
+
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    autoValidate
   }
 }
 

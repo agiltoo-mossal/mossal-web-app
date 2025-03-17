@@ -1395,7 +1395,7 @@ export type CreateEventMutationVariables = Exact<{
 }>;
 
 
-export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, createdAt: any, updatedAt: any, organisationService: { __typename?: 'OrganisationService', id: any } } };
+export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, createdAt: any, updatedAt: any, activated: boolean, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activatedAt?: any | null, autoValidate: boolean, organisationService: { __typename?: 'OrganisationService', id: any } } };
 
 export type FetchEventsQueryVariables = Exact<{
   queryConfig?: InputMaybe<QueryDataConfigInput>;
@@ -2457,6 +2457,17 @@ export const CreateEventDocument = gql`
     }
     createdAt
     updatedAt
+    activated
+    organisationService {
+      id
+    }
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    autoValidate
   }
 }
     `;

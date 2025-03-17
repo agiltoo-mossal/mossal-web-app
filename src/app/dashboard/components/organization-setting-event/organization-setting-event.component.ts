@@ -167,6 +167,7 @@ export class OrganizationSettingEventComponent {
     if (event.action === 'cancel') {
       this.showLineEvent = true;
       this.showComponent = false;
+      this.dataEvent = null;
       return;
     }
     if (!this.organisationServiceId) {
@@ -234,15 +235,27 @@ export class OrganizationSettingEventComponent {
         next: (response) => {
           this.snackBarService.showSnackBar('Événement créé avec succès');
           this.events.unshift({
-            title: eventToSave.title,
+            ...response.data.createEvent,
             startDate: formattedStartDate,
             endDate: formattedEndDate,
-            isActive: true,
           });
           this.showLineEvent = true;
           this.showComponent = false;
           this.eventSelectedId = response.data.createEvent.id;
-          this.listCategorieService = [];
+          this.listCategorieService = [
+            {
+              amount: 0,
+              amountUnit: AmountUnit.Fixed,
+              refundDuration: 1,
+              refundDurationUnit: DurationUnit.Month,
+              activated: true,
+              activatedAt: null,
+              autoValidate: true,
+              categorySociopro: {
+                title: 'Paramètres généraux',
+              } as any,
+            },
+          ];
         },
         error: (err) => {
           this.snackBarService.showSnackBar('Une erreur est survenue');
