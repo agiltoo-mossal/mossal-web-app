@@ -80,6 +80,8 @@ export type CategorySocioproService = {
   categorySociopro?: Maybe<CategorySociopro>;
   categorySocioproId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  event?: Maybe<Event>;
+  eventId?: Maybe<Scalars['String']['output']>;
   id: Scalars['Any']['output'];
   organisationService?: Maybe<OrganisationService>;
   organisationServiceId: Scalars['String']['output'];
@@ -181,13 +183,20 @@ export enum DurationUnit {
 
 export type Event = {
   __typename?: 'Event';
-  activated?: Maybe<Scalars['Boolean']['output']>;
+  activated: Scalars['Boolean']['output'];
+  activatedAt?: Maybe<Scalars['DateTime']['output']>;
   addedBy?: Maybe<Scalars['String']['output']>;
+  amount: Scalars['Int']['output'];
+  amountUnit: AmountUnit;
+  autoValidate: Scalars['Boolean']['output'];
+  categorySocioproServices?: Maybe<Array<CategorySocioproService>>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   endDate: Scalars['DateTime']['output'];
   id: Scalars['Any']['output'];
   organisationService: OrganisationService;
+  refundDuration: Scalars['Int']['output'];
+  refundDurationUnit: DurationUnit;
   startDate: Scalars['DateTime']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -195,16 +204,28 @@ export type Event = {
 
 export type EventInput = {
   activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   endDate: Scalars['DateTime']['input'];
+  refundDuration: Scalars['Int']['input'];
+  refundDurationUnit?: InputMaybe<DurationUnit>;
   startDate: Scalars['DateTime']['input'];
   title: Scalars['String']['input'];
 };
 
 export type EventUpdateInput = {
   activated?: InputMaybe<Scalars['Boolean']['input']>;
+  activatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  amountUnit?: InputMaybe<AmountUnit>;
+  autoValidate?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  refundDuration?: InputMaybe<Scalars['Int']['input']>;
+  refundDurationUnit?: InputMaybe<DurationUnit>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -327,6 +348,7 @@ export type MutationCreateCategorySocioproArgs = {
 export type MutationCreateCategorySocioproServiceArgs = {
   categorySocioproId: Scalars['ID']['input'];
   categorySocioproServiceInput: CategorySocioproServiceInput;
+  eventId?: InputMaybe<Scalars['ID']['input']>;
   organisationServiceId: Scalars['ID']['input'];
 };
 
@@ -1306,6 +1328,7 @@ export type CreateCategorySocioproServiceMutationVariables = Exact<{
   categorySocioproServiceInput: CategorySocioproServiceInput;
   categorySocioproId: Scalars['ID']['input'];
   organisationServiceId: Scalars['ID']['input'];
+  eventId?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
 
@@ -1380,7 +1403,7 @@ export type FetchEventsQueryVariables = Exact<{
 }>;
 
 
-export type FetchEventsQuery = { __typename?: 'Query', fetchEvents: { __typename?: 'PaginatedEventResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, activated?: boolean | null, createdAt: any, updatedAt: any, organisationService: { __typename?: 'OrganisationService', id: any } }> } };
+export type FetchEventsQuery = { __typename?: 'Query', fetchEvents: { __typename?: 'PaginatedEventResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Event', id: any, title: string, description?: string | null, startDate: any, endDate: any, activated: boolean, createdAt: any, updatedAt: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activatedAt?: any | null, autoValidate: boolean, organisationService: { __typename?: 'OrganisationService', id: any }, categorySocioproServices?: Array<{ __typename?: 'CategorySocioproService', createdAt: any, updatedAt: any, id: any, amount: number, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, autoValidate: boolean, organisationServiceId: string, categorySocioproId: string, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null, organizationId?: string | null, createdAt: any, updatedAt: any } | null }> | null }> } };
 
 export type DesactivateOrganisationServiceMutationVariables = Exact<{
   organisationServiceId: Scalars['ID']['input'];
@@ -2141,11 +2164,12 @@ export const UpdateCategorySocioproDocument = gql`
     }
   }
 export const CreateCategorySocioproServiceDocument = gql`
-    mutation CreateCategorySocioproService($categorySocioproServiceInput: CategorySocioproServiceInput!, $categorySocioproId: ID!, $organisationServiceId: ID!) {
+    mutation CreateCategorySocioproService($categorySocioproServiceInput: CategorySocioproServiceInput!, $categorySocioproId: ID!, $organisationServiceId: ID!, $eventId: ID) {
   createCategorySocioproService(
     categorySocioproServiceInput: $categorySocioproServiceInput
     categorySocioproId: $categorySocioproId
     organisationServiceId: $organisationServiceId
+    eventId: $eventId
   ) {
     id
   }
@@ -2471,6 +2495,34 @@ export const FetchEventsDocument = gql`
       }
       createdAt
       updatedAt
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+      categorySocioproServices {
+        createdAt
+        updatedAt
+        id
+        amount
+        amountUnit
+        refundDuration
+        refundDurationUnit
+        activated
+        activatedAt
+        autoValidate
+        organisationServiceId
+        categorySocioproId
+        categorySociopro {
+          id
+          title
+          organizationId
+          createdAt
+          updatedAt
+        }
+      }
     }
   }
 }

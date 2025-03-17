@@ -85,6 +85,21 @@
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.event-selected {
+   background-color: #061e5cd3;
+  span{
+    color: white;
+  }
+
+}
+.event-item:hover{
+  background-color: #061e5ce2;
+  span{
+    color: white;
+  }
 }
 .event-title{
   display: flex;
@@ -93,12 +108,12 @@
 
 
 }
-.event-item:nth-child(odd) {
-    background-color: #F1F7FF;
-}
-.event-item:nth-child(even) {
-    background-color: white;
-}
+// .event-item:nth-child(odd) {
+//     background-color: #F1F7FF;
+// }
+// .event-item:nth-child(even) {
+//     background-color: white;
+// }
 
 .event-details {
   display: flex;
@@ -158,7 +173,7 @@
   justify-content: flex-end;
 }
 .add-event-btn:hover {
-  background-color: #061e5c96;
+  background-color: #061e5c;
 }
 
 /* Navigation des onglets */

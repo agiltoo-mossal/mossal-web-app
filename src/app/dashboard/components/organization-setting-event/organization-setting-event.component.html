@@ -37,7 +37,7 @@
               <span>Aucun événement prévu</span>
             </div>
           </li>
-          <li *ngFor="let event of events; let i = index" class="event-item">
+          <li *ngFor="let event of events; let i = index" class="event-item" (click)="handleClickEvent(event)" [ngClass]="{ 'event-selected': eventSelectedId === event?.id }">
             <div class="event-title">
               <app-toggle-slide
                 [firstText]="'Actif'"
@@ -46,7 +46,7 @@
                 [uniqueId]="'event-' + i"
                 (toggleChange)="changeStatusEvent($event, event)"
               ></app-toggle-slide>
-              <span>{{ event.title }} </span>
+              <span>{{ event.title | uppercase}} </span>
             </div>
             <div class="event-date">
               <input type="date" [value]="event.startDate" disabled />
@@ -60,16 +60,17 @@
             </div>
           </li>
         </ul>
-        <div class="container-button">
+        <div class="container-button" *ngIf="showLineEvent">
           <button class="add-event-btn" (click)="createEvent()">
             Ajouter un événement
           </button>
         </div>
+        <app-create-event [event]="dataEvent" (closeEventEmitter)="handleEvent($event)" *ngIf="showComponent"></app-create-event>
       </div>
 
       <!-- Section des paramètres -->
       <div class="section">
-        <div class="category-selection">
+        <div class="category-selection" *ngIf="eventSelectedId?.length>0">
           <label for="category-selection">Sélectionnez une catégorie</label>
           <select
             [(ngModel)]="selectedCategory"

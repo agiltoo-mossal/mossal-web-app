@@ -1,6 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Event } from 'src/graphql/generated';
 @Component({
   selector: 'app-create-event',
   templateUrl: './create-event.component.html',
@@ -8,14 +15,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class CreateEventComponent implements OnInit {
   eventForm: FormGroup;
-  title: string;
-  action: string = 'Créer';
 
-  constructor(
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<CreateEventComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  @Input() event: Event;
+  action: string = 'Créer';
+  @Output() closeEventEmitter = new EventEmitter<{
+    action: string;
+    event: Event;
+  }>();
+
+  constructor(private fb: FormBuilder) {
     this.eventForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       startDate: ['', Validators.required],
@@ -24,12 +32,34 @@ export class CreateEventComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.title = 'Créer un  nouvel événement';
-    if (this.data) {
-      this.eventForm.patchValue(this.data);
-      this.title = 'Modifier un événement';
+    if (this.event) {
+      this.eventForm.patchValue(this.event);
       this.action = 'Modifier';
     }
+    this.startDate.valueChanges.subscribe({
+      next: (value) => {
+        if (
+          new Date(value).getTime() >
+          new Date(this.endDate.getRawValue()).getTime()
+        ) {
+          this.startDate.setErrors({ invalidDate: true });
+        } else {
+          this.startDate.setErrors(null);
+        }
+      },
+    });
+    this.endDate.valueChanges.subscribe({
+      next: (value) => {
+        if (
+          new Date(value).getTime() <
+          new Date(this.startDate.getRawValue()).getTime()
+        ) {
+          this.endDate.setErrors({ invalidDate: true });
+        } else {
+          this.endDate.setErrors(null);
+        }
+      },
+    });
   }
   get startDate() {
     return this.eventForm.get('startDate');
@@ -37,21 +67,22 @@ export class CreateEventComponent implements OnInit {
   get endDate() {
     return this.eventForm.get('endDate');
   }
+  get title() {
+    return this.eventForm.get('title');
+  }
   onSubmit(): void {
-    if (
-      new Date(this.startDate?.getRawValue()).getTime() >
-      new Date(this.endDate?.getRawValue()).getTime()
-    ) {
-      this.startDate?.setErrors({ invalidDate: true });
-      this.endDate?.setErrors({ invalidDate: true });
-      return;
-    }
     if (this.eventForm.valid) {
-      this.dialogRef.close(this.eventForm.getRawValue());
+      this.closeEventEmitter.emit({
+        action: this.action,
+        event: this.eventForm.value,
+      });
     }
   }
 
-  onCancel(): void {
-    this.dialogRef.close();
+  cancelEvent(): void {
+    this.closeEventEmitter.emit({
+      action: 'cancel',
+      event: this.eventForm.value,
+    });
   }
 }

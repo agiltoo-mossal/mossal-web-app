@@ -19,6 +19,7 @@ import {
   DeleteEventGQL,
   DesactiveEventGQL,
   DurationUnit,
+  Event,
   EventInput,
   FetchCategorySocioprosGQL,
   FetchCurrentAdminGQL,
@@ -58,11 +59,13 @@ export class OrganizationSettingEventComponent {
     organisationServiceId: string;
   }>();
   events = [];
+  eventSelectedId: string;
 
   // Onglet actif
   activeTab: string = 'Paramètres Généraux';
   listCategorieService: Partial<CategorySocioproService>[] = [];
-
+  tempListCategoryServices: Partial<CategorySocioproService>[] = [];
+  listCategorieServiceEvent: Partial<CategorySocioproService>[] = [];
   // Données pour les paramètres
 
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
@@ -70,15 +73,16 @@ export class OrganizationSettingEventComponent {
 
   organization: Organization;
   disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
-
+  showLineEvent = true;
+  showComponent = false;
   organisationServiceId: string;
   info: Partial<OrganisationService & { categorySociopro: CategorySociopro[] }>;
   dataForm: any;
   activated: { value?: boolean } = { value: true };
   selectedCategory: string;
+  dataEvent: Event;
 
   constructor(
-    private dialog: MatDialog,
     private listCategorieGQL: FetchCategorySocioprosGQL,
     private createEventGQL: CreateEventGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
@@ -122,41 +126,24 @@ export class OrganizationSettingEventComponent {
             console.log('event setting', this.info);
 
             this.fetchEvents(this.organisationServiceId);
-            this.listCategorieService = [
-              {
-                amount: this.info.amount,
-                amountUnit: this.info.amountUnit,
-                refundDuration: this.info.refundDuration,
-                refundDurationUnit: this.info.refundDurationUnit,
-                activated: this.info.activated,
-                activatedAt: this.info.activatedAt,
-                autoValidate: this.info.autoValidate,
-                categorySociopro: {
-                  title: 'Paramètres généraux',
-                } as any,
-              },
-            ];
-            this.listCategorieService = [
-              ...this.listCategorieService,
-              ...(this.info?.categoriesocioproservices || []),
-            ];
           } else {
             this.activated.value = true;
-            this.listCategorieService = [
-              {
-                amount: 0,
-                amountUnit: AmountUnit.Fixed,
-                refundDuration: 1,
-                refundDurationUnit: DurationUnit.Month,
-                activated: true,
-                activatedAt: null,
-                autoValidate: true,
-                categorySociopro: {
-                  title: 'Paramètres généraux',
-                } as any,
-              },
-            ];
           }
+          this.listCategorieService = [
+            {
+              amount: 0,
+              amountUnit: AmountUnit.Fixed,
+              refundDuration: 1,
+              refundDurationUnit: DurationUnit.Month,
+              activated: true,
+              activatedAt: null,
+              autoValidate: true,
+              categorySociopro: {
+                title: 'Paramètres généraux',
+              } as any,
+            },
+          ];
+          this.tempListCategoryServices = this.listCategorieService;
           this.selectedCategorie = this.listCategorieService[0] as any;
         },
         error: (error) => {
@@ -189,7 +176,94 @@ export class OrganizationSettingEventComponent {
   switchTab(tabName: string): void {
     this.activeTab = tabName;
   }
+  handleEvent(event: { action: string; event: Event }) {
+    if (event.action === 'cancel') {
+      this.showLineEvent = true;
+      this.showComponent = false;
+      return;
+    }
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        "Veuillez d'abord créer la configuration sur paramètres généraux"
+      );
+      return;
+    }
+    delete event.event.id;
 
+    const formattedStartDate = new Date(event.event.startDate)
+      .toISOString()
+      .split('T')[0];
+    const formattedEndDate = new Date(event.event.endDate)
+      .toISOString()
+      .split('T')[0];
+
+    const { event: eventToSave } = event;
+    if (event.action == 'Modifier') {
+      this.updateEventGQL
+        .mutate({
+          eventId: this.eventSelectedId,
+          eventInput: {
+            ...eventToSave,
+          },
+        })
+        .subscribe({
+          next: (response) => {
+            this.snackBarService.showSnackBar('Événement modifié avec succès');
+            this.events = this.events.map((e) => {
+              if (e.id === this.eventSelectedId) {
+                return {
+                  ...e,
+                  title: eventToSave.title,
+                  startDate: formattedStartDate,
+                  endDate: formattedEndDate,
+                };
+              }
+              return e;
+            });
+            this.showLineEvent = true;
+            this.showComponent = false;
+            this.eventSelectedId = '';
+          },
+          error: (err) => {
+            this.snackBarService.showSnackBar('Une erreur est survenue');
+            console.log(err);
+          },
+        });
+      return;
+    }
+    this.createEventGQL
+      .mutate({
+        eventInput: {
+          ...eventToSave,
+          amount: 0,
+          amountUnit: AmountUnit.Fixed,
+          refundDuration: 1,
+          refundDurationUnit: DurationUnit.Month,
+          activated: true,
+          autoValidate: true,
+        },
+        organizationServiceId: this.organisationServiceId,
+      })
+      .subscribe({
+        next: (response) => {
+          this.snackBarService.showSnackBar('Événement créé avec succès');
+          this.events.unshift({
+            title: eventToSave.title,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+            isActive: true,
+          });
+          this.showLineEvent = true;
+          this.showComponent = false;
+          this.eventSelectedId = response.data.createEvent.id;
+          this.listCategorieService = [];
+        },
+        error: (err) => {
+          this.snackBarService.showSnackBar('Une erreur est survenue');
+          console.log(err);
+        },
+      });
+  }
   fetchEvents(organizationServiceId: string) {
     this.fetchAllEvents
       .fetch({
@@ -251,7 +325,7 @@ export class OrganizationSettingEventComponent {
       }
     });
   }
-  onChangeCategorie(event: Event) {
+  onChangeCategorie(event: any) {
     const temp = [...this.listCategorieService];
     const cate = this.categories.find(
       (item) => item?.id == this.selectedCategory
@@ -283,64 +357,10 @@ export class OrganizationSettingEventComponent {
 
     this.listCategorieService = temp;
   }
-  updateEvent(event: {
-    id: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-  }): void {
-    const dialogRef = this.dialog.open(CreateEventComponent, {
-      width: '700px',
-      data: {
-        title: event.title,
-        startDate: new Date(event.startDate),
-        endDate: new Date(event.endDate),
-      }, // Si des données initiales sont nécessaires
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const formattedStartDate = new Date(result.startDate)
-          .toISOString()
-          .split('T')[0];
-        const formattedEndDate = new Date(result.endDate)
-          .toISOString()
-          .split('T')[0];
-
-        this.updateEventGQL
-          .mutate({
-            eventInput: {
-              title: result?.title,
-              startDate: new Date(result.startDate),
-              endDate: new Date(result.endDate),
-            },
-            eventId: event.id,
-          })
-          .subscribe({
-            next: (response) => {
-              this.snackBarService.showSnackBar(
-                'Événement modifié avec succès'
-              );
-              const eventId = event.id;
-              this.events = this.events.map((event) => {
-                if (event.id === eventId) {
-                  return {
-                    ...event,
-                    title: result.title,
-                    startDate: formattedStartDate,
-                    endDate: formattedEndDate,
-                  };
-                }
-                return event;
-              });
-            },
-            error: (err) => {
-              this.snackBarService.showSnackBar('Une erreur est survenue');
-              console.log(err);
-            },
-          });
-      }
-    });
+  updateEvent(event: Event): void {
+    this.dataEvent = event;
+    this.showLineEvent = false;
+    this.showComponent = true;
   }
 
   /**
@@ -351,21 +371,42 @@ export class OrganizationSettingEventComponent {
     if (!this.dataForm) {
       return;
     }
+
     if (
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
-      if (this.organisationServiceId) {
-        this.updateSettingOrganistion(this.organisationServiceId, {
-          ...this.dataForm,
-        });
+      if (this.eventSelectedId) {
+        this.updateEventGQL
+          .mutate({
+            eventId: this.eventSelectedId,
+            eventInput: {
+              ...this.dataForm,
+            },
+          })
+          .subscribe({
+            next: (response) => {
+              this.snackBarService.showSnackBar('Paramètres enregistrés');
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar(
+                err.message || 'Une erreur est survenue'
+              );
+            },
+          });
       } else {
-        this.createSettingOrganisation(
-          this.organization.id,
-          {
+        if (this.organisationServiceId) {
+          this.updateSettingOrganistion(this.organisationServiceId, {
             ...this.dataForm,
-          },
-          this.service.id
-        );
+          });
+        } else {
+          this.createSettingOrganisation(
+            this.organization.id,
+            {
+              ...this.dataForm,
+            },
+            this.service.id
+          );
+        }
       }
     } else {
       let selectedUpdate = this.listCategorieService.find(
@@ -374,14 +415,24 @@ export class OrganizationSettingEventComponent {
           item?.id &&
           this.selectedCategorie?.id
       );
+      const tempObjectInput: {
+        categorySocioproId: string;
+        categorySocioproServiceInput: any;
+        organisationServiceId: string;
+      } = {
+        categorySocioproId: this.selectedCategorie.categorySocioproId,
+        categorySocioproServiceInput: {
+          ...this.dataForm,
+        },
+        organisationServiceId: this.organisationServiceId,
+      };
+      if (this.eventSelectedId) {
+        tempObjectInput['eventId'] = this.eventSelectedId;
+      }
       if (!selectedUpdate) {
         this.createCategorySocioproServiceGQL
           .mutate({
-            categorySocioproId: this.selectedCategorie.categorySocioproId,
-            categorySocioproServiceInput: {
-              ...this.dataForm,
-            },
-            organisationServiceId: this.organisationServiceId,
+            ...tempObjectInput,
           })
           .subscribe({
             next: (response) => {
@@ -392,6 +443,7 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
+        delete tempObjectInput['organisationServiceId'];
         this.updateCategorySocioproServiceGQL
           .mutate({
             categorySocioproServiceId: selectedUpdate.id,
@@ -489,46 +541,44 @@ export class OrganizationSettingEventComponent {
       );
       return;
     }
-    const dialogRef = this.dialog.open(CreateEventComponent, {
-      width: '700px',
-    });
+    this.showComponent = true;
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const formattedStartDate = new Date(result.startDate)
-          .toISOString()
-          .split('T')[0];
-        const formattedEndDate = new Date(result.endDate)
-          .toISOString()
-          .split('T')[0];
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     const formattedStartDate = new Date(result.startDate)
+    //       .toISOString()
+    //       .split('T')[0];
+    //     const formattedEndDate = new Date(result.endDate)
+    //       .toISOString()
+    //       .split('T')[0];
 
-        this.createEventGQL
-          .mutate({
-            eventInput: {
-              title: result?.title,
-              startDate: new Date(result.startDate),
-              endDate: new Date(result.endDate),
-            },
-            organizationServiceId: this.organisationServiceId,
-          })
-          .subscribe({
-            next: (response) => {
-              this.snackBarService.showSnackBar('Événement créé avec succès');
+    //     this.createEventGQL
+    //       .mutate({
+    //         eventInput: {
+    //           title: result?.title,
+    //           startDate: new Date(result.startDate),
+    //           endDate: new Date(result.endDate),
+    //         },
+    //         organizationServiceId: this.organisationServiceId,
+    //       })
+    //       .subscribe({
+    //         next: (response) => {
+    //           this.snackBarService.showSnackBar('Événement créé avec succès');
 
-              this.events.push({
-                title: result.title,
-                startDate: formattedStartDate,
-                endDate: formattedEndDate,
-                isActive: true,
-              });
-            },
-            error: (err) => {
-              this.snackBarService.showSnackBar('Une erreur est survenue');
-              console.log(err);
-            },
-          });
-      }
-    });
+    //           this.events.push({
+    //             title: result.title,
+    //             startDate: formattedStartDate,
+    //             endDate: formattedEndDate,
+    //             isActive: true,
+    //           });
+    //         },
+    //         error: (err) => {
+    //           this.snackBarService.showSnackBar('Une erreur est survenue');
+    //           console.log(err);
+    //         },
+    //       });
+    //   }
+    // });
   }
 
   changeStatusEvent(
@@ -580,6 +630,30 @@ export class OrganizationSettingEventComponent {
   }
 
   createOrganizationService() {}
+  handleClickEvent(event: any) {
+    console.log('event', event);
+    if (this.eventSelectedId === event.id) {
+      this.eventSelectedId = '';
+      this.listCategorieService = this.tempListCategoryServices;
+      return;
+    }
+    this.eventSelectedId = event.id;
+    this.listCategorieService = [
+      {
+        amount: event.amount,
+        amountUnit: event.amountUnit,
+        refundDuration: event.refundDuration,
+        refundDurationUnit: event.refundDurationMonth,
+        activated: event.activated,
+        activatedAt: event.activatedAt,
+        autoValidate: event.autoValidate,
+        categorySociopro: {
+          title: 'Paramètres généraux',
+        } as any,
+      },
+      ...(event.categorySocioproServices || []),
+    ];
+  }
 
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
@@ -591,4 +665,5 @@ export class OrganizationSettingEventComponent {
       this.dataForm = $event.dataForm;
     }
   }
+  createOrganizationEvent(EventInput: EventInput) {}
 }

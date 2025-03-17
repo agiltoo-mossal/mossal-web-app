@@ -23,11 +23,13 @@ mutation CreateCategorySocioproService(
   $categorySocioproServiceInput: CategorySocioproServiceInput!
   $categorySocioproId: ID!
   $organisationServiceId: ID!
+  $eventId: ID
 ) {
   createCategorySocioproService(
     categorySocioproServiceInput: $categorySocioproServiceInput
     categorySocioproId: $categorySocioproId
     organisationServiceId: $organisationServiceId
+    eventId: $eventId
   ) {
     id
   }
@@ -259,6 +261,35 @@ query FetchEvents(
       }
       createdAt
       updatedAt
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+
+      categorySocioproServices {
+        createdAt
+        updatedAt
+        id
+        amount
+        amountUnit
+        refundDuration
+        refundDurationUnit
+        activated
+        activatedAt
+        autoValidate
+        organisationServiceId
+        categorySocioproId
+        categorySociopro {
+          id
+          title
+          organizationId
+          createdAt
+          updatedAt
+        }
+      }
     }
   }
 }
@@ -283,14 +314,14 @@ mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
   updateEvent(eventInput: $eventInput, eventId: $eventId)
 }
 
-query  FetchDemandesByCollaborator(
+query FetchDemandesByCollaborator(
   $collaboratorId: ID!
   $status: DemandeStatus
-){
+) {
   fetchDemandesByCollaborator(
     collaboratorId: $collaboratorId
     status: $status
-  ){
+  ) {
     id
     status
     amount
@@ -307,12 +338,10 @@ query  FetchDemandesByCollaborator(
       lastName
     }
     organisationService {
-      service{
+      service {
         id
         title
       }
-    
-     
     }
   }
 }

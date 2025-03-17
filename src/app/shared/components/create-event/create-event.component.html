@@ -1,57 +1,69 @@
-<div style="padding: 20px;">
-  <h2 class="modal-title">{{ title}}</h2>
-
-  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" >
-    <!-- Champ Nom de l'événement -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Nom de l'événement</mat-label>
-      <input matInput formControlName="title" placeholder="Ex : Lancement produit" required />
-      <mat-error *ngIf="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
-        Veuillez entrer un nom valide (min. 3 caractères).
-      </mat-error>
-    </mat-form-field>
-
-    <!-- Champ Date de début -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Date de début</mat-label>
-      <input
-        matInput
-        [matDatepicker]="startPicker"
-        formControlName="startDate"
-        placeholder="Choisir une date"
-        required
-      />
-      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-      <mat-datepicker #startPicker></mat-datepicker>
-      <mat-error *ngIf="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched">
-        La date de début est requise.
-      </mat-error>
-      
-    </mat-form-field>
-
-    <!-- Champ Date de fin -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Date de fin</mat-label>
-      <input
-        matInput
-        [matDatepicker]="endPicker"
-        formControlName="endDate"
-        placeholder="Choisir une date"
-        required
-      />
-      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-      <mat-datepicker #endPicker></mat-datepicker>
-      <mat-error *ngIf="eventForm.get('endDate')?.invalid && eventForm.get('endDate')?.touched">
-        La date de fin est requise.
-      </mat-error>
-    </mat-form-field>
-
-    <!-- Boutons d'action -->
-    <div class="action-buttons">
-      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">Annuler</button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
-        {{ action }}
-      </button>
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()" style="width: 100%">
+  <div class="container">
+    <div class="header">
+      <p>Nom de l’événement</p>
+      <p>Date début</p>
+      <p>Date de fin</p>
+      <p>Actions</p>
     </div>
-  </form>
-</div>
+    <div class="form-row">
+      <div>
+        <input
+          type="text"
+          formControlName="title"
+          class="input-title"
+          placeholder="Nom de l’événement"
+        />
+        <mat-error *ngIf="(title.touched || title.dirty) && title.errors?.['required']">
+          Le nom de l'événement est requis.
+        </mat-error>
+
+      </div>
+      <mat-form-field appearance="outline" class="form-field">
+        <input
+          matInput
+          [matDatepicker]="startPicker"
+          formControlName="startDate"
+          placeholder="Date de début"
+          required
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startPicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+        <mat-error *ngIf="(startDate.touched || startDate.dirty) && startDate.errors?.['required']">
+          La date de début est requise.
+        </mat-error>
+        <mat-error *ngIf="(startDate.touched || startDate.dirty) && startDate.value>endDate.value">
+          La date de début doit être inférieure à la date de fin.
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="form-field">
+        <input
+          matInput
+          [matDatepicker]="endPicker"
+          formControlName="endDate"
+          placeholder="Date de fin"
+          required
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endPicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+        <mat-error *ngIf="(endDate.touched || endDate.dirty) && endDate.errors?.['required']">
+          La date de début est requise.
+        </mat-error>
+        <mat-error *ngIf="(endDate.touched || endDate.dirty) && endDate.value < startDate.value">
+          La date de fin doit être supérieure à la date de début.
+        </mat-error>
+      </mat-form-field>
+      <div class="actions">
+        <button class="add-btn" type="submit"  [disabled]="eventForm.invalid">Ajouter</button>
+        <button class="cancel-btn" (click)="cancelEvent()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</form>
+
