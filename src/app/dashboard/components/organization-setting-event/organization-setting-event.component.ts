@@ -129,20 +129,7 @@ export class OrganizationSettingEventComponent {
           } else {
             this.activated.value = true;
           }
-          this.listCategorieService = [
-            {
-              amount: 0,
-              amountUnit: AmountUnit.Fixed,
-              refundDuration: 1,
-              refundDurationUnit: DurationUnit.Month,
-              activated: true,
-              activatedAt: null,
-              autoValidate: true,
-              categorySociopro: {
-                title: 'Paramètres généraux',
-              } as any,
-            },
-          ];
+          this.listCategorieService = [];
           this.tempListCategoryServices = this.listCategorieService;
           this.selectedCategorie = this.listCategorieService[0] as any;
         },
