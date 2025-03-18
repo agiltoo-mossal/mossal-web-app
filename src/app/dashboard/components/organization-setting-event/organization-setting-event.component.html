@@ -107,6 +107,7 @@
         </mat-tab-group>
       </div>
       <button
+        *ngIf="eventSelectedId?.length>0"
         [ngClass]="{
           'disable-button': disableButton,
         }"
