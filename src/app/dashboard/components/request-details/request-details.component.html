@@ -29,7 +29,7 @@
         <td>{{remboursement?.amount}}</td>
         <td>{{remboursement?.createdAt |date }}</td>
         <td>{{remboursement?.fees}}</td>
-        <td>{{remboursement?.status}}</td>
+        <td>{{remboursement?.status |demandeStatus |titlecase}}</td>
         <td style="display: flex;justify-content: end;" >
             <button class="action" (click)="rembourseDemande(remboursement.id)" [disabled]="remboursement?.status === 'PAYED'">
                 Rembourser
