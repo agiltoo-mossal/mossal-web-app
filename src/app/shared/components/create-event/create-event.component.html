@@ -14,10 +14,11 @@
           class="input-title"
           placeholder="Nom de l’événement"
         />
-        <mat-error *ngIf="(title.touched || title.dirty) && title.errors?.['required']">
+        <mat-error
+          *ngIf="(title.touched || title.dirty) && title.errors?.['required']"
+        >
           Le nom de l'événement est requis.
         </mat-error>
-
       </div>
       <mat-form-field appearance="outline" class="form-field">
         <input
@@ -25,6 +26,8 @@
           [matDatepicker]="startPicker"
           formControlName="startDate"
           placeholder="Date de début"
+          [readonly]="true"
+          (keydown)="$event.preventDefault()"
           required
         />
         <mat-datepicker-toggle
@@ -32,10 +35,17 @@
           [for]="startPicker"
         ></mat-datepicker-toggle>
         <mat-datepicker #startPicker></mat-datepicker>
-        <mat-error *ngIf="(startDate.touched || startDate.dirty) && startDate.errors?.['required']">
+        <mat-error
+          *ngIf="(startDate.touched || startDate.dirty) && startDate.errors?.['required']"
+        >
           La date de début est requise.
         </mat-error>
-        <mat-error *ngIf="(startDate.touched || startDate.dirty) && startDate.value>endDate.value">
+        <mat-error
+          *ngIf="
+            (startDate.touched || startDate.dirty) &&
+            startDate.value > endDate.value
+          "
+        >
           La date de début doit être inférieure à la date de fin.
         </mat-error>
       </mat-form-field>
@@ -45,6 +55,8 @@
           [matDatepicker]="endPicker"
           formControlName="endDate"
           placeholder="Date de fin"
+           [readonly]="true"
+          (keydown)="$event.preventDefault()"
           required
         />
         <mat-datepicker-toggle
@@ -52,18 +64,26 @@
           [for]="endPicker"
         ></mat-datepicker-toggle>
         <mat-datepicker #endPicker></mat-datepicker>
-        <mat-error *ngIf="(endDate.touched || endDate.dirty) && endDate.errors?.['required']">
+        <mat-error
+          *ngIf="(endDate.touched || endDate.dirty) && endDate.errors?.['required']"
+        >
           La date de début est requise.
         </mat-error>
-        <mat-error *ngIf="(endDate.touched || endDate.dirty) && endDate.value < startDate.value">
+        <mat-error
+          *ngIf="
+            (endDate.touched || endDate.dirty) &&
+            endDate.value < startDate.value
+          "
+        >
           La date de fin doit être supérieure à la date de début.
         </mat-error>
       </mat-form-field>
       <div class="actions">
-        <button class="add-btn" type="submit"  [disabled]="eventForm.invalid">Ajouter</button>
+        <button class="add-btn" type="submit" [disabled]="eventForm.invalid">
+          Ajouter
+        </button>
         <button class="cancel-btn" (click)="cancelEvent()">Annuler</button>
       </div>
     </div>
   </div>
 </form>
-

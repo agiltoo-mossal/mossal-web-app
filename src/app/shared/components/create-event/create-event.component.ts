@@ -50,6 +50,7 @@ export class CreateEventComponent implements OnInit {
     });
     this.endDate.valueChanges.subscribe({
       next: (value) => {
+        console.log('value', value);
         if (
           new Date(value).getTime() <
           new Date(this.startDate.getRawValue()).getTime()
