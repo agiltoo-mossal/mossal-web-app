@@ -51,6 +51,9 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
     this.fetchDemandesByCollaboratorId(DemandeStatus.Validated);
+    this.fetchRemboursments(this.collaboratorId);
+  }
+  fetchRemboursments(userId: string) {
     this.fetchDemandesByCollaboratorIdGQL
       .fetch({ userId: this.collaboratorId })
       .subscribe({
@@ -123,6 +126,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
           if (status === DemandeStatus.Validated) {
             this.validatedDemandes = result;
           }
+          this.fetchRemboursments(this.collaboratorId);
         },
         error: (error) => {
           console.log(error);
