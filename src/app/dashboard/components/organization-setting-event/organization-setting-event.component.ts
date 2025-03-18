@@ -139,11 +139,16 @@ export class OrganizationSettingEventComponent {
       });
 
     this.listCategorieGQL
-      .fetch({
-        queryConfig: {
-          limit: 10,
+      .fetch(
+        {
+          queryConfig: {
+            limit: 10,
+          },
         },
-      })
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
@@ -265,12 +270,17 @@ export class OrganizationSettingEventComponent {
   }
   fetchEvents(organizationServiceId: string) {
     this.fetchAllEvents
-      .fetch({
-        queryConfig: {
-          limit: 10,
+      .fetch(
+        {
+          queryConfig: {
+            limit: 10,
+          },
+          organizationServiceId,
         },
-        organizationServiceId,
-      })
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .subscribe({
         next: (response) => {
           this.events = response.data.fetchEvents.results.map((event) => {

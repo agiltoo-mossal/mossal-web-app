@@ -96,10 +96,13 @@ export class OrganizationSettingEmergencyComponent {
       .data.fetchCurrentAdmin.organization as Organization;
 
     this.organizationService
-      .fetch({
-        organisationId: this.organization.id,
-        serviceId: this.service.id,
-      })
+      .fetch(
+        {
+          organisationId: this.organization.id,
+          serviceId: this.service.id,
+        },
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe({
         next: (response) => {
           if (
@@ -165,11 +168,14 @@ export class OrganizationSettingEmergencyComponent {
         },
       });
     this.listCategorieGQL
-      .fetch({
-        queryConfig: {
-          limit: 10,
+      .fetch(
+        {
+          queryConfig: {
+            limit: 10,
+          },
         },
-      })
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe((result) => {
         this.categories = result.data.fetchCategorySociopros.results;
       });

@@ -87,10 +87,13 @@ export class OrganizationSettingSalaryComponent {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
       .data.fetchCurrentAdmin.organization as Organization;
     this.organizationService
-      .fetch({
-        organisationId: this.organization.id,
-        serviceId: this.service.id,
-      })
+      .fetch(
+        {
+          organisationId: this.organization.id,
+          serviceId: this.service.id,
+        },
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe({
         next: (response) => {
           if (
@@ -154,11 +157,16 @@ export class OrganizationSettingSalaryComponent {
         },
       });
     this.listCategorieGQL
-      .fetch({
-        queryConfig: {
-          limit: 10,
+      .fetch(
+        {
+          queryConfig: {
+            limit: 10,
+          },
         },
-      })
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .subscribe({
         next: (resp) => {
           this.categories = resp.data.fetchCategorySociopros.results;
