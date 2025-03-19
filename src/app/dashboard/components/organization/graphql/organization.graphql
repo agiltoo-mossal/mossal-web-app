@@ -348,6 +348,7 @@ query FetchDemandesByCollaborator(
       id
       firstName
       lastName
+      salary
     }
     organisationService {
       service {
