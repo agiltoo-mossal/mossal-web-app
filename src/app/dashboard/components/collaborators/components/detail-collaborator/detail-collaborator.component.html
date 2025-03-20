@@ -84,7 +84,7 @@
     <thead>
       <tr>
         <th>N° de la demande</th>
-        <th>Nom du service</th>
+        <th>Type de demande </th>
         <th>Montant</th>
         <th>Date</th>
         <th>Durée de remboursement</th>
@@ -196,7 +196,9 @@
   <table>
     <thead>
       <tr>
+        <th>N° Demande</th>
         <th>Date</th>
+        <th>Type de Demande</th>
         <th>Montant demandé</th>
         <th>Mensualité</th>
         <th>Frais</th>
@@ -207,7 +209,9 @@
     <tbody></tbody>
     <tbody>
       <tr *ngFor="let remboursement of remboursements">
+        <td>{{remboursement?.demande?.number}}</td>
         <td>{{ remboursement.createdAt | date }}</td>
+        <td>{{remboursement?.demande?.organisationService?.service?.title}}</td>
         <td>{{ remboursement?.demande?.amount }} XOF</td>
         <td>{{ remboursement.amount }} XOF</td>
         <td>{{ remboursement?.demande?.fees }} XOF</td>

@@ -7,8 +7,8 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class FileUploadService {
-  endPoint = environment.API_URI;
-  // endPoint = 'http://localhost:7007/';
+  // endPoint = environment.API_URI;
+  endPoint = 'http://localhost:7007/';
   constructor(private http: HttpClient) {}
   signalFile: WritableSignal<string | ArrayBuffer> = signal(null);
   signalDataOrganisation: WritableSignal<any> = signal(null);

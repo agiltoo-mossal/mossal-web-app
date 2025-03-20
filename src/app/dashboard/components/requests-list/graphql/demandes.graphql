@@ -74,6 +74,11 @@ query FetchRemboursementByUserId(
     createdAt
     updatedAt
     demande{
+    organisationService{
+      service{
+        title
+      }
+    }
       id
       amount
       status
