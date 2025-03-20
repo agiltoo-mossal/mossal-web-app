@@ -162,8 +162,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       this.paginator.page,
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
-        distinctUntilChanged(),
-        filter((value) => value && value.length >= 3) // Filtre pour ne passer que les valeurs dont la longueur est supérieure à 3
+        distinctUntilChanged()
 
         // startWith('')
       ),

@@ -270,24 +270,24 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       });
   }
 
-  checkBankAccount() {
-    this.collaboratorForm
-      .get('bankAccountNumber')
-      .valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((value) =>
-          this.searchService.bankAccountNumberExists(
-            value,
-            false,
-            this.collaboratorId
-          )
-        )
-      )
-      .subscribe((result) => {
-        this.bankAccountNumberExists = result;
-      });
-  }
+  // checkBankAccount() {
+  //   this.collaboratorForm
+  //     .get('bankAccountNumber')
+  //     .valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       switchMap((value) =>
+  //         this.searchService.bankAccountNumberExists(
+  //           value,
+  //           false,
+  //           this.collaboratorId
+  //         )
+  //       )
+  //     )
+  //     .subscribe((result) => {
+  //       this.bankAccountNumberExists = result;
+  //     });
+  // }
 
   checkUniqueIdentifier() {
     this.collaboratorForm
@@ -319,7 +319,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   initSearch() {
     this.checkPhone();
-    this.checkBankAccount();
+    // this.checkBankAccount();
     this.checkUniqueIdentifier();
     this.checkEmail();
   }

@@ -4,12 +4,19 @@ import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { FetchOrganizationCollaboratorGQL, InviteAdminGQL, LockUserGQL, UnlockUserGQL, UpdateCollaboratorGQL, User } from 'src/graphql/generated';
+import {
+  FetchOrganizationCollaboratorGQL,
+  InviteAdminGQL,
+  LockUserGQL,
+  UnlockUserGQL,
+  UpdateCollaboratorGQL,
+  User,
+} from 'src/graphql/generated';
 
 @Component({
   selector: 'app-form-admin',
   templateUrl: './form-admin.component.html',
-  styleUrl: './form-admin.component.scss'
+  styleUrl: './form-admin.component.scss',
 })
 export class FormAdminComponent {
   @Input() formType: string;
@@ -39,16 +46,16 @@ export class FormAdminComponent {
       email: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      phoneNumber: ['', [
-        Validators.required,
-        Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
-      ]],
+      phoneNumber: [
+        '',
+        [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
+      ],
       address: [''],
       position: ['', Validators.required],
       uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
       wizallAccountNumber: [''],
-      bankAccountNumber: ['', Validators.required]
+      bankAccountNumber: ['', Validators.required],
     });
   }
 
@@ -67,57 +74,69 @@ export class FormAdminComponent {
 
   // Méthode pour soumettre le formulaire
   submitForm() {
-    if(this.collaboratorForm.invalid || this.isLoading) {
-      this.collaboratorForm.markAllAsTouched()
+    if (this.collaboratorForm.invalid || this.isLoading) {
+      this.collaboratorForm.markAllAsTouched();
       return;
     }
     this.isLoading = true;
-    this.inviteAdminGQL.mutate({ adminInput: this.collaboratorForm.value }).subscribe(
-      result => {
-        this.isLoading = false;
-        if(result.data) {
-          this.router.navigate(['/dashboard/admins']);
-          this.snackBarService.showSuccessSnackBar("Invitation envoyé à l'admin")
+    this.inviteAdminGQL
+      .mutate({ adminInput: this.collaboratorForm.value })
+      .subscribe(
+        (result) => {
+          this.isLoading = false;
+          if (result.data) {
+            this.router.navigate(['/dashboard/admins']);
+            this.snackBarService.showSuccessSnackBar(
+              "Invitation envoyé à l'admin"
+            );
+          }
+        },
+        (error) => {
+          this.isLoading = false;
         }
-
-      },
-      error => {
-        this.isLoading = false;
-      }
-    )
+      );
   }
 
   edit() {
-    if(this.collaboratorForm.invalid || this.isLoading) {
-      this.collaboratorForm.markAllAsTouched()
+    if (this.collaboratorForm.invalid || this.isLoading) {
+      this.collaboratorForm.markAllAsTouched();
       return;
     }
     this.isLoading = true;
-    const value = { ...this.collaboratorForm.value, salary: Number(this.collaboratorForm.value.salary || 0) };
+    const value = {
+      ...this.collaboratorForm.value,
+      salary: Number(this.collaboratorForm.value.salary || 0),
+    };
     delete value.email;
-    this.updateCollaboratorGQL.mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId }).subscribe(
-      result => {
-        this.isLoading = false;
-        if(result.data) {
-          this.router.navigate(['/dashboard/admins']);
-          this.snackBarService.showSuccessSnackBar("Admin modifié avec succés")
+    this.updateCollaboratorGQL
+      .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+      .subscribe(
+        (result) => {
+          this.isLoading = false;
+          if (result.data) {
+            this.router.navigate(['/dashboard/admins']);
+            this.snackBarService.showSuccessSnackBar(
+              'Admin modifié avec succés'
+            );
+          }
+        },
+        (error) => {
+          this.isLoading = false;
         }
-
-      },
-      error => {
-        this.isLoading = false;
-      }
-    )
+      );
   }
 
   getCollab() {
-    if(this.collaboratorId) {
-      this.fetchOrganizationCollaboratorGQL.fetch({ collaboratorId: this.collaboratorId }, { fetchPolicy: 'no-cache' }).subscribe(
-        result => {
+    if (this.collaboratorId) {
+      this.fetchOrganizationCollaboratorGQL
+        .fetch(
+          { collaboratorId: this.collaboratorId },
+          { fetchPolicy: 'no-cache' }
+        )
+        .subscribe((result) => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);
-        }
-      )
+        });
     }
   }
 
@@ -126,76 +145,104 @@ export class FormAdminComponent {
   }
 
   checkPhone() {
-    this.collaboratorForm.get('phoneNumber').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(value => this.searchService.phoneNumberExists(value, true, this.collaboratorId))
-    ).subscribe(result => {
-      this.phoneNumberExists = result;
-    });
+    this.collaboratorForm
+      .get('phoneNumber')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((value) =>
+          this.searchService.phoneNumberExists(value, true, this.collaboratorId)
+        )
+      )
+      .subscribe((result) => {
+        this.phoneNumberExists = result;
+      });
   }
 
   checkEmail() {
-    this.collaboratorForm.get('email').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(value => this.searchService.emailExists(value, true, this.collaboratorId))
-    ).subscribe(result => {
-      this.emailExists = result;
-    });
+    this.collaboratorForm
+      .get('email')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((value) =>
+          this.searchService.emailExists(value, true, this.collaboratorId)
+        )
+      )
+      .subscribe((result) => {
+        this.emailExists = result;
+      });
   }
 
-  checkBankAccount() {
-    this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(value => this.searchService.bankAccountNumberExists(value, true, this.collaboratorId))
-    ).subscribe(result => {
-      this.bankAccountNumberExists = result;
+  // checkBankAccount() {
+  //   this.collaboratorForm.get('bankAccountNumber').valueChanges.pipe(
+  //     debounceTime(300),
+  //     distinctUntilChanged(),
+  //     switchMap(value => this.searchService.bankAccountNumberExists(value, true, this.collaboratorId))
+  //   ).subscribe(result => {
+  //     this.bankAccountNumberExists = result;
 
-    });
-  }
+  //   });
+  // }
 
   checkUniqueIdentifier() {
-    this.collaboratorForm.get('uniqueIdentifier').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(value => this.searchService.uniqueIdentifierExists(value, true, this.collaboratorId))
-    ).subscribe(result => {
-      this.uniqueIdentifierExists = result;
-    });
+    this.collaboratorForm
+      .get('uniqueIdentifier')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((value) =>
+          this.searchService.uniqueIdentifierExists(
+            value,
+            true,
+            this.collaboratorId
+          )
+        )
+      )
+      .subscribe((result) => {
+        this.uniqueIdentifierExists = result;
+      });
   }
 
   initSearch() {
     this.checkPhone();
-    this.checkBankAccount();
+    // this.checkBankAccount();
     this.checkUniqueIdentifier();
     this.checkEmail();
   }
 
   get hasErrors() {
-    return this.bankAccountNumberExists || this.phoneNumberExists || this.uniqueIdentifierExists || this.emailExists;
+    return (
+      this.bankAccountNumberExists ||
+      this.phoneNumberExists ||
+      this.uniqueIdentifierExists ||
+      this.emailExists
+    );
   }
 
   lockUser = (userId: string) => {
-    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      if(result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar("Utilisateur bloqué avec succès!");
+    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+      if (result.data.lockUser) {
+        this.snackBarService.showSuccessSnackBar(
+          'Utilisateur bloqué avec succès!'
+        );
         this.getCollab();
       } else {
         this.snackBarService.showErrorSnackBar();
       }
-    })
-  }
+    });
+  };
 
   unlockUser = (userId: string) => {
-    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-      if(result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar("Utilisateur débloqué avec succès!");
+    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+      if (result.data.unlockUser) {
+        this.snackBarService.showSuccessSnackBar(
+          'Utilisateur débloqué avec succès!'
+        );
         this.getCollab();
       } else {
         this.snackBarService.showErrorSnackBar();
       }
-    })
-  }
+    });
+  };
 }

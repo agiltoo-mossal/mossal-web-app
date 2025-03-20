@@ -1038,6 +1038,8 @@ export type Remboursement = {
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
+  validatedAt?: Maybe<Scalars['DateTime']['output']>;
+  validatedBy?: Maybe<User>;
 };
 
 export enum RemboursementStatus {
