@@ -6,7 +6,7 @@ import {
   Output,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { lastValueFrom, switchMap } from 'rxjs';
+import { lastValueFrom, map, switchMap } from 'rxjs';
 import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
 import {
   ActivateEventGQL,
@@ -168,6 +168,7 @@ export class OrganizationSettingEventComponent {
   switchTab(tabName: string): void {
     this.activeTab = tabName;
   }
+  eventToCreate: any;
   handleEvent(event: { action: string; event: Event }) {
     if (event.action === 'cancel') {
       this.showLineEvent = true;
@@ -191,82 +192,44 @@ export class OrganizationSettingEventComponent {
       .split('T')[0];
 
     const { event: eventToSave } = event;
+
     if (event.action == 'Modifier') {
-      this.updateEventGQL
-        .mutate({
-          eventId: this.eventSelectedId,
-          eventInput: {
-            ...eventToSave,
-          },
-        })
-        .subscribe({
-          next: (response) => {
-            this.snackBarService.showSnackBar('Événement modifié avec succès');
-            this.events = this.events.map((e) => {
-              if (e.id === this.eventSelectedId) {
-                return {
-                  ...e,
-                  title: eventToSave.title,
-                  startDate: formattedStartDate,
-                  endDate: formattedEndDate,
-                };
-              }
-              return e;
-            });
-            this.showLineEvent = true;
-            this.showComponent = false;
-          },
-          error: (err) => {
-            this.snackBarService.showSnackBar('Une erreur est survenue');
-            console.log(err);
-          },
-        });
-      return;
-    }
-    this.createEventGQL
-      .mutate({
-        eventInput: {
-          ...eventToSave,
+      this.events = this.events.map((e) => {
+        if (e.id === this.eventSelectedId) {
+          return {
+            ...e,
+            title: eventToSave.title,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+          };
+        }
+        return e;
+      });
+    } else {
+      this.events.unshift({
+        ...eventToSave,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        activated: true,
+      });
+      this.listCategorieService = [
+        {
           amount: 0,
           amountUnit: AmountUnit.Fixed,
           refundDuration: 1,
           refundDurationUnit: DurationUnit.Month,
           activated: true,
+          activatedAt: null,
           autoValidate: true,
+          categorySociopro: {
+            title: 'Paramètres généraux',
+          } as any,
         },
-        organizationServiceId: this.organisationServiceId,
-      })
-      .subscribe({
-        next: (response) => {
-          this.snackBarService.showSnackBar('Événement créé avec succès');
-          this.events.unshift({
-            ...response.data.createEvent,
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
-          });
-          this.showLineEvent = true;
-          this.showComponent = false;
-          this.eventSelectedId = response.data.createEvent.id;
-          this.listCategorieService = [
-            {
-              amount: 0,
-              amountUnit: AmountUnit.Fixed,
-              refundDuration: 1,
-              refundDurationUnit: DurationUnit.Month,
-              activated: true,
-              activatedAt: null,
-              autoValidate: true,
-              categorySociopro: {
-                title: 'Paramètres généraux',
-              } as any,
-            },
-          ];
-        },
-        error: (err) => {
-          this.snackBarService.showSnackBar('Une erreur est survenue');
-          console.log(err);
-        },
-      });
+      ];
+    }
+    this.showLineEvent = true;
+    this.showComponent = false;
+    this.eventToCreate = eventToSave;
   }
   fetchEvents(organizationServiceId: string) {
     this.fetchAllEvents
@@ -376,7 +339,7 @@ export class OrganizationSettingEventComponent {
   /**
    * Sauvegarde les paramètres globaux
    */
-  saveSettings(): void {
+  async saveSettings() {
     // Valider les données avant de sauvegarder
     if (!this.dataForm) {
       return;
@@ -404,19 +367,54 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
-        if (this.organisationServiceId) {
-          this.updateSettingOrganistion(this.organisationServiceId, {
-            ...this.dataForm,
-          });
-        } else {
-          this.createSettingOrganisation(
-            this.organization.id,
-            {
-              ...this.dataForm,
-            },
-            this.service.id
+        if (!this.organisationServiceId) {
+          const organisationService = await lastValueFrom(
+            this.defineService
+              .mutate({
+                organisationId: this.organization.id,
+                organisationServiceInput: {
+                  ...this.dataForm,
+                },
+                serviceId: this.service.id,
+              })
+              .pipe(
+                map((response) => response.data.createOrganisationService.id)
+              )
           );
+          this.organisationServiceId = organisationService;
         }
+        this.createEventGQL
+          .mutate({
+            eventInput: {
+              ...this.dataForm,
+              ...this.eventToCreate,
+            },
+            organizationServiceId: this.organisationServiceId,
+          })
+          .subscribe({
+            next: (response) => {
+              this.snackBarService.showSnackBar('Paramètres enregistrés');
+            },
+            error: (err) => {
+              this.snackBarService.showSnackBar(
+                err.message || 'Une erreur est survenue'
+              );
+            },
+          });
+
+        // if (this.organisationServiceId) {
+        //   this.updateSettingOrganistion(this.organisationServiceId, {
+        //     ...this.dataForm,
+        //   });
+        // } else {
+        //   this.createSettingOrganisation(
+        //     this.organization.id,
+        //     {
+        //       ...this.dataForm,
+        //     },
+        //     this.service.id
+        //   );
+        // }
       }
     } else {
       let selectedUpdate = this.listCategorieService.find(
@@ -552,6 +550,7 @@ export class OrganizationSettingEventComponent {
       return;
     }
     this.showComponent = true;
+    this.listCategorieService = [];
 
     // dialogRef.afterClosed().subscribe((result) => {
     //   if (result) {

@@ -70,7 +70,7 @@
 
       <!-- Section des paramètres -->
       <div class="section">
-        <div class="category-selection" *ngIf="eventSelectedId?.length>0">
+        <div class="category-selection" *ngIf="listCategorieService.length>0">
           <label for="category-selection">Sélectionnez une catégorie</label>
           <select
             [(ngModel)]="selectedCategory"
@@ -107,7 +107,7 @@
         </mat-tab-group>
       </div>
       <button
-        *ngIf="eventSelectedId?.length>0"
+        *ngIf="listCategorieService.length > 0"
         [ngClass]="{
           'disable-button': disableButton,
         }"
