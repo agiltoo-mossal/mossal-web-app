@@ -73,6 +73,7 @@ query FetchRemboursementByUserId(
     userId
     createdAt
     updatedAt
+    validatedAt
     demande{
     organisationService{
       service{
