@@ -106,7 +106,6 @@ export class OverviewComponent implements OnInit {
       this.getData();
     });
     this.getData();
-    this.filterUserByClause(FilterBy.createdAt);
   }
 
   ngOnInit(): void {
