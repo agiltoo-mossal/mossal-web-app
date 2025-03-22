@@ -350,13 +350,33 @@ export class OverviewComponent implements OnInit {
               'nouvellement créée',
               value.data.fetchPaginatedOrganizationCollaborators
             );
+            const temp = value.data.fetchPaginatedOrganizationCollaborators
+              .results as any[];
+            this.dataSource.data = temp;
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
           error: (error) => {},
         });
     } else {
-      this.filterBy = 'hasValidatedDemande';
+      this.fetchOrganizationCollaboratorsGQL
+        .fetch(
+          { hasPendingDemandes: true },
+          {
+            fetchPolicy: 'no-cache',
+          }
+        )
+        .subscribe({
+          next: (value) => {
+            console.log('demande en attente', value);
+            const temp = value.data.fetchPaginatedOrganizationCollaborators
+              .results as any[];
+            this.dataSource.data = temp;
+            this.totalNewUsers =
+              value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
+          },
+          error: (error) => {},
+        });
     }
   }
 

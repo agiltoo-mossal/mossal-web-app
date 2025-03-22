@@ -947,6 +947,7 @@ export type QueryFetchPaginatedOrganisationColArgs = {
 
 
 export type QueryFetchPaginatedOrganizationCollaboratorsArgs = {
+  hasPendingDemandes?: InputMaybe<Scalars['Boolean']['input']>;
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
@@ -1256,6 +1257,7 @@ export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchO
 export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
   queryFilter?: InputMaybe<QueryDataConfigInput>;
+  hasPendingDemandes?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -1904,10 +1906,11 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     }
   }
 export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
-    query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+    query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $hasPendingDemandes: Boolean) {
   fetchPaginatedOrganizationCollaborators(
     metricsInput: $metricsInput
     queryFilter: $queryFilter
+    hasPendingDemandes: $hasPendingDemandes
   ) {
     pagination {
       totalItems

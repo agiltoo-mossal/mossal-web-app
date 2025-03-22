@@ -29,10 +29,12 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
 query FetchPaginatedOrganizationCollaborators(
   $metricsInput: DemandesMetricsInput
   $queryFilter: QueryDataConfigInput
+  $hasPendingDemandes: Boolean
 ) {
   fetchPaginatedOrganizationCollaborators(
     metricsInput: $metricsInput
     queryFilter: $queryFilter
+    hasPendingDemandes: $hasPendingDemandes
   ) {
     pagination {
       totalItems
