@@ -353,6 +353,8 @@ export class OverviewComponent implements OnInit {
             const temp = value.data.fetchPaginatedOrganizationCollaborators
               .results as any[];
             this.dataSource.data = temp;
+            this.resultsLength =
+              value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
@@ -372,6 +374,8 @@ export class OverviewComponent implements OnInit {
             const temp = value.data.fetchPaginatedOrganizationCollaborators
               .results as any[];
             this.dataSource.data = temp;
+            this.resultsLength =
+              value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
