@@ -114,12 +114,15 @@ export class OverviewComponent implements OnInit {
   }
   getFetchCountStatus() {
     this.fetchCountStatusGQL
-      .fetch({
-        filter: {
-          startDate: this.startDate,
-          endDate: this.endDate,
+      .fetch(
+        {
+          filter: {
+            startDate: this.startDate,
+            endDate: this.endDate,
+          },
         },
-      })
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe({
         next: (value) => {
           console.log(value);
@@ -205,7 +208,7 @@ export class OverviewComponent implements OnInit {
     return lastValueFrom(
       this.fetchOrganizationDemandesGQL.fetch(
         { metricsInput: this.metricsInput.value },
-        { fetchPolicy: cache as any }
+        { fetchPolicy: 'no-cache' }
       )
     )
       .then((result) => {
@@ -229,9 +232,14 @@ export class OverviewComponent implements OnInit {
     console.log(startDate, endDate);
 
     return lastValueFrom(
-      this.fetchDemandesMetricsGQL.fetch({
-        metricsInput: { startDate, endDate },
-      })
+      this.fetchDemandesMetricsGQL.fetch(
+        {
+          metricsInput: { startDate, endDate },
+        },
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
     )
       .then((result) => {
         this.metricsData = result.data.fetchDemandesMetrics as any;
@@ -323,16 +331,19 @@ export class OverviewComponent implements OnInit {
     if (status === FilterBy.createdAt) {
       const toDay = new Date();
       this.fetchOrganizationCollaboratorsGQL
-        .fetch({
-          metricsInput: {
-            startDate: new Date(
-              toDay.getFullYear(),
-              toDay.getMonth() - 1,
-              toDay.getDate()
-            ),
-            endDate: toDay,
+        .fetch(
+          {
+            metricsInput: {
+              startDate: new Date(
+                toDay.getFullYear(),
+                toDay.getMonth() - 1,
+                toDay.getDate()
+              ),
+              endDate: toDay,
+            },
           },
-        })
+          { fetchPolicy: 'no-cache' }
+        )
         .subscribe({
           next: (value) => {
             console.log(
@@ -384,12 +395,15 @@ export class OverviewComponent implements OnInit {
   }
   getTotalDemandeAmount() {
     this.fetchTotalDemandesAmountService
-      .fetch({
-        filter: {
-          startDate: this.startDate,
-          endDate: this.endDate,
+      .fetch(
+        {
+          filter: {
+            startDate: this.startDate,
+            endDate: this.endDate,
+          },
         },
-      })
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe({
         next: (value) => {
           this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
@@ -402,13 +416,16 @@ export class OverviewComponent implements OnInit {
 
   getTotalDemandeToPay() {
     this.fetchTotalDemandesAmountService
-      .fetch({
-        status: DemandeStatus.Validated,
-        filter: {
-          startDate: this.startDate,
-          endDate: this.endDate,
+      .fetch(
+        {
+          status: DemandeStatus.Validated,
+          filter: {
+            startDate: this.startDate,
+            endDate: this.endDate,
+          },
         },
-      })
+        { fetchPolicy: 'no-cache' }
+      )
       .subscribe({
         next: (value) => {
           this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
@@ -418,12 +435,17 @@ export class OverviewComponent implements OnInit {
 
   getCollaboratorCount() {
     return this.fetchCollaboratorCountGQL
-      .fetch({
-        filter: {
-          startDate: this.startDate,
-          endDate: this.endDate,
+      .fetch(
+        {
+          filter: {
+            startDate: this.startDate,
+            endDate: this.endDate,
+          },
         },
-      })
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .subscribe({
         next: (value) => {
           console.log(value);
