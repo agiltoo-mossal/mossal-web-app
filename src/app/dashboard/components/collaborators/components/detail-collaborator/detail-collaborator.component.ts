@@ -55,11 +55,10 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   }
   fetchRemboursments(userId: string) {
     this.fetchDemandesByCollaboratorIdGQL
-      .fetch({ userId: this.collaboratorId })
+      .fetch({ userId: this.collaboratorId }, { fetchPolicy: 'no-cache' })
       .subscribe({
         next: (result) => {
           this.remboursements = result.data.fetchRemboursementByUserId;
-          console.log(this.remboursements);
         },
         error: (error) => {},
       });
@@ -80,8 +79,6 @@ export class DetailCollaboratorComponent implements AfterViewInit {
 
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      console.log(result);
-
       if (result.data.lockUser) {
         this.snackBarService.showSuccessSnackBar(
           'Utilisateur bloqué avec succès!'
@@ -108,7 +105,12 @@ export class DetailCollaboratorComponent implements AfterViewInit {
 
   fetchDemandesByCollaboratorId(status: DemandeStatus) {
     this.fetchDemandeByCollaboratorIdGQL
-      .fetch({ collaboratorId: this.collaboratorId, status })
+      .fetch(
+        { collaboratorId: this.collaboratorId, status },
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .pipe(
         map((result) => {
           if (result === null) {
@@ -119,7 +121,6 @@ export class DetailCollaboratorComponent implements AfterViewInit {
       )
       .subscribe({
         next: (result) => {
-          console.log(result);
           if (status === DemandeStatus.Pending) {
             this.pendingDemandes = result;
           }
