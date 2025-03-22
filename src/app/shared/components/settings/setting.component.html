@@ -35,7 +35,8 @@
     </div>
 
     <div class="reimbursement">
-      <h3>Montant et durée du remboursement</h3>
+      <h3 *ngIf="!hideRemboursment">Montant et durée du remboursement</h3>
+      <h3 *ngIf="hideRemboursment">Montant du remboursement</h3>
       <div class="plafond-content">
         <ng-container *ngIf="amountUnit?.value === 'Fixed'">
           <div style="display: flex; flex-direction: column; width: 100%">
@@ -124,7 +125,7 @@
           </div>
         </ng-container>
       </div>
-      <div class="plafond-content">
+      <div class="plafond-content" *ngIf="!hideRemboursment">
         <label for="duration-input">Durée du remboursement</label>
         <div class="percentage-input-group">
           <input

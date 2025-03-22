@@ -11,6 +11,7 @@ import { SnackBarService } from '../../services/snackbar.service';
 export class SettingComponent implements OnInit {
   @Output() settingChange = new EventEmitter<any>();
   @Input() serviceId: string;
+  @Input() hideRemboursment: boolean = false;
   @Input() hideToggleService: boolean = true;
   @Input() categorie: any;
   @Input() data: any = {
@@ -31,7 +32,7 @@ export class SettingComponent implements OnInit {
       activated: [true],
       amountUnit: [AmountUnit.Percentage, [Validators.required]],
       // amount: [],
-      refundDuration: [null, [Validators.required, Validators.min(1)]],
+      refundDuration: [1, [Validators.required, Validators.min(1)]],
       autoValidate: [true],
       amountPercentage: [
         null,
