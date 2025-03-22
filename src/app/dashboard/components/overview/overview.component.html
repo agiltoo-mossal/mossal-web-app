@@ -95,7 +95,7 @@
     >
       <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
         <span class="nbr-user"
-          >Utilisateurs enregistrés ({{ collaborators?.length || 0 }})</span
+          >Utilisateurs enregistrés ({{totalNewUsers }})</span
         >
         <div
           class="dropdown dropdown-filter"
@@ -114,7 +114,7 @@
             <span class="text">Filtrer</span>
           </div>
           <div class="dropdown-content" id="dropdown-filter-user-list-saved">
-            <div class="dropdown-option" (click)="filterBy = 'createdAt'">
+            <div class="dropdown-option" (click)="filterUserByClause(filterByOption.createdAt)">
               Nouveaux utilisateurs inscrits récemment
             </div>
             <div

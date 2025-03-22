@@ -61,6 +61,8 @@ export class OverviewComponent implements OnInit {
   };
   sortBy: 'createdAt' | 'hasValidatedDemande' = 'createdAt';
   filterBy = 'createdAt';
+  filterByOption = FilterBy;
+  totalNewUsers = 0;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource = new MatTableDataSource<Demande>();
@@ -104,6 +106,7 @@ export class OverviewComponent implements OnInit {
       this.getData();
     });
     this.getData();
+    this.filterUserByClause(FilterBy.createdAt);
   }
 
   ngOnInit(): void {
@@ -316,6 +319,35 @@ export class OverviewComponent implements OnInit {
       return this.collabs;
     }
   }
+  filterUserByClause(status: FilterBy) {
+    if (status === FilterBy.createdAt) {
+      const toDay = new Date();
+      this.fetchOrganizationCollaboratorsGQL
+        .fetch({
+          metricsInput: {
+            startDate: new Date(
+              toDay.getFullYear(),
+              toDay.getMonth() - 1,
+              toDay.getDate()
+            ),
+            endDate: toDay,
+          },
+        })
+        .subscribe({
+          next: (value) => {
+            console.log(
+              'nouvellement créée',
+              value.data.fetchPaginatedOrganizationCollaborators
+            );
+            this.totalNewUsers =
+              value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
+          },
+          error: (error) => {},
+        });
+    } else {
+      this.filterBy = 'hasValidatedDemande';
+    }
+  }
 
   selectCollab(selected: User) {
     this.selectedCollab = selected;
@@ -414,4 +446,8 @@ export class OverviewComponent implements OnInit {
       );
     });
   }
+}
+export enum FilterBy {
+  createdAt = 'createdAt',
+  hasValidatedDemande = 'hasValidatedDemande',
 }
