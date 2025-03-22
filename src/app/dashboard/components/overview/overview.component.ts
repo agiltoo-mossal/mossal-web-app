@@ -262,6 +262,8 @@ export class OverviewComponent implements OnInit {
         console.log(this.collabs);
         this.dataSource.data = this.collabs;
         this.selectedCollab = this.collabs?.[0];
+        this.totalNewUsers =
+          result.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
         this.resultsLength =
           result.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
       })

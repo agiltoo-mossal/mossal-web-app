@@ -99,7 +99,7 @@
         <td>{{ pending.amount }} XOF</td>
         <td>{{ pending.createdAt | date }}</td>
         <td>{{ pending?.refundDuration }}</td>
-        <td>{{ pending.collaborator?.salary }} XOF</td>
+        <td>{{ pending.collaborator?.demande?.remainingRefundAmount }} XOF</td>
         <td>
           <div class="dropdown" appDropdown="dropdown-action">
             <span fxLayout="row" class="btn-edit-statut">
@@ -215,7 +215,7 @@
         <td>{{ remboursement?.demande?.amount }} XOF</td>
         <td>{{ remboursement.amount }} XOF</td>
         <td>{{ remboursement?.demande?.fees }} XOF</td>
-        <td>{{ remboursement.reliquat }} XOF</td>
+        <td>{{ remboursement?.demande?.remainingRefundAmount }} XOF</td>
         <td>
           <span
             class="status"

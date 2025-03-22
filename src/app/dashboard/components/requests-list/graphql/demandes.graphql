@@ -24,8 +24,8 @@ query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
     updatedAt
   }
 }
-query MyRemboursements{
-  myRemboursements{
+query MyRemboursements {
+  myRemboursements {
     id
     amount
     number
@@ -35,14 +35,14 @@ query MyRemboursements{
     userId
     createdAt
     updatedAt
-    demande{
+    demande {
       id
       amount
       status
       number
       fees
       statusText
-      collaborator{
+      collaborator {
         id
         firstName
         lastName
@@ -58,12 +58,8 @@ query MyRemboursements{
     }
   }
 }
-query FetchRemboursementByUserId(
-  $userId: ID!
-){
-  fetchRemboursementByUserId(
-    userId: $userId
-  ){
+query FetchRemboursementByUserId($userId: ID!) {
+  fetchRemboursementByUserId(userId: $userId) {
     id
     amount
     number
@@ -74,19 +70,20 @@ query FetchRemboursementByUserId(
     createdAt
     updatedAt
     validatedAt
-    demande{
-    organisationService{
-      service{
-        title
+    demande {
+      remainingRefundAmount
+      organisationService {
+        service {
+          title
+        }
       }
-    }
       id
       amount
       status
       number
       fees
       statusText
-      collaborator{
+      collaborator {
         id
         firstName
         lastName
@@ -262,7 +259,7 @@ query FetchRemboursementsByDemande($demandeId: ID!) {
       number
       fees
       statusText
-      collaborator{
+      collaborator {
         id
         firstName
         lastName

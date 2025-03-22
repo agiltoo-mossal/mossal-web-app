@@ -138,6 +138,7 @@ export type Demande = {
   organisationService?: Maybe<OrganisationService>;
   refundDuration: Scalars['Float']['output'];
   rejectedReason?: Maybe<Scalars['String']['output']>;
+  remainingRefundAmount?: Maybe<Scalars['Float']['output']>;
   remboursements?: Maybe<Array<Remboursement>>;
   status: DemandeStatus;
   statusText?: Maybe<Scalars['String']['output']>;
@@ -1484,7 +1485,7 @@ export type FetchRemboursementByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, demande?: { __typename?: 'Demande', remainingRefundAmount?: number | null, id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -2811,6 +2812,7 @@ export const FetchRemboursementByUserIdDocument = gql`
     updatedAt
     validatedAt
     demande {
+      remainingRefundAmount
       organisationService {
         service {
           title
