@@ -1459,7 +1459,7 @@ export type FetchDemandesByCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchDemandesByCollaboratorQuery = { __typename?: 'Query', fetchDemandesByCollaborator: Array<{ __typename?: 'Demande', id: string, status: DemandeStatus, amount: number, number: number, refundDuration: number, rejectedReason?: string | null, statusText?: string | null, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, salary?: number | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', id: any, title: string } } | null }> };
+export type FetchDemandesByCollaboratorQuery = { __typename?: 'Query', fetchDemandesByCollaborator: Array<{ __typename?: 'Demande', id: string, status: DemandeStatus, amount: number, number: number, refundDuration: number, rejectedReason?: string | null, statusText?: string | null, fees: number, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, salary?: number | null, balance?: number | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', id: any, title: string } } | null }> };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2669,6 +2669,7 @@ export const FetchDemandesByCollaboratorDocument = gql`
       firstName
       lastName
       salary
+      balance
     }
     organisationService {
       service {
