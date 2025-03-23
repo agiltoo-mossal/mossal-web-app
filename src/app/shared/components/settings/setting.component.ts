@@ -32,7 +32,10 @@ export class SettingComponent implements OnInit {
       activated: [true],
       amountUnit: [AmountUnit.Percentage, [Validators.required]],
       // amount: [],
-      refundDuration: [1, [Validators.required, Validators.min(1)]],
+      refundDuration: [
+        1,
+        [Validators.required, Validators.min(1), Validators.max(7)],
+      ],
       autoValidate: [true],
       amountPercentage: [
         null,

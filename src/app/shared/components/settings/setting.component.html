@@ -143,10 +143,10 @@
             settingForm?.get('refundDuration').invalid &&
             (settingForm?.get('refundDuration').touched ||
               settingForm?.get('refundDuration').dirty) &&
-            settingForm?.get('refundDuration').value < 1
+            (settingForm?.get('refundDuration').value < 1 || settingForm?.get('refundDuration').value>7)
           "
         >
-          La durée du remboursement doit être supérieure à 1.
+          La durée du remboursement doit être comprise entre 1 et 7.
         </mat-error>
       </div>
     </div>
