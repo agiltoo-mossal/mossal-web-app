@@ -6,6 +6,7 @@
     "start": "ng serve --port 4500",
     "build": "ng build --configuration production",
     "build:dev": "ng build --configuration development",
+    "build:preprod": "ng build --configuration preprod",
     "watch": "ng build --watch --configuration local",
     "test": "ng test",
     "dev": "run-p start graphql-gen:watch",

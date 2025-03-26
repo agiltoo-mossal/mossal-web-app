@@ -83,6 +83,20 @@
                 }
               ]
             },
+            "preprod": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.preprod.ts"
+                }
+              ]
+            },
             "local": {
               "buildOptimizer": false,
               "optimization": false,
@@ -105,6 +119,9 @@
             },
             "local": {
               "browserTarget": "mossal-web-app:build:local"
+            },
+            "preprod": {
+              "browserTarget": "mossal-web-app:build:preprod"
             }
           },
           "defaultConfiguration": "local"
