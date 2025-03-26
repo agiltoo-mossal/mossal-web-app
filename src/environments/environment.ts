@@ -1,10 +1,8 @@
 export const environment = {
-  GRAPHQL_URI:
-    'https://mossall-enterprise-service-preprod.onrender.com/graphql',
-  API_URI: 'https://mossall-enterprise-service-preprod.onrender.com/',
+  GRAPHQL_URI: 'https://mossall-enterprise-migration.onrender.com/graphql',
+  API_URI: 'https://mossall-enterprise-migration.onrender.com/',
   // API_URI: 'http://localhost:7007/',
-  ENTERPRISE_URI:
-    'https://mossall-enterprise-service-preprod.onrender.com/graphql',
+  ENTERPRISE_URI: 'https://mossall-enterprise-migration.onrender.com/graphql',
 
   // GRAPHQL_URI: 'http://51.20.69.167:3003/graphql',
   // API_URI: 'http://51.20.69.167:3003',
