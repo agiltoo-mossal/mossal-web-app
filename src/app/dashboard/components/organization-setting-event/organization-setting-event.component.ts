@@ -340,11 +340,7 @@ export class OrganizationSettingEventComponent {
    * Sauvegarde les paramètres globaux
    */
   async saveSettings() {
-    // Valider les données avant de sauvegarder
-    if (!this.dataForm) {
-      return;
-    }
-
+    console.log('dataForm', this.dataForm);
     if (
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
@@ -367,7 +363,7 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
-        if (!this.organisationServiceId) {
+        /*  if (!this.organisationServiceId) {
           const organisationService = await lastValueFrom(
             this.defineService
               .mutate({
@@ -382,7 +378,7 @@ export class OrganizationSettingEventComponent {
               )
           );
           this.organisationServiceId = organisationService;
-        }
+        } */
         this.createEventGQL
           .mutate({
             eventInput: {
@@ -544,10 +540,26 @@ export class OrganizationSettingEventComponent {
   }
   createEvent() {
     if (!this.organisationServiceId) {
-      this.snackBarService.showSnackBar(
-        "Veuillez d'abord créer la configuration"
-      );
-      return;
+      this.defineService
+        .mutate({
+          organisationId: this.organization.id,
+          organisationServiceInput: {
+            activated: true,
+            activatedAt: new Date(),
+            amount: 0,
+            amountUnit: AmountUnit.Fixed,
+            autoValidate: true,
+            refundDuration: 1,
+            refundDurationUnit: DurationUnit.Month,
+          },
+          serviceId: this.service.id,
+        })
+        .subscribe({
+          next: (response) => {
+            this.organisationServiceId =
+              response.data.createOrganisationService.id;
+          },
+        });
     }
     this.showComponent = true;
     this.listCategorieService = [];
@@ -674,6 +686,7 @@ export class OrganizationSettingEventComponent {
       this.disableButton = true;
       this.dataForm = $event.dataForm;
     }
+    console.log('disableButton', this.disableButton);
   }
   createOrganizationEvent(EventInput: EventInput) {}
 }
