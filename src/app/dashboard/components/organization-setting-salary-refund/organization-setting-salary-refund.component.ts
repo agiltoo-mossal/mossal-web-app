@@ -105,15 +105,16 @@ export class OrganizationSettingSalaryRefundComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-
-            this.activated = data?.activated;
-            this.dateStart.setValue(new Date(data?.activatedAt));
-            this.dateEnd.setValue(
-              new Date(
-                new Date(data?.activatedAt).getTime() +
-                  data?.activationDurationDay * 24 * 60 * 60 * 1000
-              )
-            );
+            if (data.activated) {
+              this.activated = data?.activated;
+              this.dateStart.setValue(new Date(data?.activatedAt));
+              this.dateEnd.setValue(
+                new Date(
+                  new Date(data?.activatedAt).getTime() +
+                    data?.activationDurationDay * 24 * 60 * 60 * 1000
+                )
+              );
+            }
             this.listCategorieService = [
               {
                 amount: data.amount,
