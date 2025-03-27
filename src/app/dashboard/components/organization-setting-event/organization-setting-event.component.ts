@@ -288,6 +288,7 @@ export class OrganizationSettingEventComponent {
             this.events = this.events.filter(
               (event, i) => event.id !== eventId
             );
+            // this.listCategorieService = [];
           },
           error: (err) => {
             this.snackBarService.showSnackBar('Une erreur est survenue');

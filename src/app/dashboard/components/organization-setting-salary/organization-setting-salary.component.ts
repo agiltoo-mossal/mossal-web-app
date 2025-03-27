@@ -103,8 +103,8 @@ export class OrganizationSettingSalaryComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-            if (data.activated) {
-              this.activated = data?.activated;
+            this.activated = data?.activated;
+            if (data.activatedAt) {
               this.dateStart.setValue(new Date(data?.activatedAt));
               this.dateEnd.setValue(
                 new Date(

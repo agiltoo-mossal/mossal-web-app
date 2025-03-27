@@ -146,6 +146,7 @@ export class OrganizationSettingEmergencyComponent {
               selectedCategory: data.categorySociopro?.id,
             });
           } else {
+            this.activated = true;
             this.listCategorieService = [
               {
                 amount: 0,
@@ -160,6 +161,7 @@ export class OrganizationSettingEmergencyComponent {
                 } as any,
               },
             ];
+
             this.selectedCategorie = this.listCategorieService[0];
           }
         },

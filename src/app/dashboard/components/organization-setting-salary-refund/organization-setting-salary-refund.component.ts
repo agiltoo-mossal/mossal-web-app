@@ -68,8 +68,8 @@ export class OrganizationSettingSalaryRefundComponent {
     private formBuilder: FormBuilder
   ) {
     this.formDate = this.formBuilder.group({
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: [null, Validators.required],
+      endDate: [null, Validators.required],
     });
     this.formDate.valueChanges.subscribe((value) => {
       if (this.formDate.valid) {
@@ -105,8 +105,9 @@ export class OrganizationSettingSalaryRefundComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-            if (data.activated) {
-              this.activated = data?.activated;
+            console.log('data', data);
+            this.activated = data?.activated;
+            if (data.activatedAt) {
               this.dateStart.setValue(new Date(data?.activatedAt));
               this.dateEnd.setValue(
                 new Date(
