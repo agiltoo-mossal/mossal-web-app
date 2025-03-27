@@ -112,7 +112,6 @@ export class OrganizationSettingEmergencyComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.dataForm = data;
-            console.log('dataForm', this.dataForm);
 
             this.listCategorieService = [
               {
@@ -212,6 +211,8 @@ export class OrganizationSettingEmergencyComponent {
       refundDurationUnit: ERrefundDurationUnit.Month,
       refundDuration: this.service.refundDurationMonth,
     };
+    console.log('data', data);
+    delete data.selectedCategory;
 
     if (
       this.selectedCategorie.categorySociopro?.title === 'Paramètres généraux'
