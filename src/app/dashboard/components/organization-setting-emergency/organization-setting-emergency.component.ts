@@ -211,7 +211,6 @@ export class OrganizationSettingEmergencyComponent {
       refundDurationUnit: ERrefundDurationUnit.Month,
       refundDuration: this.service.refundDurationMonth,
     };
-    console.log('data', data);
     delete data.selectedCategory;
 
     if (
