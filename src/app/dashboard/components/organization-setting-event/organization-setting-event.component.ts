@@ -335,6 +335,7 @@ export class OrganizationSettingEventComponent {
     this.dataEvent = event;
     this.showLineEvent = false;
     this.showComponent = true;
+    this.disableButton = true;
   }
 
   /**
@@ -346,6 +347,22 @@ export class OrganizationSettingEventComponent {
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
       if (this.eventSelectedId) {
+        console.log('dataForm', this.dataForm);
+
+        const {
+          __typename,
+          id,
+          activationDurationDay,
+          organizationId,
+          serviceId,
+          service,
+          organization,
+          categoriesocioproservices,
+          events,
+          ...dataForm
+        } = this.dataForm;
+        this.dataForm = dataForm;
+
         this.updateEventGQL
           .mutate({
             eventId: this.eventSelectedId,

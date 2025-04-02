@@ -50,6 +50,7 @@ import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande
     MatFormFieldModule,
     FileUploadModule,
     DemandeStatusModule,
+    MatIconModule,
   ],
   exports: [CollaboratorsComponent],
 })
