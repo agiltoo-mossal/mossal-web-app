@@ -368,6 +368,7 @@ export class OrganizationSettingEventComponent {
             eventId: this.eventSelectedId,
             eventInput: {
               ...this.dataForm,
+              ...this.eventToCreate,
             },
           })
           .subscribe({
