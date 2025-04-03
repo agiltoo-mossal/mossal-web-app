@@ -123,8 +123,6 @@ export class OrganizationSettingEventComponent {
           >;
           this.dataForm = this.info;
           if (this.info) {
-            console.log('event setting', this.info);
-
             this.fetchEvents(this.organisationServiceId);
           } else {
             this.activated.value = true;
@@ -253,6 +251,7 @@ export class OrganizationSettingEventComponent {
               endDate: new Date(event.endDate).toISOString().split('T')[0],
             };
           });
+          console.log('events', this.events);
         },
         error: (err) => {
           console.log(err);
@@ -358,10 +357,15 @@ export class OrganizationSettingEventComponent {
           service,
           organization,
           categoriesocioproservices,
+          organisationService,
+          createdAt,
+          updatedAt,
+          categorySocioproServices,
           events,
           ...dataForm
         } = this.dataForm;
-        this.dataForm = dataForm;
+        this.dataForm = { ...dataForm };
+        console.log('dataForm des', this.dataForm);
 
         this.updateEventGQL
           .mutate({
@@ -374,6 +378,7 @@ export class OrganizationSettingEventComponent {
           .subscribe({
             next: (response) => {
               this.snackBarService.showSnackBar('Paramètres enregistrés');
+              this.eventToCreate = null;
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
@@ -676,6 +681,7 @@ export class OrganizationSettingEventComponent {
       this.eventSelectedId = '';
       this.listCategorieService = this.tempListCategoryServices;
       this.showComponent = false;
+      console.log('dataForm', this.dataForm);
       return;
     }
     this.eventSelectedId = event.id;
@@ -694,6 +700,7 @@ export class OrganizationSettingEventComponent {
       },
       ...(event.categorySocioproServices || []),
     ];
+    this.dataForm = this.events.find((e) => e.id === event.id);
   }
 
   onTabChange(event: MatTabChangeEvent) {
