@@ -37,6 +37,24 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CardDashboardComponent } from '../shared/card-dashboard/card-dashboard.component';
 import { OrganizationFileModule } from '../shared/components/organization-file/organization-file.module';
+import { MatTabsModule } from '@angular/material/tabs';
+import { OrganizationSettingGeneralComponent } from './components/organization-setting-general/organization-setting-general.component';
+import { OrganizationSettingEmergencyComponent } from './components/organization-setting-emergency/organization-setting-emergency.component';
+import { ToggleSlideModule } from '../shared/components/toggle-slide/toggle-slide.module';
+import { OrganizationSettingEventComponent } from './components/organization-setting-event/organization-setting-event.component';
+import { OrganizationSettingSalaryComponent } from './components/organization-setting-salary/organization-setting-salary.component';
+import { OrganizationSettingSalaryRefundComponent } from './components/organization-setting-salary-refund/organization-setting-salary-refund.component';
+import { TableSalaryModule } from '../shared/components/table-salary/table-salary.module';
+import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
+import { CreateEventModule } from '../shared/components/create-event/create-event.module';
+import { SettingModule } from '../shared/components/settings/settings.module';
+import { RequestEventComponent } from './components/request-event/request-event.component';
+import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
+import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
+import { RequestDetailsComponent } from './components/request-details/request-details.component';
 
 @NgModule({
   declarations: [
@@ -44,18 +62,29 @@ import { OrganizationFileModule } from '../shared/components/organization-file/o
     OverviewComponent,
     RequestsListComponent,
     UserComponent,
+    RequestEmergencyComponent,
     NotificationsComponent,
     RefundChartsComponent,
     OrganizationComponent,
     ActivitiesComponent,
     CardDashboardComponent,
+    OrganizationSettingGeneralComponent,
+    OrganizationSettingEmergencyComponent,
+    OrganizationSettingEventComponent,
+    OrganizationSettingSalaryComponent,
+    OrganizationSettingSalaryRefundComponent,
+    RequestEventComponent,
+    RequestSalaryComponent,
+    RequestMonthlyRepayableAdvanceComponent,
+    RequestDetailsComponent,
   ],
   imports: [
+    CreateEventModule,
     CommonModule,
     DashboardRoutingModule,
     RouterModule,
     FlexLayoutModule,
-
+    MatTabsModule,
     MatIconModule,
     Ng2GoogleChartsModule,
     UserDetailsModule,
@@ -80,6 +109,16 @@ import { OrganizationFileModule } from '../shared/components/organization-file/o
     MatInputModule,
     MatFormFieldModule,
     OrganizationFileModule,
+    ToggleSlideModule,
+    TableSalaryModule,
+    SettingModule,
+    MatDialogModule, // Pour la gestion des dialogues (modales)
+    MatFormFieldModule, // Pour les champs de formulaire stylés
+    MatInputModule, // Pour les champs d'entrée
+    MatButtonModule, // Pour les boutons
+    MatDatepickerModule, // Pour le sélecteur de dates
+    MatNativeDateModule, // Fournit la gestion des dates natives
+    MatIconModule,
   ],
   providers: [NotificationsService],
 })

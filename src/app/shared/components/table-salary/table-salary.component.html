@@ -1,0 +1,507 @@
+<div
+  class="page-wrapper"
+  style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  "
+>
+  <div style="display: flex; gap: 35px; margin: 20px 0px">
+    <h2 class="container-title-setting">
+      <span>{{ title }}</span>
+    </h2>
+    <app-organization-file
+      [organisationServiceId]="organisationServiceId"
+    ></app-organization-file>
+  </div>
+
+  <div class="table-wrapper" fxFlex="auto" fxLayout="column" fxLayoutGap="32px">
+    <div fxLayout="column">
+      <div class="filters" fxLayout="row" [formGroup]="searchForm">
+        <div
+          class="search"
+          fxFlex="20"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+        >
+          <mat-icon fxLayoutAlign="center center" class="icon-search"
+            >search</mat-icon
+          >
+          <input
+            formControlName="search"
+            type="text"
+            placeholder="Rechercher"
+          />
+          <mat-icon
+            fxLayoutAlign="center center"
+            class="icon-delete"
+            (click)="search = ''"
+            >close</mat-icon
+          >
+        </div>
+        <div
+          fxFlex="20"
+          fxLayout="row"
+          fxLayoutAlign="space-between center"
+          class="dropdown"
+          appDropdown="dropdown-statut"
+        >
+          <span
+            class="text"
+            [ngClass]="status ? 'selected' : ''"
+            fxFlex="auto"
+            >{{ status ? (status | demandeStatus) : "Statut" }}</span
+          >
+          <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center"
+            >keyboard_arrow_down</mat-icon
+          >
+          <div
+            class="dropdown-content dropdown-content-filter"
+            id="dropdown-statut"
+          >
+            <div
+              (click)="changeStatus('VALIDATED')"
+              class="dropdown-option"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+            >
+              Validée <span class="statut statut--valid"></span>
+            </div>
+            <div
+              (click)="changeStatus('PAYED')"
+              class="dropdown-option"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+            >
+              Remboursée <span class="statut statut--payed"></span>
+            </div>
+            <div
+              (click)="changeStatus('REJECTED')"
+              class="dropdown-option"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+            >
+              Rejetée <span class="statut statut--rejected"></span>
+            </div>
+            <div
+              (click)="changeStatus('PENDING')"
+              class="dropdown-option"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+            >
+              En attente
+              <span class="statut statut--pending"></span>
+            </div>
+            <div
+              (click)="changeStatus('CANCELLED')"
+              class="dropdown-option"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+            >
+              Annulée <span class="statut statut--cancel"></span>
+            </div>
+          </div>
+        </div>
+        <div
+          fxFlex="20"
+          fxLayout="row"
+          fxLayoutAlign="space-between center"
+          class="dropdown"
+          appDropdown="dropdown-fourchette"
+        >
+          <span class="text text-on-1-line" fxFlex="auto"
+            >Entre {{ min }} et {{ max }}k</span
+          >
+          <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center"
+            >keyboard_arrow_down</mat-icon
+          >
+          <div
+            class="dropdown-content dropdown-content-filter"
+            id="dropdown-fourchette"
+          >
+            <div
+              (click)="changeMinMax(0, 100)"
+              class="dropdown-option"
+              fxLayoutAlign="space-between center"
+            >
+              <span>0</span>à
+              <span>100k</span>
+            </div>
+            <div
+              (click)="changeMinMax(100, 250)"
+              class="dropdown-option"
+              fxLayoutAlign="space-between center"
+            >
+              <span>100k</span> à
+              <span>250k</span>
+            </div>
+            <div
+              (click)="changeMinMax(250, 1000)"
+              class="dropdown-option"
+              fxLayoutAlign="space-between center"
+            >
+              <span>250k</span> à
+              <span>1.000k</span>
+            </div>
+            <div
+              (click)="changeMinMax(1000, 10000)"
+              class="dropdown-option"
+              fxLayoutAlign="space-between center"
+            >
+              <span>1.000k</span> à
+              <span>plus</span>
+            </div>
+          </div>
+        </div>
+        <form fxFlex="20" class="dropdown">
+          <span
+            #btnToggleDropdownDate
+            fxFill
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            (click)="toggleMenuFilterDate()"
+          >
+            <span
+              >Du {{ startDate | frenchDate }} au
+              {{ endDate | frenchDate }}</span
+            >
+            <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center"
+              >keyboard_arrow_down</mat-icon
+            >
+          </span>
+          <div
+            class="dropdown-content"
+            id="filter-date-dropdown"
+            *ngIf="isMenuFilterOpen"
+            #dropdownContent
+          >
+            <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+              <label for="debut">Du</label>
+              <input
+                name="startDate"
+                [(ngModel)]="startDate"
+                type="date"
+                id="debut"
+                (change)="onStartDateChange()"
+              />
+            </div>
+            <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+              <label for="fin">Au</label>
+              <input
+                name="endDate"
+                [(ngModel)]="endDate"
+                type="date"
+                id="fin"
+                (change)="onEndDateChange()"
+              />
+            </div>
+          </div>
+        </form>
+        <div
+          (click)="resetFilter()"
+          fxFlex="20"
+          class="btn-filter"
+          fxLayout="row"
+          fxLayoutGap="16px"
+          fxLayoutAlign="center center"
+        >
+          <mat-icon>filter_list</mat-icon>
+          <span>Réinitialiser</span>
+        </div>
+      </div>
+      <div class="example-table-container">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="example-table"
+          matSort
+        >
+          <!-- matSortActive="uniqueIdentifier"
+        matSortDisableClear
+        matSortDirection="desc" -->
+          <!-- Number Column -->
+          <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef class="title">N° Demande</th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              class="radio-container"
+              style="width: 7%"
+            >
+              <div class="radio-container">
+                <span
+                  (click)="selectReq(row)"
+                  class="radio {{ selectedReq?.id === row.id ? 'active' : '' }}"
+                  fxLayoutAlign="center center"
+                ></span>
+                <span>{{ row?.number }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Title Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef class="title">
+              Collaborateur
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <div
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="8px"
+              >
+                <div class="circle" fxLayoutAlign="center center">
+                  {{ row?.collaborator?.firstName?.charAt(0)
+                  }}{{ row.collaborator?.lastName?.charAt(0) }}
+                </div>
+                <span
+                  >{{ row?.collaborator?.firstName }}
+                  {{ row?.collaborator?.lastName }}</span
+                >
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- State Column -->
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef class="title">Solde</th>
+            <td class="solde" mat-cell *matCellDef="let row" style="width: 15%">
+              XOF {{ row?.collaborator?.balance }}
+            </td>
+          </ng-container>
+
+          <!-- Created Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef class="title" disableClear>
+              Date
+            </th>
+            <td mat-cell *matCellDef="let row" style="width: 17%">
+              {{ row.createdAt | date : "dd-MM-YYYY" }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="refundDuration">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="title"
+              style="text-align: center"
+            >
+              Durée de remboursement
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let row"
+              class="advance"
+              style="width: 17%"
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <span> {{ row?.refundDuration }}</span>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="avance">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="title"
+              style="text-align: center"
+            >
+              Avance
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let row"
+              class="advance"
+              style="width: 17%"
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <span
+                  class="statut statut--{{ row?.status | lowercase }}"
+                ></span>
+                <span>Xof {{ row?.amount }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="title"
+              disableClear
+              style="text-align: center"
+            >
+              Action
+            </th>
+            <td mat-cell *matCellDef="let row" style="width: 20%">
+              <div class="dropdown" appDropdown="dropdown-action">
+                <span fxLayout="row" class="btn-edit-statut">
+                  <span
+                    class="text"
+                    fxFlex="auto"
+                    fxLayout="row"
+                    fxLayoutGap="8px"
+                    fxLayoutAlign="center center"
+                    ><span>{{ row?.status | demandeStatus | titlecase }}</span
+                    ><span
+                      class="statut statut--{{ row?.status | lowercase }}"
+                    ></span
+                  ></span>
+                  <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
+                    >keyboard_arrow_down</mat-icon
+                  >
+                </span>
+                <div
+                  class="dropdown-content dropdown-content-filter"
+                  id="dropdown-action"
+                >
+                  <div
+                    *ngIf="row.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous valider cette demande?'"
+                    [confirmCallback]="validateDemande"
+                    [confirmCallbackParam]="row?.id"
+                  >
+                    Validée
+                    <span class="statut statut--valid"></span>
+                  </div>
+                  <div
+                    *ngIf="
+                      row.status === 'VALIDATED' &&
+                      row.statusText === 'VALIDATED'
+                    "
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous payer cette demande?'"
+                    [confirmCallback]="payeDemande"
+                    [confirmCallbackParam]="row?.id"
+                  >
+                    Remboursée
+                    <span class="statut statut--payed"></span>
+                  </div>
+                  <div
+                    *ngIf="row.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous rejeter cette demande?'"
+                    [confirmCallback]="rejectDemande"
+                    [reasonRequired]="true"
+                    [confirmCallbackParam]="row?.id"
+                  >
+                    Rejetée
+                    <span class="statut statut--rejected"></span>
+                  </div>
+                  <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
+                                    attente
+                                    <span class="statut statut--pending"></span>
+                                </div> -->
+                  <div
+                    *ngIf="row.status === 'PENDING'"
+                    class="dropdown-option"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    requiresConfirmation
+                    [message]="'Voulez-vous annuler cette demande?'"
+                    [confirmCallback]="cancelDemande"
+                    [confirmCallbackParam]="row?.id"
+                  >
+                    Annulée
+                    <span class="statut statut--cancel"></span>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [length]="resultsLength"
+          aria-label=""
+        ></mat-paginator>
+      </div>
+    </div>
+    <div
+      class="legends"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="16px"
+    >
+      <div
+        class="valid"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <span class="color"></span>
+        <div class="nbr">Validé ({{ fetchStatus?.validated }})</div>
+      </div>
+      <div
+        class="rejected"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <span class="color"></span>
+        <div class="nbr">Rejeté ({{ fetchStatus?.rejected }})</div>
+      </div>
+      <div
+        class="pending"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <span class="color"></span>
+        <div class="nbr">En attente ({{ fetchStatus?.pending }})</div>
+      </div>
+      <div
+        class="rembourse"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <span class="color"></span>
+        <div class="nbr">Remboursé ({{ fetchStatus?.payed }})</div>
+      </div>
+      <div
+        class="canceled"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutGap="8px"
+      >
+        <span class="color"></span>
+        <div class="nbr">Annulé ({{ fetchStatus?.rejected }})</div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="info-current-user container_sticky">
+    <app-organization-file></app-organization-file>
+    <app-user-details [user]="selectedReq?.collaborator"></app-user-details>
+  </div> -->
+</div>

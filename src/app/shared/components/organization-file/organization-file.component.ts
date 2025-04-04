@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, Input, OnInit } from '@angular/core';
 import { FetchSupportPaiementGQL } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
 import * as XLSX from 'xlsx';
+import { FileUploadService } from '../../services/file-upload.service';
 
 @Component({
   selector: 'app-organization-file',
@@ -12,17 +13,52 @@ export class OrganizationFileComponent implements OnInit {
   EXCEL_TYPE =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   EXCEL_EXTENSION = '.xlsx';
-
+  @Input() organisationServiceId: string;
+  showModalOrganisation = false;
+  dataOrganisationFile!: any;
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
-    private snackBarService: SnackBarService
-  ) {}
+    private snackBarService: SnackBarService,
+    private fileService: FileUploadService
+  ) {
+    effect(() => {
+      this.dataOrganisationFile = this.fileService.signalDataOrganisation();
+      if (this.dataOrganisationFile) {
+        this.showModalOrganisation = true;
+      }
+    });
+  }
 
   ngOnInit(): void {}
-  uploadDemande() {}
+  async uploadDemande(event: Event) {
+    const files = event.target as HTMLInputElement;
+    if (files) {
+      const file: File = (event.target as HTMLInputElement).files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.fileService.sendFileEndpoint(file, `demande/upload`).subscribe({
+          next: (res) => {
+            const data = res as any;
+            if (data.errorCount === 0) {
+              this.snackBarService.showSnackBar(
+                'Demande de paiement envoyé avec success !'
+              );
+            } else {
+              this.snackBarService.showSnackBar(
+                "Une erreur est survenue lors de l'envoi de la demande de paiement !"
+              );
+            }
+            this.fileService.signalDataOrganisation.set((res as any).data);
+          },
+          error: (error) => console.log(error),
+        });
+      };
+    }
+  }
 
   downloadDemande() {
-    this.fetchSupportPaiement.fetch().subscribe({
+    this.fetchSupportPaiement.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: ({ data }) => {
         const temps = data.fetchSupportPaiement;
         if (temps.length) {
@@ -33,15 +69,17 @@ export class OrganizationFileComponent implements OnInit {
               'Email',
               'Identifiant unique',
               'Telephone',
+              'Service',
               'Montant',
               'Avance renboursée',
             ],
             ...temps.map((row) => [
-              row.firstName,
-              row.lastName,
-              row.email,
-              row.uniqueIdentifier,
-              row.phoneNumber,
+              row.collaborator.firstName,
+              row.collaborator.lastName,
+              row.collaborator.email,
+              row.collaborator.uniqueIdentifier,
+              row.collaborator.phoneNumber,
+              row.organisationService.service.title,
               row.amount,
               '',
             ]),
@@ -81,5 +119,9 @@ export class OrganizationFileComponent implements OnInit {
     a.click();
     window.URL.revokeObjectURL(url);
     // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+  }
+  closeModal() {
+    this.showModalOrganisation = false;
+    this.fileService.signalDataOrganisation.set(null);
   }
 }

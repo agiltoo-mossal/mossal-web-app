@@ -20,6 +20,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upload.module';
+import { DetailCollaboratorComponent } from './components/detail-collaborator/detail-collaborator.component';
+import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande-status.module';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,7 @@ import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upl
     CreateCollobatorComponent,
     EditCollaboratorComponent,
     FormCollaboratorComponent,
+    DetailCollaboratorComponent,
   ],
   imports: [
     CommonModule,
@@ -46,6 +49,8 @@ import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upl
     MatInputModule,
     MatFormFieldModule,
     FileUploadModule,
+    DemandeStatusModule,
+    MatIconModule,
   ],
   exports: [CollaboratorsComponent],
 })

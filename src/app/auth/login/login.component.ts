@@ -22,25 +22,22 @@ export class LoginComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
-    })
+      password: ['', [Validators.required]],
+    });
   }
 
   ngOnInit(): void {}
 
   login() {
-    if(this.form.invalid) {
+    if (this.form.invalid) {
       return;
     }
     this.missingUser = null;
     this.authService.login(this.form.value).then(
-      result => {
-
-      },
-      error => {
+      (result) => {},
+      (error) => {
         this.missingUser = true;
       }
-    )
+    );
   }
-
 }

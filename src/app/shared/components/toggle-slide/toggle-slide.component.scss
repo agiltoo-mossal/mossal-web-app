@@ -1,0 +1,102 @@
+.switches-container {
+    width: 8rem; /* Largeur ajustée */
+    position: relative;
+    display: flex;
+    padding: 0;
+    background: #f4f6fa; /* Fond gris clair */
+    line-height: 2rem;
+    border-radius: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #dcdcdc; /* Bordure subtile */
+    font-family: Arial, sans-serif; /* Police simple et lisible */
+    overflow: hidden; /* Empêche le débordement du texte */
+}
+
+/* input (radio) for toggling. hidden - use labels for clicking on */
+.switches-container input {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+}
+
+/* labels for the input (radio) boxes - something to click on */
+.switches-container label {
+    width: 50%;
+    margin: 0;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 2rem;
+    color: black; /* Texte en noir */
+    position: relative;
+    z-index: 2; /* S'assurer que les labels sont visibles au-dessus du slider */
+}
+
+/* switch highlighters wrapper (sliding left / right) */
+.switch-wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 1;
+    transition: transform 0.3s ease;
+    overflow: hidden; /* Empêche tout débordement du slider */
+}
+
+/* switch box highlighter */
+.switch {
+    border-radius: 2rem;
+    background: #4caf50; /* Couleur verte pour "Actif" */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white; /* Texte blanc sur le slider */
+    font-size: 12px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+/* slide the switch box from right to left */
+.switches-container input:nth-of-type(1):checked~.switch-wrapper {
+    transform: translateX(0%);
+    background: #4caf50; /* Couleur verte pour "Actif" */
+}
+
+/* slide the switch box from left to right */
+.switches-container input:nth-of-type(2):checked~.switch-wrapper {
+    transform: translateX(100%);
+    background: #dcdcdc; /* Couleur grise pour "Inactif" */
+}
+
+/* toggle the switch box labels - first checkbox:checked - show first switch div */
+.switches-container input:nth-of-type(1):checked~.switch-wrapper .switch div:nth-of-type(1) {
+    opacity: 1;
+}
+
+/* toggle the switch box labels - second checkbox:checked - show second switch div */
+.switches-container input:nth-of-type(2):checked~.switch-wrapper .switch div:nth-of-type(2) {
+    opacity: 1;
+}
+
+/* Positionnement du texte à l'intérieur du slider */
+.switch div {
+    width: 100%;
+    text-align: center;
+    display: block;
+    color: white; /* Texte blanc */
+    line-height: 2rem;
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.switches-container input:nth-of-type(1):checked~.switch-wrapper .switch div:nth-of-type(1),
+.switches-container input:nth-of-type(2):checked~.switch-wrapper .switch div:nth-of-type(2) {
+    opacity: 1; /* Texte visible pour l'état actif */
+}

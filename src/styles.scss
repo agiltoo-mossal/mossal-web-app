@@ -241,7 +241,29 @@ input:focus {
 .End {
   color: #fb6d3a;
 }
+.container-title-setting{
+  text-align: center;
+  font-size: 32px;
+  padding: 12px 0;
+  color: #11167a;
+  span{
+   border-bottom: 3px solid #fcd980 ;
+  }
 
+}
+.container-setting{
+  background-color: #fff;
+  padding: 10px;
+}
+.service-activation-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .form-container {
 
   .form-group {
@@ -789,6 +811,16 @@ input:focus {
       background-color: #FFC708;
     }
   }
+  .rembourse{
+    .color {
+      background-color: #40B139;
+    }
+  }
+  .canceled{
+    .color {
+      background-color: #5C6D80;
+    }
+  }
 }
 
 .info-current-user {
@@ -1059,4 +1091,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .container_sticky {
     position: sticky;
     top: 0;
+}
+.disable-button{
+  background-color:#061e5cc1;
+  align-self: flex-start;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
 }

@@ -8,15 +8,17 @@ import { environment } from 'src/environments/environment';
 })
 export class FileUploadService {
   endPoint = environment.API_URI;
+  // endPoint = 'http://localhost:7007/';
   constructor(private http: HttpClient) {}
   signalFile: WritableSignal<string | ArrayBuffer> = signal(null);
+  signalDataOrganisation: WritableSignal<any> = signal(null);
   signalDataResponse: WritableSignal<any> = signal(null);
-  renderFile(file: File) {
+  renderFile(file: File, type?: UserRole) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event: any) => {
       this.signalFile.set(reader.result);
-      this.sendFile(file);
+      this.sendFile(file, type);
     };
   }
 
@@ -27,19 +29,35 @@ export class FileUploadService {
     return this.signalDataResponse();
   }
 
-  sendFile(file: any) {
+  sendFile(file: any, type: UserRole) {
     const formData: FormData = new FormData();
 
     formData.append('file', file);
 
-    this.http.post(`${this.endPoint}/users/upload`, formData).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.signalDataResponse.set(res);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    this.http
+      .post(`${this.endPoint}users/upload?type=${type}`, formData)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.signalDataResponse.set(res);
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
+
+  sendFileEndpoint(file: any, url: string) {
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+
+    return this.http.post(`${this.endPoint}${url}`, formData);
+  }
+}
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  SUPER_ADMIN_ORG = 'SUPER_ADMIN_ORG',
+  COLLABORATOR = 'COLLABORATOR',
 }

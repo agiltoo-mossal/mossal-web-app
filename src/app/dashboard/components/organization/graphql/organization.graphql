@@ -1,3 +1,361 @@
-mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
-	updateOrganization(organizationId: $organizationId, organizationInput: $organizationInput)
+mutation UpdateOrganization(
+  $organizationId: ID!
+  $organizationInput: OrganizationUpdateInput!
+) {
+  updateOrganization(
+    organizationId: $organizationId
+    organizationInput: $organizationInput
+  )
+}
+mutation DeleteCategorySociopro($categorySocioproId: ID!) {
+  deleteCategorySociopro(categorySocioproId: $categorySocioproId)
+}
+mutation UpdateCategorySociopro(
+  $categorySocioproInput: CategorySocioproUpdateInput!
+  $categorySocioproId: ID!
+) {
+  updateCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    categorySocioproId: $categorySocioproId
+  )
+}
+mutation CreateCategorySocioproService(
+  $categorySocioproServiceInput: CategorySocioproServiceInput!
+  $categorySocioproId: ID!
+  $organisationServiceId: ID!
+  $eventId: ID
+) {
+  createCategorySocioproService(
+    categorySocioproServiceInput: $categorySocioproServiceInput
+    categorySocioproId: $categorySocioproId
+    organisationServiceId: $organisationServiceId
+    eventId: $eventId
+  ) {
+    id
+  }
+}
+
+mutation CreateCategorySociopro(
+  $categorySocioproInput: CategorySocioproInput!
+  $organizationId: ID!
+) {
+  createCategorySociopro(
+    categorySocioproInput: $categorySocioproInput
+    organizationId: $organizationId
+  ) {
+    id
+    title
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+query FetchCategorySociopros($queryConfig: QueryDataConfigInput!) {
+  fetchCategorySociopros(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      organizationId
+      createdAt
+      updatedAt
+    }
+  }
+}
+query FetchServices($queryConfig: QueryDataConfigInput) {
+  fetchServices(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      createdAt
+      updatedAt
+      identifier
+      refundDurationMonth
+      available
+    }
+  }
+}
+
+mutation CreateOrganistionService(
+  $organisationServiceInput: OrganisationServiceInput!
+  $organisationId: ID!
+  $serviceId: ID!
+) {
+  createOrganisationService(
+    organisationServiceInput: $organisationServiceInput
+    organisationId: $organisationId
+    serviceId: $serviceId
+  ) {
+    createdAt
+    updatedAt
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    organization {
+      id
+    }
+    service {
+      id
+      title
+    }
+    events {
+      id
+      title
+    }
+    categoriesocioproservices {
+      createdAt
+      updatedAt
+      id
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+      organisationServiceId
+      categorySocioproId
+      categorySociopro {
+        id
+        title
+        organizationId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+mutation UpdateOrganisationService(
+  $organisationServiceInput: OrganisationServiceUpdateInput!
+  $organisationServiceId: ID!
+) {
+  updateOrganisationService(
+    organisationServiceInput: $organisationServiceInput
+    organisationServiceId: $organisationServiceId
+  )
+}
+mutation UpdateCategorySocioproService(
+  $categorySocioproServiceInput: CategorySocioproServiceUpdateInput!
+  $categorySocioproServiceId: ID!
+) {
+  updateCategorySocioproService(
+    categorySocioproServiceInput: $categorySocioproServiceInput
+    categorySocioproServiceId: $categorySocioproServiceId
+  )
+}
+
+query FetchOrganisationServiceByOrganisationIdAndServiceId(
+  $organisationId: ID!
+  $serviceId: ID!
+) {
+  fetchOrganisationServiceByOrganisationIdAndServiceId(
+    organisationId: $organisationId
+    serviceId: $serviceId
+  ) {
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    organization {
+      id
+    }
+    service {
+      id
+      title
+    }
+    events {
+      id
+      title
+    }
+    categoriesocioproservices {
+      createdAt
+      updatedAt
+      id
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+      organisationServiceId
+      categorySocioproId
+      categorySociopro {
+        id
+        title
+        organizationId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
+  createEvent(
+    eventInput: $eventInput
+    organizationServiceId: $organizationServiceId
+  ) {
+    id
+    title
+    description
+    startDate
+    endDate
+    organisationService {
+      id
+    }
+    createdAt
+    updatedAt
+    activated
+    organisationService {
+      id
+    }
+
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    autoValidate
+  }
+}
+
+query FetchEvents(
+  $queryConfig: QueryDataConfigInput
+  $organizationServiceId: ID!
+) {
+  fetchEvents(
+    queryConfig: $queryConfig
+    organizationServiceId: $organizationServiceId
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      title
+      description
+      startDate
+      endDate
+      activated
+      organisationService {
+        id
+      }
+      createdAt
+      updatedAt
+      amount
+      amountUnit
+      refundDuration
+      refundDurationUnit
+      activated
+      activatedAt
+      autoValidate
+
+      categorySocioproServices {
+        createdAt
+        updatedAt
+        id
+        amount
+        amountUnit
+        refundDuration
+        refundDurationUnit
+        activated
+        activatedAt
+        autoValidate
+        organisationServiceId
+        categorySocioproId
+        categorySociopro {
+          id
+          title
+          organizationId
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+}
+
+mutation DesactivateOrganisationService($organisationServiceId: ID!) {
+  deactivateOrganisationService(organisationServiceId: $organisationServiceId)
+}
+mutation ActivateOrganisationService($organisationServiceId: ID!) {
+  activateOrganisationService(organisationServiceId: $organisationServiceId)
+}
+
+mutation DeleteEvent($eventId: ID!) {
+  deleteEvent(eventId: $eventId)
+}
+mutation DesactiveEvent($eventId: ID!) {
+  deactivateEvent(eventId: $eventId)
+}
+mutation ActivateEvent($eventId: ID!) {
+  activateEvent(eventId: $eventId)
+}
+mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
+  updateEvent(eventInput: $eventInput, eventId: $eventId)
+}
+
+query FetchDemandesByCollaborator(
+  $collaboratorId: ID!
+  $status: DemandeStatus
+) {
+  fetchDemandesByCollaborator(
+    collaboratorId: $collaboratorId
+    status: $status
+  ) {
+    id
+    status
+    amount
+    number
+    refundDuration
+    rejectedReason
+    statusText
+    fees
+    createdAt
+    updatedAt
+    collaborator {
+      id
+      firstName
+      lastName
+      salary
+      balance
+    }
+    organisationService {
+      service {
+        id
+        title
+      }
+    }
+  }
 }

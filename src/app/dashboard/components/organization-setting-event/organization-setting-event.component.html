@@ -1,0 +1,123 @@
+<div class="container">
+  <div class="container-title-setting">
+    <span>Avance sur événement</span>
+  </div>
+  <div class="avance-evenement-container">
+    <!-- Section Activation du service -->
+    <div class="section flex-center">
+      <h3>Activation du service</h3>
+      <app-toggle-slide
+        [firstText]="'Actif'"
+        [secondText]="'Inactif'"
+        [serviceId]="service?.id"
+        [value]="activated.value"
+        [uniqueId]="'serviceActivationEvent'"
+        (toggleChange)="onServiceActivationChange($event)"
+      ></app-toggle-slide>
+    </div>
+    <div class="toggle-side" [ngClass]="{ grise: !activated.value }">
+      <!-- Liste des événements prévus -->
+      <div class="section">
+        <h3>Liste des événements prévus</h3>
+        <ul class="event-list">
+          <li *ngIf="!events?.length">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <div>
+                <mat-icon style="font-size: 45px; width: 100%; height: 50px"
+                  >event_busy</mat-icon
+                >
+              </div>
+              <span>Aucun événement prévu</span>
+            </div>
+          </li>
+          <li *ngFor="let event of events; let i = index" class="event-item" (click)="handleClickEvent(event)" [ngClass]="{ 'event-selected': eventSelectedId === event?.id }">
+            <div class="event-title">
+              <app-toggle-slide
+                [firstText]="'Actif'"
+                [secondText]="'Inactif'"
+                [value]="event?.activated || false"
+                [uniqueId]="'event-' + i"
+                (toggleChange)="changeStatusEvent($event, event)"
+              ></app-toggle-slide>
+              <span>{{ event.title | uppercase}} </span>
+            </div>
+            <div class="event-date">
+              <input type="date" [value]="event.startDate" disabled />
+              <input type="date" [value]="event.endDate" disabled />
+            </div>
+            <div class="event-action">
+              <button class="edit-btn" (click)="updateEvent(event)">✏️</button>
+              <button class="delete-btn" (click)="deleteEvent(event)">
+                🗑️
+              </button>
+            </div>
+          </li>
+        </ul>
+        <div class="container-button" *ngIf="showLineEvent">
+          <button class="add-event-btn" (click)="createEvent()">
+            Ajouter un événement
+          </button>
+        </div>
+        <app-create-event [event]="dataEvent" (closeEventEmitter)="handleEvent($event)" *ngIf="showComponent"></app-create-event>
+      </div>
+
+      <!-- Section des paramètres -->
+      <div class="section">
+        <div class="category-selection" *ngIf="listCategorieService.length>0">
+          <label for="category-selection">Sélectionnez une catégorie</label>
+          <select
+            [(ngModel)]="selectedCategory"
+            class="custom-select"
+            (change)="onChangeCategorie($event)"
+          >
+            <option value="" disabled selected>Toutes les catégories</option>
+            <option
+              *ngFor="let categorie of categories"
+              [value]="categorie?.id"
+            >
+              {{ categorie?.title }}
+            </option>
+          </select>
+        </div>
+
+        <mat-tab-group
+          animationDuration="0ms"
+          (selectedTabChange)="onTabChange($event)"
+        >
+          <mat-tab
+            *ngFor="let categorie of listCategorieService; let i = index"
+            [label]="categorie?.categorySociopro?.title"
+          >
+            <app-setting
+              [data]="categorie"
+              [hideToggleService]="
+                categorie?.categorySociopro?.title !== 'Paramètres généraux'
+              "
+              [categorie]="categorie.categorySociopro"
+              (settingChange)="onSettingChange($event)"
+            ></app-setting>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <button
+        *ngIf="listCategorieService.length > 0"
+        [ngClass]="{
+          'disable-button': disableButton,
+        }"
+        [disabled]="!disableButton"
+        (click)="saveSettings()"
+        class="validate-btn"
+      >
+        
+        Valider
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,28 +1,157 @@
 query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
-	fetchOrganizationDemandes(metricsInput: $metricsInput) {
-		id
-		amount
-		status
-		number
-		fees
+  fetchOrganizationDemandes(metricsInput: $metricsInput) {
+    id
+    amount
+    status
+    number
+    fees
     statusText
-		collaborator {
-			id
-			firstName
-			lastName
-			balance
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
       totalDemandeAmount
       salary
       authorizedAdvance
       bankAccountNumber
       uniqueIdentifier
-			# organization {
-			# 	name
-			# }
-		}
-		createdAt
-		updatedAt
-	}
+      # organization {
+      # 	name
+      # }
+    }
+    createdAt
+    updatedAt
+  }
+}
+query MyRemboursements {
+  myRemboursements {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    demande {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+query FetchRemboursementByUserId($userId: ID!) {
+  fetchRemboursementByUserId(userId: $userId) {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    validatedAt
+    demande {
+      remainingRefundAmount
+      organisationService {
+        service {
+          title
+        }
+      }
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+query FetchPaginatedOrganizationDemandes(
+  $metricsInput: DemandesMetricsInput
+  $queryFilter: QueryDataConfigInput
+  $organizationServiceId: String
+) {
+  fetchPaginatedOrganizationDemandes(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+    organizationServiceId: $organizationServiceId
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+        # organization {
+        # 	name
+        # }
+      }
+      createdAt
+      updatedAt
+      refundDuration
+      remboursements {
+        createdAt
+        updatedAt
+        id
+        amount
+        number
+        fees
+        status
+        demandeId
+        userId
+      }
+    }
+  }
 }
 
 mutation ValidateDemande($demandeId: ID!) {
@@ -39,4 +168,110 @@ mutation CancelDemandeByAdmin($demandeId: ID!) {
 
 mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
   rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
+}
+mutation ValidateRemboursement($remboursementId: ID!) {
+  validateRemboursement(remboursementId: $remboursementId)
+}
+query FetchCountStatus($filter: DemandesMetricsInput) {
+  fetchCountStatus(filter: $filter) {
+    pending
+    validated
+    rejected
+    payed
+    cancelled
+  }
+}
+query FetchOrganisationService($organisationServiceId: ID!) {
+  fetchOrganisationService(organisationServiceId: $organisationServiceId) {
+    id
+    amount
+    amountUnit
+    refundDuration
+    refundDurationUnit
+    activated
+    activatedAt
+    activationDurationDay
+    autoValidate
+    organizationId
+    serviceId
+    demandes {
+      createdAt
+      updatedAt
+      id
+      amount
+      number
+      fees
+      status
+      collaborator {
+        createdAt
+        updatedAt
+        id
+        email
+        firstName
+        lastName
+        phoneNumber
+        address
+        position
+        uniqueIdentifier
+        salary
+        balance
+        wizallAccountNumber
+        bankAccountNumber
+        totalDemandeAmount
+        role
+        blocked
+        birthDate
+        favoriteWallet
+        enableEmailNotification
+        status
+        authorizedAdvance
+      }
+      rejectedReason
+      statusText
+    }
+  }
+}
+query FetchCollaboratorCount($filter: UserFilterInput) {
+  fetchCollaboratorCount(filter: $filter)
+}
+query FetchTotalDemandesAmount(
+  $status: DemandeStatus
+  $filter: DemandesMetricsInput
+) {
+  fetchTotalDemandesAmount(status: $status, filter: $filter)
+}
+
+query FetchRemboursementsByDemande($demandeId: ID!) {
+  fetchRemboursementsByDemande(demandeId: $demandeId) {
+    id
+    amount
+    number
+    fees
+    status
+    demandeId
+    userId
+    createdAt
+    updatedAt
+    demande {
+      id
+      amount
+      status
+      number
+      fees
+      statusText
+      collaborator {
+        id
+        firstName
+        lastName
+        balance
+        totalDemandeAmount
+        salary
+        authorizedAdvance
+        bankAccountNumber
+        uniqueIdentifier
+      }
+      createdAt
+      updatedAt
+    }
+  }
 }

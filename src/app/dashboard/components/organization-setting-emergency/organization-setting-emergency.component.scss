@@ -1,0 +1,237 @@
+/* Conteneur principal */
+.service-activation-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Titre */
+.service-activation-container h3 {
+  color: #2d3559;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+input:checked + .slider {
+  background-color: #0066ff;
+}
+.toggle-side {
+  padding: 6px;
+}
+.toggle-side.grise{
+  position: relative;
+}
+.toggle-side.grise::after{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.815);
+
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Date d'activation */
+.activation-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  label{
+  color: #2d3559;
+  font-size: 20px;
+  font-weight: bolder;
+
+  }
+  color: #2d3559;
+.date-input span {
+  font-weight: bolder;
+  padding:0 8px;
+}
+}
+
+
+/* Sélection des catégories */
+.category-selection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.category-selection select {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}/* Validation automatique */
+.auto-validation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.auto-validation span {
+  font-size: 14px;
+  color: #2d3559;
+}
+
+.add-category-button {
+  background-color: #061E5C;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-category-button:hover {
+    background-color: #061E5C;
+
+}
+/* Bouton Valider */
+.validate-button {
+  align-self: flex-start;
+  background-color: #061E5C;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.validate-button:hover {
+  background-color:#061e5cc1;
+}
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  accent-color:#4caf50;
+   /* Change the color */
+  border: 1px solid #dcdcdc;
+}
+.percentage{
+    margin-bottom: 8px;
+}
+.percentage label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin:20px 0px;
+}
+
+.percentage input[type="radio"] {
+  margin:0 20px;
+}
+.input-group input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+}
+
+.input-group span {
+  font-size: 14px;
+  color: #2d3559;
+}
+
+/* Bouton Valider */
+.validate-btn {
+  display: block;
+  margin: 20px auto 0;
+  background-color: #061E5C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.validate-btn:hover {
+  background-color: #061e5c63;
+}
+.percentage-input-group input {
+  width: 80px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2d3559; /* Couleur du texte */
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+/* Symbole de pourcentage */
+.percentage-input-group .percentage-symbol,
+.percentage-input-group .currency-symbol {
+  color: #2d3559; /* Couleur principale */
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 8px;
+}
+.plafond-content {
+  display: flex;
+  width: 24%;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.plafond-content label {
+  color: #2d3559; /* Couleur principale */
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Conteneur de l'entrée pourcentage */
+.percentage-input-group {
+  display: flex;
+  align-items: center;
+  background: #f4f6fa; /* Fond gris clair */
+  border: 1px solid #dcdcdc; /* Bordure fine */
+  border-radius: 8px;
+  padding: 8px 12px; /* Espacement interne */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

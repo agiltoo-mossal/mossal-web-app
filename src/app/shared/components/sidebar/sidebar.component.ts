@@ -12,34 +12,9 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 export class SidebarComponent implements OnInit {
   isSidebarOpened: boolean = true;
-  dashboardNav = [
-    {
-      label: 'Tableau de bord',
-      link: 'overview',
-      icon: 'dashboard',
-    },
-    {
-      label: 'Liste des demandes',
-      link: 'requests-list',
-      icon: 'list_alt',
-    },
-    {
-      label: 'Collaborateurs',
-      link: 'collaborators',
-      icon: 'people',
-    },
-    {
-      label: 'Notifications',
-      link: 'Notifications',
-      icon: 'notifications_none',
-    },
-    {
-      label: 'Mon Compte',
-      link: 'user',
-      icon: 'person_outline',
-    },
-  ];
+  dashboardNav = [];
   currentUser: User;
+  isDropdownOpened: boolean = false;
 
   constructor(
     private sidebarService: SidebarService,
@@ -54,91 +29,153 @@ export class SidebarComponent implements OnInit {
     });
   }
   getCurrentUser() {
-    this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
-      this.currentUser = result.data.fetchCurrentAdmin as User;
-      this.dashboardNav =
-        this.currentUser.role == 'SUPER_ADMIN_ORG'
-          ? this.menuSuperAdmin
-          : this.menuAdmin;
-      // console.log({ user: this.currentUser });
-    });
+    this.fetchCurrentAdminGQL
+      .fetch(
+        {},
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
+      .subscribe((result) => {
+        this.currentUser = result.data.fetchCurrentAdmin as User;
+        this.dashboardNav =
+          this.currentUser.role == 'SUPER_ADMIN_ORG'
+            ? this.menuSuperAdmin
+            : this.menuAdmin;
+        // console.log({ user: this.currentUser });
+      });
   }
   get menuAdmin() {
     return [
       {
         label: 'Tableau de bord',
-        link: 'overview',
+        link: '/dashboard/overview',
         icon: 'dashboard',
       },
       {
         label: 'Liste des demandes',
         link: 'requests-list',
         icon: 'list_alt',
+        children: [
+          {
+            label: "Dépannage d'urgence",
+            link: 'emergency-repair',
+            icon: 'build', // Icône pour un dépannage ou réparation
+          },
+          {
+            label: 'Avance sur événement',
+            link: 'event-advance',
+            icon: 'event', // Icône pour un événement
+          },
+          {
+            label: 'Avance salariale',
+            link: 'salary-advance',
+            icon: 'attach_money', // Icône pour un paiement/avance d'argent
+          },
+          {
+            label: 'Avance salariale remboursable mensuellement',
+            link: 'monthly-repayable-advance',
+            icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
+          },
+        ],
       },
       {
         label: 'Collaborateurs',
-        link: 'collaborators',
+        link: '/dashboard/collaborators',
         icon: 'people',
       },
       {
         label: 'Notifications',
-        link: 'Notifications',
+        link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
       {
         label: 'Mon Compte',
-        link: 'user',
+        link: '/dashboard/user',
         icon: 'person_outline',
       },
     ];
   }
-
+  toggleDropdown(item) {
+    if (item?.children) {
+      this.isDropdownOpened = !this.isDropdownOpened;
+    }
+  }
   get menuSuperAdmin() {
     return [
       {
         label: 'Tableau de bord',
-        link: 'overview',
+        link: '/dashboard/overview',
         icon: 'dashboard',
       },
       {
         label: 'Liste des demandes',
         link: 'requests-list',
         icon: 'list_alt',
+        children: [
+          {
+            label: "Dépannage d'urgence",
+            link: 'emergency-repair',
+            icon: 'build', // Icône pour un dépannage ou réparation
+          },
+          {
+            label: 'Avance sur événement',
+            link: 'event-advance',
+            icon: 'event', // Icône pour un événement
+          },
+          {
+            label: 'Avance salariale',
+            link: 'salary-advance',
+            icon: 'attach_money', // Icône pour un paiement/avance d'argent
+          },
+          {
+            label: 'Avance salariale remboursable mensuellement',
+            link: 'monthly-repayable-advance',
+            icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
+          },
+        ],
       },
       {
         label: 'Administrateurs',
-        link: 'admins',
+        link: '/dashboard/admins',
         icon: 'person',
       },
       {
         label: 'Collaborateurs',
-        link: 'collaborators',
+        link: '/dashboard/collaborators',
         icon: 'people',
       },
 
       {
         label: 'Notifications',
-        link: 'Notifications',
+        link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
       {
         label: 'Mon Compte',
-        link: 'user',
+        link: '/dashboard/user',
         icon: 'person_outline',
       },
       {
         label: 'Organisation',
-        link: 'organization',
+        link: '/dashboard/organization',
         icon: 'business',
       },
       {
         label: 'Activités',
-        link: 'activities',
+        link: '/dashboard/activities',
         icon: 'feed',
       },
     ];
   }
-
+  handleClick(item) {
+    if (item.children) {
+      this.toggleDropdown(item);
+    } else {
+      console.log(item.link);
+      this.router.navigate([item.link]);
+    }
+  }
   logout() {
     this.keycloakService.logout().then((result) => {
       this.router.navigate(['/']);

@@ -1,103 +1,39 @@
-<div
-  class="page-wrapper form-container form-container-card"
-  fxLayout="column"
-  fxLayoutGap="32px"
->
-  <div fxLayout="row" fxLayoutGap="32px">
-    <div fxFlex="50" fxLayout="column" fxLayoutGap="38px">
-      <span class="title">Mon profil</span>
-      <form
-        *ngIf="form"
-        [formGroup]="form"
-        class="wrapper form-container"
-        fxLayout="column"
-        fxLayoutGap="38px"
-      >
-        <div fxLayout="column" fxLayoutGap="15px">
-          <label for="prenom">Nom <span class="color-danger">*</span></label>
-          <input
-            formControlName="name"
-            type="text"
-            id="name"
-            class="form-control"
-            placeholder="Cofina"
-          />
-        </div>
-        <div fxLayout="column" fxLayoutGap="15px">
-          <label for="nom"
-            >Pourcentage de demande maximum sur le salaire(minimum 1, maximum
-            100)<span class="color-danger">*</span></label
-          >
-          <input
-            formControlName="amountPercent"
-            type="number"
-            id="amountPercent"
-            class="form-control"
-            placeholder="75"
-          />
-        </div>
-        <div fxLayout="column" fxLayoutGap="15px">
-          <label for="address"
-            >Montant maximale peu importe le salaire(minimum 5000)<span
-              class="color-danger"
-              >*</span
-            ></label
-          >
-          <input
-            formControlName="maxDemandeAmount"
-            type="number"
-            id="maxDemandeAmount"
-            class="form-control"
-            placeholder="1000000"
-          />
-        </div>
-      </form>
-    </div>
-    <div fxFlex="50" fxLayout="column" fxLayoutGap="24px">
-      <form fxLayout="column" fxLayoutGap="38px" class="form-container">
-        <span class="title">Date limite des demandes</span>
-        <div class="wrapper" fxLayout="column" fxLayoutGap="38px">
-          <ul>
-            @for (item of itemsCardDate; track $index) {
+<!-- class="page-wrapper form-container form-container-card" -->
+<div fxLayout="column" class="page-wrapper form-container form-container-card">
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    <mat-tab *ngFor="let service of listServices" [label]="service.title">
+      <div [ngSwitch]="service.title">
+        <div class="container_tab">
+          <app-organization-setting-general
+            *ngSwitchCase="'général'"
+          ></app-organization-setting-general>
+          <app-organization-setting-emergency
+            (serviceActivationChange)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Dépannage d’urgence'"
+          ></app-organization-setting-emergency>
+          <app-organization-setting-event
+            (activeService)="onServiceActivationChange($event)"
 
-            <li
-              [ngClass]="{
-                pending: item.pending == true,
-                active: item.active == true
-              }"
-            >
-              <button (click)="setDate(item.day)">
-                <time
-                  [dateTime]="
-                    lastDayOfCurrentMonth.getFullYear() +
-                    '-' +
-                    lastDayOfCurrentMonth.getMonth() +
-                    '-' +
-                    item
-                  "
-                  >{{ item.day }}</time
-                >
-              </button>
-            </li>
-            }
-          </ul>
+            [service]="service"
+            *ngSwitchCase="'Avance sur évenement'"
+          ></app-organization-setting-event>
+          <app-organization-setting-salary
+            (activeService)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Avance salariale'"
+          ></app-organization-setting-salary>
+          <app-organization-setting-salary-refund
+            (activeService)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Avance sur plusieurs mois'"
+          ></app-organization-setting-salary-refund>
+          <div *ngSwitchDefault>Component not found</div>
         </div>
-      </form>
-      <p style="text-align: justify; padding: 8px;">
-        <span style="width: 25px; height: 25px; padding: 5px; border-radius: 50%;display: inline-flex ;justify-content: center;align-items: center; background-color: gray;" ><i class="fa-solid fa-info" style="color: white;"></i></span>
-        Veuillez sélectionner la date du mois à partir de laquelle le collaborateur ne pourra plus soumettre de demande d'avance pour le mois en cours</p>
-    </div>
-  </div>
-  <div fxLayout="row" fxLayoutGap="32px" style="width: 100%;">
-    <div fxLayout="colum" fxLayoutAlign="start start" fxFlex="50" >
-      <button class="submit" (click)="updateOrganization()">
-        Mettre à jour
-      </button>
-    </div>
-    <div fxLayout="column" fxLayoutAlign="start start" fxFlex="50">
-      <button class="submit" (click)="updateDateLimit()" >
-        Soumettre
-      </button>
-    </div>
-  </div>
+      </div>
+    </mat-tab>
+   
+  </mat-tab-group>
+
+  
 </div>

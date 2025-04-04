@@ -1,18 +1,35 @@
 <div class="page-wrapper notif-list-container">
-    <div
+  <div
+    matSort
     [routerLink]="['/dashboard/requests-list']"
-    [queryParams]="{ 'entity': notif.entityId }"
-    class="notif" fxLayout="column" fxLayoutGap="13px" *ngFor=" let notif of notfis">
-        <div fxLayout="row" fxLayoutAlign="space-between start">
-            <span class="notif-title">{{ notif.title }}</span>
-            <span class="date-and-destinatary" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
-                <span class="date">{{ notif.date | frenchDate }}</span>
-                <span class="separator"></span>
-                <span class="collobator">par {{ notif.author.firstName }} {{ notif.author.lastName }}</span>
-            </span>
-        </div>
-        <div class="notif-content text-on-2-line">
-            {{ notif.content }}
-        </div>
+    [queryParams]="{ entity: notif.entityId }"
+    class="notif"
+    fxLayout="column"
+    fxLayoutGap="13px"
+    *ngFor="let notif of notfis"
+  >
+    <div fxLayout="row" fxLayoutAlign="space-between start">
+      <span class="notif-title">{{ notif.title }}</span>
+      <span
+        class="date-and-destinatary"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="8px"
+      >
+        <span class="date">{{ notif.date | frenchDate }}</span>
+        <span class="separator"></span>
+        <span class="collobator"
+          >par {{ notif.author.firstName }} {{ notif.author.lastName }}</span
+        >
+      </span>
     </div>
+    <div class="notif-content text-on-2-line">
+      {{ notif.content }}
+    </div>
+  </div>
+  <mat-paginator
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [length]="resultsLength"
+    aria-label=""
+  ></mat-paginator>
 </div>

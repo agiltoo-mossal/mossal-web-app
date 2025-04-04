@@ -9,6 +9,11 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { OrganizationComponent } from './components/organization/organization.component';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ActivitiesComponent } from './components/activities/activities.component';
+import { RequestEmergencyComponent } from './components/request-emergency/request-emergency.component';
+import { RequestEventComponent } from './components/request-event/request-event.component';
+import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
+import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
+import { RequestDetailsComponent } from './components/request-details/request-details.component';
 
 const routes: Routes = [
   {
@@ -42,6 +47,26 @@ const routes: Routes = [
           import('./components/admins/admins.module').then(
             (m) => m.AdminsModule
           ),
+      },
+      {
+        path: 'emergency-repair',
+        component: RequestEmergencyComponent,
+      },
+      {
+        path: 'event-advance',
+        component: RequestEventComponent,
+      },
+      {
+        path: 'salary-advance',
+        component: RequestSalaryComponent,
+      },
+      {
+        path: 'monthly-repayable-advance',
+        component: RequestMonthlyRepayableAdvanceComponent,
+      },
+      {
+        path: 'requests/details/:id',
+        component: RequestDetailsComponent,
       },
       {
         path: 'Notifications',

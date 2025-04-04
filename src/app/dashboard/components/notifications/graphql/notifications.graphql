@@ -16,3 +16,30 @@ query FetchOrganizationNotifications {
 mutation ViewOrganizationNotifications {
   viewOrganizationNotifications
 }
+
+query FetchPaginatedNotifications
+($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput){
+  fetchPaginatedNotifications(
+    metricsInput: $metricsInput, queryFilter: $queryFilter
+  ){
+    pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+    results{
+      entityId
+    title
+    content
+    author {
+      firstName
+      lastName
+    }
+    viewedByMe
+    organization
+    date: createdAt
+    }
+
+  }
+}

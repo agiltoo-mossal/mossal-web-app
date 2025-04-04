@@ -1,0 +1,274 @@
+/* Conteneur principal */
+.avance-evenement-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Titres principaux */
+.avance-evenement-container h2 {
+  font-size: 26px; /* Augmenté pour un titre principal */
+  color: #2d3559;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 2px solid #fcd980;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* Section */
+.section {
+  margin-bottom: 20px;
+}
+.flex-center {
+  display: flex;
+  gap: 8px;
+}
+.section h3 {
+  font-size: 20px; /* Augmenté pour les sous-titres */
+  color: #2d3559;
+  margin-bottom: 10px;
+}
+.category-input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.category-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px; /* Augmenté pour les champs de saisie */
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.category-input:focus {
+  border-color: #061e5c;
+}
+.category-btn {
+  padding: 10px 16px;
+  font-size: 14px; /* Augmenté pour les boutons */
+  background-color: #061e5c;
+  color: white;
+  border: 1px solid #061e5c;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.2s;
+}
+
+.category-btn:hover {
+  background-color: #061e5ce2;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+/* Liste des événements */
+.event-list {
+  list-style: none;
+  padding: 0;
+}
+
+.event-item {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.event-selected {
+   background-color: #061e5cd3;
+  span{
+    color: white;
+  }
+
+}
+.event-item:hover{
+  background-color: #061e5c86;
+  span{
+    color: white;
+  }
+}
+.event-title{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+
+}
+// .event-item:nth-child(odd) {
+//     background-color: #F1F7FF;
+// }
+// .event-item:nth-child(even) {
+//     background-color: white;
+// }
+
+.event-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex: 1;
+}
+.event-date {
+  display: flex;
+  justify-content: center;
+
+  gap: 5px;
+}
+.event-action{
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.event-details input[type="date"] {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  font-size: 14px; /* Taille de police pour les champs de date */
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px; /* Augmenté pour les icônes de boutons */
+}
+
+.edit-btn:hover {
+  color: #061e5c;
+}
+
+.delete-btn:hover {
+  color: #ff0000;
+}
+
+/* Bouton Ajouter un événement */
+.add-event-btn {
+  background-color: #061e5c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px; /* Augmenté pour le bouton */
+  align-self: flex-end;
+}
+.container-button {
+  display: flex;
+  justify-content: flex-end;
+}
+.add-event-btn:hover {
+  background-color: #061e5c;
+}
+
+/* Navigation des onglets */
+.tab-navigation {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.tab-item {
+  padding: 8px 12px;
+  background: #f4f6fa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px; /* Augmenté pour les onglets */
+  color: #2d3559;
+}
+.toggle-side {
+  padding: 6px;
+}
+.toggle-side.grise {
+  position: relative;
+}
+.toggle-side.grise::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.815);
+}
+/* Sélection des catégories */
+.category-selection {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.category-selection select {
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #f4f6fa;
+  color: #2d3559;
+}/* 
+.tab-item.active {
+  background: #061e5c;
+  color: white;
+}
+
+/* Paramètres */
+.settings h3 {
+  font-size: 18px; /* Augmenté pour les titres des paramètres */
+  color: #2d3559;
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  font-size: 16px; /* Augmenté pour les champs de saisie */
+}
+
+.input-group span {
+  font-size: 16px; /* Augmenté pour les labels */
+  color: #2d3559;
+}
+
+/* Bouton Valider */
+.validate-btn {
+  display: block;
+  background-color: #061e5c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px; /* Augmenté pour le bouton */
+  cursor: pointer;
+}
+
+.validate-btn:hover {
+  background-color: #061e5c63;
+}

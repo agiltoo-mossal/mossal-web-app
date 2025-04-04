@@ -139,3 +139,22 @@ mat-icon {
     font-size: 16px;
     transition: all .3s ease;
 }
+.dropdown-container {
+        background: #F1F7FF;
+  .dropdown-toggle {
+    cursor: pointer;
+  }
+
+  .dropdown-menu {
+    padding-left: 16px;
+
+    .nav-item {
+      padding: 12px 0;
+        background: #d7e3f3;
+
+      &:hover {
+        background: #f1f7ffa2;
+      }
+    }
+  }
+}

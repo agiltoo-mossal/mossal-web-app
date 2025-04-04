@@ -5,6 +5,7 @@ import { CollaboratorsComponent } from './collaborators.component';
 import { OverviewComponent } from './components/overview/overview.component';
 import { CreateCollobatorComponent } from './components/create-collobator/create-collobator.component';
 import { EditCollaboratorComponent } from './components/edit-collaborator/edit-collaborator.component';
+import { DetailCollaboratorComponent } from './components/detail-collaborator/detail-collaborator.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
       {
         path: ':id',
         component: EditCollaboratorComponent,
+      },
+      {
+        path: 'details/:id',
+        component: DetailCollaboratorComponent,
       },
     ],
   },
