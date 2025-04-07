@@ -38,6 +38,7 @@ export class FormAdminComponent {
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
+
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL
@@ -48,7 +49,11 @@ export class FormAdminComponent {
       lastName: ['', Validators.required],
       phoneNumber: [
         '',
-        [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
+        [
+          Validators.required,
+
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+        ],
       ],
       address: [''],
       position: ['', Validators.required],
@@ -79,6 +84,12 @@ export class FormAdminComponent {
       return;
     }
     this.isLoading = true;
+    console.log(this.formType);
+    if (this.formType == 'edit') {
+      this.edit();
+      return;
+    }
+
     this.inviteAdminGQL
       .mutate({ adminInput: this.collaboratorForm.value })
       .subscribe(
@@ -98,10 +109,13 @@ export class FormAdminComponent {
   }
 
   edit() {
-    if (this.collaboratorForm.invalid || this.isLoading) {
+    console.log(this.collaboratorForm.invalid, this.isLoading);
+    console.log(this.collaboratorForm.getRawValue());
+
+    /* if (this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched();
       return;
-    }
+    } */
     this.isLoading = true;
     const value = {
       ...this.collaboratorForm.value,

@@ -147,7 +147,7 @@
             >Le numéro de téléphone est obligatoire.</span
           >
           <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']"
-            >Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</span
+            >Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par +221 suivi de 78, 77, 76, 70 ou 75. Ex: +221785238928</span
           >
           <span *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</span>
         </div>
