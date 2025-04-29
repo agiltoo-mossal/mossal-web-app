@@ -196,6 +196,12 @@ export class OrganizationSettingSalaryComponent {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
       return;
     }
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
+      );
+      return;
+    }
     temp.push({
       activated: true,
       amount: 0,
