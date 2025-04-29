@@ -436,5 +436,14 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.endDate = '2025-12-31';
     this.status = null;
     this.search = '';
+    this.searchForm.patchValue({
+      startDate: '2025-01-01',
+      endDate: '2025-12-31',
+
+      average: {
+        min: 0,
+        max: 10000,
+      },
+    });
   }
 }
