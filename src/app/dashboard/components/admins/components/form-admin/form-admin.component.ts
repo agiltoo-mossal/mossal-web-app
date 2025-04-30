@@ -59,8 +59,8 @@ export class FormAdminComponent {
       position: ['', Validators.required],
       uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
-      wizallAccountNumber: [''],
-      bankAccountNumber: ['', Validators.required],
+      //wizallAccountNumber: [''],
+      // bankAccountNumber: [''],
     });
   }
 
@@ -79,6 +79,7 @@ export class FormAdminComponent {
 
   // Méthode pour soumettre le formulaire
   submitForm() {
+    console.log(this.collaboratorForm.invalid, this.isLoading);
     if (this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched();
       return;
@@ -169,7 +170,14 @@ export class FormAdminComponent {
         )
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['phoneNumber'].setErrors(null);
+        this.collaboratorForm.controls['phoneNumber'].updateValueAndValidity();
         this.phoneNumberExists = result;
+        if (result) {
+          this.collaboratorForm.controls['phoneNumber'].setErrors({
+            phoneNumberExists: true,
+          });
+        }
       });
   }
 
@@ -185,6 +193,14 @@ export class FormAdminComponent {
       )
       .subscribe((result) => {
         this.emailExists = result;
+        this.collaboratorForm.controls['email'].setErrors(null);
+        this.collaboratorForm.controls['email'].updateValueAndValidity();
+
+        if (result) {
+          this.collaboratorForm.controls['email'].setErrors({
+            emailExists: true,
+          });
+        }
       });
   }
 
@@ -214,6 +230,15 @@ export class FormAdminComponent {
         )
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+        this.collaboratorForm.controls[
+          'uniqueIdentifier'
+        ].updateValueAndValidity();
+        if (result) {
+          this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+            uniqueIdentifierExists: true,
+          });
+        }
         this.uniqueIdentifierExists = result;
       });
   }
