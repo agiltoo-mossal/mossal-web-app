@@ -211,9 +211,10 @@
     <!-- Boutons -->
     <div class="form-row">
       <button type="submit" [disabled]="collaboratorForm.invalid"
-      (click)="submitForm()"
+    
        class="submit-button">{{ formType === 'create' ? 'Enregistrer' : 'Sauvegarder' }}</button>
       <button
+        type="button"
         *ngIf="!collaborator?.blocked"
         class="suspend"
         requiresConfirmation
@@ -225,6 +226,7 @@
         Suspendre
       </button>
       <button
+        type="button"
         *ngIf="collaborator?.blocked"
         class="suspend"
         requiresConfirmation

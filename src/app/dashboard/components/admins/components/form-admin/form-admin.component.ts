@@ -104,6 +104,7 @@ export class FormAdminComponent {
           }
         },
         (error) => {
+          this.snackBarService.showSnackBar('une erreur est survenue');
           this.isLoading = false;
         }
       );
