@@ -80,7 +80,6 @@ export class SettingComponent implements OnInit {
           temp.amount = value.amountPercentage;
         }
         delete temp.amountPercentage;
-        console.log('dataForm', temp);
 
         this.settingChange.emit({
           dataForm: temp,
@@ -88,8 +87,6 @@ export class SettingComponent implements OnInit {
           saveData: true,
         });
       } else {
-        console.log('dataFormErrors', this.settingForm.errors);
-
         this.settingChange.emit({
           dataForm: null,
           categorie: this.categorie,

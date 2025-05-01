@@ -103,17 +103,17 @@ export class OrganizationSettingSalaryComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-            console.log('data', data);
-
             this.activated = data?.activated;
-            this.dateStart.setValue(new Date(data?.activatedAt));
-            this.dateEnd.setValue(
-              new Date(
-                new Date(data?.activatedAt).getTime() +
-                  data?.activationDurationDay * 24 * 60 * 60 * 1000
-              )
-            );
-            console.log('dateEnd', this.dateEnd.value);
+            if (data.activatedAt) {
+              this.dateStart.setValue(new Date(data?.activatedAt));
+              this.dateEnd.setValue(
+                new Date(
+                  new Date(data?.activatedAt).getTime() +
+                    data?.activationDurationDay * 24 * 60 * 60 * 1000
+                )
+              );
+              console.log('dateEnd', this.dateEnd.value);
+            }
 
             this.listCategorieService = [
               {
@@ -194,6 +194,12 @@ export class OrganizationSettingSalaryComponent {
       )
     ) {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
+      );
       return;
     }
     temp.push({

@@ -112,7 +112,6 @@ export class OrganizationSettingEmergencyComponent {
               .fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data.id;
             this.dataForm = data;
-            console.log('dataForm', this.dataForm);
 
             this.listCategorieService = [
               {
@@ -146,6 +145,7 @@ export class OrganizationSettingEmergencyComponent {
               selectedCategory: data.categorySociopro?.id,
             });
           } else {
+            this.activated = true;
             this.listCategorieService = [
               {
                 amount: 0,
@@ -160,6 +160,7 @@ export class OrganizationSettingEmergencyComponent {
                 } as any,
               },
             ];
+
             this.selectedCategorie = this.listCategorieService[0];
           }
         },
@@ -210,6 +211,7 @@ export class OrganizationSettingEmergencyComponent {
       refundDurationUnit: ERrefundDurationUnit.Month,
       refundDuration: this.service.refundDurationMonth,
     };
+    delete data.selectedCategory;
 
     if (
       this.selectedCategorie.categorySociopro?.title === 'Paramètres généraux'
@@ -444,6 +446,12 @@ export class OrganizationSettingEmergencyComponent {
       )
     ) {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
+      );
       return;
     }
     temp.push({

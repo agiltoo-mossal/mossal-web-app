@@ -68,8 +68,8 @@ export class OrganizationSettingSalaryRefundComponent {
     private formBuilder: FormBuilder
   ) {
     this.formDate = this.formBuilder.group({
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: [null, Validators.required],
+      endDate: [null, Validators.required],
     });
     this.formDate.valueChanges.subscribe((value) => {
       if (this.formDate.valid) {
@@ -105,15 +105,17 @@ export class OrganizationSettingSalaryRefundComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-
+            console.log('data', data);
             this.activated = data?.activated;
-            this.dateStart.setValue(new Date(data?.activatedAt));
-            this.dateEnd.setValue(
-              new Date(
-                new Date(data?.activatedAt).getTime() +
-                  data?.activationDurationDay * 24 * 60 * 60 * 1000
-              )
-            );
+            if (data.activatedAt) {
+              this.dateStart.setValue(new Date(data?.activatedAt));
+              this.dateEnd.setValue(
+                new Date(
+                  new Date(data?.activatedAt).getTime() +
+                    data?.activationDurationDay * 24 * 60 * 60 * 1000
+                )
+              );
+            }
             this.listCategorieService = [
               {
                 amount: data.amount,
@@ -193,6 +195,12 @@ export class OrganizationSettingSalaryRefundComponent {
       )
     ) {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
+      return;
+    }
+    if (!this.organisationServiceId) {
+      this.snackBarService.showSnackBar(
+        'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
+      );
       return;
     }
     temp.push({

@@ -15,6 +15,7 @@ import {
   CategorySociopro,
   FetchCategorySocioprosGQL,
   FetchOrganizationCollaboratorGQL,
+  InviteAdminGQL,
   InviteCollaboratorGQL,
   LockUserGQL,
   UnlockUserGQL,
@@ -45,7 +46,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private inviteCollaboratorGQL: InviteCollaboratorGQL,
+    private inviteAdminGQL: InviteAdminGQL,
     private router: Router,
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
@@ -70,7 +71,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       address: [''],
       // position: ['', Validators.required],
       uniqueIdentifier: ['', [Validators.required]],
-      salary: [500000, [Validators.required, Validators.min(50000)]],
+      salary: [0, [Validators.required, Validators.min(50000)]],
       wizallAccountNumber: [''],
       bankAccountNumber: [''],
       birthDate: [null],
@@ -126,14 +127,14 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.isLoading = true;
     const temp = this.collaboratorForm.getRawValue();
     delete temp.categorySocioProId;
-    this.inviteCollaboratorGQL
+    this.inviteAdminGQL
       .mutate({
-        collaboratorInput: {
+        adminInput: {
           ...temp,
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
-        categorySocioProId: this.collaboratorForm.value.categorySocioProId,
+        // categorySocioProId: this.collaboratorForm.value.categorySocioProId,
       })
       .subscribe(
         (result) => {

@@ -35,6 +35,7 @@ import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upl
     MatTableModule,
     MatSortModule,
     FileUploadModule,
+    MatIconModule,
   ],
   declarations: [
     AdminsComponent,

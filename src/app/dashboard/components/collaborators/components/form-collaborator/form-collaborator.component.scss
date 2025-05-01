@@ -78,3 +78,18 @@ select:focus {
 .submit-button:hover {
   background-color: #003399;
 }
+ button{
+    padding: 10px 15px;
+    background-color: transparent;
+    border: none;
+    color:#000066   ;
+    font-size: 16px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    &.suspend{
+        color: #ff0000;
+    }
+   }

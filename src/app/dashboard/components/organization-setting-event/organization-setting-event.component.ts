@@ -123,8 +123,6 @@ export class OrganizationSettingEventComponent {
           >;
           this.dataForm = this.info;
           if (this.info) {
-            console.log('event setting', this.info);
-
             this.fetchEvents(this.organisationServiceId);
           } else {
             this.activated.value = true;
@@ -253,6 +251,7 @@ export class OrganizationSettingEventComponent {
               endDate: new Date(event.endDate).toISOString().split('T')[0],
             };
           });
+          console.log('events', this.events);
         },
         error: (err) => {
           console.log(err);
@@ -288,6 +287,7 @@ export class OrganizationSettingEventComponent {
             this.events = this.events.filter(
               (event, i) => event.id !== eventId
             );
+            // this.listCategorieService = [];
           },
           error: (err) => {
             this.snackBarService.showSnackBar('Une erreur est survenue');
@@ -310,6 +310,13 @@ export class OrganizationSettingEventComponent {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
       return;
     }
+    if (!this.eventSelectedId && this.events.length == 0) {
+      this.snackBarService.showSnackBar(
+        'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
+      );
+      return;
+    }
+
     temp.push({
       activated: true,
       amount: 0,
@@ -334,31 +341,51 @@ export class OrganizationSettingEventComponent {
     this.dataEvent = event;
     this.showLineEvent = false;
     this.showComponent = true;
+    this.disableButton = true;
   }
 
   /**
    * Sauvegarde les paramètres globaux
    */
   async saveSettings() {
-    // Valider les données avant de sauvegarder
-    if (!this.dataForm) {
-      return;
-    }
-
+    console.log('dataForm', this.dataForm);
     if (
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
       if (this.eventSelectedId) {
+        console.log('dataForm', this.dataForm);
+
+        const {
+          __typename,
+          id,
+          activationDurationDay,
+          organizationId,
+          serviceId,
+          service,
+          organization,
+          categoriesocioproservices,
+          organisationService,
+          createdAt,
+          updatedAt,
+          categorySocioproServices,
+          events,
+          ...dataForm
+        } = this.dataForm;
+        this.dataForm = { ...dataForm };
+        console.log('dataForm des', this.dataForm);
+
         this.updateEventGQL
           .mutate({
             eventId: this.eventSelectedId,
             eventInput: {
               ...this.dataForm,
+              ...this.eventToCreate,
             },
           })
           .subscribe({
             next: (response) => {
               this.snackBarService.showSnackBar('Paramètres enregistrés');
+              this.eventToCreate = null;
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
@@ -367,7 +394,7 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
-        if (!this.organisationServiceId) {
+        /*  if (!this.organisationServiceId) {
           const organisationService = await lastValueFrom(
             this.defineService
               .mutate({
@@ -382,7 +409,7 @@ export class OrganizationSettingEventComponent {
               )
           );
           this.organisationServiceId = organisationService;
-        }
+        } */
         this.createEventGQL
           .mutate({
             eventInput: {
@@ -544,10 +571,26 @@ export class OrganizationSettingEventComponent {
   }
   createEvent() {
     if (!this.organisationServiceId) {
-      this.snackBarService.showSnackBar(
-        "Veuillez d'abord créer la configuration"
-      );
-      return;
+      this.defineService
+        .mutate({
+          organisationId: this.organization.id,
+          organisationServiceInput: {
+            activated: true,
+            activatedAt: new Date(),
+            amount: 0,
+            amountUnit: AmountUnit.Fixed,
+            autoValidate: true,
+            refundDuration: 1,
+            refundDurationUnit: DurationUnit.Month,
+          },
+          serviceId: this.service.id,
+        })
+        .subscribe({
+          next: (response) => {
+            this.organisationServiceId =
+              response.data.createOrganisationService.id;
+          },
+        });
     }
     this.showComponent = true;
     this.listCategorieService = [];
@@ -645,6 +688,7 @@ export class OrganizationSettingEventComponent {
       this.eventSelectedId = '';
       this.listCategorieService = this.tempListCategoryServices;
       this.showComponent = false;
+      console.log('dataForm', this.dataForm);
       return;
     }
     this.eventSelectedId = event.id;
@@ -663,6 +707,7 @@ export class OrganizationSettingEventComponent {
       },
       ...(event.categorySocioproServices || []),
     ];
+    this.dataForm = this.events.find((e) => e.id === event.id);
   }
 
   onTabChange(event: MatTabChangeEvent) {
@@ -674,6 +719,7 @@ export class OrganizationSettingEventComponent {
       this.disableButton = true;
       this.dataForm = $event.dataForm;
     }
+    console.log('disableButton', this.disableButton);
   }
   createOrganizationEvent(EventInput: EventInput) {}
 }

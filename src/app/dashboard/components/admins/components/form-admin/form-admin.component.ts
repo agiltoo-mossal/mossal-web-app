@@ -38,6 +38,7 @@ export class FormAdminComponent {
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
+
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL
@@ -48,14 +49,18 @@ export class FormAdminComponent {
       lastName: ['', Validators.required],
       phoneNumber: [
         '',
-        [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
+        [
+          Validators.required,
+
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+        ],
       ],
       address: [''],
       position: ['', Validators.required],
       uniqueIdentifier: ['', Validators.required],
       salary: [0, Validators.required],
-      wizallAccountNumber: [''],
-      bankAccountNumber: ['', Validators.required],
+      //wizallAccountNumber: [''],
+      // bankAccountNumber: [''],
     });
   }
 
@@ -74,11 +79,18 @@ export class FormAdminComponent {
 
   // Méthode pour soumettre le formulaire
   submitForm() {
+    console.log(this.collaboratorForm.invalid, this.isLoading);
     if (this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched();
       return;
     }
     this.isLoading = true;
+    console.log(this.formType);
+    if (this.formType == 'edit') {
+      this.edit();
+      return;
+    }
+
     this.inviteAdminGQL
       .mutate({ adminInput: this.collaboratorForm.value })
       .subscribe(
@@ -92,16 +104,20 @@ export class FormAdminComponent {
           }
         },
         (error) => {
+          this.snackBarService.showSnackBar('une erreur est survenue');
           this.isLoading = false;
         }
       );
   }
 
   edit() {
-    if (this.collaboratorForm.invalid || this.isLoading) {
+    console.log(this.collaboratorForm.invalid, this.isLoading);
+    console.log(this.collaboratorForm.getRawValue());
+
+    /* if (this.collaboratorForm.invalid || this.isLoading) {
       this.collaboratorForm.markAllAsTouched();
       return;
-    }
+    } */
     this.isLoading = true;
     const value = {
       ...this.collaboratorForm.value,
@@ -155,7 +171,14 @@ export class FormAdminComponent {
         )
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['phoneNumber'].setErrors(null);
+        this.collaboratorForm.controls['phoneNumber'].updateValueAndValidity();
         this.phoneNumberExists = result;
+        if (result) {
+          this.collaboratorForm.controls['phoneNumber'].setErrors({
+            phoneNumberExists: true,
+          });
+        }
       });
   }
 
@@ -171,6 +194,14 @@ export class FormAdminComponent {
       )
       .subscribe((result) => {
         this.emailExists = result;
+        this.collaboratorForm.controls['email'].setErrors(null);
+        this.collaboratorForm.controls['email'].updateValueAndValidity();
+
+        if (result) {
+          this.collaboratorForm.controls['email'].setErrors({
+            emailExists: true,
+          });
+        }
       });
   }
 
@@ -200,6 +231,15 @@ export class FormAdminComponent {
         )
       )
       .subscribe((result) => {
+        this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+        this.collaboratorForm.controls[
+          'uniqueIdentifier'
+        ].updateValueAndValidity();
+        if (result) {
+          this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+            uniqueIdentifierExists: true,
+          });
+        }
         this.uniqueIdentifierExists = result;
       });
   }
