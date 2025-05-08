@@ -1,3 +1,20 @@
+<!-- Style local pour forcer l'affichage des Material Icons -->
+<style>
+.mat-icon {
+  font-family: 'Material Icons' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+</style>
+
 <div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
   <a routerLink="/dashboard/admins"><span>{{ "<" }}</span>retour</a>
 </div>
@@ -134,7 +151,7 @@
           type="tel"
           id="phone"
           formControlName="phoneNumber"
-          placeholder="770000000"
+          placeholder="+221770000000"
         />
         <div
           *ngIf="
@@ -147,8 +164,10 @@
             >Le numéro de téléphone est obligatoire.</span
           >
           <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']"
-            >Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</span
+            >Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par +221 suivi de 78, 77, 76, 70 ou 75. Ex: +221785238928</span
           >
+        </div>
+        <div class="error-message"> 
           <span *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</span>
         </div>
       </div>
@@ -191,8 +210,11 @@
 
     <!-- Boutons -->
     <div class="form-row">
-      <button type="submit" class="submit-button">{{ formType === 'create' ? 'Enregistrer' : 'Sauvegarder' }}</button>
+      <button type="submit" [disabled]="collaboratorForm.invalid"
+    
+       class="submit-button">{{ formType === 'create' ? 'Enregistrer' : 'Sauvegarder' }}</button>
       <button
+        type="button"
         *ngIf="!collaborator?.blocked"
         class="suspend"
         requiresConfirmation
@@ -204,6 +226,7 @@
         Suspendre
       </button>
       <button
+        type="button"
         *ngIf="collaborator?.blocked"
         class="suspend"
         requiresConfirmation
