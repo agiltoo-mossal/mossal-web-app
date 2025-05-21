@@ -127,7 +127,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     }
     this.isLoading = true;
     const temp = this.collaboratorForm.getRawValue();
-    delete temp.categorySocioProId;
+    temp.categorySocioProId;
     this.inviteCollaboratorGQL
       .mutate({
         collaboratorInput: {
