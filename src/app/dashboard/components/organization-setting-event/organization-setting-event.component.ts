@@ -310,7 +310,13 @@ export class OrganizationSettingEventComponent {
       this.snackBarService.showSnackBar('Cette catégorie est déjà ajoutée');
       return;
     }
-    if (!this.eventSelectedId && this.events.length == 0) {
+    if (!this.eventSelectedId) {
+      this.snackBarService.showSnackBar(
+        "Veuillez enregistrer l'événement avant d ajouter une catégorie"
+      );
+      return;
+    }
+    if (!this.organisationServiceId) {
       this.snackBarService.showSnackBar(
         'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
       );
