@@ -221,7 +221,7 @@
                   class="radio {{ selectedReq?.id === row.id ? 'active' : '' }}"
                   fxLayoutAlign="center center"
                 ></span>
-                <span>{{ row?.number }}</span>
+                <span [routerLink]="['/dashboard/requests/details', row.id]" style="cursor: pointer;">{{ row?.number }}</span>
               </div>
             </td>
           </ng-container>

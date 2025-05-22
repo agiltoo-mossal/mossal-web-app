@@ -1,5 +1,5 @@
 <div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
-  <a routerLink="/dashboard/collaborators"
+  <a routerLink="/dashboard/Notifications"
     ><span>{{ "<" }}</span
     >retour</a
   >
@@ -9,9 +9,34 @@
   <span>Details Demande</span>
 </h2>
 
+<div class="container">
+  <!-- Section gauche : Détails de la demande -->
+  <div class="profile-section">
+    <div>
+      <h2>Demande #{{ demande?.number }}</h2>
+      <p><strong>Montant :</strong> {{ demande?.amount }} XOF</p>
+      <p><strong>Frais :</strong> {{ demande?.fees }} XOF</p>
+      <p><strong>Statut :</strong> {{ demande?.status | demandeStatus | titlecase }}</p>
+      <p><strong>Date de création :</strong> {{ demande?.createdAt | date }}</p>
+      <p><strong>Date de mise à jour :</strong> {{ demande?.updatedAt | date }}</p>
+    </div>
+  </div>
 
-<!-- Section centrale : Demande en attente -->
+  <!-- Section droite : Informations du collaborateur -->
+  <div class="finance-section">
+    <div>
+      <h2>{{ demande?.collaborator?.firstName }} {{ demande?.collaborator?.lastName }}</h2>
+      <p><strong>Matricule :</strong> {{ demande?.collaborator?.uniqueIdentifier }}</p>
+      <p><strong>Salaire :</strong> {{ demande?.collaborator?.salary }} XOF</p>
+      <p><strong>Balance :</strong> {{ demande?.collaborator?.balance }} XOF</p>
+      <p><strong>Acompte autorisé :</strong> {{ demande?.collaborator?.authorizedAdvance }} XOF</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section des remboursements -->
 <div class="request-section">
+  <h2>Historique des remboursements</h2>
   <table>
     <thead>
       <tr>
@@ -26,17 +51,16 @@
     <tbody>
       <tr *ngFor="let remboursement of listRemboursements">
         <td>{{remboursement?.number}}</td>
-        <td>{{remboursement?.amount}}</td>
-        <td>{{remboursement?.createdAt |date }}</td>
-        <td>{{remboursement?.fees}}</td>
-        <td>{{remboursement?.status |demandeStatus |titlecase}}</td>
+        <td>{{remboursement?.amount}} XOF</td>
+        <td>{{remboursement?.createdAt | date }}</td>
+        <td>{{remboursement?.fees}} XOF</td>
+        <td>{{remboursement?.status | demandeStatus | titlecase}}</td>
         <td style="display: flex;justify-content: end;" >
             <button class="action" (click)="rembourseDemande(remboursement.id)" [disabled]="remboursement?.status === 'PAYED'">
                 Rembourser
             </button>
         </td>
       </tr>
-        
     </tbody>
   </table>
 </div>

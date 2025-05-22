@@ -1,14 +1,17 @@
 <div class="page-wrapper notif-list-container">
   <div
     matSort
-    [routerLink]="['/dashboard/requests-list']"
-    [queryParams]="{ entity: notif.entityId }"
     class="notif"
     fxLayout="column"
     fxLayoutGap="13px"
+    [routerLink]="['/dashboard/requests/details', notif.entityId]"
     *ngFor="let notif of notfis"
   >
-    <div fxLayout="row" fxLayoutAlign="space-between start">
+    <!-- [queryParams]="{ entity: notif.entityId }" -->
+    <div
+    
+    
+     fxLayout="row" fxLayoutAlign="space-between start">
       <span class="notif-title">{{ notif.title }}</span>
       <span
         class="date-and-destinatary"
