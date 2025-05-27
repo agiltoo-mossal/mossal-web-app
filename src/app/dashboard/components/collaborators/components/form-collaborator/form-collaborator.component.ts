@@ -127,7 +127,8 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     }
     this.isLoading = true;
     const temp = this.collaboratorForm.getRawValue();
-    temp.categorySocioProId;
+    delete temp.categorySocioProId;
+
     this.inviteCollaboratorGQL
       .mutate({
         collaboratorInput: {
@@ -135,7 +136,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
-        // categorySocioProId: this.collaboratorForm.value.categorySocioProId,
+        categorySocioProId: this.collaboratorForm.value.categorySocioProId,
       })
       .subscribe(
         (result) => {
