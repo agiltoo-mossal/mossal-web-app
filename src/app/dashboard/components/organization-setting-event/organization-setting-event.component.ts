@@ -287,6 +287,7 @@ export class OrganizationSettingEventComponent {
             this.events = this.events.filter(
               (event, i) => event.id !== eventId
             );
+            this.eventSelectedId = '';
             // this.listCategorieService = [];
           },
           error: (err) => {
@@ -312,16 +313,16 @@ export class OrganizationSettingEventComponent {
     }
     if (!this.eventSelectedId) {
       this.snackBarService.showSnackBar(
-        "Veuillez enregistrer l'événement avant d ajouter une catégorie"
+        'Veuillez enregistrer les paramètres généraux avant d ajouter une catégorie'
       );
       return;
     }
-    if (!this.organisationServiceId) {
+    /* if (!this.organisationServiceId) {
       this.snackBarService.showSnackBar(
         'Veuillez enregistrer les paramètres avant d ajouter une catégorie'
       );
       return;
-    }
+    } */
 
     temp.push({
       activated: true,
@@ -400,22 +401,6 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
-        /*  if (!this.organisationServiceId) {
-          const organisationService = await lastValueFrom(
-            this.defineService
-              .mutate({
-                organisationId: this.organization.id,
-                organisationServiceInput: {
-                  ...this.dataForm,
-                },
-                serviceId: this.service.id,
-              })
-              .pipe(
-                map((response) => response.data.createOrganisationService.id)
-              )
-          );
-          this.organisationServiceId = organisationService;
-        } */
         this.createEventGQL
           .mutate({
             eventInput: {
@@ -427,6 +412,9 @@ export class OrganizationSettingEventComponent {
           .subscribe({
             next: (response) => {
               this.snackBarService.showSnackBar('Paramètres enregistrés');
+              this.organisationServiceId =
+                response.data.createEvent.organisationService.id;
+              this.eventSelectedId = response.data.createEvent.id;
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
