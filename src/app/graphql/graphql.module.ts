@@ -6,8 +6,7 @@ import { environment } from 'src/environments/environment';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
-    // link: httpLink.create({ uri: environment.GRAPHQL_URI }),
-    link: httpLink.create({ uri: 'http://localhost:7007/graphql' }),
+    link: httpLink.create({ uri: environment.GRAPHQL_URI }),
     cache: new InMemoryCache(),
   };
 }
