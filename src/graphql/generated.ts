@@ -998,7 +998,7 @@ export type QueryFetchServicesPubArgs = {
 
 export type QueryFetchTotalDemandesAmountArgs = {
   filter?: InputMaybe<DemandesMetricsInput>;
-  status?: InputMaybe<DemandeStatus>;
+  status?: InputMaybe<Array<DemandeStatus>>;
 };
 
 
@@ -1554,7 +1554,7 @@ export type FetchCollaboratorCountQueryVariables = Exact<{
 export type FetchCollaboratorCountQuery = { __typename?: 'Query', fetchCollaboratorCount: number };
 
 export type FetchTotalDemandesAmountQueryVariables = Exact<{
-  status?: InputMaybe<DemandeStatus>;
+  status?: InputMaybe<Array<DemandeStatus> | DemandeStatus>;
   filter?: InputMaybe<DemandesMetricsInput>;
 }>;
 
@@ -3095,7 +3095,7 @@ export const FetchCollaboratorCountDocument = gql`
     }
   }
 export const FetchTotalDemandesAmountDocument = gql`
-    query FetchTotalDemandesAmount($status: DemandeStatus, $filter: DemandesMetricsInput) {
+    query FetchTotalDemandesAmount($status: [DemandeStatus!], $filter: DemandesMetricsInput) {
   fetchTotalDemandesAmount(status: $status, filter: $filter)
 }
     `;

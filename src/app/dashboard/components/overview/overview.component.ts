@@ -228,7 +228,6 @@ export class OverviewComponent implements OnInit {
     const startDate =
       this.metricsInput.value.startDate || new Date('2024-01-01');
     const endDate = this.metricsInput.value.endDate || new Date();
-    console.log(startDate, endDate);
 
     return lastValueFrom(
       this.fetchDemandesMetricsGQL.fetch(
@@ -259,7 +258,6 @@ export class OverviewComponent implements OnInit {
       .then((result) => {
         this.collabs = result.data.fetchPaginatedOrganizationCollaborators
           .results as User[];
-        console.log(this.collabs);
         this.dataSource.data = this.collabs;
         this.selectedCollab = this.collabs?.[0];
         this.totalNewUsers =
@@ -426,6 +424,7 @@ export class OverviewComponent implements OnInit {
             startDate: this.startDate,
             endDate: this.endDate,
           },
+          status: [DemandeStatus.Validated, DemandeStatus.Payed],
         },
         { fetchPolicy: 'no-cache' }
       )
@@ -443,7 +442,7 @@ export class OverviewComponent implements OnInit {
     this.fetchTotalDemandesAmountService
       .fetch(
         {
-          status: DemandeStatus.Validated,
+          status: [DemandeStatus.Validated],
           filter: {
             startDate: this.startDate,
             endDate: this.endDate,
