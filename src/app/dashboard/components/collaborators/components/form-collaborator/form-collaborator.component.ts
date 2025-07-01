@@ -46,7 +46,8 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private inviteAdminGQL: InviteAdminGQL,
+    //  private inviteAdminGQL: InviteAdminGQL,
+    private inviteCollaboratorGQL: InviteCollaboratorGQL,
     private router: Router,
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
@@ -75,7 +76,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       wizallAccountNumber: [''],
       bankAccountNumber: [''],
       birthDate: [null],
-      favoriteWallet: [Wallet.Wave],
+      favoriteWallet: [Wallet.om],
       categorySocioProId: ['', Validators.required],
       position: ['TESTEUR'],
     });
@@ -127,9 +128,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.isLoading = true;
     const temp = this.collaboratorForm.getRawValue();
     delete temp.categorySocioProId;
-    this.inviteAdminGQL
+    this.inviteCollaboratorGQL
       .mutate({
-        adminInput: {
+        collaboratorInput: {
           ...temp,
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
