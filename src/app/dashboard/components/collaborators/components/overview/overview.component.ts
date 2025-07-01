@@ -24,6 +24,7 @@ import {
   UnlockUserGQL,
   User,
 } from 'src/graphql/generated';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-overview',
@@ -48,6 +49,10 @@ export class OverviewComponent implements AfterViewInit {
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
+
+  EXCEL_TYPE =
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  EXCEL_EXTENSION = '.xlsx';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -189,4 +194,64 @@ export class OverviewComponent implements AfterViewInit {
       }
     });
   };
+
+
+    downloadCollaborators() {
+      this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+        next: ({ data }) => {
+          console.log("result =>>>>>>>>>>> ", data);
+          
+          const temps = data.fetchOrganizationCollaborators;
+          if (temps.length) {
+            const csvRows = [
+              [
+                'Nom',
+                'Prenom',
+                'Identifiant unique',
+                'Date d\'inscription',
+              ],
+              ...temps.map((row) => [
+                row.lastName,
+                row.firstName,
+                row.uniqueIdentifier,
+                row.createdAt,
+                '',
+              ]),
+            ];
+            this.convertToXLSX(csvRows);
+          } else {
+            this.snackBarService.showSnackBar(
+              "Aucun collaborateur trouvé !"
+            );
+          }
+        },
+        error: (error) => console.log(error),
+      });
+    }
+  
+    convertToXLSX(data: any[]) {
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+        skipHeader: true,
+      });
+      const workbook: XLSX.WorkBook = {
+        Sheets: { data: worksheet },
+        SheetNames: ['data'],
+      };
+      const excelBuffer: any = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+      this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
+    }
+  
+    saveAsExcelFile(buffer: any, fileName: string): void {
+      const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+    }
 }

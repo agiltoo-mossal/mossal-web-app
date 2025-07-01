@@ -735,6 +735,7 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
+  fetchAccountantData: Array<Demande>;
   fetchActivity: Activity;
   fetchAllCategorySocioproServices: Array<CategorySocioproService>;
   fetchAllCategorySociopros: Array<CategorySociopro>;
@@ -1176,7 +1177,8 @@ export enum UserRole {
 
 /** Possible wallets */
 export enum Wallet {
-  Wave = 'WAVE'
+  // Wave = 'WAVE',
+  om = 'Orange Money'
 }
 
 export type _Entity = Demande | Organization | Remboursement;
@@ -1621,6 +1623,11 @@ export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }
 
 export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'Demande', amount: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, email: string, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, phoneNumber?: string | null, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null }> };
 
+export type FetchAccountantDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchAccountantDataQuery = { __typename?: 'Query', fetchAccountantData: Array<{ __typename?: 'Demande', amount: number, number: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, email: string, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, phoneNumber?: string | null, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null }> };
+
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
   isAdmin?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1679,48 +1686,48 @@ export const LoginAdminDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class LoginAdminGQL extends Apollo.Query<LoginAdminQuery, LoginAdminQueryVariables> {
-    document = LoginAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class LoginAdminGQL extends Apollo.Query<LoginAdminQuery, LoginAdminQueryVariables> {
+  document = LoginAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ResetAdminPasswordDocument = gql`
     mutation ResetAdminPassword($resetPasswordInput: ResetPasswordInput!) {
   resetAdminPassword(resetPasswordInput: $resetPasswordInput)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ResetAdminPasswordGQL extends Apollo.Mutation<ResetAdminPasswordMutation, ResetAdminPasswordMutationVariables> {
-    document = ResetAdminPasswordDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ResetAdminPasswordGQL extends Apollo.Mutation<ResetAdminPasswordMutation, ResetAdminPasswordMutationVariables> {
+  document = ResetAdminPasswordDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const StartForgotPasswordDocument = gql`
     mutation StartForgotPassword($email: String!) {
   startForgotPassword(email: $email)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class StartForgotPasswordGQL extends Apollo.Mutation<StartForgotPasswordMutation, StartForgotPasswordMutationVariables> {
-    document = StartForgotPasswordDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class StartForgotPasswordGQL extends Apollo.Mutation<StartForgotPasswordMutation, StartForgotPasswordMutationVariables> {
+  document = StartForgotPasswordDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FinalizeForgotPasswordDocument = gql`
     mutation FinalizeForgotPassword($finalizeForgotPasswordInput: FinalizeForgotPasswordInput!) {
   finalizeForgotPassword(
@@ -1729,16 +1736,16 @@ export const FinalizeForgotPasswordDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
-    document = FinalizeForgotPasswordDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
+  document = FinalizeForgotPasswordDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchPaginatedActivitiesDocument = gql`
     query FetchPaginatedActivities($queryFilter: QueryDataConfigInput) {
   fetchPaginatedActivities(queryFilter: $queryFilter) {
@@ -1765,16 +1772,16 @@ export const FetchPaginatedActivitiesDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedActivitiesGQL extends Apollo.Query<FetchPaginatedActivitiesQuery, FetchPaginatedActivitiesQueryVariables> {
-    document = FetchPaginatedActivitiesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchPaginatedActivitiesGQL extends Apollo.Query<FetchPaginatedActivitiesQuery, FetchPaginatedActivitiesQueryVariables> {
+  document = FetchPaginatedActivitiesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganizationAdminsDocument = gql`
     query FetchOrganizationAdmins {
   fetchOrganizationAdmins {
@@ -1799,32 +1806,32 @@ export const FetchOrganizationAdminsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationAdminsGQL extends Apollo.Query<FetchOrganizationAdminsQuery, FetchOrganizationAdminsQueryVariables> {
-    document = FetchOrganizationAdminsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganizationAdminsGQL extends Apollo.Query<FetchOrganizationAdminsQuery, FetchOrganizationAdminsQueryVariables> {
+  document = FetchOrganizationAdminsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const InviteAdminDocument = gql`
     mutation InviteAdmin($adminInput: InviteCollaboratorInput!) {
   inviteAdmin(admin: $adminInput)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
-    document = InviteAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class InviteAdminGQL extends Apollo.Mutation<InviteAdminMutation, InviteAdminMutationVariables> {
+  document = InviteAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchPaginatedOrganisationAdminsDocument = gql`
     query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
   fetchPaginatedOrganisationAdmins(
@@ -1860,16 +1867,16 @@ export const FetchPaginatedOrganisationAdminsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedOrganisationAdminsGQL extends Apollo.Query<FetchPaginatedOrganisationAdminsQuery, FetchPaginatedOrganisationAdminsQueryVariables> {
-    document = FetchPaginatedOrganisationAdminsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchPaginatedOrganisationAdminsGQL extends Apollo.Query<FetchPaginatedOrganisationAdminsQuery, FetchPaginatedOrganisationAdminsQueryVariables> {
+  document = FetchPaginatedOrganisationAdminsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganizationCollaboratorsDocument = gql`
     query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
   fetchOrganizationCollaborators(metricsInput: $metricsInput) {
@@ -1896,16 +1903,16 @@ export const FetchOrganizationCollaboratorsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
-    document = FetchOrganizationCollaboratorsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
+  document = FetchOrganizationCollaboratorsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
     query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $hasPendingDemandes: Boolean) {
   fetchPaginatedOrganizationCollaborators(
@@ -1944,16 +1951,16 @@ export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedOrganizationCollaboratorsGQL extends Apollo.Query<FetchPaginatedOrganizationCollaboratorsQuery, FetchPaginatedOrganizationCollaboratorsQueryVariables> {
-    document = FetchPaginatedOrganizationCollaboratorsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchPaginatedOrganizationCollaboratorsGQL extends Apollo.Query<FetchPaginatedOrganizationCollaboratorsQuery, FetchPaginatedOrganizationCollaboratorsQueryVariables> {
+  document = FetchPaginatedOrganizationCollaboratorsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const InviteCollaboratorDocument = gql`
     mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!, $categorySocioProId: String) {
   inviteCollaborator(
@@ -1963,16 +1970,16 @@ export const InviteCollaboratorDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
-    document = InviteCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
+  document = InviteCollaboratorDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganizationCollaboratorDocument = gql`
     query FetchOrganizationCollaborator($collaboratorId: String!) {
   fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
@@ -2004,16 +2011,16 @@ export const FetchOrganizationCollaboratorDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
-    document = FetchOrganizationCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
+  document = FetchOrganizationCollaboratorDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateCollaboratorDocument = gql`
     mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!, $categorySocioProId: String) {
   updateCollaborator(
@@ -2024,16 +2031,16 @@ export const UpdateCollaboratorDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
-    document = UpdateCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
+  document = UpdateCollaboratorDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganizationNotificationsDocument = gql`
     query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
@@ -2051,32 +2058,32 @@ export const FetchOrganizationNotificationsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationNotificationsGQL extends Apollo.Query<FetchOrganizationNotificationsQuery, FetchOrganizationNotificationsQueryVariables> {
-    document = FetchOrganizationNotificationsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganizationNotificationsGQL extends Apollo.Query<FetchOrganizationNotificationsQuery, FetchOrganizationNotificationsQueryVariables> {
+  document = FetchOrganizationNotificationsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ViewOrganizationNotificationsDocument = gql`
     mutation ViewOrganizationNotifications {
   viewOrganizationNotifications
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ViewOrganizationNotificationsGQL extends Apollo.Mutation<ViewOrganizationNotificationsMutation, ViewOrganizationNotificationsMutationVariables> {
-    document = ViewOrganizationNotificationsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ViewOrganizationNotificationsGQL extends Apollo.Mutation<ViewOrganizationNotificationsMutation, ViewOrganizationNotificationsMutationVariables> {
+  document = ViewOrganizationNotificationsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchPaginatedNotificationsDocument = gql`
     query FetchPaginatedNotifications($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
   fetchPaginatedNotifications(
@@ -2105,16 +2112,16 @@ export const FetchPaginatedNotificationsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedNotificationsGQL extends Apollo.Query<FetchPaginatedNotificationsQuery, FetchPaginatedNotificationsQueryVariables> {
-    document = FetchPaginatedNotificationsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchPaginatedNotificationsGQL extends Apollo.Query<FetchPaginatedNotificationsQuery, FetchPaginatedNotificationsQueryVariables> {
+  document = FetchPaginatedNotificationsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateOrganizationDocument = gql`
     mutation UpdateOrganization($organizationId: ID!, $organizationInput: OrganizationUpdateInput!) {
   updateOrganization(
@@ -2124,32 +2131,32 @@ export const UpdateOrganizationDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateOrganizationGQL extends Apollo.Mutation<UpdateOrganizationMutation, UpdateOrganizationMutationVariables> {
-    document = UpdateOrganizationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateOrganizationGQL extends Apollo.Mutation<UpdateOrganizationMutation, UpdateOrganizationMutationVariables> {
+  document = UpdateOrganizationDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const DeleteCategorySocioproDocument = gql`
     mutation DeleteCategorySociopro($categorySocioproId: ID!) {
   deleteCategorySociopro(categorySocioproId: $categorySocioproId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DeleteCategorySocioproGQL extends Apollo.Mutation<DeleteCategorySocioproMutation, DeleteCategorySocioproMutationVariables> {
-    document = DeleteCategorySocioproDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class DeleteCategorySocioproGQL extends Apollo.Mutation<DeleteCategorySocioproMutation, DeleteCategorySocioproMutationVariables> {
+  document = DeleteCategorySocioproDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateCategorySocioproDocument = gql`
     mutation UpdateCategorySociopro($categorySocioproInput: CategorySocioproUpdateInput!, $categorySocioproId: ID!) {
   updateCategorySociopro(
@@ -2159,16 +2166,16 @@ export const UpdateCategorySocioproDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateCategorySocioproGQL extends Apollo.Mutation<UpdateCategorySocioproMutation, UpdateCategorySocioproMutationVariables> {
-    document = UpdateCategorySocioproDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateCategorySocioproGQL extends Apollo.Mutation<UpdateCategorySocioproMutation, UpdateCategorySocioproMutationVariables> {
+  document = UpdateCategorySocioproDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const CreateCategorySocioproServiceDocument = gql`
     mutation CreateCategorySocioproService($categorySocioproServiceInput: CategorySocioproServiceInput!, $categorySocioproId: ID!, $organisationServiceId: ID!, $eventId: ID) {
   createCategorySocioproService(
@@ -2182,16 +2189,16 @@ export const CreateCategorySocioproServiceDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateCategorySocioproServiceGQL extends Apollo.Mutation<CreateCategorySocioproServiceMutation, CreateCategorySocioproServiceMutationVariables> {
-    document = CreateCategorySocioproServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateCategorySocioproServiceGQL extends Apollo.Mutation<CreateCategorySocioproServiceMutation, CreateCategorySocioproServiceMutationVariables> {
+  document = CreateCategorySocioproServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const CreateCategorySocioproDocument = gql`
     mutation CreateCategorySociopro($categorySocioproInput: CategorySocioproInput!, $organizationId: ID!) {
   createCategorySociopro(
@@ -2207,16 +2214,16 @@ export const CreateCategorySocioproDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateCategorySocioproGQL extends Apollo.Mutation<CreateCategorySocioproMutation, CreateCategorySocioproMutationVariables> {
-    document = CreateCategorySocioproDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateCategorySocioproGQL extends Apollo.Mutation<CreateCategorySocioproMutation, CreateCategorySocioproMutationVariables> {
+  document = CreateCategorySocioproDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchCategorySocioprosDocument = gql`
     query FetchCategorySociopros($queryConfig: QueryDataConfigInput!) {
   fetchCategorySociopros(queryConfig: $queryConfig) {
@@ -2237,16 +2244,16 @@ export const FetchCategorySocioprosDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchCategorySocioprosGQL extends Apollo.Query<FetchCategorySocioprosQuery, FetchCategorySocioprosQueryVariables> {
-    document = FetchCategorySocioprosDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchCategorySocioprosGQL extends Apollo.Query<FetchCategorySocioprosQuery, FetchCategorySocioprosQueryVariables> {
+  document = FetchCategorySocioprosDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchServicesDocument = gql`
     query FetchServices($queryConfig: QueryDataConfigInput) {
   fetchServices(queryConfig: $queryConfig) {
@@ -2270,16 +2277,16 @@ export const FetchServicesDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchServicesGQL extends Apollo.Query<FetchServicesQuery, FetchServicesQueryVariables> {
-    document = FetchServicesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchServicesGQL extends Apollo.Query<FetchServicesQuery, FetchServicesQueryVariables> {
+  document = FetchServicesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const CreateOrganistionServiceDocument = gql`
     mutation CreateOrganistionService($organisationServiceInput: OrganisationServiceInput!, $organisationId: ID!, $serviceId: ID!) {
   createOrganisationService(
@@ -2336,16 +2343,16 @@ export const CreateOrganistionServiceDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateOrganistionServiceGQL extends Apollo.Mutation<CreateOrganistionServiceMutation, CreateOrganistionServiceMutationVariables> {
-    document = CreateOrganistionServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateOrganistionServiceGQL extends Apollo.Mutation<CreateOrganistionServiceMutation, CreateOrganistionServiceMutationVariables> {
+  document = CreateOrganistionServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateOrganisationServiceDocument = gql`
     mutation UpdateOrganisationService($organisationServiceInput: OrganisationServiceUpdateInput!, $organisationServiceId: ID!) {
   updateOrganisationService(
@@ -2355,16 +2362,16 @@ export const UpdateOrganisationServiceDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateOrganisationServiceGQL extends Apollo.Mutation<UpdateOrganisationServiceMutation, UpdateOrganisationServiceMutationVariables> {
-    document = UpdateOrganisationServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateOrganisationServiceGQL extends Apollo.Mutation<UpdateOrganisationServiceMutation, UpdateOrganisationServiceMutationVariables> {
+  document = UpdateOrganisationServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateCategorySocioproServiceDocument = gql`
     mutation UpdateCategorySocioproService($categorySocioproServiceInput: CategorySocioproServiceUpdateInput!, $categorySocioproServiceId: ID!) {
   updateCategorySocioproService(
@@ -2374,16 +2381,16 @@ export const UpdateCategorySocioproServiceDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateCategorySocioproServiceGQL extends Apollo.Mutation<UpdateCategorySocioproServiceMutation, UpdateCategorySocioproServiceMutationVariables> {
-    document = UpdateCategorySocioproServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateCategorySocioproServiceGQL extends Apollo.Mutation<UpdateCategorySocioproServiceMutation, UpdateCategorySocioproServiceMutationVariables> {
+  document = UpdateCategorySocioproServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganisationServiceByOrganisationIdAndServiceIdDocument = gql`
     query FetchOrganisationServiceByOrganisationIdAndServiceId($organisationId: ID!, $serviceId: ID!) {
   fetchOrganisationServiceByOrganisationIdAndServiceId(
@@ -2437,16 +2444,16 @@ export const FetchOrganisationServiceByOrganisationIdAndServiceIdDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganisationServiceByOrganisationIdAndServiceIdGQL extends Apollo.Query<FetchOrganisationServiceByOrganisationIdAndServiceIdQuery, FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables> {
-    document = FetchOrganisationServiceByOrganisationIdAndServiceIdDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganisationServiceByOrganisationIdAndServiceIdGQL extends Apollo.Query<FetchOrganisationServiceByOrganisationIdAndServiceIdQuery, FetchOrganisationServiceByOrganisationIdAndServiceIdQueryVariables> {
+  document = FetchOrganisationServiceByOrganisationIdAndServiceIdDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const CreateEventDocument = gql`
     mutation CreateEvent($eventInput: EventInput!, $organizationServiceId: ID!) {
   createEvent(
@@ -2478,16 +2485,16 @@ export const CreateEventDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CreateEventGQL extends Apollo.Mutation<CreateEventMutation, CreateEventMutationVariables> {
-    document = CreateEventDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateEventGQL extends Apollo.Mutation<CreateEventMutation, CreateEventMutationVariables> {
+  document = CreateEventDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchEventsDocument = gql`
     query FetchEvents($queryConfig: QueryDataConfigInput, $organizationServiceId: ID!) {
   fetchEvents(
@@ -2545,112 +2552,112 @@ export const FetchEventsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchEventsGQL extends Apollo.Query<FetchEventsQuery, FetchEventsQueryVariables> {
-    document = FetchEventsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchEventsGQL extends Apollo.Query<FetchEventsQuery, FetchEventsQueryVariables> {
+  document = FetchEventsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const DesactivateOrganisationServiceDocument = gql`
     mutation DesactivateOrganisationService($organisationServiceId: ID!) {
   deactivateOrganisationService(organisationServiceId: $organisationServiceId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DesactivateOrganisationServiceGQL extends Apollo.Mutation<DesactivateOrganisationServiceMutation, DesactivateOrganisationServiceMutationVariables> {
-    document = DesactivateOrganisationServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class DesactivateOrganisationServiceGQL extends Apollo.Mutation<DesactivateOrganisationServiceMutation, DesactivateOrganisationServiceMutationVariables> {
+  document = DesactivateOrganisationServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ActivateOrganisationServiceDocument = gql`
     mutation ActivateOrganisationService($organisationServiceId: ID!) {
   activateOrganisationService(organisationServiceId: $organisationServiceId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ActivateOrganisationServiceGQL extends Apollo.Mutation<ActivateOrganisationServiceMutation, ActivateOrganisationServiceMutationVariables> {
-    document = ActivateOrganisationServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ActivateOrganisationServiceGQL extends Apollo.Mutation<ActivateOrganisationServiceMutation, ActivateOrganisationServiceMutationVariables> {
+  document = ActivateOrganisationServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const DeleteEventDocument = gql`
     mutation DeleteEvent($eventId: ID!) {
   deleteEvent(eventId: $eventId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DeleteEventGQL extends Apollo.Mutation<DeleteEventMutation, DeleteEventMutationVariables> {
-    document = DeleteEventDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class DeleteEventGQL extends Apollo.Mutation<DeleteEventMutation, DeleteEventMutationVariables> {
+  document = DeleteEventDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const DesactiveEventDocument = gql`
     mutation DesactiveEvent($eventId: ID!) {
   deactivateEvent(eventId: $eventId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DesactiveEventGQL extends Apollo.Mutation<DesactiveEventMutation, DesactiveEventMutationVariables> {
-    document = DesactiveEventDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class DesactiveEventGQL extends Apollo.Mutation<DesactiveEventMutation, DesactiveEventMutationVariables> {
+  document = DesactiveEventDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ActivateEventDocument = gql`
     mutation ActivateEvent($eventId: ID!) {
   activateEvent(eventId: $eventId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ActivateEventGQL extends Apollo.Mutation<ActivateEventMutation, ActivateEventMutationVariables> {
-    document = ActivateEventDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ActivateEventGQL extends Apollo.Mutation<ActivateEventMutation, ActivateEventMutationVariables> {
+  document = ActivateEventDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateEventDocument = gql`
     mutation UpdateEvent($eventInput: EventUpdateInput!, $eventId: ID!) {
   updateEvent(eventInput: $eventInput, eventId: $eventId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateEventGQL extends Apollo.Mutation<UpdateEventMutation, UpdateEventMutationVariables> {
-    document = UpdateEventDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateEventGQL extends Apollo.Mutation<UpdateEventMutation, UpdateEventMutationVariables> {
+  document = UpdateEventDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchDemandesByCollaboratorDocument = gql`
     query FetchDemandesByCollaborator($collaboratorId: ID!, $status: DemandeStatus) {
   fetchDemandesByCollaborator(collaboratorId: $collaboratorId, status: $status) {
@@ -2681,16 +2688,16 @@ export const FetchDemandesByCollaboratorDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchDemandesByCollaboratorGQL extends Apollo.Query<FetchDemandesByCollaboratorQuery, FetchDemandesByCollaboratorQueryVariables> {
-    document = FetchDemandesByCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchDemandesByCollaboratorGQL extends Apollo.Query<FetchDemandesByCollaboratorQuery, FetchDemandesByCollaboratorQueryVariables> {
+  document = FetchDemandesByCollaboratorDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchDemandesMetricsDocument = gql`
     query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
   fetchDemandesMetrics(metricsInput: $metricsInput) {
@@ -2706,16 +2713,16 @@ export const FetchDemandesMetricsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchDemandesMetricsGQL extends Apollo.Query<FetchDemandesMetricsQuery, FetchDemandesMetricsQueryVariables> {
-    document = FetchDemandesMetricsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchDemandesMetricsGQL extends Apollo.Query<FetchDemandesMetricsQuery, FetchDemandesMetricsQueryVariables> {
+  document = FetchDemandesMetricsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganizationDemandesDocument = gql`
     query FetchOrganizationDemandes($metricsInput: DemandesMetricsInput) {
   fetchOrganizationDemandes(metricsInput: $metricsInput) {
@@ -2742,16 +2749,16 @@ export const FetchOrganizationDemandesDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
-    document = FetchOrganizationDemandesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganizationDemandesGQL extends Apollo.Query<FetchOrganizationDemandesQuery, FetchOrganizationDemandesQueryVariables> {
+  document = FetchOrganizationDemandesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const MyRemboursementsDocument = gql`
     query MyRemboursements {
   myRemboursements {
@@ -2789,16 +2796,16 @@ export const MyRemboursementsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class MyRemboursementsGQL extends Apollo.Query<MyRemboursementsQuery, MyRemboursementsQueryVariables> {
-    document = MyRemboursementsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class MyRemboursementsGQL extends Apollo.Query<MyRemboursementsQuery, MyRemboursementsQueryVariables> {
+  document = MyRemboursementsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchRemboursementByUserIdDocument = gql`
     query FetchRemboursementByUserId($userId: ID!) {
   fetchRemboursementByUserId(userId: $userId) {
@@ -2843,16 +2850,16 @@ export const FetchRemboursementByUserIdDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchRemboursementByUserIdGQL extends Apollo.Query<FetchRemboursementByUserIdQuery, FetchRemboursementByUserIdQueryVariables> {
-    document = FetchRemboursementByUserIdDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchRemboursementByUserIdGQL extends Apollo.Query<FetchRemboursementByUserIdQuery, FetchRemboursementByUserIdQueryVariables> {
+  document = FetchRemboursementByUserIdDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchPaginatedOrganizationDemandesDocument = gql`
     query FetchPaginatedOrganizationDemandes($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $organizationServiceId: String) {
   fetchPaginatedOrganizationDemandes(
@@ -2903,96 +2910,96 @@ export const FetchPaginatedOrganizationDemandesDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedOrganizationDemandesGQL extends Apollo.Query<FetchPaginatedOrganizationDemandesQuery, FetchPaginatedOrganizationDemandesQueryVariables> {
-    document = FetchPaginatedOrganizationDemandesDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchPaginatedOrganizationDemandesGQL extends Apollo.Query<FetchPaginatedOrganizationDemandesQuery, FetchPaginatedOrganizationDemandesQueryVariables> {
+  document = FetchPaginatedOrganizationDemandesDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ValidateDemandeDocument = gql`
     mutation ValidateDemande($demandeId: ID!) {
   validateDemande(demandeId: $demandeId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ValidateDemandeGQL extends Apollo.Mutation<ValidateDemandeMutation, ValidateDemandeMutationVariables> {
-    document = ValidateDemandeDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ValidateDemandeGQL extends Apollo.Mutation<ValidateDemandeMutation, ValidateDemandeMutationVariables> {
+  document = ValidateDemandeDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const PayeDemandeDocument = gql`
     mutation PayeDemande($demandeId: ID!) {
   payeDemande(demandeId: $demandeId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class PayeDemandeGQL extends Apollo.Mutation<PayeDemandeMutation, PayeDemandeMutationVariables> {
-    document = PayeDemandeDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class PayeDemandeGQL extends Apollo.Mutation<PayeDemandeMutation, PayeDemandeMutationVariables> {
+  document = PayeDemandeDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const CancelDemandeByAdminDocument = gql`
     mutation CancelDemandeByAdmin($demandeId: ID!) {
   cancelDemandeByAdmin(demandeId: $demandeId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class CancelDemandeByAdminGQL extends Apollo.Mutation<CancelDemandeByAdminMutation, CancelDemandeByAdminMutationVariables> {
-    document = CancelDemandeByAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class CancelDemandeByAdminGQL extends Apollo.Mutation<CancelDemandeByAdminMutation, CancelDemandeByAdminMutationVariables> {
+  document = CancelDemandeByAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const RejectDemandeByAdminDocument = gql`
     mutation RejectDemandeByAdmin($demandeId: ID!, $rejectedReason: String!) {
   rejectDemandeByAdmin(demandeId: $demandeId, rejectedReason: $rejectedReason)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
-    document = RejectDemandeByAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class RejectDemandeByAdminGQL extends Apollo.Mutation<RejectDemandeByAdminMutation, RejectDemandeByAdminMutationVariables> {
+  document = RejectDemandeByAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const ValidateRemboursementDocument = gql`
     mutation ValidateRemboursement($remboursementId: ID!) {
   validateRemboursement(remboursementId: $remboursementId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ValidateRemboursementGQL extends Apollo.Mutation<ValidateRemboursementMutation, ValidateRemboursementMutationVariables> {
-    document = ValidateRemboursementDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class ValidateRemboursementGQL extends Apollo.Mutation<ValidateRemboursementMutation, ValidateRemboursementMutationVariables> {
+  document = ValidateRemboursementDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchCountStatusDocument = gql`
     query FetchCountStatus($filter: DemandesMetricsInput) {
   fetchCountStatus(filter: $filter) {
@@ -3005,16 +3012,16 @@ export const FetchCountStatusDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchCountStatusGQL extends Apollo.Query<FetchCountStatusQuery, FetchCountStatusQueryVariables> {
-    document = FetchCountStatusDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchCountStatusGQL extends Apollo.Query<FetchCountStatusQuery, FetchCountStatusQueryVariables> {
+  document = FetchCountStatusDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchOrganisationServiceDocument = gql`
     query FetchOrganisationService($organisationServiceId: ID!) {
   fetchOrganisationService(organisationServiceId: $organisationServiceId) {
@@ -3068,48 +3075,48 @@ export const FetchOrganisationServiceDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganisationServiceGQL extends Apollo.Query<FetchOrganisationServiceQuery, FetchOrganisationServiceQueryVariables> {
-    document = FetchOrganisationServiceDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchOrganisationServiceGQL extends Apollo.Query<FetchOrganisationServiceQuery, FetchOrganisationServiceQueryVariables> {
+  document = FetchOrganisationServiceDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchCollaboratorCountDocument = gql`
     query FetchCollaboratorCount($filter: UserFilterInput) {
   fetchCollaboratorCount(filter: $filter)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchCollaboratorCountGQL extends Apollo.Query<FetchCollaboratorCountQuery, FetchCollaboratorCountQueryVariables> {
-    document = FetchCollaboratorCountDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchCollaboratorCountGQL extends Apollo.Query<FetchCollaboratorCountQuery, FetchCollaboratorCountQueryVariables> {
+  document = FetchCollaboratorCountDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchTotalDemandesAmountDocument = gql`
     query FetchTotalDemandesAmount($status: [DemandeStatus!], $filter: DemandesMetricsInput) {
   fetchTotalDemandesAmount(status: $status, filter: $filter)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchTotalDemandesAmountGQL extends Apollo.Query<FetchTotalDemandesAmountQuery, FetchTotalDemandesAmountQueryVariables> {
-    document = FetchTotalDemandesAmountDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchTotalDemandesAmountGQL extends Apollo.Query<FetchTotalDemandesAmountQuery, FetchTotalDemandesAmountQueryVariables> {
+  document = FetchTotalDemandesAmountDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchRemboursementsByDemandeDocument = gql`
     query FetchRemboursementsByDemande($demandeId: ID!) {
   fetchRemboursementsByDemande(demandeId: $demandeId) {
@@ -3147,32 +3154,32 @@ export const FetchRemboursementsByDemandeDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchRemboursementsByDemandeGQL extends Apollo.Query<FetchRemboursementsByDemandeQuery, FetchRemboursementsByDemandeQueryVariables> {
-    document = FetchRemboursementsByDemandeDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchRemboursementsByDemandeGQL extends Apollo.Query<FetchRemboursementsByDemandeQuery, FetchRemboursementsByDemandeQueryVariables> {
+  document = FetchRemboursementsByDemandeDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateMyAdminPasswordDocument = gql`
     mutation UpdateMyAdminPassword($oldPassword: String!, $newPassword: String!) {
   updateMyAdminPassword(oldPassword: $oldPassword, newPassword: $newPassword)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateMyAdminPasswordGQL extends Apollo.Mutation<UpdateMyAdminPasswordMutation, UpdateMyAdminPasswordMutationVariables> {
-    document = UpdateMyAdminPasswordDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateMyAdminPasswordGQL extends Apollo.Mutation<UpdateMyAdminPasswordMutation, UpdateMyAdminPasswordMutationVariables> {
+  document = UpdateMyAdminPasswordDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchCurrentAdminDocument = gql`
     query FetchCurrentAdmin {
   fetchCurrentAdmin {
@@ -3201,96 +3208,96 @@ export const FetchCurrentAdminDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchCurrentAdminGQL extends Apollo.Query<FetchCurrentAdminQuery, FetchCurrentAdminQueryVariables> {
-    document = FetchCurrentAdminDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchCurrentAdminGQL extends Apollo.Query<FetchCurrentAdminQuery, FetchCurrentAdminQueryVariables> {
+  document = FetchCurrentAdminDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UpdateMyAdminProfileDocument = gql`
     mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
   updateMyAdminProfile(userInput: $userInput)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
-    document = UpdateMyAdminProfileDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UpdateMyAdminProfileGQL extends Apollo.Mutation<UpdateMyAdminProfileMutation, UpdateMyAdminProfileMutationVariables> {
+  document = UpdateMyAdminProfileDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const LockUserDocument = gql`
     mutation LockUser($userId: String!) {
   lockUser(userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class LockUserGQL extends Apollo.Mutation<LockUserMutation, LockUserMutationVariables> {
-    document = LockUserDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class LockUserGQL extends Apollo.Mutation<LockUserMutation, LockUserMutationVariables> {
+  document = LockUserDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UnlockUserDocument = gql`
     mutation UnlockUser($userId: String!) {
   unlockUser(userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UnlockUserGQL extends Apollo.Mutation<UnlockUserMutation, UnlockUserMutationVariables> {
-    document = UnlockUserDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UnlockUserGQL extends Apollo.Mutation<UnlockUserMutation, UnlockUserMutationVariables> {
+  document = UnlockUserDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const EnableEmailNotificationDocument = gql`
     mutation EnableEmailNotification($userId: String!) {
   enableEmailNotification(userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class EnableEmailNotificationGQL extends Apollo.Mutation<EnableEmailNotificationMutation, EnableEmailNotificationMutationVariables> {
-    document = EnableEmailNotificationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class EnableEmailNotificationGQL extends Apollo.Mutation<EnableEmailNotificationMutation, EnableEmailNotificationMutationVariables> {
+  document = EnableEmailNotificationDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const DisableEmailNotificationDocument = gql`
     mutation DisableEmailNotification($userId: String!) {
   disableEmailNotification(userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
-    document = DisableEmailNotificationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
+  document = DisableEmailNotificationDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const FetchSupportPaiementDocument = gql`
     query FetchSupportPaiement {
   fetchSupportPaiement {
@@ -3317,16 +3324,53 @@ export const FetchSupportPaiementDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchSupportPaiementGQL extends Apollo.Query<FetchSupportPaiementQuery, FetchSupportPaiementQueryVariables> {
-    document = FetchSupportPaiementDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchSupportPaiementGQL extends Apollo.Query<FetchSupportPaiementQuery, FetchSupportPaiementQueryVariables> {
+  document = FetchSupportPaiementDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+export const FetchAccountantDataDocument = gql`
+    query FetchAccountantData {
+  fetchAccountantData {
+    amount
+    number
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      email
+      totalDemandeAmount
+      salary
+      authorizedAdvance
+      phoneNumber
+      bankAccountNumber
+      uniqueIdentifier
+    }
+    organisationService {
+      service {
+        title
+      }
     }
   }
+}
+    `;
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FetchAccountantDataGQL extends Apollo.Query<FetchAccountantDataQuery, FetchAccountantDataQueryVariables> {
+  document = FetchAccountantDataDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
 export const BankAccountNumberExistsDocument = gql`
     query BankAccountNumberExists($bankAccountNumber: String!, $isAdmin: Boolean, $userId: String) {
   bankAccountNumberExists(
@@ -3337,32 +3381,32 @@ export const BankAccountNumberExistsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class BankAccountNumberExistsGQL extends Apollo.Query<BankAccountNumberExistsQuery, BankAccountNumberExistsQueryVariables> {
-    document = BankAccountNumberExistsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class BankAccountNumberExistsGQL extends Apollo.Query<BankAccountNumberExistsQuery, BankAccountNumberExistsQueryVariables> {
+  document = BankAccountNumberExistsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const PhoneNumberExistsDocument = gql`
     query PhoneNumberExists($phoneNumber: String!, $isAdmin: Boolean, $userId: String) {
   phoneNumberExists(phoneNumber: $phoneNumber, isAdmin: $isAdmin, userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class PhoneNumberExistsGQL extends Apollo.Query<PhoneNumberExistsQuery, PhoneNumberExistsQueryVariables> {
-    document = PhoneNumberExistsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class PhoneNumberExistsGQL extends Apollo.Query<PhoneNumberExistsQuery, PhoneNumberExistsQueryVariables> {
+  document = PhoneNumberExistsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const UniqueIdentifierExistsDocument = gql`
     query UniqueIdentifierExists($uniqueIdentifier: String!, $isAdmin: Boolean, $userId: String) {
   uniqueIdentifierExists(
@@ -3373,29 +3417,29 @@ export const UniqueIdentifierExistsDocument = gql`
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UniqueIdentifierExistsGQL extends Apollo.Query<UniqueIdentifierExistsQuery, UniqueIdentifierExistsQueryVariables> {
-    document = UniqueIdentifierExistsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class UniqueIdentifierExistsGQL extends Apollo.Query<UniqueIdentifierExistsQuery, UniqueIdentifierExistsQueryVariables> {
+  document = UniqueIdentifierExistsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}
 export const EmailExistsDocument = gql`
     query EmailExists($email: String!, $isAdmin: Boolean, $userId: String) {
   emailExists(email: $email, isAdmin: $isAdmin, userId: $userId)
 }
     `;
 
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
-    document = EmailExistsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
+@Injectable({
+  providedIn: 'root'
+})
+export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
+  document = EmailExistsDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
   }
+}

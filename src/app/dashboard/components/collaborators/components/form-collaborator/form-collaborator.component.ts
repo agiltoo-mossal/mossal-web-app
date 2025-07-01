@@ -76,7 +76,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       wizallAccountNumber: [''],
       bankAccountNumber: [''],
       birthDate: [null],
-      favoriteWallet: [Wallet.Wave],
+      favoriteWallet: [Wallet.om],
       categorySocioProId: ['', Validators.required],
       position: ['TESTEUR'],
     });
