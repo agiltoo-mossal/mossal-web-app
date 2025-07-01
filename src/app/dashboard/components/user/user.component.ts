@@ -43,14 +43,20 @@ export class UserComponent {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+          ),
         ],
       ],
       confirmPassword: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/),
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+          ),
         ],
       ],
     });
@@ -61,7 +67,10 @@ export class UserComponent {
       email: ['', Validators.required],
       phoneNumber: [
         '',
-        [Validators.required, Validators.pattern(/^(78|77|76|70|75)\d{7}$/)],
+        [
+          Validators.required,
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+        ],
       ],
       address: [''],
     });

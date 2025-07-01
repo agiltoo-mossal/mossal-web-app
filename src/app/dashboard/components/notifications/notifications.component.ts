@@ -16,8 +16,7 @@ import { MatPaginator } from '@angular/material/paginator';
 })
 export class NotificationsComponent implements OnDestroy, OnInit {
   notfis = [];
-  listNotisSubscription: Subscription;
-  viewSubscription: Subscription;
+  subscriptions: Subscription[] = [];
   resultsLength: number = 0;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -25,63 +24,74 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private notificationsService: NotificationsService,
     private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
-
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
-
     private paginatedNofif: FetchPaginatedNotificationsGQL
   ) {}
 
   getNotifications() {
-    // this.listNotisSubscription = this.fetchOrganizationNotificationsGQL
-    //   .fetch()
-    //   .subscribe((result) => {
-    //     this.notfis = (result.data?.fetchOrganizationNotifications ||
-    //       []) as any[];
-    //   });
-    this.fetchPaginatedNotificationsGQL.fetch().subscribe({
+    const subscription = this.fetchPaginatedNotificationsGQL.fetch().subscribe({
       next: (result) => {
         this.notfis = result.data?.fetchPaginatedNotifications?.results || [];
         this.resultsLength =
           result.data?.fetchPaginatedNotifications?.pagination?.totalItems || 0;
       },
-      error: (error) => {},
+      error: (error) => {
+        console.error('Error fetching notifications:', error);
+      },
     });
+    this.subscriptions.push(subscription);
   }
+
   ngAfterViewInit(): void {
-    console.log(this.sort, this.paginator);
-    // this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-    merge(this.paginator.page)
-      .pipe(
-        switchMap(() => {
-          return this.fetchPaginatedNotificationsGQL.fetch(
-            {},
-            {
-              fetchPolicy: 'no-cache',
-            }
-          );
-        }),
-        map((result) => {
-          return result.data?.fetchPaginatedNotifications?.results || [];
-        })
-      )
-      .subscribe((data: any) => {
-        this.notfis = data || [];
-        this.resultsLength =
-          data?.fetchPaginatedNotifications?.pagination?.totalItems || 0;
-      });
+    if (this.paginator) {
+      const subscription = merge(this.paginator.page)
+        .pipe(
+          switchMap(() => {
+            return this.fetchPaginatedNotificationsGQL.fetch(
+              {},
+              {
+                fetchPolicy: 'no-cache',
+              }
+            );
+          }),
+          map((result) => {
+            return result.data?.fetchPaginatedNotifications?.results || [];
+          })
+        )
+        .subscribe({
+          next: (data: any) => {
+            this.notfis = data || [];
+            this.resultsLength =
+              data?.fetchPaginatedNotifications?.pagination?.totalItems || 0;
+          },
+          error: (error) => {
+            console.error('Error in pagination:', error);
+          },
+        });
+      this.subscriptions.push(subscription);
+    }
   }
 
   ngOnInit(): void {
     this.getNotifications();
-    this.viewSubscription = this.viewOrganizationNotificationsGQL
+    const viewSubscription = this.viewOrganizationNotificationsGQL
       .mutate()
-      .subscribe((result) => {
-        this.notificationsService.unViewedNotification.next(false);
+      .subscribe({
+        next: (result) => {
+          this.notificationsService.unViewedNotification.next(false);
+        },
+        error: (error) => {
+          console.error('Error marking notifications as viewed:', error);
+        },
       });
+    this.subscriptions.push(viewSubscription);
   }
 
   ngOnDestroy(): void {
-    this.listNotisSubscription.unsubscribe();
-    this.viewSubscription.unsubscribe();
+    this.subscriptions.forEach((subscription) => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    });
   }
 }

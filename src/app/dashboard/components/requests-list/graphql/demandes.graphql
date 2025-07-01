@@ -241,6 +241,9 @@ query FetchTotalDemandesAmount(
   fetchTotalDemandesAmount(status: $status, filter: $filter)
 }
 
+
+
+
 query FetchRemboursementsByDemande($demandeId: ID!) {
   fetchRemboursementsByDemande(demandeId: $demandeId) {
     id

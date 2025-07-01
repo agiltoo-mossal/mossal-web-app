@@ -28,4 +28,5 @@ export const environment = {
     'https://ec2-16-171-29-127.eu-north-1.compute.amazonaws.com:8443',
   KEYCLOACK_REALM: 'mossall_admins',
   KEYCLOACK_CLIENT_ID: 'mossall_admin_web_public',
+  SECRET_KEY: 'mossal-secret-web-key',
 };
