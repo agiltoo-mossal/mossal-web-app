@@ -735,6 +735,7 @@ export type Query = {
   _service: _Service;
   bankAccountNumberExists: Scalars['Boolean']['output'];
   emailExists: Scalars['Boolean']['output'];
+  fetchAccountantData: Array<Demande>;
   fetchActivity: Activity;
   fetchAllCategorySocioproServices: Array<CategorySocioproService>;
   fetchAllCategorySociopros: Array<CategorySociopro>;
@@ -998,7 +999,7 @@ export type QueryFetchServicesPubArgs = {
 
 export type QueryFetchTotalDemandesAmountArgs = {
   filter?: InputMaybe<DemandesMetricsInput>;
-  status?: InputMaybe<DemandeStatus>;
+  status?: InputMaybe<Array<DemandeStatus>>;
 };
 
 
@@ -1554,7 +1555,7 @@ export type FetchCollaboratorCountQueryVariables = Exact<{
 export type FetchCollaboratorCountQuery = { __typename?: 'Query', fetchCollaboratorCount: number };
 
 export type FetchTotalDemandesAmountQueryVariables = Exact<{
-  status?: InputMaybe<DemandeStatus>;
+  status?: InputMaybe<Array<DemandeStatus> | DemandeStatus>;
   filter?: InputMaybe<DemandesMetricsInput>;
 }>;
 
@@ -1620,6 +1621,11 @@ export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }
 
 
 export type FetchSupportPaiementQuery = { __typename?: 'Query', fetchSupportPaiement: Array<{ __typename?: 'Demande', amount: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, email: string, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, phoneNumber?: string | null, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null }> };
+
+export type FetchAccountantDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchAccountantDataQuery = { __typename?: 'Query', fetchAccountantData: Array<{ __typename?: 'Demande', amount: number, number: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, email: string, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, phoneNumber?: string | null, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null }> };
 
 export type BankAccountNumberExistsQueryVariables = Exact<{
   bankAccountNumber: Scalars['String']['input'];
@@ -3095,7 +3101,7 @@ export const FetchCollaboratorCountDocument = gql`
     }
   }
 export const FetchTotalDemandesAmountDocument = gql`
-    query FetchTotalDemandesAmount($status: DemandeStatus, $filter: DemandesMetricsInput) {
+    query FetchTotalDemandesAmount($status: [DemandeStatus!], $filter: DemandesMetricsInput) {
   fetchTotalDemandesAmount(status: $status, filter: $filter)
 }
     `;
@@ -3322,6 +3328,43 @@ export const FetchSupportPaiementDocument = gql`
   })
   export class FetchSupportPaiementGQL extends Apollo.Query<FetchSupportPaiementQuery, FetchSupportPaiementQueryVariables> {
     document = FetchSupportPaiementDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchAccountantDataDocument = gql`
+    query FetchAccountantData {
+  fetchAccountantData {
+    amount
+    number
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      email
+      totalDemandeAmount
+      salary
+      authorizedAdvance
+      phoneNumber
+      bankAccountNumber
+      uniqueIdentifier
+    }
+    organisationService {
+      service {
+        title
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchAccountantDataGQL extends Apollo.Query<FetchAccountantDataQuery, FetchAccountantDataQueryVariables> {
+    document = FetchAccountantDataDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

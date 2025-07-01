@@ -1,5 +1,5 @@
-import { Component, effect, Input, OnInit } from '@angular/core';
-import { FetchSupportPaiementGQL } from 'src/graphql/generated';
+import { Component, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FetchAccountantDataGQL, FetchSupportPaiementGQL } from 'src/graphql/generated';
 import { SnackBarService } from '../../services/snackbar.service';
 import * as XLSX from 'xlsx';
 import { FileUploadService } from '../../services/file-upload.service';
@@ -16,16 +16,20 @@ export class OrganizationFileComponent implements OnInit {
   @Input() organisationServiceId: string;
   showModalOrganisation = false;
   dataOrganisationFile!: any;
+
+  @Input() startDate: string;
+
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
     private snackBarService: SnackBarService,
-    private fileService: FileUploadService
+    private fileService: FileUploadService,
+    private fetchAccountantData: FetchAccountantDataGQL,
   ) {
     effect(() => {
       this.dataOrganisationFile = this.fileService.signalDataOrganisation();
       if (this.dataOrganisationFile) {
         this.showModalOrganisation = true;
-      }
+      }  
     });
   }
 
@@ -84,7 +88,7 @@ export class OrganizationFileComponent implements OnInit {
               '',
             ]),
           ];
-          this.convertToXLSX(csvRows);
+          this.convertToXLSX(csvRows, 'support-paiement');
         } else {
           this.snackBarService.showSnackBar(
             "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
@@ -95,7 +99,7 @@ export class OrganizationFileComponent implements OnInit {
     });
   }
 
-  convertToXLSX(data: any[]) {
+  convertToXLSX(data: any[], filename: string) {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
       skipHeader: true,
     });
@@ -107,7 +111,7 @@ export class OrganizationFileComponent implements OnInit {
       bookType: 'xlsx',
       type: 'array',
     });
-    this.saveAsExcelFile(excelBuffer, 'support-paiement');
+    this.saveAsExcelFile(excelBuffer, filename);
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
@@ -123,5 +127,47 @@ export class OrganizationFileComponent implements OnInit {
   closeModal() {
     this.showModalOrganisation = false;
     this.fileService.signalDataOrganisation.set(null);
+  }
+
+  downloadAccountantData() {
+    this.fetchAccountantData.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+      next: ({ data }) => {
+        const temps = data.fetchAccountantData;
+        console.log("Accountant data ======>>>>>>>>> ", temps);
+        console.log("startDate =====>>>>>>> ", this.startDate);
+        
+        // if (temps.length) {
+        //   const csvRows = [
+        //     [
+        //       'Nom',
+        //       'Prenom',
+        //       'Matricule',
+        //       'Telephone',
+        //       'Organisation',
+        //       'Numéro demande',
+        //       'Montant',
+        //       'Type d\'vance',
+        //     ],
+        //     ...temps.map((row) => [
+        //       row.collaborator.lastName,
+        //       row.collaborator.firstName,
+        //       row.collaborator.uniqueIdentifier,
+        //       row.collaborator.phoneNumber,
+        //       'Mossall',
+        //       row.number,
+        //       row.amount,
+        //       row.organisationService.service.title,
+        //       '',
+        //     ]),
+        //   ];
+        //   this.convertToXLSX(csvRows, 'fichier-comptable');
+        // } else {
+        //   this.snackBarService.showSnackBar(
+        //     "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+        //   );
+        // }
+      },
+      error: (error) => console.log(error),
+    });
   }
 }
