@@ -18,6 +18,7 @@ export class OrganizationFileComponent implements OnInit {
   dataOrganisationFile!: any;
 
   @Input() startDate: string;
+  @Input() endDate: string;
 
   constructor(
     private fetchSupportPaiement: FetchSupportPaiementGQL,
@@ -29,11 +30,11 @@ export class OrganizationFileComponent implements OnInit {
       this.dataOrganisationFile = this.fileService.signalDataOrganisation();
       if (this.dataOrganisationFile) {
         this.showModalOrganisation = true;
-      }  
+      }
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
   async uploadDemande(event: Event) {
     const files = event.target as HTMLInputElement;
     if (files) {
@@ -133,39 +134,37 @@ export class OrganizationFileComponent implements OnInit {
     this.fetchAccountantData.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: ({ data }) => {
         const temps = data.fetchAccountantData;
-        console.log("Accountant data ======>>>>>>>>> ", temps);
-        console.log("startDate =====>>>>>>> ", this.startDate);
-        
-        // if (temps.length) {
-        //   const csvRows = [
-        //     [
-        //       'Nom',
-        //       'Prenom',
-        //       'Matricule',
-        //       'Telephone',
-        //       'Organisation',
-        //       'Numéro demande',
-        //       'Montant',
-        //       'Type d\'vance',
-        //     ],
-        //     ...temps.map((row) => [
-        //       row.collaborator.lastName,
-        //       row.collaborator.firstName,
-        //       row.collaborator.uniqueIdentifier,
-        //       row.collaborator.phoneNumber,
-        //       'Mossall',
-        //       row.number,
-        //       row.amount,
-        //       row.organisationService.service.title,
-        //       '',
-        //     ]),
-        //   ];
-        //   this.convertToXLSX(csvRows, 'fichier-comptable');
-        // } else {
-        //   this.snackBarService.showSnackBar(
-        //     "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
-        //   );
-        // }
+
+        if (temps.length) {
+          const csvRows = [
+            [
+              'Nom',
+              'Prenom',
+              'Matricule',
+              'Telephone',
+              'Organisation',
+              'Numéro demande',
+              'Montant',
+              'Type d\'vance',
+            ],
+            ...temps.map((row) => [
+              row.collaborator.lastName,
+              row.collaborator.firstName,
+              row.collaborator.uniqueIdentifier,
+              row.collaborator.phoneNumber,
+              'Mossall',
+              row.number,
+              row.amount,
+              row.organisationService.service.title,
+              '',
+            ]),
+          ];
+          this.convertToXLSX(csvRows, 'fichier-comptable');
+        } else {
+          this.snackBarService.showSnackBar(
+            "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+          );
+        }
       },
       error: (error) => console.log(error),
     });
