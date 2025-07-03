@@ -165,7 +165,11 @@ export class AuthService {
   }
 
   cleanAuthData() {
+    const savedCredentials = localStorage.getItem('savedCredentials');
     localStorage.clear();
+    if (savedCredentials) {
+      localStorage.setItem('savedCredentials', savedCredentials);
+    }
   }
 
   logout() {

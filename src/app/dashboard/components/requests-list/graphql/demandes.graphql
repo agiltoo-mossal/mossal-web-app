@@ -235,11 +235,14 @@ query FetchCollaboratorCount($filter: UserFilterInput) {
   fetchCollaboratorCount(filter: $filter)
 }
 query FetchTotalDemandesAmount(
-  $status: DemandeStatus
+  $status: [DemandeStatus!]
   $filter: DemandesMetricsInput
 ) {
   fetchTotalDemandesAmount(status: $status, filter: $filter)
 }
+
+
+
 
 query FetchRemboursementsByDemande($demandeId: ID!) {
   fetchRemboursementsByDemande(demandeId: $demandeId) {

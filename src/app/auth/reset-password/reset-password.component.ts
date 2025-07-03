@@ -4,29 +4,45 @@ import { AuthService } from '../auth.service';
 
 @Component({
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+  styleUrl: './reset-password.component.scss',
 })
 export class ResetPasswordComponent {
   hidePassword: boolean = true;
   form: FormGroup;
-  help: string = "Mot de passe doit contenir: 8 caracteres, 1 chiffre, 1 Majuscule, 1 Minuscule";
+  help: string =
+    'Mot de passe doit contenir: 8 caracteres, 1 chiffre, 1 Majuscule, 1 Minuscule';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService
-  ) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.form = this.fb.group({
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
-      ]],
-      confirm: ['']
-    })
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+          ),
+        ],
+      ],
+      confirm: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+          ),
+        ],
+      ],
+    });
   }
 
   get notSame() {
-    return (this.form.value.password !== this.form.value.confirm) && this.password.touched && this.confirm.touched;
+    return (
+      this.form.value.password !== this.form.value.confirm &&
+      this.password.touched &&
+      this.confirm.touched
+    );
   }
 
   get password() {
@@ -38,11 +54,13 @@ export class ResetPasswordComponent {
   }
 
   get formValid(): boolean {
-    return this.form.valid && this.form.value.password === this.form.value.confirm;
+    return (
+      this.form.valid && this.form.value.password === this.form.value.confirm
+    );
   }
 
   reset() {
-    if(!this.formValid) {
+    if (!this.formValid) {
       return;
     }
     this.authService.resetPassword(this.form.value.password);
