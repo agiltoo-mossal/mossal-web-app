@@ -1,65 +1,32 @@
-<div
-  class="page-wrapper"
-  fxLayout="row"
-  fxLayoutAlign="none start"
-  fxLayoutGap="20px"
->
+<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="15px">
     <div fxLayout="row" fxLayoutGap="19px">
-      <div
-        *ngIf="searchForm"
-        [formGroup]="searchForm"
-        class="search-container"
-        fxFlex="auto"
-        fxLayoutAlign="start center"
-      >
+      <div *ngIf="searchForm" [formGroup]="searchForm" class="search-container" fxFlex="auto"
+        fxLayoutAlign="start center">
         <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
-        <input
-          formControlName="search"
-          type="text"
-          class="form-control"
-          placeholder="Recherche"
-        />
+        <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
       </div>
       <div fxLayout="row" fxLayoutGap="19px">
         <div class="dropdown" appDropdown="downlod-dropdown">
-          <button
-            class="btn btn-primary"
-            fxLayoutAlign="center center"
-            fxLayoutGap="8px"
-          >
-            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon
-            ><span>Importer un fichier</span>
+          <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
+            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un fichier</span>
           </button>
           <div class="dropdown-content" id="downlod-dropdown">
             <app-file-upload [type]="type"></app-file-upload>
-            <a
-              style="display: block;"
-              href="./assets/files/template-admin.xlsx"
-              [download]="'template-admin.xlsx' "
-              class="dropdown-option"
-              fxLayout="column"
-              fxLayoutAlign="start center"
-            >
+            <a style="display: block;" href="./assets/files/template-admin.xlsx" [download]="'template-admin.xlsx' "
+              class="dropdown-option" fxLayout="column" fxLayoutAlign="start center">
               <div class="icon">
                 <img src="./assets/img/icon-download.png" alt="" />
               </div>
-              <div
-                fxLayout="column"
-                fxLayoutAlign="start center"
-              >
+              <div fxLayout="column" fxLayoutAlign="start center">
                 <span class="type">Télécharger le template</span>
                 <span class="format">template.XLSX</span>
               </div>
             </a>
           </div>
         </div>
-        <button
-          class="btn btn-primary"
-          fxLayoutAlign="center center"
-          fxLayoutGap="8px"
-          routerLink="/dashboard/admins/create-admin"
-        >
+        <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
+          routerLink="/dashboard/admins/create-admin">
           <span>+</span> <span>Ajouter un admin</span>
         </button>
       </div>
@@ -67,30 +34,20 @@
 
 
     <div class="example-table-container">
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        class="example-table"
-        matSort
-      >
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
         <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
         <!-- Number Column -->
         <ng-container matColumnDef="uniqueIdentifier">
-          <th  mat-header-cell *matHeaderCellDef class="title " >Identifiant</th>
-          <td class="radio-container" mat-cell
+          <th mat-header-cell *matHeaderCellDef class="title ">Identifiant</th>
+          <td class="radio-container" mat-cell *matCellDef="let row">
+            <div class="radio-container">
+              <span (click)="selectAdmin(row)" class="radio {{ row?.id === selectedAdmin?.id ? 'active' : '' }}"
+                fxLayoutAlign="center center"></span>
+              <span>{{ row.uniqueIdentifier }}</span>
 
-          *matCellDef="let row">
-          <div class="radio-container">
-          <span
-            (click)="selectAdmin(row)"
-            class="radio {{ row?.id === selectedAdmin?.id ? 'active' : '' }}"
-            fxLayoutAlign="center center"
-          ></span>
-          <span>{{ row.uniqueIdentifier }}</span>
-
-          </div>
+            </div>
           </td>
         </ng-container>
 
@@ -117,73 +74,37 @@
         </ng-container>
 
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef class="title" disableClear  style="text-align: center;">Action</th>
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center;">Action</th>
           <td mat-cell *matCellDef="let row">
-            <div  class="dropdown" appDropdown="dropdown-action">
-            <span fxLayout="row" class="btn-edit-statut">
-              <span
-                class="text"
-                fxFlex="auto"
-                fxLayout="row"
-                fxLayoutGap="8px"
-                fxLayoutAlign="center center"
-                                  style="padding: 0 8px;"
-
-                ><span>Action</span
-                ><span
-                  class="statut statut--{{
+            <div class="dropdown" appDropdown="dropdown-action">
+              <span fxLayout="row" class="btn-edit-statut">
+                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
+                  style="padding: 0 8px;"><span>Action</span><span class="statut statut--{{
                     row?.blocked ? 'rejected' : 'valid'
-                  }}"
-                ></span
-              ></span>
-              <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
-                >keyboard_arrow_down</mat-icon
-              >
-            </span>
-            <div
-              class="dropdown-content dropdown-content-filter"
-              id="dropdown-action"
-            >
-              <div
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="12px"
-                routerLink="/dashboard/admins/{{ row.id }}"
-              >
-                <span><mat-icon>edit</mat-icon></span>
-                <span>Editer</span>
-              </div>
-              <div
-                *ngIf="!row.blocked"
-                class="dropdown-option color-danger"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="12px"
-                requiresConfirmation
-                [message]="'Voulez-vous bloquer cet utilisateur?'"
-                [confirmCallback]="lockUser"
-                [confirmCallbackParam]="row?.id"
-              >
-                <span><mat-icon>lock</mat-icon></span>
-                <span>Suspendre</span>
-              </div>
-              <div
-                *ngIf="row.blocked"
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="12px"
-                requiresConfirmation
-                [message]="'Voulez-vous débloquer cet utilisateur?'"
-                [confirmCallback]="unlockUser"
-                [confirmCallbackParam]="row?.id"
-              >
-                <span><mat-icon>lock_open</mat-icon></span>
-                <span>Débloquer</span>
+                  }}"></span></span>
+                <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+              </span>
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                  routerLink="/dashboard/admins/{{ row.id }}">
+                  <span><mat-icon>edit</mat-icon></span>
+                  <span>Editer</span>
+                </div>
+                <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
+                  fxLayoutAlign="start center" fxLayoutGap="12px" requiresConfirmation
+                  [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
+                  [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock</mat-icon></span>
+                  <span>Suspendre</span>
+                </div>
+                <div *ngIf="row.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center"
+                  fxLayoutGap="12px" requiresConfirmation [message]="'Voulez-vous débloquer cet utilisateur?'"
+                  [confirmCallback]="unlockUser" [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock_open</mat-icon></span>
+                  <span>Débloquer</span>
+                </div>
               </div>
             </div>
-          </div>
           </td>
 
         </ng-container>
@@ -191,14 +112,10 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-      <mat-paginator
-        [pageSizeOptions]="[10, 25, 50, 100]"
-        [length]="resultsLength"
-        aria-label=""
-      ></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
     </div>
   </div>
-  <div class="info-current-user container_sticky">
+  <!-- <div class="info-current-user container_sticky">
     <app-user-details [user]="selectedAdmin"></app-user-details>
-  </div>
+  </div> -->
 </div>
