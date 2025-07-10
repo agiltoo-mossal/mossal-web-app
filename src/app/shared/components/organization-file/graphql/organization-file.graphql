@@ -1,6 +1,5 @@
 query FetchSupportPaiement {
   fetchSupportPaiement {
-   
     amount
 
     collaborator {
@@ -19,11 +18,36 @@ query FetchSupportPaiement {
       # 	name
       # }
     }
-    organisationService{
-      service{
+    organisationService {
+      service {
         title
       }
     }
-   
+  }
+}
+
+query FetchAccountantData {
+  fetchAccountantData {
+    amount
+    number
+
+    collaborator {
+      id
+      firstName
+      lastName
+      balance
+      email
+      totalDemandeAmount
+      salary
+      authorizedAdvance
+      phoneNumber
+      bankAccountNumber
+      uniqueIdentifier
+    }
+    organisationService {
+      service {
+        title
+      }
+    }
   }
 }
