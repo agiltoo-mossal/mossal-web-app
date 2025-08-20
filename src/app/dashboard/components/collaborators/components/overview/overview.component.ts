@@ -17,10 +17,13 @@ import {
   UserRole,
 } from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { dateToString } from 'src/app/shared/utils/time';
 import {
+  FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
   LockUserGQL,
+  Organization,
   UnlockUserGQL,
   User,
 } from 'src/graphql/generated';
@@ -60,6 +63,7 @@ export class OverviewComponent implements AfterViewInit {
 
   page: number = 1;
   data = [];
+  organization: Organization;
 
   constructor(
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
@@ -69,7 +73,8 @@ export class OverviewComponent implements AfterViewInit {
     private unlockUserGQL: UnlockUserGQL,
     private snackBarService: SnackBarService,
     private fileUploadService: FileUploadService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
   ) {
     // this.fetchCollabs();
     effect(() => {
@@ -196,62 +201,75 @@ export class OverviewComponent implements AfterViewInit {
   };
 
 
-    downloadCollaborators() {
-      this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
-        next: ({ data }) => {
-          console.log("result =>>>>>>>>>>> ", data);
-          
-          const temps = data.fetchOrganizationCollaborators;
-          if (temps.length) {
-            const csvRows = [
-              [
-                'Nom',
-                'Prenom',
-                'Identifiant unique',
-                'Date d\'inscription',
-              ],
-              ...temps.map((row) => [
-                row.lastName,
-                row.firstName,
-                row.uniqueIdentifier,
-                row.createdAt,
-                '',
-              ]),
-            ];
-            this.convertToXLSX(csvRows);
-          } else {
-            this.snackBarService.showSnackBar(
-              "Aucun collaborateur trouvé !"
-            );
-          }
-        },
-        error: (error) => console.log(error),
+  downloadCollaborators() {
+    this.getCurrentorganization();
+    const date = dateToString(new Date).toString();
+    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+      next: ({ data }) => {
+
+        const temps = data.fetchOrganizationCollaborators;
+        if (temps.length) {
+          const csvRows = [
+            [
+              'Nom',
+              'Prenom',
+              'Identifiant unique',
+              'Date d\'inscription',
+            ],
+            ...temps.map((row) => [
+              row.lastName,
+              row.firstName,
+              row.uniqueIdentifier,
+              row.createdAt,
+              '',
+            ]),
+          ];
+          this.convertToXLSX(csvRows, this.organization.name, date);
+        } else {
+          this.snackBarService.showSnackBar(
+            "Aucun collaborateur trouvé !"
+          );
+        }
+      },
+      error: (error) => console.log(error),
+    });
+  }
+
+  convertToXLSX(data: any[], name: string, date: string) {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+      skipHeader: true,
+    });
+    const workbook: XLSX.WorkBook = {
+      Sheets: { data: worksheet },
+      SheetNames: ['data'],
+    };
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    this.saveAsExcelFile(excelBuffer, 'collaborateurs_' + name + '_' + date);
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+  }
+
+  getCurrentorganization(useCache = true) {
+    this.fetchCurrentAdminGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        if (result.data) {
+          this.organization = result.data.fetchCurrentAdmin
+            .organization as Organization;
+          console.log({ org: this.organization });
+        }
       });
-    }
-  
-    convertToXLSX(data: any[]) {
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-        skipHeader: true,
-      });
-      const workbook: XLSX.WorkBook = {
-        Sheets: { data: worksheet },
-        SheetNames: ['data'],
-      };
-      const excelBuffer: any = XLSX.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array',
-      });
-      this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
-    }
-  
-    saveAsExcelFile(buffer: any, fileName: string): void {
-      const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-      const url = window.URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.setAttribute('href', url);
-      a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
-    }
+  }
 }

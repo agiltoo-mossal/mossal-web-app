@@ -22,7 +22,7 @@ export class RequestMonthlyRepayableAdvanceComponent {
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchCurrentAdminGQL

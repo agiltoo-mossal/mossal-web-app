@@ -43,7 +43,7 @@ export class OrganizationSettingGeneralComponent {
     private listCategorieGQL: FetchCategorySocioprosGQL,
     private updateCategorieGQL: UpdateCategorySocioproGQL,
     private deleteCategoryGQL: DeleteCategorySocioproGQL
-  ) {}
+  ) { }
   // Données pour les catégories
   newCategorie: string = '';
   maxPercentage: number = 0;
@@ -52,6 +52,7 @@ export class OrganizationSettingGeneralComponent {
   >[] = [];
   errorMessage: string = '';
   dayLimite!: number;
+  organizationBalance!: number;
 
   ngOnInit() {
     this.getCurrentorganization();
@@ -240,6 +241,7 @@ export class OrganizationSettingGeneralComponent {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
           this.maxPercentage = this.organization.amountPercent;
+          this.organizationBalance = this.organization.balance;
           // this.form.patchValue(this.organization);
           this.itemsCardDate.forEach((element) => {
             element.active = false;
@@ -283,9 +285,8 @@ export class OrganizationSettingGeneralComponent {
   }
 
   getDateTime(item: any): string {
-    return `${this.lastDayOfCurrentMonth.getFullYear()}-${
-      this.lastDayOfCurrentMonth.getMonth() + 1
-    }-${item.day}`;
+    return `${this.lastDayOfCurrentMonth.getFullYear()}-${this.lastDayOfCurrentMonth.getMonth() + 1
+      }-${item.day}`;
   }
   setDate(item: number) {
     this.dayLimite = item;
