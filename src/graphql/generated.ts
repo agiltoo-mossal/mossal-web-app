@@ -628,6 +628,7 @@ export type OrganisationServiceUpdateInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  balance: Scalars['Float']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
@@ -641,6 +642,7 @@ export type Organization = {
 
 export type OrganizationInput = {
   amountPercent: Scalars['Float']['input'];
+  balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
@@ -655,6 +657,7 @@ export type OrganizationInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
+  balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;

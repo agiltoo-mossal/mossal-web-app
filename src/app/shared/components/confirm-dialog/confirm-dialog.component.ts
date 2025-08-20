@@ -18,7 +18,7 @@ export class ConfirmDialogComponent implements OnInit {
     this.reasonRequired = data.reasonRequired;
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onConfirm() {
     if (this.reasonRequired) {
