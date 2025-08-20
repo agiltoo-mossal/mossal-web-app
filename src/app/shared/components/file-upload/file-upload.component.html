@@ -1,32 +1,14 @@
-
-<label
-style="display: flex; height: 100% ; flex-direction: column; justify-content: center; align-items: center; "
-  for="file_input"
-  class="dropdown-option"
-  fxLayout="column"
-  fxLayoutGap="16px"
-  fxLayoutAlign="start center"
->
+<label style="display: flex; height: 100% ; flex-direction: column; justify-content: center; align-items: center; "
+  for="file_input" class="dropdown-option" fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="start center">
   <div class="icon">
     <img src="./assets/img/icon-upload.png" alt="" />
   </div>
   <form enctype="multipart/form-data">
-    <div
-      fxLayout="column"
-      fxLayoutGap="4px"
-      fxLayoutAlign="start center"
-      for="file_input"
-    >
+    <div fxLayout="column" fxLayoutGap="4px" fxLayoutAlign="start center" for="file_input">
       <span class="type">Importer</span>
       <span class="format">Format accepté : XLSX</span>
     </div>
-    <input
-      type="file"
-      (change)="onFileSelected($event)"
-      accept=".xlsx"
-      style="display: none"
-      id="file_input"
-    />
+    <input type="file" (change)="onFileSelected($event)" accept=".xlsx" style="display: none" id="file_input" />
   </form>
 </label>
 
