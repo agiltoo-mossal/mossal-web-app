@@ -22,7 +22,7 @@ export class RequestEmergencyComponent {
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fetchCurrentAdminGQL

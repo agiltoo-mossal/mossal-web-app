@@ -20,7 +20,6 @@ query FetchCurrentAdmin {
       amountPercent
       fees
       demandeDeadlineDay
-      balance
       organisationService{
         id
         serviceId
