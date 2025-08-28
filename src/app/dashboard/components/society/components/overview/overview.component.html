@@ -1,4 +1,4 @@
-<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
+<!-- <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
     <div fxLayout="row" fxLayoutGap="19px">
       <div *ngIf="searchForm" [formGroup]="searchForm" class="search-container" fxFlex="auto"
@@ -7,15 +7,14 @@
         <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
       </div>
       <div fxLayout="row" fxLayoutGap="19px">
-        <!-- <div class="dropdown" appDropdown="downlod-dropdown">
+        <div class="dropdown" appDropdown="downlod-dropdown">
           <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
             <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un fichier</span>
           </button>
           <div class="dropdown-content" id="downlod-dropdown">
             <app-file-upload [type]="type"></app-file-upload>
-            <a style="display: block" href="./assets/files/template-society.xlsx"
-              [download]="'template-society.xlsx'" class="dropdown-option" fxLayout="column"
-              fxLayoutAlign="start center">
+            <a style="display: block" href="./assets/files/template-society.xlsx" [download]="'template-society.xlsx'"
+              class="dropdown-option" fxLayout="column" fxLayoutAlign="start center">
               <div class="icon">
                 <img src="./assets/img/icon-download.png" alt="" />
               </div>
@@ -27,21 +26,21 @@
           </div>
         </div> -->
 
-        <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
+        <!-- <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
           routerLink="/dashboard/society/create-society">
           <span>+</span> <span>Ajouter une société</span>
         </button>
         <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
           routerLink="/dashboard/society/create-society">
           <span>💫</span> <span>Synchroniser avec Sage</span>
-        </button>
+        </button> -->
 
         <!-- <div class="dropdown" appDropdown="downlod-dropdown">
           <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
             <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Télécharger</span>
           </button>
           <div class="dropdown-content" id="downlod-dropdown">
-            <button style="display: block" (click)="downloadSociety()" class="dropdown-option" fxLayout="column"
+            <button style="display: block" (click)="downloadCollaborators()" class="dropdown-option" fxLayout="column"
               fxLayoutAlign="start center">
               <div class="icon">
                 <img src="./assets/img/icon-download.png" alt="" />
@@ -54,52 +53,52 @@
           </div>
         </div> -->
 
-      </div>
+      <!-- </div>
     </div>
 
     <div class="example-table-container">
-      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort> -->
         <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
-        <!-- Number Column -->
-        <ng-container matColumnDef="uniqueIdentifier">
-          <th mat-header-cell *matHeaderCellDef class="title">Entreprise</th>
+<!-- Number Column -->
+<!-- <ng-container matColumnDef="uniqueIdentifier">
+          <th mat-header-cell *matHeaderCellDef class="title">Identifiant</th>
           <td class="radio-container" mat-cell *matCellDef="let row">
             <div class="radio-container">
-              <!-- <span (click)="selectCollab(row)" class="radio {{
+              <span (click)="selectCollab(row)" class="radio {{
                   row?.id === selectedCollab?.id ? 'active' : ''
                 }}" fxLayoutAlign="center center"></span>
               <span>{{ row.uniqueIdentifier }}</span> -->
-            </div>
+            <!-- </div>
           </td>
-        </ng-container>
+        </ng-container>  -->
 
-        <!-- Title Column -->
+<!-- Title Column
         <ng-container matColumnDef="society">
           <th mat-header-cell *matHeaderCellDef class="title">Numéro de compte Cofina</th>
-          <!-- <td mat-cell *matCellDef="let row">
+          <<td mat-cell *matCellDef="let row">
             {{ row.firstName }} {{ row.lastName }}
-          </td> -->
-        </ng-container>
+          </td>
+        </ng-container> -->
 
-        <!-- State Column -->
-        <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef class="title">Dernière mise à jour</th>
-          <!-- <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td> -->
-        </ng-container>
+<!-- State Column -->
+<!-- <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
+        </ng-container> -->
 
-        <!-- Created Column -->
-        <ng-container matColumnDef="createdAt">
+<!-- Created Column -->
+<!-- <ng-container matColumnDef="createdAt">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear>
             Solde disponible
           </th>
           <td mat-cell *matCellDef="let row">
-            <!-- {{ row.createdAt | date : "dd-MM-YYYY" }} -->
-          </td>
-        </ng-container>
+            {{ row.createdAt | date : "dd-MM-YYYY" }} -->
+          <!-- </td>
+        </ng-container> -->
 
-        <!-- <ng-container matColumnDef="action">
+<!-- <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
             Action
           </th>
@@ -142,13 +141,41 @@
           </td>
         </ng-container> -->
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
     </div>
-  </div>
-  <!-- <div class="info-current-user container_sticky">
+  </div> -->
+<!-- <div class="info-current-user container_sticky">
     <app-user-details [user]="selectedCollab"></app-user-details>
   </div> -->
+<!-- </div> -->
+
+<div class="page-wrapper" style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  ">
+  <div style="display: flex; gap: 35px; margin: 20px 10px; justify-content: space-between;
+        align-items: center;">
+    <h2 class="container-title-setting">
+      <span>{{ title }}</span>
+    </h2>
+    <!-- <app-organization-file [organisationServiceId]="organisationServiceId" [startDate]="startDate"
+      [endDate]="endDate"></app-organization-file> -->
+    <div style="width: 25%">
+      <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px" style="
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;" (click)="addSocity()">
+        <mat-icon fxLayoutAlign="center center">add_circle_outline</mat-icon><span style="font-size: 13px">Ajouter
+          une société </span>
+      </button>
+    </div>
+  </div>
 </div>

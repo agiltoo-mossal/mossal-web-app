@@ -57,10 +57,10 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   accountNumberExists: boolean = false;
   adminEmailExists: boolean = false;
   companyNameExists: boolean = false;
-  
+
   title = 'Ajout d\'une nouvelle société';
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
-  
+
   // Données pour les listes déroulantes
   financialInstitutions: FinancialInstitution[] = [
     { id: '1', name: 'CBAO Groupe Attijariwafa Bank' },
@@ -159,7 +159,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       this.formType == 'edit'
         ? 'Modifier les informations de la société'
         : 'Création nouvelle société';
-    
+
     this.listCategorieGQL
       .fetch({
         queryConfig: {
@@ -170,12 +170,12 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         this.categories = result.data.fetchCategorySociopros.results;
         console.log('list', this.categories);
       });
-    
-    this.initSearch();
+
+    // this.initSearch();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.getSociety();
+    // this.getSociety();
     if (this.formType == 'edit') {
       this.societyForm.controls['adminEmail'].disable();
     }
@@ -213,27 +213,27 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxSalaryPercent: Number(formValue.maxSalaryPercent)
     };
 
-    this.inviteCollaboratorGQL
-      .mutate({
-        societyInput: societyData
-      })
-      .subscribe(
-        (result) => {
-          console.log('result', result);
-          this.isLoading = false;
-          if (result.data) {
-            this.router.navigate(['/dashboard/society']);
-            this.snackBarService.showSuccessSnackBar(
-              'Société créée avec succès'
-            );
-          }
-        },
-        (error) => {
-          console.error('Erreur lors de la création:', error);
-          this.snackBarService.showErrorSnackBar('Erreur lors de la création de la société');
-          this.isLoading = false;
-        }
-      );
+    // this.inviteCollaboratorGQL
+    //   .mutate({
+    //     societyInput: societyData
+    //   })
+    //   .subscribe(
+    //     (result) => {
+    //       console.log('result', result);
+    //       this.isLoading = false;
+    //       if (result.data) {
+    //         this.router.navigate(['/dashboard/society']);
+    //         this.snackBarService.showSuccessSnackBar(
+    //           'Société créée avec succès'
+    //         );
+    //       }
+    //     },
+    //     (error) => {
+    //       console.error('Erreur lors de la création:', error);
+    //       this.snackBarService.showErrorSnackBar('Erreur lors de la création de la société');
+    //       this.isLoading = false;
+    //     }
+    //   );
   }
 
   edit() {
@@ -261,61 +261,61 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxSalaryPercent: Number(formValue.maxSalaryPercent)
     };
 
-    this.updateCollaboratorGQL
-      .mutate({
-        societyInput: societyData,
-        societyId: this.societyId
-      })
-      .subscribe(
-        (result) => {
-          this.isLoading = false;
-          if (result.data) {
-            this.router.navigate(['/dashboard/society']);
-            this.snackBarService.showSuccessSnackBar(
-              'Société modifiée avec succès'
-            );
-          }
-        },
-        (error) => {
-          console.error('Erreur lors de la modification:', error);
-          this.snackBarService.showErrorSnackBar('Erreur lors de la modification');
-          this.isLoading = false;
-        }
-      );
+    // this.updateCollaboratorGQL
+    //   .mutate({
+    //     societyInput: societyData,
+    //     societyId: this.societyId
+    //   })
+    //   .subscribe(
+    //     (result) => {
+    //       this.isLoading = false;
+    //       if (result.data) {
+    //         this.router.navigate(['/dashboard/society']);
+    //         this.snackBarService.showSuccessSnackBar(
+    //           'Société modifiée avec succès'
+    //         );
+    //       }
+    //     },
+    //     (error) => {
+    //       console.error('Erreur lors de la modification:', error);
+    //       this.snackBarService.showErrorSnackBar('Erreur lors de la modification');
+    //       this.isLoading = false;
+    //     }
+    //   );
   }
 
-  getSociety() {
-    if (this.societyId) {
-      this.title = 'Modification société';
-      this.fetchOrganizationCollaboratorGQL
-        .fetch(
-          { societyId: this.societyId },
-          { fetchPolicy: 'no-cache' }
-        )
-        .subscribe((result) => {
-          this.society = result.data.fetchOrganizationCollaborator as User;
-          
-          // Remplir le formulaire avec les données existantes
-          this.societyForm.patchValue({
-            companyName: this.society.companyName || '',
-            address: this.society.address || '',
-            city: this.society.city || '',
-            companyPhone: this.society.companyPhone || '',
-            accountNumber: this.society.accountNumber || '',
-            financialInstitution: this.society.financialInstitutionId || '',
-            adminFirstName: this.society.firstName || '',
-            adminLastName: this.society.lastName || '',
-            adminFunction: this.society.position || '',
-            adminPhone: this.society.phoneNumber || '',
-            adminEmail: this.society.email || '',
-            maxAmount: this.society.maxAmount || 0,
-            reimbursementDate: this.society.reimbursementDate || '',
-            interestRate: this.society.interestRate || '',
-            maxSalaryPercent: this.society.maxSalaryPercent || ''
-          });
-        });
-    }
-  }
+  // getSociety() {
+  //   if (this.societyId) {
+  //     this.title = 'Modification société';
+  //     this.fetchOrganizationCollaboratorGQL
+  //       .fetch(
+  //         { societyId: this.societyId },
+  //         { fetchPolicy: 'no-cache' }
+  //       )
+  //       .subscribe((result) => {
+  //         this.society = result.data.fetchOrganizationCollaborator as User;
+
+  //         // Remplir le formulaire avec les données existantes
+  //         this.societyForm.patchValue({
+  //           companyName: this.society.companyName || '',
+  //           address: this.society.address || '',
+  //           city: this.society.city || '',
+  //           companyPhone: this.society.companyPhone || '',
+  //           accountNumber: this.society.accountNumber || '',
+  //           financialInstitution: this.society.financialInstitutionId || '',
+  //           adminFirstName: this.society.firstName || '',
+  //           adminLastName: this.society.lastName || '',
+  //           adminFunction: this.society.position || '',
+  //           adminPhone: this.society.phoneNumber || '',
+  //           adminEmail: this.society.email || '',
+  //           maxAmount: this.society.maxAmount || 0,
+  //           reimbursementDate: this.society.reimbursementDate || '',
+  //           interestRate: this.society.interestRate || '',
+  //           maxSalaryPercent: this.society.maxSalaryPercent || ''
+  //         });
+  //       });
+  //   }
+  // }
 
   checkCompanyPhone() {
     this.societyForm
@@ -396,66 +396,66 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       });
   }
 
-  checkAccountNumber() {
-    this.societyForm
-      .get('accountNumber')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((value) => {
-          return this.searchService.bankAccountNumberExists(
-            value,
-            false,
-            this.societyId
-          );
-        })
-      )
-      .subscribe((result) => {
-        this.societyForm.controls['accountNumber'].setErrors(null);
-        this.societyForm.controls['accountNumber'].updateValueAndValidity();
-        this.accountNumberExists = result;
-        if (result) {
-          this.societyForm.controls['accountNumber'].setErrors({
-            accountNumberExists: true,
-          });
-        }
-      });
-  }
+  // checkAccountNumber() {
+  //   this.societyForm
+  //     .get('accountNumber')
+  //     ?.valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       switchMap((value) => {
+  //         return this.searchService.bankAccountNumberExists(
+  //           value,
+  //           false,
+  //           this.societyId
+  //         );
+  //       })
+  //     )
+  //     .subscribe((result) => {
+  //       this.societyForm.controls['accountNumber'].setErrors(null);
+  //       this.societyForm.controls['accountNumber'].updateValueAndValidity();
+  //       this.accountNumberExists = result;
+  //       if (result) {
+  //         this.societyForm.controls['accountNumber'].setErrors({
+  //           accountNumberExists: true,
+  //         });
+  //       }
+  //     });
+  // }
 
-  checkCompanyName() {
-    this.societyForm
-      .get('companyName')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((value) => {
-          // Supposant qu'il existe une méthode pour vérifier le nom de l'entreprise
-          return this.searchService.companyNameExists(
-            value,
-            false,
-            this.societyId
-          );
-        })
-      )
-      .subscribe((result) => {
-        this.societyForm.controls['companyName'].setErrors(null);
-        this.societyForm.controls['companyName'].updateValueAndValidity();
-        this.companyNameExists = result;
-        if (result) {
-          this.societyForm.controls['companyName'].setErrors({
-            companyNameExists: true,
-          });
-        }
-      });
-  }
+  // checkCompanyName() {
+  //   this.societyForm
+  //     .get('companyName')
+  //     ?.valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       switchMap((value) => {
+  //         // Supposant qu'il existe une méthode pour vérifier le nom de l'entreprise
+  //         return this.searchService.companyNameExists(
+  //           value,
+  //           false,
+  //           this.societyId
+  //         );
+  //       })
+  //     )
+  //     .subscribe((result) => {
+  //       this.societyForm.controls['companyName'].setErrors(null);
+  //       this.societyForm.controls['companyName'].updateValueAndValidity();
+  //       this.companyNameExists = result;
+  //       if (result) {
+  //         this.societyForm.controls['companyName'].setErrors({
+  //           companyNameExists: true,
+  //         });
+  //       }
+  //     });
+  // }
 
-  initSearch() {
-    this.checkCompanyPhone();
-    this.checkAdminPhone();
-    this.checkAdminEmail();
-    this.checkAccountNumber();
-    this.checkCompanyName();
-  }
+  // initSearch() {
+  //   this.checkCompanyPhone();
+  //   this.checkAdminPhone();
+  //   this.checkAdminEmail();
+  //   this.checkAccountNumber();
+  //   this.checkCompanyName();
+  // }
 
   get hasErrors() {
     return (
@@ -467,29 +467,29 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     );
   }
 
-  lockUser = (userId: string) => {
-    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Société bloquée avec succès!'
-        );
-        this.getSociety();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
+  // lockUser = (userId: string) => {
+  //   this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+  //     if (result.data.lockUser) {
+  //       this.snackBarService.showSuccessSnackBar(
+  //         'Société bloquée avec succès!'
+  //       );
+  //       this.getSociety();
+  //     } else {
+  //       this.snackBarService.showErrorSnackBar();
+  //     }
+  //   });
+  // };
 
-  unlockUser = (userId: string) => {
-    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Société débloquée avec succès!'
-        );
-        this.getSociety();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
+  // unlockUser = (userId: string) => {
+  //   this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+  //     if (result.data.unlockUser) {
+  //       this.snackBarService.showSuccessSnackBar(
+  //         'Société débloquée avec succès!'
+  //       );
+  //       this.getSociety();
+  //     } else {
+  //       this.snackBarService.showErrorSnackBar();
+  //     }
+  //   });
+  // };
 }

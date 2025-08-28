@@ -17,13 +17,10 @@ import {
   UserRole,
 } from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { dateToString } from 'src/app/shared/utils/time';
 import {
-  FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
   LockUserGQL,
-  Organization,
   UnlockUserGQL,
   User,
 } from 'src/graphql/generated';
@@ -63,7 +60,6 @@ export class OverviewComponent implements AfterViewInit {
 
   page: number = 1;
   data = [];
-  organization: Organization;
 
   constructor(
     private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
@@ -73,8 +69,7 @@ export class OverviewComponent implements AfterViewInit {
     private unlockUserGQL: UnlockUserGQL,
     private snackBarService: SnackBarService,
     private fileUploadService: FileUploadService,
-    private fb: FormBuilder,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fb: FormBuilder
   ) {
     // this.fetchCollabs();
     effect(() => {
@@ -202,10 +197,9 @@ export class OverviewComponent implements AfterViewInit {
 
 
   downloadCollaborators() {
-    this.getCurrentorganization();
-    const date = dateToString(new Date).toString();
     this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: ({ data }) => {
+        console.log("result =>>>>>>>>>>> ", data);
 
         const temps = data.fetchOrganizationCollaborators;
         if (temps.length) {
@@ -224,7 +218,7 @@ export class OverviewComponent implements AfterViewInit {
               '',
             ]),
           ];
-          this.convertToXLSX(csvRows, this.organization.name, date);
+          this.convertToXLSX(csvRows);
         } else {
           this.snackBarService.showSnackBar(
             "Aucun collaborateur trouvé !"
@@ -235,7 +229,7 @@ export class OverviewComponent implements AfterViewInit {
     });
   }
 
-  convertToXLSX(data: any[], name: string, date: string) {
+  convertToXLSX(data: any[]) {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
       skipHeader: true,
     });
@@ -247,7 +241,7 @@ export class OverviewComponent implements AfterViewInit {
       bookType: 'xlsx',
       type: 'array',
     });
-    this.saveAsExcelFile(excelBuffer, 'collaborateurs_' + name + '_' + date);
+    this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
@@ -259,17 +253,5 @@ export class OverviewComponent implements AfterViewInit {
     a.click();
     window.URL.revokeObjectURL(url);
     // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
-  }
-
-  getCurrentorganization(useCache = true) {
-    this.fetchCurrentAdminGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        if (result.data) {
-          this.organization = result.data.fetchCurrentAdmin
-            .organization as Organization;
-          console.log({ org: this.organization });
-        }
-      });
   }
 }

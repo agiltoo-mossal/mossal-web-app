@@ -132,6 +132,7 @@ export type Demande = {
   collaborator: User;
   colloborator?: Maybe<User>;
   createdAt: Scalars['DateTime']['output'];
+  event?: Maybe<Event>;
   fees: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
@@ -237,6 +238,25 @@ export type FinalizeForgotPasswordInput = {
   token: Scalars['String']['input'];
 };
 
+export type FinancialOrganization = {
+  __typename?: 'FinancialOrganization';
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Any']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type FinancialOrganizationInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type FinancialOrganizationUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type InviteCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -268,7 +288,7 @@ export type Mutation = {
   createCategorySociopro: CategorySociopro;
   createCategorySocioproService: CategorySocioproService;
   createEvent: Event;
-  createFinancialOrganization: Organization;
+  createFinancialOrganization: FinancialOrganization;
   createOrganisationService: OrganisationService;
   createOrganization: Organization;
   createService: Service;
@@ -297,6 +317,7 @@ export type Mutation = {
   updateCategorySocioproService: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
   updateEvent: Scalars['Boolean']['output'];
+  updateFinancialOrganization: Scalars['Boolean']['output'];
   updateMyAdminPassword: Scalars['Boolean']['output'];
   updateMyAdminProfile: Scalars['Boolean']['output'];
   updateOrganisationService: Scalars['Boolean']['output'];
@@ -361,7 +382,7 @@ export type MutationCreateEventArgs = {
 
 
 export type MutationCreateFinancialOrganizationArgs = {
-  organizationInput: OrganizationInput;
+  financialOrganizationInput: FinancialOrganizationInput;
 };
 
 
@@ -514,6 +535,12 @@ export type MutationUpdateEventArgs = {
 };
 
 
+export type MutationUpdateFinancialOrganizationArgs = {
+  financialOrganizationId: Scalars['ID']['input'];
+  financialOrganizationUpdateInput: FinancialOrganizationUpdateInput;
+};
+
+
 export type MutationUpdateMyAdminPasswordArgs = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
@@ -628,8 +655,11 @@ export type OrganisationServiceUpdateInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  balance: Scalars['Float']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
+  financialOrganization?: Maybe<FinancialOrganization>;
+  financialOrganizationId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   maxDemandeAmount: Scalars['Float']['output'];
   /** Nom de l'organisation */
@@ -641,7 +671,10 @@ export type Organization = {
 
 export type OrganizationInput = {
   amountPercent: Scalars['Float']['input'];
+  balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
+  /** Nom de l'organisation financière */
+  financialOrganizationName: Scalars['String']['input'];
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
   name: Scalars['String']['input'];
@@ -655,8 +688,11 @@ export type OrganizationInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
+  balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
+  /** Nom de l'organisation financière */
+  financialOrganizationName: Scalars['String']['input'];
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -690,6 +726,12 @@ export type PaginatedEventResult = {
   __typename?: 'PaginatedEventResult';
   pagination: PaginationInfo;
   results: Array<Event>;
+};
+
+export type PaginatedFinancialOrganizationResult = {
+  __typename?: 'PaginatedFinancialOrganizationResult';
+  pagination: PaginationInfo;
+  results: Array<FinancialOrganization>;
 };
 
 export type PaginatedNotificationResult = {
@@ -754,6 +796,7 @@ export type Query = {
   fetchDemandesMetrics: DemandesMetrics;
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
+  fetchFinancialOrganization: PaginatedFinancialOrganizationResult;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
@@ -886,6 +929,11 @@ export type QueryFetchEventArgs = {
 
 export type QueryFetchEventsArgs = {
   organizationServiceId: Scalars['ID']['input'];
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchFinancialOrganizationArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -1496,7 +1544,7 @@ export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, refundDuration: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, remboursements?: Array<{ __typename?: 'Remboursement', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null }> | null }> } };
+export type FetchPaginatedOrganizationDemandesQuery = { __typename?: 'Query', fetchPaginatedOrganizationDemandes: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, refundDuration: number, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null }, remboursements?: Array<{ __typename?: 'Remboursement', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null }> | null, event?: { __typename?: 'Event', id: any, title: string } | null }> } };
 
 export type ValidateDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -2904,6 +2952,10 @@ export const FetchPaginatedOrganizationDemandesDocument = gql`
         status
         demandeId
         userId
+      }
+      event {
+        id
+        title
       }
     }
   }

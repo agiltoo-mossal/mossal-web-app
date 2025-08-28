@@ -17,6 +17,7 @@ export class RequestEmergencyComponent {
   organizationServiceId: string;
   organizationId: string;
   title: string = "Dépannage d'urgence"; // Titre dynamique
+  eventName: string;
   data = [];
   constructor(
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
@@ -67,4 +68,5 @@ export class RequestEmergencyComponent {
         },
       });
   }
+
 }

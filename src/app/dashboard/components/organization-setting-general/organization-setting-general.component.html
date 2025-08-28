@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Paramètres généraux</span></h2>
-        <h2 class="container-title-amount-setting">Solde du compte</h2>
-        <h2 class="container-amount-setting">82 500 XOF</h2>
+  <!-- <h2 class="container-title-amount-setting">Solde du compte</h2>
+  <h2 class="container-amount-setting">{{ organizationBalance }} XOF</h2> -->
   <div class="container-setting">
     <div class="parametres-container">
       <!-- Section des catégories socioprofessionnelles -->
@@ -10,23 +10,15 @@
         <div class="input-section">
           <label for="categorie-input">Catégorie Socio Professionnelle</label>
           <div class="input-group">
-            <input
-              type="text"
-              id="categorie-input"
-              placeholder="Nom de la catégorie"
-              [(ngModel)]="newCategorie"
-            />
+            <input type="text" id="categorie-input" placeholder="Nom de la catégorie" [(ngModel)]="newCategorie" />
             <button class="add-button" (click)="addCategorie()">Ajouter</button>
           </div>
         </div>
 
         <h4>Liste des catégories socioprofessionnelles</h4>
         <ul class="categorie-list">
-          <li
-            *ngFor="let categorie of categories; let i = index"
-            [ngClass]="{ error: categorie.error }"
-            class="categorie-item"
-          >
+          <li *ngFor="let categorie of categories; let i = index" [ngClass]="{ error: categorie.error }"
+            class="categorie-item">
             <!-- Affichage conditionnel -->
             <div class="categorie-field" *ngIf="!categorie.isEditing">
               <span>{{ categorie.title }}</span>
@@ -40,11 +32,7 @@
 
             <!-- Mode édition -->
             <div class="categorie-field" *ngIf="categorie.isEditing">
-              <input
-                type="text"
-                [(ngModel)]="categorie.title"
-                class="edit-input"
-              />
+              <input type="text" [(ngModel)]="categorie.title" class="edit-input" />
               <div class="actions">
                 <button class="save-btn" (click)="saveCategorie(i)">✔️</button>
                 <button class="cancel-btn" (click)="cancelEdit(i)">❌</button>
@@ -63,23 +51,18 @@
           <div class="wrapper" fxLayout="column" fxLayoutGap="38px">
             <ul class="date">
               @for (item of itemsCardDate; track $index) {
-              <li
-                [ngClass]="{
+              <li [ngClass]="{
                   pending: item.pending == true,
                   active: item.active == true
-                }"
-              >
+                }">
                 <button (click)="setDate(item.day)">
-                  <time
-                    [dateTime]="
+                  <time [dateTime]="
                       lastDayOfCurrentMonth.getFullYear() +
                       '-' +
                       lastDayOfCurrentMonth.getMonth() +
                       '-' +
                       item
-                    "
-                    >{{ item.day }}</time
-                  >
+                    ">{{ item.day }}</time>
                 </button>
               </li>
               }
@@ -87,8 +70,7 @@
           </div>
         </form>
         <p style="text-align: justify; padding: 8px">
-          <span
-            style="
+          <span style="
               width: 25px;
               height: 25px;
               padding: 5px;
@@ -97,9 +79,7 @@
               justify-content: center;
               align-items: center;
               background-color: gray;
-            "
-            ><i class="fa-solid fa-info" style="color: white"></i
-          ></span>
+            "><i class="fa-solid fa-info" style="color: white"></i></span>
           Veuillez sélectionner la date limite de préparation de la paie
         </p>
       </div>
@@ -110,14 +90,7 @@
       <div class="plafond-content">
         <label for="percentage-input">Pourcentage maximum du salaire</label>
         <div class="percentage-input-group">
-          <input
-            type="number"
-            id="percentage-input"
-            [(ngModel)]="maxPercentage"
-            placeholder="50"
-            min="0"
-            max="100"
-          />
+          <input type="number" id="percentage-input" [(ngModel)]="maxPercentage" placeholder="50" min="0" max="100" />
           <span class="percentage-symbol">%</span>
         </div>
       </div>
