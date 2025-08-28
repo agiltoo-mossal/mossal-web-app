@@ -147,6 +147,46 @@
               {{ row.createdAt | date : "dd-MM-YYYY" }}
             </td>
           </ng-container>
+
+          <!-- Version 2: Avec affichage conditionnel plus explicite -->
+          <ng-container matColumnDef="eventName">
+            <th mat-header-cell *matHeaderCellDef class="title" disableClear>
+              Evènement
+            </th>
+            <td mat-cell *matCellDef="let row" class="advance">
+              <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+      ">
+                <span *ngIf="row.event && row.event.title; else emptyEvent">
+                  {{ row.event.title }}
+                </span>
+                <ng-template #emptyEvent>
+                  <span class="no-event">-</span>
+                </ng-template>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- <ng-container *ngIf="eventName" matColumnDef="eventName">
+            <th mat-header-cell *matHeaderCellDef class="title" disableClear>
+              Evènement
+            </th>
+            <td mat-cell *matCellDef="let row" class="advance">
+              <div style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 3px;
+                ">
+                <span> {{ eventName }}</span>
+              </div>
+
+            </td>
+          </ng-container> -->
+
           <ng-container matColumnDef="refundDuration">
             <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center">
               Durée de remboursement

@@ -149,6 +149,10 @@ query FetchPaginatedOrganizationDemandes(
         status
         demandeId
         userId
+      },
+      event {
+        id
+        title
       }
     }
   }

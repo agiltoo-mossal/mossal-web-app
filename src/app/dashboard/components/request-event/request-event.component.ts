@@ -25,7 +25,7 @@ export class RequestEventComponent {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
     private snacbkarService: SnackBarService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchCurrentAdminGQL
