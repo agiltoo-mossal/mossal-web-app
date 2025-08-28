@@ -7,7 +7,7 @@
         <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
       </div>
       <div fxLayout="row" fxLayoutGap="19px">
-        <div class="dropdown" appDropdown="downlod-dropdown">
+        <!-- <div class="dropdown" appDropdown="downlod-dropdown">
           <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
             <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un fichier</span>
           </button>
@@ -25,18 +25,18 @@
               </div>
             </a>
           </div>
-        </div>
+        </div> -->
 
         <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
           routerLink="/dashboard/society/create-society">
-          <span>+</span> <span>Ajouter un collaborateur</span>
+          <span>+</span> <span>Ajouter une société</span>
         </button>
         <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
           routerLink="/dashboard/society/create-society">
           <span>💫</span> <span>Synchroniser avec Sage</span>
         </button>
 
-        <div class="dropdown" appDropdown="downlod-dropdown">
+        <!-- <div class="dropdown" appDropdown="downlod-dropdown">
           <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
             <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Télécharger</span>
           </button>
@@ -52,7 +52,7 @@
               </div>
             </button>
           </div>
-        </div>
+        </div> -->
 
       </div>
     </div>
@@ -64,42 +64,42 @@
         matSortDirection="desc" -->
         <!-- Number Column -->
         <ng-container matColumnDef="uniqueIdentifier">
-          <th mat-header-cell *matHeaderCellDef class="title">Identifiant</th>
+          <th mat-header-cell *matHeaderCellDef class="title">Entreprise</th>
           <td class="radio-container" mat-cell *matCellDef="let row">
             <div class="radio-container">
-              <span (click)="selectCollab(row)" class="radio {{
+              <!-- <span (click)="selectCollab(row)" class="radio {{
                   row?.id === selectedCollab?.id ? 'active' : ''
                 }}" fxLayoutAlign="center center"></span>
-              <span>{{ row.uniqueIdentifier }}</span>
+              <span>{{ row.uniqueIdentifier }}</span> -->
             </div>
           </td>
         </ng-container>
 
         <!-- Title Column -->
         <ng-container matColumnDef="society">
-          <th mat-header-cell *matHeaderCellDef class="title">Collaborateur</th>
-          <td mat-cell *matCellDef="let row">
+          <th mat-header-cell *matHeaderCellDef class="title">Numéro de compte Cofina</th>
+          <!-- <td mat-cell *matCellDef="let row">
             {{ row.firstName }} {{ row.lastName }}
-          </td>
+          </td> -->
         </ng-container>
 
         <!-- State Column -->
         <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
-          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
+          <th mat-header-cell *matHeaderCellDef class="title">Dernière mise à jour</th>
+          <!-- <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td> -->
         </ng-container>
 
         <!-- Created Column -->
         <ng-container matColumnDef="createdAt">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear>
-            Date D'inscription
+            Solde disponible
           </th>
           <td mat-cell *matCellDef="let row">
-            {{ row.createdAt | date : "dd-MM-YYYY" }}
+            <!-- {{ row.createdAt | date : "dd-MM-YYYY" }} -->
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="action">
+        <!-- <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
             Action
           </th>
@@ -140,7 +140,7 @@
               </div>
             </div>
           </td>
-        </ng-container>
+        </ng-container> -->
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
