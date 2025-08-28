@@ -42,6 +42,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'society',
+        loadChildren: () =>
+          import('./components/society/society.module').then(
+            (m) => m.SocietyModule
+          ),
+      },
+      {
         path: 'admins',
         loadChildren: () =>
           import('./components/admins/admins.module').then(
