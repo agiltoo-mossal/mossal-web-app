@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -66,24 +66,13 @@ export class OverviewComponent implements AfterViewInit {
   organization: Organization;
 
   constructor(
-    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
-    private fetchPaginatedOrganizationCollaboratorsGQL: FetchPaginatedOrganizationCollaboratorsGQL,
-    private activatedRoute: ActivatedRoute,
-    private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL,
-    private snackBarService: SnackBarService,
+    private router: Router,
     private fileUploadService: FileUploadService,
     private fb: FormBuilder,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
   ) {
     // this.fetchCollabs();
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
-      if (tempData) {
-        this.searchForm.patchValue({
-          search: '',
-        });
-      }
     });
     this.initSearchForm();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
@@ -96,180 +85,18 @@ export class OverviewComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-    this.searchForm
-      .get('search')
-      .valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        startWith('')
-      )
-      .subscribe((r) => {
-        this.paginator.firstPage();
-      });
 
-    merge(
-      this.sort.sortChange,
-      this.paginator.page,
-      this.searchForm.get('search').valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-        // startWith('')
-      )
-    )
-      .pipe(
-        startWith({}),
-        switchMap(() => {
-          this.isLoadingResults = true;
-          const queryFilter = {
-            limit: this.paginator.pageSize,
-            page: this.paginator.pageIndex + 1,
-            // sortField: this.sort.active,
-            // sortOrder: this.sort.direction,
-            search: this.searchForm?.value?.search,
-          };
-
-          return this.fetchPaginatedOrganizationCollaboratorsGQL.fetch(
-            { queryFilter },
-            { fetchPolicy: 'no-cache' }
-          );
-        }),
-        map((result) => {
-          // Flip flag to show that loading has finished.
-          this.isLoadingResults = false;
-          this.isRateLimitReached = result === null;
-
-          if (result === null) {
-            return [];
-          }
-
-          // Only refresh the result length if there is new data. In case of rate
-          // limit errors, we do not want to reset the paginator to zero, as that
-          // would prevent users from re-triggering requests
-          return result.data;
-        })
-      )
-      .subscribe((data: any) => {
-        this.data = data.fetchPaginatedOrganizationCollaborators.results as any;
-        this.dataSource.data = this.data as any;
-        this.selectedCollab = this.data[0];
-        this.resultsLength =
-          data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
-        this.selectedCollab = this.data?.[0];
-      });
   }
 
-  fetchCollabs() {
-    this.fetchPaginatedOrganizationCollaboratorsGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        this.collabs = result.data.fetchPaginatedOrganizationCollaborators
-          .results as User[];
-        this.dataSource.data = this.collabs;
-        this.selectedCollab = this.collabs?.[0];
-      });
+  title: string = "liste des sociétés"
+  requests = [{}, {}, {}, {}, {}, {}];
+
+
+  addSocity() {
+    this.router.navigate(['/dashboard/society/create-society']);
   }
 
-  selectCollab(selected: User) {
-    this.selectedCollab = selected;
-  }
-
-  lockUser = (userId: string) => {
-    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur bloqué avec succès!'
-        );
-        this.fetchCollabs();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
-
-  unlockUser = (userId: string) => {
-    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur débloqué avec succès!'
-        );
-        this.fetchCollabs();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
 
 
-  downloadCollaborators() {
-    this.getCurrentorganization();
-    const date = dateToString(new Date).toString();
-    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
-      next: ({ data }) => {
 
-        const temps = data.fetchOrganizationCollaborators;
-        if (temps.length) {
-          const csvRows = [
-            [
-              'Nom',
-              'Prenom',
-              'Identifiant unique',
-              'Date d\'inscription',
-            ],
-            ...temps.map((row) => [
-              row.lastName,
-              row.firstName,
-              row.uniqueIdentifier,
-              row.createdAt,
-              '',
-            ]),
-          ];
-          this.convertToXLSX(csvRows, this.organization.name, date);
-        } else {
-          this.snackBarService.showSnackBar(
-            "Aucun collaborateur trouvé !"
-          );
-        }
-      },
-      error: (error) => console.log(error),
-    });
-  }
-
-  convertToXLSX(data: any[], name: string, date: string) {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-      skipHeader: true,
-    });
-    const workbook: XLSX.WorkBook = {
-      Sheets: { data: worksheet },
-      SheetNames: ['data'],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    this.saveAsExcelFile(excelBuffer, 'collaborateurs_' + name + '_' + date);
-  }
-
-  saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-    const url = window.URL.createObjectURL(data);
-    const a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
-  }
-
-  getCurrentorganization(useCache = true) {
-    this.fetchCurrentAdminGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        if (result.data) {
-          this.organization = result.data.fetchCurrentAdmin
-            .organization as Organization;
-          console.log({ org: this.organization });
-        }
-      });
-  }
 }

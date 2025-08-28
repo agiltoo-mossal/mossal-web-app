@@ -14,7 +14,7 @@ const routes: Routes = [
 
     children: [
       {
-        path: '',
+        path: 'list-society',
         component: OverviewComponent,
       },
       {
@@ -25,10 +25,10 @@ const routes: Routes = [
         path: ':id',
         component: EditSocietyComponent,
       },
-      {
-        path: 'details/:id',
-        // component: DetailSocietyComponent,
-      },
+      // {
+      //   path: 'details/:id',
+      //   component: DetailSocietyComponent,
+      // },
     ],
   },
 ];
@@ -38,4 +38,4 @@ const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class SocietyRoutingModule {}
+export class SocietyRoutingModule { }

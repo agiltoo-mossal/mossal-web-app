@@ -231,15 +231,15 @@ export class SidebarComponent implements OnInit {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private keycloakService: KeycloakService,
     private router: Router
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     this.getCurrentUser();
     this.sidebarService.isSidebarOpen().subscribe((resp) => {
       this.isSidebarOpened = resp;
     });
   }
-  
+
   getCurrentUser() {
     this.fetchCurrentAdminGQL
       .fetch(
@@ -250,7 +250,7 @@ export class SidebarComponent implements OnInit {
       )
       .subscribe((result) => {
         this.currentUser = result.data.fetchCurrentAdmin as User;
-        
+
         // Attribution du menu selon le rôle de l'utilisateur
         switch (this.currentUser.role) {
           case 'SUPER_ADMIN_ORG':
@@ -263,11 +263,11 @@ export class SidebarComponent implements OnInit {
             this.dashboardNav = this.menuAdmin;
             break;
         }
-        
+
         // console.log({ user: this.currentUser });
       });
   }
-  
+
   get menuAdmin() {
     return [
       {
@@ -319,7 +319,7 @@ export class SidebarComponent implements OnInit {
       },
     ];
   }
-  
+
   get menuSuperAdmin() {
     return [
       {
@@ -427,11 +427,11 @@ export class SidebarComponent implements OnInit {
     if (item.children) {
       this.toggleDropdown(item);
     } else {
-      console.log(item.link);
+      console.log("Item link =========>>>>>>>>>>", item);
       this.router.navigate([item.link]);
     }
   }
-  
+
   logout() {
     this.keycloakService.logout().then((result) => {
       this.router.navigate(['/']);
