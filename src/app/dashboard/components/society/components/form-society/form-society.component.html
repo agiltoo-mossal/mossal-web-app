@@ -81,6 +81,30 @@
         </div>
       </div>
 
+      <!-- <div class="form-row">
+          <div class="form-group">
+            <label for="ninea-file">NINEA (PDF)</label>
+            <div class="file-upload-container">
+              <input
+                type="file"
+                id="ninea-file"
+                accept=".pdf"
+                (change)="onFileSelect($event, 'ninea')"
+                #nineaFileInput
+              />
+              <button
+                type="button"
+                class="file-upload-button"
+                (click)="nineaFileInput.click()"
+              >
+                <span class="material-icons">upload_file</span>
+                Choisir fichier NINEA
+              </button>
+              <span class="file-name" *ngIf="selectedFiles.ninea">
+                {{ selectedFiles.ninea.name }}
+              </span>
+            </div>
+          </div> -->
       <div class="form-row">
         <div class="form-group">
           <label for="institutions-financieres">Les institutions financières</label>
@@ -204,6 +228,29 @@
           </div>
         </div>
       </div>
+
+       <!-- <div class="form-row">
+        <div class="form-group">
+          <label for="psp">PSP (Partenaire de Service de Paiement)</label>
+          <select id="psp" formControlName="psp">
+            <option value="">Sélectionner un PSP</option>
+            <option *ngFor="let psp of psps" [value]="psp.id">
+              {{ psp.name }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              societyForm.get('psp')?.invalid &&
+              societyForm.get('psp')?.touched
+            "
+            class="error-message"
+          >
+            <span *ngIf="societyForm.get('psp')?.errors?.['required']">
+              Le PSP est obligatoire.
+            </span>
+          </div>
+        </div>
+      </div> -->
 
       <div class="form-row">
         <div class="form-group">
