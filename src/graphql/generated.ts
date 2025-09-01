@@ -324,7 +324,7 @@ export type Mutation = {
   updateOrganization: Scalars['Boolean']['output'];
   updateService: Scalars['Boolean']['output'];
   upladFile: Scalars['Boolean']['output'];
-  validateDemande: Scalars['Boolean']['output'];
+  validateDemande: ValidationResponse;
   validateRemboursement: Scalars['Boolean']['output'];
   viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
@@ -1223,6 +1223,12 @@ export enum UserRole {
   SuperAdminOrg = 'SUPER_ADMIN_ORG'
 }
 
+export type ValidationResponse = {
+  __typename?: 'ValidationResponse';
+  paymentMean: Scalars['String']['output'];
+  validateDemande: Scalars['Boolean']['output'];
+};
+
 /** Possible wallets */
 export enum Wallet {
   OrangeMoney = 'ORANGE_MONEY',
@@ -1551,7 +1557,7 @@ export type ValidateDemandeMutationVariables = Exact<{
 }>;
 
 
-export type ValidateDemandeMutation = { __typename?: 'Mutation', validateDemande: boolean };
+export type ValidateDemandeMutation = { __typename?: 'Mutation', validateDemande: { __typename?: 'ValidationResponse', validateDemande: boolean, paymentMean: string } };
 
 export type PayeDemandeMutationVariables = Exact<{
   demandeId: Scalars['ID']['input'];
@@ -2974,7 +2980,10 @@ export const FetchPaginatedOrganizationDemandesDocument = gql`
   }
 export const ValidateDemandeDocument = gql`
     mutation ValidateDemande($demandeId: ID!) {
-  validateDemande(demandeId: $demandeId)
+  validateDemande(demandeId: $demandeId) {
+    validateDemande
+    paymentMean
+  }
 }
     `;
 

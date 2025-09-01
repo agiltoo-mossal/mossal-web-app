@@ -159,7 +159,10 @@ query FetchPaginatedOrganizationDemandes(
 }
 
 mutation ValidateDemande($demandeId: ID!) {
-  validateDemande(demandeId: $demandeId)
+  validateDemande(demandeId: $demandeId) {
+    validateDemande
+    paymentMean
+  }
 }
 
 mutation PayeDemande($demandeId: ID!) {
