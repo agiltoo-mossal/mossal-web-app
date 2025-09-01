@@ -67,6 +67,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   accountNumberExists: boolean = false;
   adminEmailExists: boolean = false;
   companyNameExists: boolean = false;
+  selectedFiles: SelectedFiles = {};
 
   title = 'Ajout d\'une nouvelle société';
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
@@ -128,18 +129,16 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       // Section Informations de la société
       companyName: ['', Validators.required],
       address: ['', Validators.required],
-      city: ['', Validators.required],
+      city: [''],
       companyPhone: [
         '',
         [
-          Validators.required,
           Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
         ]
       ],
-      accountNumber: ['', Validators.required],
-      financialInstitution: ['', Validators.required],
-      // psp: ['', Validators.required], // PSP obligatoire
-
+      accountNumber: [''],
+      financialInstitution: [''],
+      ninea: [''], 
 
       // Section Informations du super admin
       adminFirstName: ['', Validators.required],
@@ -153,10 +152,11 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
-      maxAmount: [0, [Validators.required, Validators.min(0)]],
-      reimbursementDate: ['', Validators.required],
-      interestRate: ['', Validators.required],
-      maxSalaryPercent: ['', Validators.required]
+      maxAmount: [0, [Validators.min(0)]],
+      reimbursementDate: [''],
+      psp: ['', Validators.required],
+      interestRate: [''],
+      maxSalaryPercent: ['']
     });
   }
 
@@ -172,26 +172,26 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     return this.societyForm.get('maxAmount');
   }
 
-  // Méthode pour gérer la sélection des fichiers PDF
-  // onFileSelect(event: any, fileType: 'ninea' | 'registre' | 'domiciliation') {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     // Vérifier que c'est un PDF
-  //     if (file.type !== 'application/pdf') {
-  //       this.snackBarService.showErrorSnackBar(5000,'Veuillez sélectionner un fichier PDF');
-  //       return;
-  //     }
-      
-  //     // Vérifier la taille du fichier (max 5MB)
-  //     if (file.size > 5 * 1024 * 1024) {
-  //       this.snackBarService.showErrorSnackBar(5000,'Le fichier ne doit pas dépasser 5MB');
-  //       return;
-  //     }
-      
-  //     this.selectedFiles[fileType] = file;
-  //     console.log(`Fichier ${fileType} sélectionné:`, file.name);
-  //   }
-  // }
+  // Méthode pour gérer la sélection du fichier NINEA
+onFileSelect(event: any, fileType: 'ninea') {
+  const file = event.target.files[0];
+  if (file) {
+    // Vérifier que c'est un PDF
+    if (file.type !== 'application/pdf') {
+      this.snackBarService.showErrorSnackBar(5000, 'Veuillez sélectionner un fichier PDF');
+      return;
+    }
+    
+    // Vérifier la taille du fichier (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.snackBarService.showErrorSnackBar(5000, 'Le fichier ne doit pas dépasser 5MB');
+      return;
+    }
+    
+    this.selectedFiles[fileType] = file;
+    console.log(`Fichier ${fileType} sélectionné:`, file.name);
+  }
+}
 
   ngOnInit(): void {
     this.formText =
@@ -221,39 +221,64 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   }
 
   // Méthode pour soumettre le formulaire
-  submitForm() {
-    if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
-      this.societyForm.markAllAsTouched();
-      return;
-    }
-    if (this.societyId) {
-      this.edit();
-      return;
-    }
-    this.isLoading = true;
-    const formValue = this.societyForm.getRawValue();
-
-    // Préparer les données pour l'API
-    const societyData = {
-      companyName: formValue.companyName,
-      address: formValue.address,
-      city: formValue.city,
-      companyPhone: formValue.companyPhone,
-      accountNumber: formValue.accountNumber,
-      financialInstitutionId: formValue.financialInstitution,
-      // pspId: formValue.psp,
-      // pspId: formValue.psp,
-      adminFirstName: formValue.adminFirstName,
-      adminLastName: formValue.adminLastName,
-      adminFunction: formValue.adminFunction,
-      adminPhone: formValue.adminPhone,
-      adminEmail: formValue.adminEmail,
-      maxAmount: Number(formValue.maxAmount),
-      reimbursementDate: formValue.reimbursementDate,
-      interestRate: Number(formValue.interestRate),
-      maxSalaryPercent: Number(formValue.maxSalaryPercent)
-    };
+ submitForm() {
+  if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
+    this.societyForm.markAllAsTouched();
+    return;
   }
+
+  if (this.societyId) {
+    this.edit();
+    return;
+  }
+
+  this.isLoading = true;
+
+  const formValue = this.societyForm.getRawValue();
+
+  // Préparer les données pour l'API
+  const societyData = {
+    companyName: formValue.companyName,
+    address: formValue.address,
+    city: formValue.city,
+    companyPhone: formValue.companyPhone,
+    accountNumber: formValue.accountNumber,
+    financialInstitutionId: formValue.financialInstitution,
+    pspId: formValue.psp,
+    ninea: this.selectedFiles?.ninea,
+    adminFirstName: formValue.adminFirstName,
+    adminLastName: formValue.adminLastName,
+    adminFunction: formValue.adminFunction,
+    adminPhone: formValue.adminPhone,
+    adminEmail: formValue.adminEmail,
+    maxAmount: Number(formValue.maxAmount),
+    reimbursementDate: formValue.reimbursementDate,
+    interestRate: Number(formValue.interestRate),
+    maxSalaryPercent: Number(formValue.maxSalaryPercent)
+  };
+
+  // Ici, on appelle le service qui fait la requête API
+  // this.societyService.createSociety(societyData).subscribe(
+  //   (result) => {
+  //     console.log('result', result);
+
+  //     this.isLoading = false;
+
+  //     if (result.data) {
+  //       this.router.navigate(['/dashboard/society']);
+  //       this.snackBarService.showSuccessSnackBar(
+  //         'Formulaire enregistré avec succès'
+  //       );
+  //     }
+  //   },
+  //   (error) => {
+  //     console.error(error);
+  //     this.snackBarService.showErrorSnackBar(5000, 'Une erreur est survenue');
+  //     this.isLoading = false;
+  //   }
+  // );
+}
+
 
   edit() {
     if (this.societyForm.invalid || this.isLoading) {
@@ -270,7 +295,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       companyPhone: formValue.companyPhone,
       accountNumber: formValue.accountNumber,
       financialInstitutionId: formValue.financialInstitution,
-      // pspId: formValue.psp,
+      pspId: formValue.psp,
+      ninea: this.selectedFiles.ninea,
       adminFirstName: formValue.adminFirstName,
       adminLastName: formValue.adminLastName,
       adminFunction: formValue.adminFunction,
@@ -279,12 +305,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       reimbursementDate: formValue.reimbursementDate,
       interestRate: Number(formValue.interestRate),
       maxSalaryPercent: Number(formValue.maxSalaryPercent)
-    };
-
-  
+    };  
   }
-
- 
 
   checkCompanyPhone() {
     this.societyForm
@@ -372,7 +394,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       this.adminPhoneExists ||
       this.adminEmailExists ||
       this.accountNumberExists ||
-      this.companyNameExists
+      this.companyNameExists ||
+      this.psps
     );
   }
 

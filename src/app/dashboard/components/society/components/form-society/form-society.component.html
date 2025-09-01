@@ -1,299 +1,147 @@
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<div class="creation-compte" (ngSubmit)="submitForm">
+        <form class="form">
+            <!-- Section Informations de la société -->
+            <div class="form-section">
+                <h3 class="section-title">Informations de la société</h3>
 
-<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
-  <a routerLink="/dashboard/society">
-    <span>{{ "<" }}</span>retour
-  </a>
-</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="entreprise" class="required">Entreprise</label>
+                        <input type="text" id="entreprise" name="companyName" placeholder="Agiltoo" required />
+                    </div>
+                </div>
 
-<h2 class="container-title-setting">
-  <span>{{ title }}</span>
-</h2>
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label for="adresse-postale" class="required">Adresse postale</label>
+                        <input type="text" id="adresse-postale" name="address" placeholder="Ouest-Foire" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="city" placeholder="Dakar - Sénégal" style="margin-top: 28px;" />
+                    </div>
+                </div>
 
-<div class="creation-compte">
-  <form class="form" [formGroup]="societyForm" (ngSubmit)="submitForm()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telephone-entreprise">téléphone</label>
+                        <input type="tel" id="telephone-entreprise" name="companyPhone" placeholder="+221 77 000 00 00" />
+                    </div>
+                </div>
 
-    <!-- Section Informations de la société -->
-    <div class="form-section">
-      <h3 class="section-title">Informations de la société</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ninea-file">NINEA</label>
+                        <div class="file-upload-container">
+                            <input type="file" id="ninea-file" accept=".pdf" />
+                            <button type="button" class="file-upload-button" onclick="document.getElementById('ninea-file').click()">
+                                <span class="material-icons">upload_file</span>
+                                NINEA_Agiltoo.pdf
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="entreprise">Entreprise</label>
-          <input type="text" id="entreprise" formControlName="companyName" placeholder="Agiltoo" />
-          <div *ngIf="
-              societyForm.get('companyName')?.invalid &&
-              societyForm.get('companyName')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('companyName')?.errors?.['required']">
-              Le nom de l'entreprise est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="institutions-financieres">Les institutions financières</label>
+                        <select id="institutions-financieres" name="financialInstitution">
+                            <option value="">Choisir une institution financière</option>
+                            <option value="1">Banque Atlantique</option>
+                            <option value="2">UBA</option>
+                            <option value="3">SGBS</option>
+                        </select>
+                    </div>
+                </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="adresse-postale">Adresse postale</label>
-          <input type="text" id="adresse-postale" formControlName="address" placeholder="Ouest-Foire" />
-          <div *ngIf="
-              societyForm.get('address')?.invalid &&
-              societyForm.get('address')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('address')?.errors?.['required']">
-              L'adresse postale est obligatoire.
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <input type="text" formControlName="city" placeholder="Dakar - Sénégal" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="telephone-entreprise">Téléphone</label>
-          <input type="tel" id="telephone-entreprise" formControlName="companyPhone" placeholder="+221 77 000 00 00" />
-          <div *ngIf="
-              societyForm.get('companyPhone')?.invalid &&
-              societyForm.get('companyPhone')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('companyPhone')?.errors?.['required']">
-              Le numéro de téléphone est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="numero-compte">Numéro de compte</label>
-          <input type="text" id="numero-compte" formControlName="accountNumber"
-            placeholder="SN12 0120 0361 7348 7602 43" />
-          <div *ngIf="
-              societyForm.get('accountNumber')?.invalid &&
-              societyForm.get('accountNumber')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('accountNumber')?.errors?.['required']">
-              Le numéro de compte est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- <div class="form-row">
-          <div class="form-group">
-            <label for="ninea-file">NINEA (PDF)</label>
-            <div class="file-upload-container">
-              <input
-                type="file"
-                id="ninea-file"
-                accept=".pdf"
-                (change)="onFileSelect($event, 'ninea')"
-                #nineaFileInput
-              />
-              <button
-                type="button"
-                class="file-upload-button"
-                (click)="nineaFileInput.click()"
-              >
-                <span class="material-icons">upload_file</span>
-                Choisir fichier NINEA
-              </button>
-              <span class="file-name" *ngIf="selectedFiles.ninea">
-                {{ selectedFiles.ninea.name }}
-              </span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numero-compte">Numéro de compte</label>
+                        <input type="text" id="numero-compte" name="accountNumber" placeholder="SN12 0120 0361 7348 7602 43" />
+                    </div>
+                </div>
             </div>
-          </div> -->
-      <div class="form-row">
-        <div class="form-group">
-          <label for="institutions-financieres">Les institutions financières</label>
-          <select id="institutions-financieres" formControlName="financialInstitution">
-            <option value="">Choisir une institution financière</option>
-            <option *ngFor="let institution of financialInstitutions" [value]="institution.id">
-              {{ institution.name }}
-            </option>
-          </select>
-          <div *ngIf="
-              societyForm.get('financialInstitution')?.invalid &&
-              societyForm.get('financialInstitution')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('financialInstitution')?.errors?.['required']">
-              L'institution financière est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
+
+            <!-- Section Informations du super admin -->
+            <div class="form-section">
+                <h3 class="section-title">Informations du super admin</h3>
+
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label for="nom-admin" class="required">Nom</label>
+                        <input type="text" id="nom-admin" name="adminLastName" placeholder="Sall" />
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom-admin" class="required">Prénom</label>
+                        <input type="text" id="prenom-admin" name="adminFirstName" placeholder="Omar" />
+                    </div>
+                </div>
+
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label for="fonction" class="required">Fonction</label>
+                        <input type="text" id="fonction" name="adminFunction" placeholder="Directeur" />
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone-admin" class="required">Numéro téléphone</label>
+                        <input type="tel" id="telephone-admin" name="adminPhone" placeholder="+221 77 000 00 00" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email-admin" class="required">Adresse mail du super admin</label>
+                        <input type="email" id="email-admin" name="adminEmail" placeholder="contact@agiltoo.fr" />
+                    </div>
+                </div>
+
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label for="montant-maximum">Montant maximum</label>
+                        <input type="number" id="montant-maximum" name="maxAmount" placeholder="0" />
+                    </div>
+                    <div class="form-group">
+                        <label for="date-remboursement">La date de remboursement</label>
+                        <input type="text" id="date-remboursement" name="reimbursementDate" placeholder="jj/mm/aaaa" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="psp" class="required">Partenaire de Service de Paiement</label>
+                        <select id="psp" name="psp">
+                            <option value="">Sélectionner un PSP</option>
+                            <option value="1">Orange Money</option>
+                            <option value="2">Wave</option>
+                            <option value="3">Free Money</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row two-cols">
+                    <div class="form-group">
+                        <label for="taux-interet">Taux d'intérêt</label>
+                        <select id="taux-interet" name="interestRate">
+                            <option value="">Sélectionner</option>
+                            <option value="5">5%</option>
+                            <option value="10">10%</option>
+                            <option value="15">15%</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="max-salaire">% Maximum du salaire</label>
+                        <select id="max-salaire" name="maxSalaryPercent">
+                            <option value="">Sélectionner</option>
+                            <option value="30">30%</option>
+                            <option value="50">50%</option>
+                            <option value="70">70%</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="form-buttons">
+                <button type="submit" class="submit-button">Enregistrer</button>
+            </div>
+        </form>
     </div>
-
-    <!-- Section Informations du super admin -->
-    <div class="form-section">
-      <h3 class="section-title">Informations du super admin</h3>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="nom-admin">Nom</label>
-          <input type="text" id="nom-admin" formControlName="adminLastName" placeholder="Sall" />
-          <div *ngIf="
-              societyForm.get('adminLastName')?.invalid &&
-              societyForm.get('adminLastName')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('adminLastName')?.errors?.['required']">
-              Le nom est obligatoire.
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="prenom-admin">Prénom</label>
-          <input type="text" id="prenom-admin" formControlName="adminFirstName" placeholder="Omar" />
-          <div *ngIf="
-              societyForm.get('adminFirstName')?.invalid &&
-              societyForm.get('adminFirstName')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('adminFirstName')?.errors?.['required']">
-              Le prénom est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="fonction">Fonction</label>
-          <input type="text" id="fonction" formControlName="adminFunction" placeholder="Directeur" />
-          <div *ngIf="
-              societyForm.get('adminFunction')?.invalid &&
-              societyForm.get('adminFunction')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('adminFunction')?.errors?.['required']">
-              La fonction est obligatoire.
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="telephone-admin">Numéro téléphone</label>
-          <input type="tel" id="telephone-admin" formControlName="adminPhone" placeholder="+221 77 000 00 00" />
-          <div *ngIf="
-              societyForm.get('adminPhone')?.invalid &&
-              societyForm.get('adminPhone')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">
-              Le numéro de téléphone est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group full-width">
-          <label for="email-admin">Adresse mail du super admin</label>
-          <input type="email" id="email-admin" formControlName="adminEmail" placeholder="contact@agiltoo.fr" />
-          <div *ngIf="
-              societyForm.get('adminEmail')?.invalid &&
-              societyForm.get('adminEmail')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('adminEmail')?.errors?.['required']">
-              L'adresse mail est obligatoire.
-            </span>
-            <span *ngIf="societyForm.get('adminEmail')?.errors?.['email']">
-              Entrez une adresse mail valide.
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="montant-maximum">Montant maximum</label>
-          <input type="number" id="montant-maximum" formControlName="maxAmount" placeholder="0" />
-          <div *ngIf="
-              societyForm.get('maxAmount')?.invalid &&
-              societyForm.get('maxAmount')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('maxAmount')?.errors?.['required']">
-              Le montant maximum est obligatoire.
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="date-remboursement">La date de remboursement</label>
-          <input type="text" id="date-remboursement" formControlName="reimbursementDate" placeholder="jj/mm/aaaa" />
-          <div *ngIf="
-              societyForm.get('reimbursementDate')?.invalid &&
-              societyForm.get('reimbursementDate')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('reimbursementDate')?.errors?.['required']">
-              La date de remboursement est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-
-       <!-- <div class="form-row">
-        <div class="form-group">
-          <label for="psp">PSP (Partenaire de Service de Paiement)</label>
-          <select id="psp" formControlName="psp">
-            <option value="">Sélectionner un PSP</option>
-            <option *ngFor="let psp of psps" [value]="psp.id">
-              {{ psp.name }}
-            </option>
-          </select>
-          <div
-            *ngIf="
-              societyForm.get('psp')?.invalid &&
-              societyForm.get('psp')?.touched
-            "
-            class="error-message"
-          >
-            <span *ngIf="societyForm.get('psp')?.errors?.['required']">
-              Le PSP est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div> -->
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="taux-interet">Taux d'intérêt</label>
-          <select id="taux-interet" formControlName="interestRate">
-            <option value="">Sélectionner</option>
-            <option *ngFor="let rate of interestRates" [value]="rate.value">
-              {{ rate.label }}
-            </option>
-          </select>
-          <div *ngIf="
-              societyForm.get('interestRate')?.invalid &&
-              societyForm.get('interestRate')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('interestRate')?.errors?.['required']">
-              Le taux d'intérêt est obligatoire.
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="max-salaire">% Maximum du salaire</label>
-          <select id="max-salaire" formControlName="maxSalaryPercent">
-            <option value="">Sélectionner</option>
-            <option *ngFor="let percent of salaryPercentages" [value]="percent.value">
-              {{ percent.label }}
-            </option>
-          </select>
-          <div *ngIf="
-              societyForm.get('maxSalaryPercent')?.invalid &&
-              societyForm.get('maxSalaryPercent')?.touched
-            " class="error-message">
-            <span *ngIf="societyForm.get('maxSalaryPercent')?.errors?.['required']">
-              Le pourcentage maximum est obligatoire.
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Boutons -->
-    <div class="form-buttons">
-      <button type="submit" class="submit-button">Mettre à jour</button>
-      <button type="button" class="suspend-button">Suspendre</button>
-    </div>
-  </form>
-</div>
