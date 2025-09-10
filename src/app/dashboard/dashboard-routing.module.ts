@@ -14,6 +14,7 @@ import { RequestEventComponent } from './components/request-event/request-event.
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
+import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 
 const routes: Routes = [
   {
@@ -39,6 +40,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('./components/collaborators/collaborators.module').then(
             (m) => m.CollaboratorsModule
+          ),
+      },
+      {
+        path: 'society',
+        loadChildren: () =>
+          import('./components/society/society.module').then(
+            (m) => m.SocietyModule
           ),
       },
       {
@@ -84,6 +92,10 @@ const routes: Routes = [
         path: 'activities',
         component: ActivitiesComponent,
       },
+      {
+        path: 'admin-overview',
+        component: DashboardAdminComponent,
+      },
     ],
   },
 ];
@@ -93,4 +105,4 @@ const routes: Routes = [
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule { }
