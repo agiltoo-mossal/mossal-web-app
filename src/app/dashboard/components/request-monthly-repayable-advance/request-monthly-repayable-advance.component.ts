@@ -18,11 +18,12 @@ export class RequestMonthlyRepayableAdvanceComponent {
   organizationId: string;
   serviceId = '6751908bee9f8e91151fe4b2'; // Titre dynamique
   data = [];
+  eventName: string = "eventName";
   constructor(
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchCurrentAdminGQL

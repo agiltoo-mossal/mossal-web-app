@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 import { lastValueFrom } from 'rxjs';
 import {
+  FetchCurrentAdminGQL,
   LoginAdminGQL,
   LoginInput,
   ResetAdminPasswordGQL,
   StartForgotPasswordGQL,
+  User,
 } from 'src/graphql/generated';
 import { SnackBarService } from '../shared/services/snackbar.service';
 
@@ -24,15 +26,18 @@ export class AuthService {
   // private static token: string;
   // private static access_token: string;
   // private static refresh_token: string;
-
+  role: string = '';
+  currentUser: User;
   constructor(
     private keycloakService: KeycloakService,
     private loginAdminGQL: LoginAdminGQL,
     private snackBarService: SnackBarService,
     private resetPasswordGQL: ResetAdminPasswordGQL,
     private requestResetPwdGQL: StartForgotPasswordGQL,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+
+  ) { }
 
   saveToken(token: string) {
     localStorage.setItem(AuthConstant.access_tokenLocalName, token);
@@ -83,6 +88,7 @@ export class AuthService {
         )
       );
       const session = res.data.loginAdmin;
+
       // AuthService.token = session.token;
       // AuthService.access_token = session.access_token;
       // AuthService.refresh_token = session.refresh_token;
@@ -99,10 +105,14 @@ export class AuthService {
         AuthConstant.sessionLocalName,
         JSON.stringify(session)
       );
+
       if (!session?.enabled) {
         this.router.navigate(['/auth/reset']);
       } else {
-        this.router.navigate(['/dashboard']);
+        session.role === 'SUPER_ADMIN' ?
+          this.router.navigate(['/dashboard/admin-overview']) :
+          this.router.navigate(['/dashboard']);
+
       }
       // return session;
     } catch (e) {
@@ -180,4 +190,5 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
     // return true;
   }
+
 }
