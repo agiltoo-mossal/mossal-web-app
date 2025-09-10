@@ -35,7 +35,11 @@
           </td>
         </ng-container>
        
-
+ <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title">Action</th>
+          <td mat-cell *matCellDef="let row">
+ACTION          </td>
+        </ng-container>
         <!-- State Column -->
         <!-- <ng-container matColumnDef="phone">
           <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
@@ -52,7 +56,7 @@
           </td>
         </ng-container> -->
 
-        <ng-container matColumnDef="action">
+        <!-- <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
             Action
           </th>
@@ -65,7 +69,7 @@
                     }}"></span></span>
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
-              <!-- <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
                   routerLink="/dashboard/psp/{{ row.id ?? row?._id }}">
                   <span><mat-icon>edit</mat-icon></span>
@@ -90,10 +94,10 @@
                   <span><mat-icon>lock_open</mat-icon></span>
                   <span>Débloquer</span>
                 </div>
-              </div> -->
+              </div>
             </div>
           </td>
-        </ng-container>
+        </ng-container> -->
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>

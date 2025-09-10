@@ -18,8 +18,10 @@ import {
 } from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
-  FetchOrganizationCollaboratorsGQL,
-  FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchPaginatedFinancialOrganizationGQL,
+  FinancialOrganization,
+  // FetchOrganizationCollaboratorsGQL,
+  // FetchPaginatedOrganizationCollaboratorsGQL,
   LockUserGQL,
   UnlockUserGQL,
   User,
@@ -32,8 +34,8 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements AfterViewInit {
-  collabs: User[] = [];
-  selectedCollab: User;
+  // collabs: User[] = [];
+  // selectedCollab: User;
   disableCache: boolean;
   search: string = '';
   searchForm: FormGroup;
@@ -48,20 +50,21 @@ export class OverviewComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-  EXCEL_TYPE =
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  EXCEL_EXTENSION = '.xlsx';
+  // EXCEL_TYPE =
+  //   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  // EXCEL_EXTENSION = '.xlsx';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  dataSource = new MatTableDataSource<User>();
+  dataSource = new MatTableDataSource<FinancialOrganization>();
 
   page: number = 1;
   data = [];
 
   constructor(
-    private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
-    private fetchPaginatedOrganizationCollaboratorsGQL: FetchPaginatedOrganizationCollaboratorsGQL,
+    // private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
+    // private fetchPaginatedOrganizationCollaboratorsGQL: FetchPaginatedOrganizationCollaboratorsGQL,
+    private fetchPaginatedFinancialOrganizationGQL:FetchPaginatedFinancialOrganizationGQL,
     private activatedRoute: ActivatedRoute,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL,
@@ -114,16 +117,16 @@ export class OverviewComponent implements AfterViewInit {
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          const queryFilter = {
+          const queryConfig = {
             limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
             // sortField: this.sort.active,
-            // sortOrder: this.sort.direction,
+            // sortOrder: this.sort.direction,FetchFinancialOrganization
             search: this.searchForm?.value?.search,
           };
 
-          return this.fetchPaginatedOrganizationCollaboratorsGQL.fetch(
-            { queryFilter },
+          return this.fetchPaginatedFinancialOrganizationGQL.fetch(
+            { queryConfig },
             { fetchPolicy: 'no-cache' }
           );
         }),
@@ -139,117 +142,121 @@ export class OverviewComponent implements AfterViewInit {
           // Only refresh the result length if there is new data. In case of rate
           // limit errors, we do not want to reset the paginator to zero, as that
           // would prevent users from re-triggering requests
+                  console.log("data", result);
+
           return result.data;
+
         })
       )
       .subscribe((data: any) => {
-        this.data = data.fetchPaginatedOrganizationCollaborators.results as any;
+        // console.log("data", data);
+        // this.data = data.fet .results as any;
         this.dataSource.data = this.data as any;
-        this.selectedCollab = this.data[0];
+        // this.selectedCollab = this.data[0];
         this.resultsLength =
-          data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
-        this.selectedCollab = this.data?.[0];
+          data.fetchPaginatedFinancialOrganizationGQL.pagination.totalItems;
+        // this.selectedCollab = this.data?.[0];
       });
   }
 
-  fetchCollabs() {
-    this.fetchPaginatedOrganizationCollaboratorsGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        this.collabs = result.data.fetchPaginatedOrganizationCollaborators
-          .results as User[];
-        this.dataSource.data = this.collabs;
-        this.selectedCollab = this.collabs?.[0];
-      });
-  }
+  // fetchCollabs() {
+  //   this.fetchPaginatedOrganizationCollaboratorsGQL
+  //     .fetch({}, { fetchPolicy: 'no-cache' })
+  //     .subscribe((result) => {
+  //       this.collabs = result.data.fetchPaginatedOrganizationCollaborators
+  //         .results as User[];
+  //       this.dataSource.data = this.collabs;
+  //       this.selectedCollab = this.collabs?.[0];
+  //     });
+  // }
 
-  selectCollab(selected: User) {
-    this.selectedCollab = selected;
-  }
+  // selectCollab(selected: User) {
+  //   this.selectedCollab = selected;
+  // }
 
-  lockUser = (userId: string) => {
-    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur bloqué avec succès!'
-        );
-        this.fetchCollabs();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
+  // lockUser = (userId: string) => {
+  //   this.lockUserGQL.mutate({ userId }).subscribe((result) => {
+  //     if (result.data.lockUser) {
+  //       this.snackBarService.showSuccessSnackBar(
+  //         'Utilisateur bloqué avec succès!'
+  //       );
+  //       this.fetchCollabs();
+  //     } else {
+  //       this.snackBarService.showErrorSnackBar();
+  //     }
+  //   });
+  // };
 
-  unlockUser = (userId: string) => {
-    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur débloqué avec succès!'
-        );
-        this.fetchCollabs();
-      } else {
-        this.snackBarService.showErrorSnackBar();
-      }
-    });
-  };
+  // unlockUser = (userId: string) => {
+  //   this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
+  //     if (result.data.unlockUser) {
+  //       this.snackBarService.showSuccessSnackBar(
+  //         'Utilisateur débloqué avec succès!'
+  //       );
+  //       this.fetchCollabs();
+  //     } else {
+  //       this.snackBarService.showErrorSnackBar();
+  //     }
+  //   });
+  // };
 
 
-  downloadCollaborators() {
-    this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
-      next: ({ data }) => {
-        console.log("result =>>>>>>>>>>> ", data);
+  // downloadCollaborators() {
+  //   this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+  //     next: ({ data }) => {
+  //       console.log("result =>>>>>>>>>>> ", data);
 
-        const temps = data.fetchOrganizationCollaborators;
-        if (temps.length) {
-          const csvRows = [
-            [
-              'Nom',
-              'Prenom',
-              'Identifiant unique',
-              'Date d\'inscription',
-            ],
-            ...temps.map((row) => [
-              row.lastName,
-              row.firstName,
-              row.uniqueIdentifier,
-              row.createdAt,
-              '',
-            ]),
-          ];
-          this.convertToXLSX(csvRows);
-        } else {
-          this.snackBarService.showSnackBar(
-            "Aucun collaborateur trouvé !"
-          );
-        }
-      },
-      error: (error) => console.log(error),
-    });
-  }
+  //       const temps = data.fetchOrganizationCollaborators;
+  //       if (temps.length) {
+  //         const csvRows = [
+  //           [
+  //             'Nom',
+  //             'Prenom',
+  //             'Identifiant unique',
+  //             'Date d\'inscription',
+  //           ],
+  //           ...temps.map((row) => [
+  //             row.lastName,
+  //             row.firstName,
+  //             row.uniqueIdentifier,
+  //             row.createdAt,
+  //             '',
+  //           ]),
+  //         ];
+  //         this.convertToXLSX(csvRows);
+  //       } else {
+  //         this.snackBarService.showSnackBar(
+  //           "Aucun collaborateur trouvé !"
+  //         );
+  //       }
+  //     },
+  //     error: (error) => console.log(error),
+  //   });
+  // }
 
-  convertToXLSX(data: any[]) {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-      skipHeader: true,
-    });
-    const workbook: XLSX.WorkBook = {
-      Sheets: { data: worksheet },
-      SheetNames: ['data'],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
-  }
+  // convertToXLSX(data: any[]) {
+  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+  //     skipHeader: true,
+  //   });
+  //   const workbook: XLSX.WorkBook = {
+  //     Sheets: { data: worksheet },
+  //     SheetNames: ['data'],
+  //   };
+  //   const excelBuffer: any = XLSX.write(workbook, {
+  //     bookType: 'xlsx',
+  //     type: 'array',
+  //   });
+  //   this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
+  // }
 
-  saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-    const url = window.URL.createObjectURL(data);
-    const a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
-  }
+  // saveAsExcelFile(buffer: any, fileName: string): void {
+  //   const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+  //   const url = window.URL.createObjectURL(data);
+  //   const a = document.createElement('a');
+  //   a.setAttribute('href', url);
+  //   a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+  //   a.click();
+  //   window.URL.revokeObjectURL(url);
+  //   // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+  // }
 }

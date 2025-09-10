@@ -1,5 +1,5 @@
-query FetchFinancialOrganization($queryConfig: QueryDataConfigInput) {
-  fetchFinancialOrganization(queryConfig: $queryConfig) {
+query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
     pagination {
       totalItems
       pageCount
