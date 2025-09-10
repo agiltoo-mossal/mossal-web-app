@@ -810,7 +810,6 @@ export type Query = {
   fetchDemandesMetrics: DemandesMetrics;
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
-  fetchFinancialOrganization: PaginatedFinancialOrganizationResult;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
@@ -822,6 +821,7 @@ export type Query = {
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
   fetchPaginatedActivities: PaginatedActivityResult;
+  fetchPaginatedFinancialOrganization: PaginatedFinancialOrganizationResult;
   fetchPaginatedNotifications: PaginatedNotificationResult;
   fetchPaginatedOrganisationAdmins: PaginatedUserResult;
   fetchPaginatedOrganisationCol: PaginatedUserResult;
@@ -948,11 +948,6 @@ export type QueryFetchEventsArgs = {
 };
 
 
-export type QueryFetchFinancialOrganizationArgs = {
-  queryConfig?: InputMaybe<QueryDataConfigInput>;
-};
-
-
 export type QueryFetchOrganisationServiceArgs = {
   organisationServiceId: Scalars['ID']['input'];
 };
@@ -991,6 +986,11 @@ export type QueryFetchOrganizationDemandesArgs = {
 
 export type QueryFetchPaginatedActivitiesArgs = {
   queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedFinancialOrganizationArgs = {
+  queryConfig?: InputMaybe<QueryDataConfigInput>;
 };
 
 
@@ -1559,6 +1559,13 @@ export type FetchOrganizationQueryVariables = Exact<{
 
 
 export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', name: string } | null } };
+
+export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
+  queryConfig: QueryDataConfigInput;
+}>;
+
+
+export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2876,6 +2883,34 @@ export const FetchOrganizationDocument = gql`
   })
   export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
     document = FetchOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedFinancialOrganizationDocument = gql`
+    query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedFinancialOrganizationGQL extends Apollo.Query<FetchPaginatedFinancialOrganizationQuery, FetchPaginatedFinancialOrganizationQueryVariables> {
+    document = FetchPaginatedFinancialOrganizationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -413,3 +413,19 @@ query FetchOrganization($organizationId: ID!) {
 	}
 }
 
+query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
+}
+

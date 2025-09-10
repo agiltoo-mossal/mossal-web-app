@@ -17,16 +17,14 @@ import {
   CreateOrganizationGQL,
   FetchCategorySocioprosGQL,
   FetchOrganizationGQL,
+  FetchPaginatedFinancialOrganizationGQL,
+  FinancialOrganization,
   OrganisationService,
   Organization,
   UpdateOrganizationGQL,
   User,
 } from 'src/graphql/generated';
 
-interface PSP {
-  id: string;
-  name: string;
-}
 
 interface SelectedFiles {
   ninea?: File;
@@ -57,20 +55,15 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   logoPreview: string | null = null;
 
   title = 'Ajout d\'une nouvelle société';
-  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
-  psps: PSP[] = [
-    { id: '1', name: 'InTouch' },
-    { id: '2', name: 'Paydunya' },
-    { id: '3', name: 'Cofina' }
-  ];
+  psps: Partial<FinancialOrganization & { error: boolean }>[] = [];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private snackBarService: SnackBarService,
     private searchService: SearchService,
-    private listCategorieGQL: FetchCategorySocioprosGQL,
+    private listFinancialOrgGQL: FetchPaginatedFinancialOrganizationGQL,
     private createOrganizationGQL: CreateOrganizationGQL,
     private fetchOrganizationGQL: FetchOrganizationGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
@@ -113,6 +106,16 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         ? 'Modifier les informations de la société'
         : 'Création nouvelle société';
 
+    this.listFinancialOrgGQL
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe((result) => {
+        this.psps = result.data.fetchPaginatedFinancialOrganization.results;
+        console.log('list des psp ===>>>>>>>>', this.psps);
+      });
 
     // Initialiser les validations
     if (this.formType !== 'edit') {
@@ -151,7 +154,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
               address: addressParts[0]?.trim() || '',
               city: addressParts[1]?.trim() || '',
               phone: this.society.phone || '',
-              psp: this.society.financialOrganization.name || '',
+              psp: this.society.financialOrganization.id || '',
 
               // Informations admin - adapter selon votre structure Organization
               adminFirstName: this.society.user.firstName,

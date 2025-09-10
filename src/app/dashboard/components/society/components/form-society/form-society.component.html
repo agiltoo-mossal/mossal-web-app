@@ -107,7 +107,7 @@
                     <label for="psp" class="required">Partenaire de Service de Paiement</label>
                     <select id="psp" name="psp" formControlName="psp">
                         <option value="">Sélectionner le partenaire de paiement</option>
-                        <option *ngFor="let psp of psps" [value]="psp.name">{{ psp.name }}</option>
+                        <option *ngFor="let psp of psps" [value]="psp.id">{{ psp.name }}</option>
                     </select>
                     <div *ngIf="societyForm.get('psp')?.invalid &&
                                 societyForm.get('psp')?.touched" class="error-message">
