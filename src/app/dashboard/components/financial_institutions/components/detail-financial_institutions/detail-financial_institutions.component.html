@@ -1,0 +1,248 @@
+<!-- <div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+  <a routerLink="/dashboard/society"
+    ><span>{{ "<" }}</span
+    >retour</a
+  >
+</div>
+
+<h2 class="container-title-setting">
+  <span>Information de la société</span>
+</h2>
+<div class="container">
+  <!-- Section gauche : Profil collaborateur -->
+  <div class="profile-section">
+    <div>
+      <h2>{{ society?.firstName }} {{ society?.lastName }}</h2>
+      <p><strong>Matricule :</strong> {{ society?.uniqueIdentifier }}</p>
+      <p>{{ society?.categorySociopro?.title }}</p>
+      <p><strong>Email:</strong> {{ society?.email }}</p>
+      <p><strong>Téléphone:</strong>{{ society?.phoneNumber }}</p>
+      <p>
+        <strong>Date de naissance :</strong>
+        {{ society?.birthDate | date }}
+      </p>
+      <p><strong>Adresse :</strong> {{ society?.address }}</p>
+      <p>
+        <strong>Mobile money favori :</strong>
+        {{ society?.favoriteWallet }}
+      </p>
+    </div>
+    <div class="profile-actions">
+      <button [routerLink]="'/dashboard/society/' + societyId">
+        <span><mat-icon>edit</mat-icon></span>
+        Modifier
+      </button>
+      <button
+        *ngIf="!society?.blocked"
+        class="suspend"
+        requiresConfirmation
+        [message]="'Voulez-vous bloquer cet utilisateur?'"
+        [confirmCallback]="lockUser"
+        [confirmCallbackParam]="society?.id"
+      >
+        <span><mat-icon>lock</mat-icon></span>
+        Suspendre
+      </button>
+      <button
+        *ngIf="society?.blocked"
+        class="suspend"
+        requiresConfirmation
+        [message]="'Voulez-vous débloquer cet utilisateur?'"
+        [confirmCallback]="unlockUser"
+        [confirmCallbackParam]="society?.id"
+      >
+        <span><mat-icon>lock_open</mat-icon></span>
+        Débloquer
+      </button>
+    </div>
+  </div>
+
+  <!-- Section droite : Informations financières -->
+  <div class="finance-section">
+    <div>
+      <p>
+        <strong>Salaire net mensuel :</strong> {{ society?.salary }} XOF
+      </p>
+      <p>
+        <strong>Acompte autorisé :</strong>
+        {{ society?.authorizedAdvance }} XOF
+      </p>
+      <p>
+        <strong>Total demandé :</strong>
+        {{ society?.totalDemandeAmount }} XOF
+      </p>
+      <p><strong>Balance :</strong>{{ society?.balance }} XOF</p>
+    </div>
+    <app-user-details [user]="society"></app-user-details>
+  </div>
+</div>
+
+<!-- Section centrale : Demande en attente -->
+<div class="request-section">
+  <h2>Demande en attente</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>N° de la demande</th>
+        <th>Type de demande </th>
+        <th>Montant</th>
+        <th>Date</th>
+        <th>Durée de remboursement</th>
+        <th>Solde</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pending of pendingDemandes">
+        <td>{{ pending.number }}</td>
+        <td>{{ pending.organisationService.service.title }}</td>
+        <td>{{ pending.amount }} XOF</td>
+        <td>{{ pending.createdAt | date }}</td>
+        <td>{{ pending?.refundDuration }}</td>
+        <td>{{ pending.society?.balance }} XOF</td>
+        <td>
+          <div class="dropdown" appDropdown="dropdown-action">
+            <span fxLayout="row" class="btn-edit-statut">
+              <span
+                class="text"
+                fxFlex="auto"
+                fxLayout="row"
+                fxLayoutGap="8px"
+                fxLayoutAlign="center center"
+                ><span>{{ pending?.status | demandeStatus | titlecase }}</span
+                ><span
+                  class="statut statut--{{ pending?.status | lowercase }}"
+                ></span
+              ></span>
+              <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
+                >keyboard_arrow_down</mat-icon
+              >
+            </span>
+            <div
+              class="dropdown-content dropdown-content-filter"
+              id="dropdown-action"
+            >
+              <!-- <div
+                *ngIf="pending.status === 'PENDING'"
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                requiresConfirmation
+                [message]="'Voulez-vous valider cette demande?'"
+                [confirmCallback]="validateDemande"
+                [confirmCallbackParam]="pending?.id"
+              >
+                Validée
+                <span class="statut statut--valid"></span>
+              </div> -->
+              <div
+                *ngIf="
+                  pending.status === 'VALIDATED' &&
+                  pending.statusText === 'VALIDATED'
+                "
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                requiresConfirmation
+                [message]="'Voulez-vous payer cette demande?'"
+                [confirmCallback]="payeDemande"
+                [confirmCallbackParam]="pending?.id"
+              >
+                Remboursée
+                <span class="statut statut--payed"></span>
+              </div>
+              <div
+                *ngIf="pending.status === 'PENDING'"
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                requiresConfirmation
+                [message]="'Voulez-vous rejeter cette demande?'"
+                [confirmCallback]="rejectDemande"
+                [reasonRequired]="true"
+                [confirmCallbackParam]="pending?.id"
+              >
+                Rejetée
+                <span class="statut statut--rejected"></span>
+              </div>
+              <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
+                                    attente
+                                    <span class="statut statut--pending"></span>
+                                </div> -->
+              <div
+                *ngIf="pending.status === 'PENDING'"
+                class="dropdown-option"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                requiresConfirmation
+                [message]="'Voulez-vous annuler cette demande?'"
+                [confirmCallback]="cancelDemande"
+                [confirmCallbackParam]="pending?.id"
+              >
+                Annulée
+                <span class="statut statut--cancel"></span>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Section inférieure : Demande en cours -->
+<div class="current-request-section">
+  <h2>Avance salariale remboursable mensuellement</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>N° Demande</th>
+        <th>Date</th>
+        <th>Type de Demande</th>
+        <th>Montant demandé</th>
+        <th>Mensualité</th>
+        <th>Frais</th>
+        <th>Reliquat</th>
+        <th>État</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tbody>
+      <tr *ngFor="let remboursement of remboursements">
+        <td>{{remboursement?.demande?.number}}</td>
+        <td>{{ remboursement.validatedAt | date }}</td>
+        <td>{{remboursement?.demande?.organisationService?.service?.title}}</td>
+        <td>{{ remboursement?.demande?.amount }} XOF</td>
+        <td>{{ remboursement.amount }} XOF</td>
+        <td>{{ remboursement?.demande?.fees }} XOF</td>
+        <td>{{ remboursement?.demande?.remainingRefundAmount }} XOF</td>
+        <td>
+          <span
+            class="status"
+            [ngClass]="{
+              success: remboursement.status === 'PAYED',
+              failure: remboursement.status === 'PENDING'
+            }"
+            >{{ remboursement.status === 'PAYED' ? '✔' : '✘' }}</span
+          >
+        </td>
+      </tr>
+      <!-- <tr>
+        <td>03/06/2024</td>
+        <td>1 500 XOF</td>
+        <td>500 XOF</td>
+        <td>10 XOF</td>
+        <td>650 XOF</td>
+        <td><span class="status success">✔</span></td>
+      </tr>
+      <tr>
+        <td>03/09/2024</td>
+        <td>1 500 XOF</td>
+        <td>500 XOF</td>
+        <td>10 XOF</td>
+        <td>650 XOF</td>
+        <td><span class="status failure">✘</span></td>
+      </tr> -->
+    </tbody>
+  </table>
+</div> -->

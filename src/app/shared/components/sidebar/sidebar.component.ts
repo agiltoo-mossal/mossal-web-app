@@ -401,7 +401,12 @@ export class SidebarComponent implements OnInit {
       },
       {
         label: 'Institutions financières',
-        link: '/dashboard/institutfinance',
+        link: '/dashboard/financial_institutions',
+        icon: 'people',
+      },
+         {
+        label: 'PSP',
+        link: '/dashboard/psp',
         icon: 'people',
       },
       {

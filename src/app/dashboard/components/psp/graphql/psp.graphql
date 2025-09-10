@@ -1,0 +1,15 @@
+query FetchFinancialOrganization($queryConfig: QueryDataConfigInput) {
+  fetchFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
+}

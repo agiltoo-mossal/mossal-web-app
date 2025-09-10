@@ -49,6 +49,20 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'financial_institutions',
+        loadChildren: () =>
+          import('./components/financial_institutions/financial_institutions.module').then(
+            (m) => m.FinancialInstitutionsModule
+          ),
+      },
+      {
+        path: 'psp',
+        loadChildren: () =>
+          import('./components/psp/psp.module').then(
+            (m) => m.PspModule
+          ),
+      },
+      {
         path: 'admins',
         loadChildren: () =>
           import('./components/admins/admins.module').then(
