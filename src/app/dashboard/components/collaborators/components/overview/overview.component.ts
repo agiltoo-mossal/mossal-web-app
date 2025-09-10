@@ -146,6 +146,8 @@ export class OverviewComponent implements AfterViewInit {
       )
       .subscribe((data: any) => {
         this.data = data.fetchPaginatedOrganizationCollaborators.results as any;
+        console.log("this.data in collaborators =======>>>>>>>>>> ", this.data);
+
         this.dataSource.data = this.data as any;
         this.selectedCollab = this.data[0];
         this.resultsLength =
@@ -199,7 +201,6 @@ export class OverviewComponent implements AfterViewInit {
   downloadCollaborators() {
     this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: ({ data }) => {
-        console.log("result =>>>>>>>>>>> ", data);
 
         const temps = data.fetchOrganizationCollaborators;
         if (temps.length) {

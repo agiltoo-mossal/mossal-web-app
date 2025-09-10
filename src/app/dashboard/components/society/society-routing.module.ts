@@ -14,7 +14,7 @@ const routes: Routes = [
 
     children: [
       {
-        path: 'list-society',
+        path: '',
         component: OverviewComponent,
       },
       {

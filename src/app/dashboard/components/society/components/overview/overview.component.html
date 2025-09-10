@@ -1,104 +1,93 @@
-<!-- <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
+<div class="page-wrapper" style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  ">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    <div fxLayout="row" fxLayoutGap="19px">
-      <div *ngIf="searchForm" [formGroup]="searchForm" class="search-container" fxFlex="auto"
+
+    <div style="display: flex; gap: 35px; margin: 20px 10px; justify-content: space-between;
+        align-items: center;">
+      <h2 class="container-title-setting">
+        <span>{{ title }}</span>
+      </h2>
+
+      <div style="width: 25%" *ngIf="searchForm" [formGroup]="searchForm" class="search-container"
         fxLayoutAlign="start center">
         <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
         <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
       </div>
-      <div fxLayout="row" fxLayoutGap="19px">
-        <div class="dropdown" appDropdown="downlod-dropdown">
-          <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
-            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Importer un fichier</span>
-          </button>
-          <div class="dropdown-content" id="downlod-dropdown">
-            <app-file-upload [type]="type"></app-file-upload>
-            <a style="display: block" href="./assets/files/template-society.xlsx" [download]="'template-society.xlsx'"
-              class="dropdown-option" fxLayout="column" fxLayoutAlign="start center">
-              <div class="icon">
-                <img src="./assets/img/icon-download.png" alt="" />
-              </div>
-              <div fxLayout="column" fxLayoutAlign="start center">
-                <span class="type">Télécharger le template</span>
-                <span class="format">template.XLSX</span>
-              </div>
-            </a>
-          </div>
-        </div> -->
 
-        <!-- <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
-          routerLink="/dashboard/society/create-society">
-          <span>+</span> <span>Ajouter une société</span>
+      <div style="width: 25%">
+        <button routerLink="/dashboard/society/create-society" class="btn btn-primary" fxLayoutAlign="center center"
+          fxLayoutGap="8px" style="
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;">
+          <mat-icon fxLayoutAlign="center center">add_circle_outline</mat-icon><span style="font-size: 13px">Ajouter
+            une société </span>
         </button>
-        <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
-          routerLink="/dashboard/society/create-society">
-          <span>💫</span> <span>Synchroniser avec Sage</span>
-        </button> -->
-
-        <!-- <div class="dropdown" appDropdown="downlod-dropdown">
-          <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px">
-            <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon><span>Télécharger</span>
-          </button>
-          <div class="dropdown-content" id="downlod-dropdown">
-            <button style="display: block" (click)="downloadCollaborators()" class="dropdown-option" fxLayout="column"
-              fxLayoutAlign="start center">
-              <div class="icon">
-                <img src="./assets/img/icon-download.png" alt="" />
-              </div>
-              <div fxLayout="column" fxLayoutAlign="start center">
-                <span class="type">Télécharger la liste des collaborateurs</span>
-                <span class="format">Format XLSX</span>
-              </div>
-            </button>
-          </div>
-        </div> -->
-
-      <!-- </div>
+      </div>
     </div>
 
     <div class="example-table-container">
-      <table mat-table [dataSource]="dataSource" class="example-table" matSort> -->
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
         <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
-<!-- Number Column -->
-<!-- <ng-container matColumnDef="uniqueIdentifier">
-          <th mat-header-cell *matHeaderCellDef class="title">Identifiant</th>
+        <!-- Number Column -->
+        <ng-container matColumnDef="entreprise">
+          <th mat-header-cell *matHeaderCellDef class="title">Entreprise</th>
           <td class="radio-container" mat-cell *matCellDef="let row">
-            <div class="radio-container">
-              <span (click)="selectCollab(row)" class="radio {{
+            <div class="radio-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px">
+              <!-- <span (click)="selectCollab(row)" class="radio {{
                   row?.id === selectedCollab?.id ? 'active' : ''
-                }}" fxLayoutAlign="center center"></span>
-              <span>{{ row.uniqueIdentifier }}</span> -->
-            <!-- </div>
+                }}" fxLayoutAlign="center center"></span> -->
+              <span><mat-icon>business</mat-icon></span>
+              <span>{{ row.name }}</span>
+            </div>
           </td>
-        </ng-container>  -->
+        </ng-container>
 
-<!-- Title Column
-        <ng-container matColumnDef="society">
-          <th mat-header-cell *matHeaderCellDef class="title">Numéro de compte Cofina</th>
-          <<td mat-cell *matCellDef="let row">
-            {{ row.firstName }} {{ row.lastName }}
-          </td>
-        </ng-container> -->
-
-<!-- State Column -->
-<!-- <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
-          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
-        </ng-container> -->
-
-<!-- Created Column -->
-<!-- <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef class="title" disableClear>
-            Solde disponible
-          </th>
+        <!-- Title Column -->
+        <ng-container matColumnDef="adressePostale">
+          <th mat-header-cell *matHeaderCellDef class="title">Adresse Postale</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.createdAt | date : "dd-MM-YYYY" }} -->
-          <!-- </td>
+            {{ row?.postalAddress }}
+          </td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
+          <td mat-cell *matCellDef="let row"> {{ row?.phone }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="coordSuperAdmin">
+          <th mat-header-cell *matHeaderCellDef class="title">Coordonnées admin</th>
+          <td mat-cell *matCellDef="let row">{{ row.rootEmail }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="adminName">
+          <th mat-header-cell *matHeaderCellDef class="title">Nom admin</th>
+          <td mat-cell *matCellDef="let row">{{ row.user.firstName }} {{ row.user.firstName }}</td>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title">Action</th>
+          <td mat-cell *matCellDef="let row">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
+              routerLink="/dashboard/society/{{ row.id ?? row?._id }}">
+              <span><mat-icon>edit</mat-icon></span>
+              <span>Editer</span>
+            </div>
+          </td>
         </ng-container> -->
 
-<!-- <ng-container matColumnDef="action">
+        <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
             Action
           </th>
@@ -106,9 +95,7 @@
             <div class="dropdown" appDropdown="dropdown-action">
               <span fxLayout="row" class="btn-edit-statut">
                 <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
-                  style="padding: 0 8px"><span>Action</span><span class="statut statut--{{
-                      row?.blocked ? 'rejected' : 'valid'
-                    }}"></span></span>
+                  style="padding: 0 8px"><span>Action</span></span>
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
               <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
@@ -117,7 +104,7 @@
                   <span><mat-icon>edit</mat-icon></span>
                   <span>Editer</span>
                 </div>
-                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" routerLink="/dashboard/society/details/{{
+                <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" routerLink="/dashboard/collaborators/details/{{
                     row.id ?? row?._id
                   }}">
                   <span><mat-icon>info</mat-icon></span>
@@ -135,47 +122,17 @@
                   [confirmCallback]="unlockUser" [confirmCallbackParam]="row?.id">
                   <span><mat-icon>lock_open</mat-icon></span>
                   <span>Débloquer</span>
-                </div>
+                </div> -->
               </div>
             </div>
           </td>
-        </ng-container> -->
+        </ng-container>
 
-        <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
     </div>
-  </div> -->
-<!-- <div class="info-current-user container_sticky">
-    <app-user-details [user]="selectedCollab"></app-user-details>
-  </div> -->
-<!-- </div> -->
 
-<div class="page-wrapper" style="
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    padding: 5px;
-  ">
-  <div style="display: flex; gap: 35px; margin: 20px 10px; justify-content: space-between;
-        align-items: center;">
-    <h2 class="container-title-setting">
-      <span>{{ title }}</span>
-    </h2>
-    <!-- <app-organization-file [organisationServiceId]="organisationServiceId" [startDate]="startDate"
-      [endDate]="endDate"></app-organization-file> -->
-    <div style="width: 25%">
-      <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px" style="
-        width: 100%;
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;" (click)="addSocity()">
-        <mat-icon fxLayoutAlign="center center">add_circle_outline</mat-icon><span style="font-size: 13px">Ajouter
-          une société </span>
-      </button>
-    </div>
   </div>
 </div>

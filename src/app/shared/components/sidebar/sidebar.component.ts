@@ -391,7 +391,7 @@ export class SidebarComponent implements OnInit {
     return [
       {
         label: 'Tableau de bord',
-        link: '/dashboard/overview',
+        link: '/dashboard/admin-overview',
         icon: 'dashboard',
       },
       {
@@ -409,16 +409,16 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/psp',
         icon: 'people',
       },
-      {
-        label: 'Notifications',
-        link: '/dashboard/Notifications',
-        icon: 'notifications_none',
-      },
-      {
-        label: 'Mon Compte',
-        link: '/dashboard/user',
-        icon: 'person_outline',
-      },
+      // {
+      //   label: 'Notifications',
+      //   link: '/dashboard/Notifications',
+      //   icon: 'notifications_none',
+      // },
+      // {
+      //   label: 'Mon Compte',
+      //   link: '/dashboard/user',
+      //   icon: 'person_outline',
+      // },
     ];
   }
 

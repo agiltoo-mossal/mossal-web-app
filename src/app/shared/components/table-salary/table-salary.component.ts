@@ -516,8 +516,10 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.validateDemande) {
+          console.log("result.data.validateDemande ==========>>>>>>>>>> ", result.data);
+
           this.snackBarService.showSuccessSnackBar(
-            'demande validée avec succés!'
+            `demande validée avec succés! (${result.data.validateDemande.paymentMean})`
           );
           this.getDemandes(false);
         } else {
@@ -525,9 +527,10 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         }
       },
       (error) => {
+        console.log("error validation =========>>>>>>>> ", error)
         this.snackBarService.showErrorSnackBar(
-          5000,
-          'Vous ne pouvez pas effectuer cette action.'
+          7000,
+          'Vous ne pouvez pas effectuer cette action...'
         );
       }
     );

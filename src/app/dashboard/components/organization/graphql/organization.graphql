@@ -359,3 +359,57 @@ query FetchDemandesByCollaborator(
     }
   }
 }
+
+query FetchPaginatedOrganizations($queryFilter: QueryDataConfigInput) {
+	fetchPaginatedOrganizations(queryFilter: $queryFilter) {
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results {
+			id
+			name
+      rootEmail
+      postalAddress
+      phone
+			user {
+        firstName
+        lastName
+      }
+		}
+	}
+}
+
+mutation CreateOrganization(
+  $organizationInput: OrganizationInput!
+) {
+  createOrganization(
+    organizationInput: $organizationInput
+  ) {
+    id
+    rootEmail
+    name
+  }
+}
+
+query FetchOrganization($organizationId: ID!) {
+	fetchOrganization(organizationId: $organizationId) {
+    id
+    name
+    rootEmail
+    postalAddress
+    phone
+    user {
+      firstName
+      lastName
+      role
+      phoneNumber
+    }
+    financialOrganization {
+      name
+    }
+	}
+}
+

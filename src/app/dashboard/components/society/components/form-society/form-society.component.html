@@ -1,147 +1,194 @@
-<div class="creation-compte" (ngSubmit)="submitForm">
-        <form class="form">
-            <!-- Section Informations de la société -->
-            <div class="form-section">
-                <h3 class="section-title">Informations de la société</h3>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="entreprise" class="required">Entreprise</label>
-                        <input type="text" id="entreprise" name="companyName" placeholder="Agiltoo" required />
-                    </div>
-                </div>
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+    <a routerLink="/dashboard/society"><span>{{ "<" }}</span>retour</a>
+</div>
 
-                <div class="form-row two-cols">
-                    <div class="form-group">
-                        <label for="adresse-postale" class="required">Adresse postale</label>
-                        <input type="text" id="adresse-postale" name="address" placeholder="Ouest-Foire" required />
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="city" placeholder="Dakar - Sénégal" style="margin-top: 28px;" />
-                    </div>
-                </div>
+<h2 class="container-title-setting">
+    <span>{{ title }}</span>
+</h2>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="telephone-entreprise">téléphone</label>
-                        <input type="tel" id="telephone-entreprise" name="companyPhone" placeholder="+221 77 000 00 00" />
-                    </div>
-                </div>
+<div class="creation-compte">
+    <form class="form" [formGroup]="societyForm" (ngSubmit)="submitForm()">
+        <!-- Section Informations de la société -->
+        <div class="form-section">
+            <h3 class="section-title">Informations de la société</h3>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="ninea-file">NINEA</label>
-                        <div class="file-upload-container">
-                            <input type="file" id="ninea-file" accept=".pdf" />
-                            <button type="button" class="file-upload-button" onclick="document.getElementById('ninea-file').click()">
-                                <span class="material-icons">upload_file</span>
-                                NINEA_Agiltoo.pdf
+            <!-- Logo Upload Section -->
+            <div class="form-row">
+                <div class="form-group logo-upload-group">
+                    <div class="logo-upload-container">
+                        <!-- Logo preview or placeholder -->
+                        <div class="logo-preview" [class.has-logo]="logoPreview">
+                            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo preview" class="logo-image">
+                            <div *ngIf="!logoPreview" class="logo-placeholder">
+                                <span class="material-icons">business</span>
+                            </div>
+                        </div>
+
+                        <!-- Upload button -->
+                        <div class="logo-upload-actions">
+                            <button type="button" class="logo-upload-button" (click)="triggerLogoUpload()">
+                                <span class="material-icons">cloud_upload</span>
+                                Télécharger le logo de l'entreprise
                             </button>
+                            <button type="button" *ngIf="selectedFiles?.logo" class="logo-remove-button"
+                                (click)="removeLogo()">
+                                Supprimer
+                            </button>
+                        </div>
+
+                        <!-- Hidden file input -->
+                        <input type="file" #logoFileInput id="logo-file" accept="image/*"
+                            (change)="onFileSelect($event, 'logo')" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="entreprise" class="required">Entreprise</label>
+                    <input type="text" id="companyName" formControlName="companyName" placeholder="Agiltoo" required />
+                    <div *ngIf="societyForm.get('companyName')?.invalid &&
+                                    societyForm.get('companyName')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('companyName')?.errors?.['required']">Le nom de la société
+                            est obligatoire.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row two-cols">
+                <div class="form-group">
+                    <label for="address" class="required">Adresse postale</label>
+                    <input type="text" id="address" formControlName="address" placeholder="Ouest-Foire" required />
+                    <div *ngIf="societyForm.get('address')?.invalid &&
+                                societyForm.get('address')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('address')?.errors?.['required']">L'adresse postale
+                            est obligatoire.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="city" formControlName="city" placeholder="Dakar - Sénégal"
+                        style="margin-top: 28px;" />
+                    <div *ngIf="societyForm.get('city')?.invalid &&
+                                societyForm.get('city')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('city')?.errors?.['required']">L'adresse postale
+                            est obligatoire.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telephone-entreprise">téléphone</label>
+                    <input type="tel" id="phone" formControlName="phone" placeholder="+221 77 000 00 00" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ninea-file">NINEA</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="ninea" accept=".pdf" (change)="onFileSelect($event, 'ninea')"
+                            style="display: none;" #nineaFileInput />
+                        <div class="file-upload-display" (click)="nineaFileInput.click()">
+                            <span class="material-icons">upload_file</span>
+                            <span class="file-name">
+                                {{ selectedFiles?.ninea?.name || 'NINEA_Agiltoo.pdf' }}
+                            </span>
+                            <span class="material-icons upload-icon">cloud_upload</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="institutions-financieres">Les institutions financières</label>
-                        <select id="institutions-financieres" name="financialInstitution">
-                            <option value="">Choisir une institution financière</option>
-                            <option value="1">Banque Atlantique</option>
-                            <option value="2">UBA</option>
-                            <option value="3">SGBS</option>
-                        </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="psp" class="required">Partenaire de Service de Paiement</label>
+                    <select id="psp" name="psp" formControlName="psp">
+                        <option value="">Sélectionner le partenaire de paiement</option>
+                        <option *ngFor="let psp of psps" [value]="psp.name">{{ psp.name }}</option>
+                    </select>
+                    <div *ngIf="societyForm.get('psp')?.invalid &&
+                                societyForm.get('psp')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('psp')?.errors?.['required']">Selectionner un partenaire de
+                            paiement.</span>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="numero-compte">Numéro de compte</label>
-                        <input type="text" id="numero-compte" name="accountNumber" placeholder="SN12 0120 0361 7348 7602 43" />
+        <!-- Section Informations du super admin -->
+        <div class="form-section">
+            <h3 class="section-title">Informations du super admin</h3>
+
+            <div class="form-row two-cols">
+                <div class="form-group">
+                    <label for="nom-admin" class="required">Nom</label>
+                    <input type="text" id="adminLastName" formControlName="adminLastName" placeholder="Sall" />
+                    <div *ngIf="societyForm.get('adminLastName')?.invalid &&
+                                societyForm.get('adminLastName')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('adminLastName')?.errors?.['required']">Le nom de l'admin
+                            est obligatoire.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="prenom-admin" class="required">Prénom</label>
+                    <input type="text" id="adminFirstName" formControlName="adminFirstName" placeholder="Omar" />
+                    <div *ngIf="societyForm.get('adminFirstName')?.invalid &&
+                                societyForm.get('adminFirstName')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('adminFirstName')?.errors?.['required']">Le prénom de l'admin
+                            est obligatoire.</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Section Informations du super admin -->
-            <div class="form-section">
-                <h3 class="section-title">Informations du super admin</h3>
-
-                <div class="form-row two-cols">
-                    <div class="form-group">
-                        <label for="nom-admin" class="required">Nom</label>
-                        <input type="text" id="nom-admin" name="adminLastName" placeholder="Sall" />
-                    </div>
-                    <div class="form-group">
-                        <label for="prenom-admin" class="required">Prénom</label>
-                        <input type="text" id="prenom-admin" name="adminFirstName" placeholder="Omar" />
+            <div class="form-row two-cols">
+                <div class="form-group">
+                    <label for="fonction" class="required">Fonction</label>
+                    <input type="text" id="adminFunction" formControlName="adminFunction" placeholder="Directeur" />
+                    <div *ngIf="societyForm.get('adminFunction')?.invalid &&
+                                societyForm.get('adminFunction')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('adminFunction')?.errors?.['required']">La fonction de l'admin
+                            est obligatoire.</span>
                     </div>
                 </div>
-
-                <div class="form-row two-cols">
-                    <div class="form-group">
-                        <label for="fonction" class="required">Fonction</label>
-                        <input type="text" id="fonction" name="adminFunction" placeholder="Directeur" />
-                    </div>
-                    <div class="form-group">
-                        <label for="telephone-admin" class="required">Numéro téléphone</label>
-                        <input type="tel" id="telephone-admin" name="adminPhone" placeholder="+221 77 000 00 00" />
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email-admin" class="required">Adresse mail du super admin</label>
-                        <input type="email" id="email-admin" name="adminEmail" placeholder="contact@agiltoo.fr" />
-                    </div>
-                </div>
-
-                <div class="form-row two-cols">
-                    <div class="form-group">
-                        <label for="montant-maximum">Montant maximum</label>
-                        <input type="number" id="montant-maximum" name="maxAmount" placeholder="0" />
-                    </div>
-                    <div class="form-group">
-                        <label for="date-remboursement">La date de remboursement</label>
-                        <input type="text" id="date-remboursement" name="reimbursementDate" placeholder="jj/mm/aaaa" />
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="psp" class="required">Partenaire de Service de Paiement</label>
-                        <select id="psp" name="psp">
-                            <option value="">Sélectionner un PSP</option>
-                            <option value="1">Orange Money</option>
-                            <option value="2">Wave</option>
-                            <option value="3">Free Money</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row two-cols">
-                    <div class="form-group">
-                        <label for="taux-interet">Taux d'intérêt</label>
-                        <select id="taux-interet" name="interestRate">
-                            <option value="">Sélectionner</option>
-                            <option value="5">5%</option>
-                            <option value="10">10%</option>
-                            <option value="15">15%</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="max-salaire">% Maximum du salaire</label>
-                        <select id="max-salaire" name="maxSalaryPercent">
-                            <option value="">Sélectionner</option>
-                            <option value="30">30%</option>
-                            <option value="50">50%</option>
-                            <option value="70">70%</option>
-                        </select>
+                <div class="form-group">
+                    <label for="telephone-admin" class="required">Numéro téléphone</label>
+                    <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="+221770000000" />
+                    <div *ngIf="societyForm.get('adminPhone')?.invalid &&
+                                societyForm.get('adminPhone')?.touched" class="error-message">
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">Le numéro de téléphone
+                            est obligatoire.</span>
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">Entrez un numéro au
+                            format +221XXXXXXXXX.</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Boutons -->
-            <div class="form-buttons">
-                <button type="submit" class="submit-button">Enregistrer</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email-admin" class="required">Adresse mail du super admin</label>
+                    <input type="email" id="adminEmail" formControlName="adminEmail" placeholder="contact@agiltoo.fr" />
+                    <div *ngIf="societyForm.get('adminEmail')?.invalid && societyForm.get('adminEmail')?.touched
+                            " class="error-message">
+                        <span *ngIf="societyForm.get('adminEmail')?.errors?.['required']">L'adresse mail est
+                            obligatoire.</span>
+                        <span *ngIf="societyForm.get('adminEmail')?.errors?.['adminEmail']">Entrez une adresse mail
+                            valide.</span>
+                        <span *ngIf="adminEmailExists">Adresse email déjà utilisé</span>
+
+                    </div>
+                </div>
             </div>
-        </form>
-    </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-buttons">
+            <button type="submit" class="submit-button" [disabled]="isLoading">
+                <span *ngIf="isLoading" class="loading-spinner"></span>
+                {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+        </div>
+    </form>
+</div>
