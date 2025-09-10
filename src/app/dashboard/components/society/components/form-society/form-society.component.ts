@@ -4,40 +4,24 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { dateToString } from 'src/app/shared/utils/time';
 import {
   CategorySociopro,
+  CreateOrganizationGQL,
   FetchCategorySocioprosGQL,
-  FetchOrganizationCollaboratorGQL,
-  InviteAdminGQL,
-  InviteCollaboratorGQL,
-  LockUserGQL,
-  UnlockUserGQL,
-  UpdateCollaboratorGQL,
+  FetchOrganizationGQL,
+  OrganisationService,
+  Organization,
+  UpdateOrganizationGQL,
   User,
-  Wallet,
 } from 'src/graphql/generated';
-
-interface FinancialInstitution {
-  id: string;
-  name: string;
-}
-
-interface InterestRate {
-  value: number;
-  label: string;
-}
-
-interface SalaryPercentage {
-  value: number;
-  label: string;
-}
 
 interface PSP {
   id: string;
@@ -46,20 +30,22 @@ interface PSP {
 
 interface SelectedFiles {
   ninea?: File;
-  registre?: File;
-  domiciliation?: File;
+  logo?: File;
 }
+
 @Component({
   selector: 'app-form-society',
   templateUrl: './form-society.component.html',
   styleUrls: ['./form-society.component.scss'],
 })
 export class FormSocietyComponent implements OnInit, OnChanges {
-  @Input() formType: string;
+  @Input() formType: string = 'create';
+  @Input() societyId: string;
+  @ViewChild('logoFileInput') logoFileInput!: ElementRef<HTMLInputElement>;
+
   formText: string = '';
   societyForm: FormGroup;
-  society: User;
-  @Input() societyId: string;
+  society: Organization;
   isLoading: boolean = false;
   phoneNumberExists: boolean = false;
   companyPhoneExists: boolean = false;
@@ -68,77 +54,43 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   adminEmailExists: boolean = false;
   companyNameExists: boolean = false;
   selectedFiles: SelectedFiles = {};
+  logoPreview: string | null = null;
 
   title = 'Ajout d\'une nouvelle société';
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
-  // Données pour les listes déroulantes
-  financialInstitutions: FinancialInstitution[] = [
-    { id: '1', name: 'CBAO Groupe Attijariwafa Bank' },
-    { id: '2', name: 'Banque de l\'Habitat du Sénégal' },
-    { id: '3', name: 'Ecobank Sénégal' },
-    { id: '4', name: 'Société Générale de Banques au Sénégal' },
-    { id: '5', name: 'UBA Sénégal' },
-    { id: '6', name: 'Banque Atlantique' },
-    { id: '7', name: 'BICIS' },
-    { id: '8', name: 'CITIBANK' }
-  ];
-
   psps: PSP[] = [
-    { id: '1', name: 'Intouch' },
+    { id: '1', name: 'InTouch' },
     { id: '2', name: 'Paydunya' },
     { id: '3', name: 'Cofina' }
   ];
 
-  interestRates: InterestRate[] = [
-    { value: 0, label: '0%' },
-    { value: 2, label: '2%' },
-    { value: 5, label: '5%' },
-    { value: 7, label: '7%' },
-    { value: 10, label: '10%' },
-    { value: 12, label: '12%' },
-    { value: 15, label: '15%' }
-  ];
-
-  salaryPercentages: SalaryPercentage[] = [
-    { value: 10, label: '10%' },
-    { value: 20, label: '20%' },
-    { value: 30, label: '30%' },
-    { value: 40, label: '40%' },
-    { value: 50, label: '50%' },
-    { value: 60, label: '60%' },
-    { value: 70, label: '70%' },
-    { value: 80, label: '80%' },
-    { value: 90, label: '90%' },
-    { value: 100, label: '100%' }
-  ];
-
   constructor(
     private fb: FormBuilder,
-    private inviteCollaboratorGQL: InviteCollaboratorGQL,
     private router: Router,
     private snackBarService: SnackBarService,
-    private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
-    private updateCollaboratorGQL: UpdateCollaboratorGQL,
     private searchService: SearchService,
-    private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL,
-    private listCategorieGQL: FetchCategorySocioprosGQL
+    private listCategorieGQL: FetchCategorySocioprosGQL,
+    private createOrganizationGQL: CreateOrganizationGQL,
+    private fetchOrganizationGQL: FetchOrganizationGQL,
+    private updateOrganizationGQL: UpdateOrganizationGQL,
   ) {
     this.societyForm = this.fb.group({
       // Section Informations de la société
       companyName: ['', Validators.required],
       address: ['', Validators.required],
       city: [''],
-      companyPhone: [
+      phone: [
         '',
-        [
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
-        ]
+        [Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)]
       ],
-      accountNumber: [''],
-      financialInstitution: [''],
-      ninea: [''], 
+      ninea: [''],
+      psp: ['', Validators.required],
+
+      balance: [1000000], // Valeur par défaut
+      maxDemandeAmount: [1000000], // Valeur par défaut
+      fees: [0], // Valeur par défaut
+      amountPercent: [75],
 
       // Section Informations du super admin
       adminFirstName: ['', Validators.required],
@@ -152,46 +104,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
-      maxAmount: [0, [Validators.min(0)]],
-      reimbursementDate: [''],
-      psp: ['', Validators.required],
-      interestRate: [''],
-      maxSalaryPercent: ['']
     });
   }
-
-  get companyPhone() {
-    return this.societyForm.controls['companyPhone'];
-  }
-
-  get adminPhone() {
-    return this.societyForm.controls['adminPhone'];
-  }
-
-  get maxAmount() {
-    return this.societyForm.get('maxAmount');
-  }
-
-  // Méthode pour gérer la sélection du fichier NINEA
-onFileSelect(event: any, fileType: 'ninea') {
-  const file = event.target.files[0];
-  if (file) {
-    // Vérifier que c'est un PDF
-    if (file.type !== 'application/pdf') {
-      this.snackBarService.showErrorSnackBar(5000, 'Veuillez sélectionner un fichier PDF');
-      return;
-    }
-    
-    // Vérifier la taille du fichier (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      this.snackBarService.showErrorSnackBar(5000, 'Le fichier ne doit pas dépasser 5MB');
-      return;
-    }
-    
-    this.selectedFiles[fileType] = file;
-    console.log(`Fichier ${fileType} sélectionné:`, file.name);
-  }
-}
 
   ngOnInit(): void {
     this.formText =
@@ -199,88 +113,224 @@ onFileSelect(event: any, fileType: 'ninea') {
         ? 'Modifier les informations de la société'
         : 'Création nouvelle société';
 
-    this.listCategorieGQL
-      .fetch({
-        queryConfig: {
-          limit: 10,
-        },
-      })
-      .subscribe((result) => {
-        this.categories = result.data.fetchCategorySociopros.results;
-        console.log('list', this.categories);
-      });
 
-    // this.initSearch();
+    // Initialiser les validations
+    if (this.formType !== 'edit') {
+      this.initValidations();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // this.getSociety();
+    this.getOrganization();
     if (this.formType == 'edit') {
       this.societyForm.controls['adminEmail'].disable();
     }
   }
 
-  // Méthode pour soumettre le formulaire
- submitForm() {
-  if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
-    this.societyForm.markAllAsTouched();
-    return;
+  getOrganization(): void {
+    if (this.societyId) {
+      this.title = 'Modification societé';
+      this.fetchOrganizationGQL
+        .fetch(
+          { organizationId: this.societyId },
+          { fetchPolicy: 'no-cache' }
+        )
+        .subscribe({
+          next: (result) => {
+            this.society = result.data.fetchOrganization as Organization;
+            console.log('Organisation récupérée:', this.society);
+
+            // Extraction de l'adresse
+            const fullAddress = this.society.postalAddress || '';
+            const addressParts = fullAddress.split(',');
+
+            // Mise à jour directe du formulaire avec mapping explicite
+            this.societyForm.patchValue({
+              // Informations société
+              companyName: this.society.name,
+              address: addressParts[0]?.trim() || '',
+              city: addressParts[1]?.trim() || '',
+              phone: this.society.phone || '',
+              psp: this.society.financialOrganization.name || '',
+
+              // Informations admin - adapter selon votre structure Organization
+              adminFirstName: this.society.user.firstName,
+              adminLastName: this.society.user.lastName,
+              adminEmail: this.society.rootEmail,
+              // Ces champs peuvent ne pas exister dans votre entité Organization
+              // Vérifiez votre interface/type Organization
+              adminFunction: this.society.user.role || '',
+              adminPhone: this.society.phone || '',
+            });
+
+            console.log('Valeurs appliquées au formulaire:', this.societyForm.value);
+          },
+          error: (error) => {
+            console.error('Erreur:', error);
+            this.snackBarService.showErrorSnackBar(5000, 'Erreur lors du chargement');
+          }
+        });
+    }
   }
 
-  if (this.societyId) {
-    this.edit();
-    return;
+  // Déclencher l'input file pour le logo
+  triggerLogoUpload(): void {
+    this.logoFileInput.nativeElement.click();
   }
 
-  this.isLoading = true;
+  // Gérer la sélection de fichiers
+  onFileSelect(event: any, fileType: 'ninea' | 'logo'): void {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const formValue = this.societyForm.getRawValue();
+    if (fileType === 'logo') {
+      // Validation pour le logo
+      if (!file.type.startsWith('image/')) {
+        this.snackBarService.showErrorSnackBar(5000, 'Veuillez sélectionner une image valide');
+        return;
+      }
 
-  // Préparer les données pour l'API
-  const societyData = {
-    companyName: formValue.companyName,
-    address: formValue.address,
-    city: formValue.city,
-    companyPhone: formValue.companyPhone,
-    accountNumber: formValue.accountNumber,
-    financialInstitutionId: formValue.financialInstitution,
-    pspId: formValue.psp,
-    ninea: this.selectedFiles?.ninea,
-    adminFirstName: formValue.adminFirstName,
-    adminLastName: formValue.adminLastName,
-    adminFunction: formValue.adminFunction,
-    adminPhone: formValue.adminPhone,
-    adminEmail: formValue.adminEmail,
-    maxAmount: Number(formValue.maxAmount),
-    reimbursementDate: formValue.reimbursementDate,
-    interestRate: Number(formValue.interestRate),
-    maxSalaryPercent: Number(formValue.maxSalaryPercent)
-  };
+      // Vérifier la taille du fichier (max 2MB pour les images)
+      if (file.size > 2 * 1024 * 1024) {
+        this.snackBarService.showErrorSnackBar(5000, 'L\'image ne doit pas dépasser 2MB');
+        return;
+      }
 
-  // Ici, on appelle le service qui fait la requête API
-  // this.societyService.createSociety(societyData).subscribe(
-  //   (result) => {
-  //     console.log('result', result);
+      this.selectedFiles[fileType] = file;
 
-  //     this.isLoading = false;
+      // Créer l'aperçu de l'image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.logoPreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
 
-  //     if (result.data) {
-  //       this.router.navigate(['/dashboard/society']);
-  //       this.snackBarService.showSuccessSnackBar(
-  //         'Formulaire enregistré avec succès'
-  //       );
-  //     }
-  //   },
-  //   (error) => {
-  //     console.error(error);
-  //     this.snackBarService.showErrorSnackBar(5000, 'Une erreur est survenue');
-  //     this.isLoading = false;
-  //   }
-  // );
-}
+      console.log('Logo sélectionné:', file.name);
+    } else if (fileType === 'ninea') {
+      // Validation pour NINEA
+      if (file.type !== 'application/pdf') {
+        this.snackBarService.showErrorSnackBar(5000, 'Veuillez sélectionner un fichier PDF');
+        return;
+      }
 
+      // Vérifier la taille du fichier (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.snackBarService.showErrorSnackBar(5000, 'Le fichier ne doit pas dépasser 5MB');
+        return;
+      }
 
-  edit() {
+      this.selectedFiles[fileType] = file;
+      console.log(`Fichier ${fileType} sélectionné:`, file.name);
+    }
+  }
+
+  // Supprimer le logo
+  removeLogo(): void {
+    this.selectedFiles.logo = undefined;
+    this.logoPreview = null;
+    if (this.logoFileInput) {
+      this.logoFileInput.nativeElement.value = '';
+    }
+  }
+
+  // Initialiser les validations
+  initValidations(): void {
+    this.checkAdminPhone();
+    this.checkAdminEmail();
+  }
+
+  submitForm(): void {
+    console.log('Heerreeeee: =====>>>>>>>>> ');
+    if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
+      console.log('this.hasErrors =====>>>>>>>>> ', this.hasErrors);
+      console.log('societyForm.invalid: =====>>>>>>>>> ', this.societyForm.invalid);
+      console.log('this.isLoading =====>>>>>>>>> ', this.isLoading);
+      this.societyForm.markAllAsTouched();
+
+      const controls = this.societyForm.controls;
+
+      Object.keys(controls).forEach(controlName => {
+        const control = controls[controlName];
+        if (control.errors) {
+          console.log(`❌ Erreurs sur "${controlName}":`, control.errors);
+        }
+      });
+
+      return;
+    }
+
+    if (this.societyId) {
+      this.edit();
+      return;
+    }
+
+    this.createOrganization();
+  }
+
+  // Créer l'organisation avec la mutation GraphQL
+  createOrganization(): void {
+    this.isLoading = true;
+    const formValue = this.societyForm.getRawValue();
+
+    // Préparer les données pour la mutation
+    const organizationInput = {
+      name: formValue.companyName,
+      rootEmail: formValue.adminEmail,
+      rootFirstname: formValue.adminFirstName,
+      rootLastname: formValue.adminLastName,
+      balance: formValue.balance,
+      maxDemandeAmount: formValue.maxDemandeAmount,
+      fees: formValue.fees,
+      amountPercent: formValue.amountPercent,
+      financialOrganizationName: formValue.psp,
+      postalAddress: `${formValue.address}, ${formValue.city}`,
+      phone: formValue.phone
+    };
+
+    // Variables pour la mutation
+    const variables: any = {
+      organizationInput
+    };
+
+    // Ajouter le logo s'il existe
+    if (this.selectedFiles.logo) {
+      variables.logoFile = this.selectedFiles.logo;
+    }
+
+    console.log('Données envoyées:', variables);
+
+    // Exécuter la mutation
+    this.createOrganizationGQL.mutate({
+      organizationInput: {
+        ...organizationInput,
+      },
+      // context: {
+      //   useMultipart: true // Important pour l'upload de fichiers
+      // }
+    }).subscribe({
+      next: (result: any) => {
+        console.log('Organisation créée avec succès:', result);
+        this.isLoading = false;
+
+        if (result.data?.createOrganization) {
+          this.router.navigate(['/dashboard/society']);
+          this.snackBarService.showSuccessSnackBar(
+            'Société créée avec succès'
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création:', error);
+        this.snackBarService.showErrorSnackBar(
+          5000,
+          'Une erreur est survenue lors de la création'
+        );
+        this.isLoading = false;
+      }
+    });
+  }
+
+  edit(): void {
     if (this.societyForm.invalid || this.isLoading) {
       this.societyForm.markAllAsTouched();
       return;
@@ -288,69 +338,78 @@ onFileSelect(event: any, fileType: 'ninea') {
     this.isLoading = true;
     const formValue = this.societyForm.getRawValue();
 
-    const societyData = {
-      companyName: formValue.companyName,
-      address: formValue.address,
-      city: formValue.city,
-      companyPhone: formValue.companyPhone,
-      accountNumber: formValue.accountNumber,
-      financialInstitutionId: formValue.financialInstitution,
-      pspId: formValue.psp,
-      ninea: this.selectedFiles.ninea,
-      adminFirstName: formValue.adminFirstName,
-      adminLastName: formValue.adminLastName,
-      adminFunction: formValue.adminFunction,
-      adminPhone: formValue.adminPhone,
-      maxAmount: Number(formValue.maxAmount),
-      reimbursementDate: formValue.reimbursementDate,
-      interestRate: Number(formValue.interestRate),
-      maxSalaryPercent: Number(formValue.maxSalaryPercent)
-    };  
-  }
+    // Préparer les données pour la mutation
+    const organizationInput = {
+      name: formValue.companyName,
+      // rootEmail: formValue.adminEmail,
+      // rootFirstname: formValue.adminFirstName,
+      // rootLastname: formValue.adminLastName,
+      balance: formValue.balance,
+      maxDemandeAmount: formValue.maxDemandeAmount,
+      fees: formValue.fees,
+      amountPercent: formValue.amountPercent,
+      financialOrganizationName: formValue.psp,
+      postalAddress: `${formValue.address}, ${formValue.city}`,
+      phone: formValue.phone
+    };
 
-  checkCompanyPhone() {
-    this.societyForm
-      .get('companyPhone')
-      ?.valueChanges.pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((value) => {
-          return this.searchService.phoneNumberExists(
-            value,
-            false,
-            this.societyId
+    // Variables pour la mutation
+    const variables: any = {
+      organizationInput
+    };
+
+    // Ajouter le logo s'il existe
+    if (this.selectedFiles.logo) {
+      variables.logoFile = this.selectedFiles.logo;
+    }
+
+    console.log('Données envoyées:', variables);
+    // Exécuter la mutation
+    this.updateOrganizationGQL.mutate({
+      organizationId: this.societyId,
+      organizationInput: {
+        ...organizationInput,
+      },
+      // context: {
+      //   useMultipart: true // Important pour l'upload de fichiers
+      // }
+    }).subscribe(
+      (result) => {
+        this.isLoading = false;
+        if (result.data) {
+          this.router.navigate(['/dashboard/society']);
+          this.snackBarService.showSuccessSnackBar(
+            'Societé modifié avec succés'
           );
-        })
-      )
-      .subscribe((result) => {
-        this.societyForm.controls['companyPhone'].setErrors(null);
-        this.societyForm.controls['companyPhone'].updateValueAndValidity();
-        this.companyPhoneExists = result;
-        if (result) {
-          this.societyForm.controls['companyPhone'].setErrors({
-            phoneNumberExists: true,
-          });
         }
-      });
+      },
+      (error) => {
+        this.snackBarService.showErrorSnackBar();
+        this.isLoading = false;
+      }
+    );
   }
 
-  checkAdminPhone() {
+  checkAdminPhone(): void {
     this.societyForm
       .get('adminPhone')
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((value) => {
+          if (!value || value.length < 10) {
+            return [false];
+          }
+
           return this.searchService.phoneNumberExists(
             value,
             false,
-            this.societyId
+            this.societyId // Exclure l'organisation actuelle
           );
         })
       )
       .subscribe((result) => {
         this.societyForm.controls['adminPhone'].setErrors(null);
-        this.societyForm.controls['adminPhone'].updateValueAndValidity();
         this.adminPhoneExists = result;
         if (result) {
           this.societyForm.controls['adminPhone'].setErrors({
@@ -360,24 +419,28 @@ onFileSelect(event: any, fileType: 'ninea') {
       });
   }
 
-  checkAdminEmail() {
+  checkAdminEmail(): void {
     this.societyForm
       .get('adminEmail')
       ?.valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((value) => {
+          if (!value || !value.includes('@')) {
+            return [false];
+          }
+
+          // pour exclure l'email actuel de la vérification
           return this.searchService.emailExists(
             value,
             false,
-            this.societyId
+            this.societyId // Exclure l'organisation actuelle de la vérification
           );
         })
       )
       .subscribe((result) => {
         this.adminEmailExists = result;
         this.societyForm.controls['adminEmail'].setErrors(null);
-        this.societyForm.controls['adminEmail'].updateValueAndValidity();
 
         if (result) {
           this.societyForm.controls['adminEmail'].setErrors({
@@ -387,17 +450,10 @@ onFileSelect(event: any, fileType: 'ninea') {
       });
   }
 
-
-  get hasErrors() {
+  get hasErrors(): boolean {
     return (
-      this.companyPhoneExists ||
       this.adminPhoneExists ||
-      this.adminEmailExists ||
-      this.accountNumberExists ||
-      this.companyNameExists ||
-      this.psps
+      this.adminEmailExists
     );
   }
-
-
 }

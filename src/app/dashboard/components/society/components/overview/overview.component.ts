@@ -21,7 +21,7 @@ import { dateToString } from 'src/app/shared/utils/time';
 import {
   FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorsGQL,
-  FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchPaginatedOrganizationsGQL,
   LockUserGQL,
   Organization,
   UnlockUserGQL,
@@ -35,17 +35,18 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements AfterViewInit {
-  collabs: User[] = [];
-  selectedCollab: User;
+  // collabs: User[] = [];
+  // selectedOrg: User;
   disableCache: boolean;
   search: string = '';
   searchForm: FormGroup;
   displayedColumns: string[] = [
-    'uniqueIdentifier',
-    'society',
+    'entreprise',
+    'adressePostale',
     'phone',
-    'createdAt',
-    'action',
+    'coordSuperAdmin',
+    'adminName',
+    'action'
   ];
   type = UserRole.SUPER_ADMIN;
 
@@ -53,24 +54,20 @@ export class OverviewComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-  EXCEL_TYPE =
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  EXCEL_EXTENSION = '.xlsx';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  dataSource = new MatTableDataSource<User>();
+  dataSource = new MatTableDataSource<Organization>();
 
   page: number = 1;
   data = [];
-  organization: Organization;
 
   constructor(
     private router: Router,
     private fileUploadService: FileUploadService,
     private fb: FormBuilder,
+    private fetchPaginatedOrganizationsGQL: FetchPaginatedOrganizationsGQL
   ) {
-    // this.fetchCollabs();
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
     });
@@ -84,19 +81,76 @@ export class OverviewComponent implements AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-
-  }
-
   title: string = "liste des sociétés"
   requests = [{}, {}, {}, {}, {}, {}];
 
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.searchForm
+      .get('search')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
+      .subscribe((r) => {
+        this.paginator.firstPage();
+      });
 
-  addSocity() {
-    this.router.navigate(['/dashboard/society/create-society']);
+    merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.searchForm.get('search').valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+        // startWith('')
+      )
+    )
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          this.isLoadingResults = true;
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+            // sortField: this.sort.active,
+            // sortOrder: this.sort.direction,
+            search: this.searchForm?.value?.search,
+          };
+
+          return this.fetchPaginatedOrganizationsGQL.fetch(
+            { queryFilter },
+            { fetchPolicy: 'no-cache' }
+          );
+        }),
+        map((result) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingResults = false;
+          this.isRateLimitReached = result === null;
+
+          if (result === null) {
+            return [];
+          }
+
+          // Only refresh the result length if there is new data. In case of rate
+          // limit errors, we do not want to reset the paginator to zero, as that
+          // would prevent users from re-triggering requests
+          console.log("list of organizations =========>>>>>>> ", result.data);
+
+          return result.data;
+        })
+      )
+      .subscribe((data: any) => {
+        this.data = data.fetchPaginatedOrganizations.results as any;
+
+        this.dataSource.data = this.data as any;
+        console.log("this.dataSource.data in socity =======>>>>>>>>>> ", this.dataSource.data);
+        // this.selectedCollab = this.data[0];
+        this.resultsLength =
+          data.fetchPaginatedOrganizations.pagination.totalItems;
+        // this.selectedCollab = this.data?.[0];
+      });
   }
-
-
 
 
 }

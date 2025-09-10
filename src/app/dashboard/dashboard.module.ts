@@ -55,6 +55,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
+import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { RequestDetailsComponent } from './components/request-details/request-de
     RequestSalaryComponent,
     RequestMonthlyRepayableAdvanceComponent,
     RequestDetailsComponent,
+    DashboardAdminComponent,
   ],
   imports: [
     CreateEventModule,
@@ -122,4 +124,4 @@ import { RequestDetailsComponent } from './components/request-details/request-de
   ],
   providers: [NotificationsService],
 })
-export class DashboardModule {}
+export class DashboardModule { }
