@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -16,8 +16,6 @@ import {
   FileUploadService,
   UserRole,
 } from 'src/app/shared/services/file-upload.service';
-import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { dateToString } from 'src/app/shared/utils/time';
 import {
   FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorsGQL,
@@ -27,7 +25,6 @@ import {
   UnlockUserGQL,
   User,
 } from 'src/graphql/generated';
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-overview',
@@ -35,8 +32,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements AfterViewInit {
-  // collabs: User[] = [];
-  // selectedOrg: User;
+
   disableCache: boolean;
   search: string = '';
   searchForm: FormGroup;
@@ -144,11 +140,8 @@ export class OverviewComponent implements AfterViewInit {
         this.data = data.fetchPaginatedOrganizations.results as any;
 
         this.dataSource.data = this.data as any;
-        console.log("this.dataSource.data in socity =======>>>>>>>>>> ", this.dataSource.data);
-        // this.selectedCollab = this.data[0];
         this.resultsLength =
           data.fetchPaginatedOrganizations.pagination.totalItems;
-        // this.selectedCollab = this.data?.[0];
       });
   }
 

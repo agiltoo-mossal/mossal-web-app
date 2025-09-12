@@ -14,26 +14,39 @@
         <div class="form-section">
             <h3 class="section-title">Informations de la société</h3>
 
-            <!-- Logo Upload Section -->
+            <!-- Logo Upload Section avec affichage du logo existant -->
             <div class="form-row">
                 <div class="form-group logo-upload-group">
                     <div class="logo-upload-container">
-                        <!-- Logo preview or placeholder -->
-                        <div class="logo-preview" [class.has-logo]="logoPreview">
-                            <img *ngIf="logoPreview" [src]="logoPreview" alt="Logo preview" class="logo-image">
-                            <div *ngIf="!logoPreview" class="logo-placeholder">
+                        <!-- Logo preview - existant ou nouveau -->
+                        <div class="logo-preview" [class.has-logo]="hasLogo()">
+
+                            <!-- Affichage du logo existant (Base64) -->
+                            <img *ngIf="existingLogoData && !logoPreview"
+                                [src]="'data:' + existingLogoMimeType + ';base64,' + existingLogoData" alt="Logo actuel"
+                                class="logo-image existing-logo">
+
+                            <!-- Affichage du nouveau logo en prévisualisation -->
+                            <img *ngIf="logoPreview" [src]="logoPreview" alt="Nouveau logo" class="logo-image new-logo">
+
+                            <!-- Placeholder si aucun logo -->
+                            <div *ngIf="!hasLogo()" class="logo-placeholder">
                                 <span class="material-icons">business</span>
                             </div>
                         </div>
-
                         <!-- Upload button -->
                         <div class="logo-upload-actions">
-                            <button type="button" class="logo-upload-button" (click)="triggerLogoUpload()">
+                            <button fxLayout="row" fxLayoutAlign="center center" type="button"
+                                class="logo-upload-button" (click)="triggerLogoUpload()">
                                 <span class="material-icons">cloud_upload</span>
-                                Télécharger le logo de l'entreprise
+                                <span>
+                                    {{ hasLogo() ? 'Changer le logo' : 'Télécharger le logo de l\'entreprise' }}
+                                </span>
                             </button>
-                            <button type="button" *ngIf="selectedFiles?.logo" class="logo-remove-button"
-                                (click)="removeLogo()">
+
+                            <!-- Bouton supprimer (nouveau logo ou logo existant) -->
+                            <button type="button" *ngIf="selectedFiles?.logo || existingLogoData"
+                                class="logo-remove-button" (click)="removeLogo()">
                                 Supprimer
                             </button>
                         </div>
@@ -81,7 +94,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="telephone-entreprise">téléphone</label>
-                    <input type="tel" id="phone" formControlName="phone" placeholder="+221 77 000 00 00" />
+                    <input type="tel" id="phone" formControlName="phone" placeholder="+221 770000000" />
                 </div>
             </div>
 

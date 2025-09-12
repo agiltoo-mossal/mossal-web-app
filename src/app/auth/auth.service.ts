@@ -110,7 +110,8 @@ export class AuthService {
         this.router.navigate(['/auth/reset']);
       } else {
         session.role === 'SUPER_ADMIN' ?
-          this.router.navigate(['/dashboard/admin-overview']) :
+          this.router.navigate(['/dashboard/society']) :
+          // this.router.navigate(['/dashboard/admin-overview']) :
           this.router.navigate(['/dashboard']);
 
       }
