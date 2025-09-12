@@ -527,10 +527,12 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         }
       },
       (error) => {
-        console.log("error validation =========>>>>>>>> ", error)
+        console.log("error validation =========>>>>>>>> ", error.message)
+        let message = error.message == 4002 ? 'Demande non validé: vous n’avez pas suffisamment de fonds.' :
+          'Vous ne pouvez pas effectuer cette action...';
         this.snackBarService.showErrorSnackBar(
           7000,
-          'Vous ne pouvez pas effectuer cette action...'
+          message
         );
       }
     );

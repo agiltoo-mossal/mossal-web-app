@@ -378,6 +378,9 @@ query FetchPaginatedOrganizations($queryFilter: QueryDataConfigInput) {
         firstName
         lastName
       }
+      logo {
+        data
+      }
 		}
 	}
 }
@@ -408,8 +411,29 @@ query FetchOrganization($organizationId: ID!) {
       phoneNumber
     }
     financialOrganization {
+      id
       name
     }
+    logo {
+      id
+      data
+    }
 	}
+}
+
+query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
 }
 

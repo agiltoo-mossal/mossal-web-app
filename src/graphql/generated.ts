@@ -661,6 +661,8 @@ export type Organization = {
   financialOrganization?: Maybe<FinancialOrganization>;
   financialOrganizationId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  logo?: Maybe<OrganizationLogo>;
+  logoId?: Maybe<Scalars['String']['output']>;
   maxDemandeAmount: Scalars['Float']['output'];
   /** Nom de l'organisation */
   name: Scalars['String']['output'];
@@ -677,7 +679,8 @@ export type OrganizationInput = {
   balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
   /** Nom de l'organisation financière */
-  financialOrganizationName: Scalars['String']['input'];
+  financialOrganizationId: Scalars['String']['input'];
+  logo?: InputMaybe<OrganizationLogoInput>;
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
   name: Scalars['String']['input'];
@@ -693,12 +696,29 @@ export type OrganizationInput = {
   rootLastname: Scalars['String']['input'];
 };
 
+export type OrganizationLogo = {
+  __typename?: 'OrganizationLogo';
+  /** Données encodées en base64 */
+  data?: Maybe<Scalars['String']['output']>;
+  filename: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  mimetype: Scalars['String']['output'];
+  size: Scalars['Float']['output'];
+};
+
+export type OrganizationLogoInput = {
+  data: Scalars['String']['input'];
+  filename: Scalars['String']['input'];
+  mimetype: Scalars['String']['input'];
+  size: Scalars['Float']['input'];
+};
+
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
-  financialOrganizationName?: InputMaybe<Scalars['String']['input']>;
+  financialOrganizationId?: InputMaybe<Scalars['String']['input']>;
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1544,7 +1564,7 @@ export type FetchPaginatedOrganizationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null }> } };
+export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null, logo?: { __typename?: 'OrganizationLogo', data?: string | null } | null }> } };
 
 export type CreateOrganizationMutationVariables = Exact<{
   organizationInput: OrganizationInput;
@@ -1558,7 +1578,14 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', name: string } | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
+
+export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
+  queryConfig: QueryDataConfigInput;
+}>;
+
+
+export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2822,6 +2849,9 @@ export const FetchPaginatedOrganizationsDocument = gql`
         firstName
         lastName
       }
+      logo {
+        data
+      }
     }
   }
 }
@@ -2872,7 +2902,12 @@ export const FetchOrganizationDocument = gql`
       phoneNumber
     }
     financialOrganization {
+      id
       name
+    }
+    logo {
+      id
+      data
     }
   }
 }
@@ -2883,6 +2918,34 @@ export const FetchOrganizationDocument = gql`
   })
   export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
     document = FetchOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedFinancialOrganizationDocument = gql`
+    query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedFinancialOrganizationGQL extends Apollo.Query<FetchPaginatedFinancialOrganizationQuery, FetchPaginatedFinancialOrganizationQueryVariables> {
+    document = FetchPaginatedFinancialOrganizationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
