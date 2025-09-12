@@ -1585,7 +1585,7 @@ export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
+// export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -1594,9 +1594,9 @@ export type FetchDemandesMetricsQueryVariables = Exact<{
 
 export type FetchDemandesMetricsQuery = { __typename?: 'Query', fetchDemandesMetrics: { __typename?: 'DemandesMetrics', remaining: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }>, total: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }> } };
 
-export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
-  queryConfig?: InputMaybe<QueryDataConfigInput>;
-}>;
+// export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
+//   queryConfig?: InputMaybe<QueryDataConfigInput>;
+// }>;
 
 
 export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
