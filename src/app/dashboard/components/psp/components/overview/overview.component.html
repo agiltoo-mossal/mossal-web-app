@@ -1,26 +1,7 @@
 <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-    
-
     <div class="example-table-container">
       <table mat-table [dataSource]="dataSource" class="example-table" matSort>
-        <!-- matSortActive="uniqueIdentifier"
-        matSortDisableClear
-        matSortDirection="desc" -->
-        <!-- Number Column -->
-        <!-- <ng-container matColumnDef="uniqueIdentifier">
-          <th mat-header-cell *matHeaderCellDef class="title">Identifiant</th>
-          <td class="radio-container" mat-cell *matCellDef="let row">
-            <div class="radio-container">
-              <span (click)="selectCollab(row)" class="radio {{
-                  row?.id === selectedCollab?.id ? 'active' : ''
-                }}" fxLayoutAlign="center center"></span>
-              <span>{{ row.uniqueIdentifier }}</span>
-            </div>
-          </td>
-        </ng-container> -->
-
-        <!-- Title Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef class="title">Nom</th>
           <td mat-cell *matCellDef="let row">
@@ -35,28 +16,8 @@
           </td>
         </ng-container>
        
- <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef class="title">Action</th>
-          <td mat-cell *matCellDef="let row">
-ACTION          </td>
-        </ng-container>
-        <!-- State Column -->
-        <!-- <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
-          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
-        </ng-container> -->
-
-        <!-- Created Column -->
-        <!-- <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef class="title" disableClear>
-            Date D'inscription
-          </th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.createdAt | date : "dd-MM-YYYY" }}
-          </td>
-        </ng-container> -->
-
-        <!-- <ng-container matColumnDef="action">
+        
+         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
             Action
           </th>
@@ -69,43 +30,58 @@ ACTION          </td>
                     }}"></span></span>
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
-              <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
-                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
-                  routerLink="/dashboard/psp/{{ row.id ?? row?._id }}">
-                  <span><mat-icon>edit</mat-icon></span>
-                  <span>Editer</span>
-                </div>
-                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" routerLink="/dashboard/psp/details/{{
-                    row.id ?? row?._id
-                  }}">
-                  <span><mat-icon>info</mat-icon></span>
-                  <span>Details</span>
-                </div>
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action"> 
                 <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
                   fxLayoutAlign="start center" fxLayoutGap="12px" requiresConfirmation
-                  [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
                   [confirmCallbackParam]="row?.id">
                   <span><mat-icon>lock</mat-icon></span>
                   <span>Suspendre</span>
+                </div>  
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear style="text-align: center">
+            Action
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="dropdown" appDropdown="dropdown-action">
+              <span fxLayout="row" class="btn-edit-statut">
+                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
+                  style="padding: 0 8px">
+                  <span>Action</span>
+                  <span class="statut statut--{{ row?.blocked ? 'rejected' : 'valid' }}"></span>
+                </span>
+                <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+              </span>
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action"> 
+                <div *ngIf="!row.blocked" 
+                     class="dropdown-option color-danger" 
+                     fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                     (click)="suspendPartner(row)">
+                  <span><mat-icon>lock</mat-icon></span>
+                  <span>Suspendre</span>
                 </div>
-                <div *ngIf="row.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center"
-                  fxLayoutGap="12px" requiresConfirmation [message]="'Voulez-vous débloquer cet utilisateur?'"
-                  [confirmCallback]="unlockUser" [confirmCallbackParam]="row?.id">
+                
+                <div *ngIf="row.blocked" 
+                     class="dropdown-option color-success" 
+                     fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                     (click)="reactivatePartner(row)">
                   <span><mat-icon>lock_open</mat-icon></span>
-                  <span>Débloquer</span>
+                  <span>Réactiver</span>
                 </div>
               </div>
             </div>
           </td>
         </ng-container> -->
-
+       
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
     </div>
   </div>
-  <!-- <div class="info-current-user container_sticky">
-    <app-user-details [user]="selectedCollab"></app-user-details>
-  </div> -->
+ 
 </div>

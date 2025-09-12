@@ -20,10 +20,7 @@ import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   FetchPaginatedFinancialOrganizationGQL,
   FinancialOrganization,
-  // FetchOrganizationCollaboratorsGQL,
-  // FetchPaginatedOrganizationCollaboratorsGQL,
-  LockUserGQL,
-  UnlockUserGQL,
+ 
   User,
 } from 'src/graphql/generated';
 import * as XLSX from 'xlsx';
@@ -34,8 +31,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements AfterViewInit {
-  // collabs: User[] = [];
-  // selectedCollab: User;
+
   disableCache: boolean;
   search: string = '';
   searchForm: FormGroup;
@@ -50,29 +46,19 @@ export class OverviewComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-  // EXCEL_TYPE =
-  //   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  // EXCEL_EXTENSION = '.xlsx';
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource = new MatTableDataSource<FinancialOrganization>();
 
   page: number = 1;
-  data = [];
 
   constructor(
-    // private fetchOrganizationCollaboratorsGQL: FetchOrganizationCollaboratorsGQL,
-    // private fetchPaginatedOrganizationCollaboratorsGQL: FetchPaginatedOrganizationCollaboratorsGQL,
     private fetchPaginatedFinancialOrganizationGQL:FetchPaginatedFinancialOrganizationGQL,
     private activatedRoute: ActivatedRoute,
-    private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL,
     private snackBarService: SnackBarService,
     private fileUploadService: FileUploadService,
     private fb: FormBuilder
   ) {
-    // this.fetchCollabs();
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
       if (tempData) {
@@ -82,7 +68,6 @@ export class OverviewComponent implements AfterViewInit {
       }
     });
     this.initSearchForm();
-    // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
 
   initSearchForm() {
@@ -110,7 +95,6 @@ export class OverviewComponent implements AfterViewInit {
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged()
-        // startWith('')
       )
     )
       .pipe(
@@ -120,8 +104,6 @@ export class OverviewComponent implements AfterViewInit {
           const queryConfig = {
             limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
-            // sortField: this.sort.active,
-            // sortOrder: this.sort.direction,FetchFinancialOrganization
             search: this.searchForm?.value?.search,
           };
 
@@ -131,132 +113,113 @@ export class OverviewComponent implements AfterViewInit {
           );
         }),
         map((result) => {
-          // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
           this.isRateLimitReached = result === null;
-
           if (result === null) {
             return [];
           }
-
-          // Only refresh the result length if there is new data. In case of rate
-          // limit errors, we do not want to reset the paginator to zero, as that
-          // would prevent users from re-triggering requests
-                  console.log("data", result);
-
+          console.log("data", result);
           return result.data;
-
         })
       )
       .subscribe((data: any) => {
-        // console.log("data", data);
-        // this.data = data.fet .results as any;
-        this.dataSource.data = this.data as any;
-        // this.selectedCollab = this.data[0];
-        this.resultsLength =
-          data.fetchPaginatedFinancialOrganizationGQL.pagination.totalItems;
-        // this.selectedCollab = this.data?.[0];
-      });
+          console.log('Données reçues:', data); 
+          this.dataSource.data = data?.fetchPaginatedFinancialOrganization?.results || [];  
+          this.resultsLength = data?.fetchPaginatedFinancialOrganization?.pagination?.totalItems || 0;
+          console.log('Données assignées au dataSource:', this.dataSource.data);
+        });
   }
 
-  // fetchCollabs() {
-  //   this.fetchPaginatedOrganizationCollaboratorsGQL
-  //     .fetch({}, { fetchPolicy: 'no-cache' })
-  //     .subscribe((result) => {
-  //       this.collabs = result.data.fetchPaginatedOrganizationCollaborators
-  //         .results as User[];
-  //       this.dataSource.data = this.collabs;
-  //       this.selectedCollab = this.collabs?.[0];
-  //     });
-  // }
+  //******************************************** */
 
-  // selectCollab(selected: User) {
-  //   this.selectedCollab = selected;
-  // }
-
-  // lockUser = (userId: string) => {
-  //   this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-  //     if (result.data.lockUser) {
-  //       this.snackBarService.showSuccessSnackBar(
-  //         'Utilisateur bloqué avec succès!'
-  //       );
-  //       this.fetchCollabs();
-  //     } else {
-  //       this.snackBarService.showErrorSnackBar();
+  // suspendPartner(partner: FinancialOrganization) {
+  //   // Dialogue de confirmation
+  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  //     width: '400px',
+  //     data: {
+  //       title: 'Suspendre le partenaire',
+  //       message: `Êtes-vous sûr de vouloir suspendre "${partner.name}" ?`,
+  //       confirmText: 'Suspendre',
+  //       cancelText: 'Annuler'
   //     }
   //   });
-  // };
 
-  // unlockUser = (userId: string) => {
-  //   this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-  //     if (result.data.unlockUser) {
-  //       this.snackBarService.showSuccessSnackBar(
-  //         'Utilisateur débloqué avec succès!'
-  //       );
-  //       this.fetchCollabs();
-  //     } else {
-  //       this.snackBarService.showErrorSnackBar();
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     if (result === true) {
+  //       this.performSuspension(partner);
   //     }
   //   });
-  // };
+  // }
 
-
-  // downloadCollaborators() {
-  //   this.fetchOrganizationCollaboratorsGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
-  //     next: ({ data }) => {
-  //       console.log("result =>>>>>>>>>>> ", data);
-
-  //       const temps = data.fetchOrganizationCollaborators;
-  //       if (temps.length) {
-  //         const csvRows = [
-  //           [
-  //             'Nom',
-  //             'Prenom',
-  //             'Identifiant unique',
-  //             'Date d\'inscription',
-  //           ],
-  //           ...temps.map((row) => [
-  //             row.lastName,
-  //             row.firstName,
-  //             row.uniqueIdentifier,
-  //             row.createdAt,
-  //             '',
-  //           ]),
-  //         ];
-  //         this.convertToXLSX(csvRows);
+ 
+  // private performSuspension(partner: FinancialOrganization) {
+  //   this.suspendFinancialOrganizationGQL.mutate({
+  //     id: partner.id
+  //   }).subscribe({
+  //     next: (result) => {
+  //       if (result.data?.suspendFinancialOrganization) {
+  //         this.snackBarService.showSuccessSnackBar('Partenaire suspendu avec succès');
+  //         // Mettre à jour localement l'état
+  //         this.updatePartnerStatus(partner.id, true);
   //       } else {
-  //         this.snackBarService.showSnackBar(
-  //           "Aucun collaborateur trouvé !"
-  //         );
+  //         this.snackBarService.showSuccessSnackBar('Erreur lors de la suspension');
   //       }
   //     },
-  //     error: (error) => console.log(error),
+  //     error: (error) => {
+  //       console.error('Erreur lors de la suspension:', error);
+  //       this.snackBarService.showSuccessSnackBar('Erreur lors de la suspension');
+  //     }
   //   });
   // }
 
-  // convertToXLSX(data: any[]) {
-  //   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-  //     skipHeader: true,
+  // reactivatePartner(partner: FinancialOrganization) {
+  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  //     width: '400px',
+  //     data: {
+  //       title: 'Réactiver le partenaire',
+  //       message: `Êtes-vous sûr de vouloir réactiver "${partner.name}" ?`,
+  //       confirmText: 'Réactiver',
+  //       cancelText: 'Annuler'
+  //     }
   //   });
-  //   const workbook: XLSX.WorkBook = {
-  //     Sheets: { data: worksheet },
-  //     SheetNames: ['data'],
-  //   };
-  //   const excelBuffer: any = XLSX.write(workbook, {
-  //     bookType: 'xlsx',
-  //     type: 'array',
+
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     if (result === true) {
+  //       this.performReactivation(partner);
+  //     }
   //   });
-  //   this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
   // }
 
-  // saveAsExcelFile(buffer: any, fileName: string): void {
-  //   const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
-  //   const url = window.URL.createObjectURL(data);
-  //   const a = document.createElement('a');
-  //   a.setAttribute('href', url);
-  //   a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
-  //   a.click();
-  //   window.URL.revokeObjectURL(url);
-  //   // FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + this.EXCEL_EXTENSION);
+
+  // private performReactivation(partner: FinancialOrganization) {
+  //   this.reactivateFinancialOrganizationGQL.mutate({
+  //     id: partner.id
+  //   }).subscribe({
+  //     next: (result) => {
+  //       if (result.data?.reactivateFinancialOrganization) {
+  //         this.snackBarService.showSuccessSnackBar('Partenaire réactivé avec succès');
+  //         // Mettre à jour localement l'état
+  //         this.updatePartnerStatus(partner.id, false);
+  //       } else {
+  //         this.snackBarService.showSuccessSnackBar('Erreur lors de la réactivation');
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Erreur lors de la réactivation:', error);
+  //       this.snackBarService.showSuccessSnackBar('Erreur lors de la réactivation');
+  //     }
+  //   });
   // }
+
+
+  // private updatePartnerStatus(partnerId: string, blocked: boolean) {
+  //   const updatedData = this.dataSource.data.map(partner => {
+  //     if (partner.id === partnerId) {
+  //       return { ...partner, blocked: blocked };
+  //     }
+  //     return partner;
+  //   });
+  //   this.dataSource.data = updatedData;
+  // }
+
 }
