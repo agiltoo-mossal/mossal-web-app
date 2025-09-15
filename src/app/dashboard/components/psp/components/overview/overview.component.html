@@ -33,6 +33,7 @@
               <div class="dropdown-content dropdown-content-filter" id="dropdown-action"> 
                 <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
                   fxLayoutAlign="start center" fxLayoutGap="12px" requiresConfirmation
+                  [message]="'Voulez vous bloquer ce psp ?'"
                   [confirmCallbackParam]="row?.id">
                   <span><mat-icon>lock</mat-icon></span>
                   <span>Suspendre</span>

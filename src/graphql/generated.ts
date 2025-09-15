@@ -312,6 +312,7 @@ export type Mutation = {
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
   updateCategorySociopro: Scalars['Boolean']['output'];
   updateCategorySocioproService: Scalars['Boolean']['output'];
@@ -505,6 +506,11 @@ export type MutationStartForgotPasswordArgs = {
 };
 
 
+export type MutationSuspendOrganizationArgs = {
+  organizationId: Scalars['String']['input'];
+};
+
+
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
 };
@@ -656,6 +662,7 @@ export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
   balance: Scalars['Float']['output'];
+  blocked?: Maybe<Scalars['Boolean']['output']>;
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
@@ -1585,7 +1592,7 @@ export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
 }>;
 
 
-// export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
+export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -1593,13 +1600,6 @@ export type FetchDemandesMetricsQueryVariables = Exact<{
 
 
 export type FetchDemandesMetricsQuery = { __typename?: 'Query', fetchDemandesMetrics: { __typename?: 'DemandesMetrics', remaining: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }>, total: Array<{ __typename?: 'DemandesMetricsRow', y: number, x: string }> } };
-
-// export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
-//   queryConfig?: InputMaybe<QueryDataConfigInput>;
-// }>;
-
-
-export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -2971,34 +2971,6 @@ export const FetchDemandesMetricsDocument = gql`
   })
   export class FetchDemandesMetricsGQL extends Apollo.Query<FetchDemandesMetricsQuery, FetchDemandesMetricsQueryVariables> {
     document = FetchDemandesMetricsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchPaginatedFinancialOrganizationDocument = gql`
-    query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput) {
-  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
-    pagination {
-      totalItems
-      pageCount
-      currentPage
-      pageSize
-    }
-    results {
-      id
-      name
-      description
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedFinancialOrganizationGQL extends Apollo.Query<FetchPaginatedFinancialOrganizationQuery, FetchPaginatedFinancialOrganizationQueryVariables> {
-    document = FetchPaginatedFinancialOrganizationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
