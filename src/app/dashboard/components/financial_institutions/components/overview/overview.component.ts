@@ -70,12 +70,10 @@ export class OverviewComponent implements AfterViewInit {
     private fileUploadService: FileUploadService,
     private fb: FormBuilder,
   ) {
-    // this.fetchCollabs();
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
     });
     this.initSearchForm();
-    // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
 
   initSearchForm() {
@@ -95,8 +93,5 @@ export class OverviewComponent implements AfterViewInit {
   addSocity() {
     this.router.navigate(['/dashboard/financial_institutions/create-financial_institutions']);
   }
-
-
-
 
 }

@@ -4,8 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { FinancialInstitutionsComponent } from './financial_institutions.component';
 import { OverviewComponent } from './components/overview/overview.component';
 import { CreateFinancialInstitutionsComponent } from './components/create-financial_institutions/create-financial_institutions.component';
-// import { EditFinancialInstitutionsComponent } from './components/edit-financial_institutions/edit-financial_institutions.component';
-// import { DetailFinancialInstitutionsComponent } from './components/detail-financial_institutions/detail-financial_institutions.component';
 
 const routes: Routes = [
   {
@@ -21,14 +19,7 @@ const routes: Routes = [
         path: 'create-financial_institutions',
         component: CreateFinancialInstitutionsComponent,
       },
-      // {
-      //   path: ':id',
-      //   component: EditFinancialInstitutionsComponent,
-      // },
-      // {
-      //   path: 'details/:id',
-      //   component: DetailFinancialInstitutionsComponent,
-      // },
+   
     ],
   },
 ];

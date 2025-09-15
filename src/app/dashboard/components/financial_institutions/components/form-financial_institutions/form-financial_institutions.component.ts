@@ -80,11 +80,7 @@ export class FormFinancialInstitutionsComponent implements OnInit, OnChanges {
         this.categories = result.data.fetchCategorySociopros.results;
         console.log('list', this.categories);
       });
-
-    // this.initSearch();
   }
-
-
 
   // Méthode pour soumettre le formulaire
  submitForm() {
@@ -93,33 +89,5 @@ export class FormFinancialInstitutionsComponent implements OnInit, OnChanges {
     return;
   }
 
-  
-
-  // Ici, on appelle le service qui fait la requête API
-  // this.financial_institutionsService.createFinancialInstitutions(financial_institutionsData).subscribe(
-  //   (result) => {
-  //     console.log('result', result);
-
-  //     this.isLoading = false;
-
-  //     if (result.data) {
-  //       this.router.navigate(['/dashboard/financial_institutions']);
-  //       this.snackBarService.showSuccessSnackBar(
-  //         'Formulaire enregistré avec succès'
-  //       );
-  //     }
-  //   },
-  //   (error) => {
-  //     console.error(error);
-  //     this.snackBarService.showErrorSnackBar(5000, 'Une erreur est survenue');
-  //     this.isLoading = false;
-  //   }
-  // );
 }
-
-
-
-  
-
-
 }
