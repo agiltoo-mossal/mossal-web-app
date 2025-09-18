@@ -243,59 +243,6 @@ export class OverviewComponent implements AfterViewInit {
       });
   }
 
-  private loadMockedData() {
-    this.isLoadingResults = true;
-
-    // Simulation d'un appel API avec délai
-    setTimeout(() => {
-      let filteredData = [...this.mockAdmins];
-
-      // Filtrage par recherche
-      const searchTerm = this.searchForm?.value?.search?.toLowerCase() || '';
-      if (searchTerm) {
-        filteredData = filteredData.filter(admin =>
-          admin.firstName.toLowerCase().includes(searchTerm) ||
-          admin.lastName.toLowerCase().includes(searchTerm) ||
-          admin.email.toLowerCase().includes(searchTerm) ||
-          admin.uniqueIdentifier.toLowerCase().includes(searchTerm)
-        );
-      }
-
-      // Tri
-      if (this.sort.active && this.sort.direction) {
-        filteredData.sort((a, b) => {
-          const isAsc = this.sort.direction === 'asc';
-          switch (this.sort.active) {
-            case 'uniqueIdentifier':
-              return this.compare(a.uniqueIdentifier, b.uniqueIdentifier, isAsc);
-            case 'admin':
-              return this.compare(`${a.firstName} ${a.lastName}`, `${b.firstName} ${b.lastName}`, isAsc);
-            case 'email':
-              return this.compare(a.email, b.email, isAsc);
-            case 'phone':
-              return this.compare(a.phoneNumber, b.phoneNumber, isAsc);
-            case 'createdAt':
-              return this.compare(a.createdAt, b.createdAt, isAsc);
-            default:
-              return 0;
-          }
-        });
-      }
-
-      // Pagination
-      const pageSize = this.paginator.pageSize || 10;
-      const pageIndex = this.paginator.pageIndex || 0;
-      const startIndex = pageIndex * pageSize;
-      const endIndex = startIndex + pageSize;
-
-      this.data = filteredData.slice(startIndex, endIndex);
-      this.dataSource.data = this.data;
-      this.selectedAdmin = this.data[0];
-      this.resultsLength = filteredData.length;
-      this.isLoadingResults = false;
-    }, 300);
-  }
-
   private compare(a: string | number | Date, b: string | number | Date, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
@@ -306,7 +253,7 @@ export class OverviewComponent implements AfterViewInit {
     if (adminIndex !== -1) {
       this.mockAdmins[adminIndex].blocked = true;
       this.snackBarService.showSuccessSnackBar('Utilisateur bloqué avec succès!');
-      this.loadMockedData(); // Recharger les données
+      // this.loadMockedData(); // Recharger les données
     } else {
       this.snackBarService.showErrorSnackBar();
     }
@@ -318,7 +265,7 @@ export class OverviewComponent implements AfterViewInit {
     if (adminIndex !== -1) {
       this.mockAdmins[adminIndex].blocked = false;
       this.snackBarService.showSuccessSnackBar('Utilisateur débloqué avec succès!');
-      this.loadMockedData(); // Recharger les données
+      // this.loadMockedData(); // Recharger les données
     } else {
       this.snackBarService.showErrorSnackBar();
     }
