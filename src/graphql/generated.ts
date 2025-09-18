@@ -849,6 +849,7 @@ export type Query = {
   fetchOrganizations: Array<Organization>;
   fetchPaginatedActivities: PaginatedActivityResult;
   fetchPaginatedFinancialOrganization: PaginatedFinancialOrganizationResult;
+  fetchPaginatedMossallAdmins: PaginatedUserResult;
   fetchPaginatedNotifications: PaginatedNotificationResult;
   fetchPaginatedOrganisationAdmins: PaginatedUserResult;
   fetchPaginatedOrganisationCol: PaginatedUserResult;
@@ -1018,6 +1019,11 @@ export type QueryFetchPaginatedActivitiesArgs = {
 
 export type QueryFetchPaginatedFinancialOrganizationArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedMossallAdminsArgs = {
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
 
@@ -1352,6 +1358,13 @@ export type FetchPaginatedOrganisationAdminsQueryVariables = Exact<{
 
 
 export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> } };
+
+export type FetchPaginatedMossallAdminsQueryVariables = Exact<{
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedMossallAdminsQuery = { __typename?: 'Query', fetchPaginatedMossallAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, blocked?: boolean | null, position?: string | null, createdAt: any }> } };
 
 export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -2011,6 +2024,41 @@ export const FetchPaginatedOrganisationAdminsDocument = gql`
   })
   export class FetchPaginatedOrganisationAdminsGQL extends Apollo.Query<FetchPaginatedOrganisationAdminsQuery, FetchPaginatedOrganisationAdminsQueryVariables> {
     document = FetchPaginatedOrganisationAdminsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedMossallAdminsDocument = gql`
+    query FetchPaginatedMossallAdmins($queryFilter: QueryDataConfigInput) {
+  fetchPaginatedMossallAdmins(queryFilter: $queryFilter) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      firstName
+      lastName
+      email
+      phoneNumber
+      uniqueIdentifier
+      address
+      blocked
+      position
+      createdAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedMossallAdminsGQL extends Apollo.Query<FetchPaginatedMossallAdminsQuery, FetchPaginatedMossallAdminsQueryVariables> {
+    document = FetchPaginatedMossallAdminsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
