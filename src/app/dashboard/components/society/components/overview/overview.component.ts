@@ -35,7 +35,7 @@ export class OverviewComponent implements AfterViewInit {
   search: string = '';
   searchForm: FormGroup;
   displayedColumns: string[] = [
-    'entreprise',
+    'name',
     'adressePostale',
     'phone',
     'coordSuperAdmin',
@@ -66,9 +66,7 @@ export class OverviewComponent implements AfterViewInit {
     private snackBarService: SnackBarService,
     private fetchOrganizationGQL: FetchOrganizationGQL
   ) {
-    effect(() => {
-      const tempData = this.fileUploadService.getDataResponse();
-    });
+
     this.initSearchForm();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
