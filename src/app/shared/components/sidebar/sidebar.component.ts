@@ -263,7 +263,6 @@ export class SidebarComponent implements OnInit {
             this.dashboardNav = this.menuAdmin;
             break;
         }
-
         // console.log({ user: this.currentUser });
       });
   }
@@ -404,7 +403,12 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/financial_institutions',
         icon: 'people',
       },
-         {
+      {
+        label: 'Administrateurs',
+        link: '/dashboard/admin_mossall',
+        icon: 'person',
+      },
+      {
         label: 'PSP',
         link: '/dashboard/psp',
         icon: 'people',
@@ -414,11 +418,12 @@ export class SidebarComponent implements OnInit {
       //   link: '/dashboard/Notifications',
       //   icon: 'notifications_none',
       // },
-      // {
-      //   label: 'Mon Compte',
-      //   link: '/dashboard/user',
-      //   icon: 'person_outline',
-      // },
+      {
+        label: 'Mon Compte',
+        link: '/dashboard/user_admin_mossall',
+        icon: 'person_outline',
+      },
+      
     ];
   }
 

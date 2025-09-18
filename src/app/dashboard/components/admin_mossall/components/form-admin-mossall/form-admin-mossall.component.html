@@ -1,0 +1,242 @@
+<!-- Style local pour forcer l'affichage des Material Icons -->
+<style>
+.mat-icon {
+  font-family: 'Material Icons' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+</style>
+
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+  <a routerLink="/dashboard/admins"><span>{{ "<" }}</span>retour</a>
+</div>
+
+<h2 class="container-title-setting">
+  <span>{{ formText }}</span>
+</h2>
+
+<div class="creation-compte">
+  <form class="form" [formGroup]="collaboratorForm" (ngSubmit)="submitForm()">
+    <!-- Ligne: Prénom, Nom -->
+    <div class="form-row">
+      <div class="form-row" style="width: 49%">
+        <div class="form-group">
+          <label for="prenom">Prénom <span class="color-danger">*</span></label>
+          <input
+            type="text"
+            id="prenom"
+            formControlName="firstName"
+            placeholder="John"
+          />
+          <div
+            *ngIf="
+              collaboratorForm.get('firstName')?.invalid &&
+              collaboratorForm.get('firstName')?.touched
+            "
+            class="error-message"
+          >
+            <span
+              *ngIf="collaboratorForm.get('firstName')?.errors?.['required']"
+              >Le champ Prénom est obligatoire.</span
+            >
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="nom">Nom <span class="color-danger">*</span></label>
+          <input
+            type="text"
+            id="nom"
+            formControlName="lastName"
+            placeholder="Doe"
+          />
+          <div
+            *ngIf="
+              collaboratorForm.get('lastName')?.invalid &&
+              collaboratorForm.get('lastName')?.touched
+            "
+            class="error-message"
+          >
+            <span *ngIf="collaboratorForm.get('lastName')?.errors?.['required']"
+              >Le champ Nom est obligatoire.</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="fonction">Fonction <span class="color-danger">*</span></label>
+        <input
+          type="text"
+          id="fonction"
+          formControlName="position"
+          placeholder="Fonction"
+        />
+        <div
+          *ngIf="
+            collaboratorForm.get('position')?.invalid &&
+            collaboratorForm.get('position')?.touched
+          "
+          class="error-message"
+        >
+          <span *ngIf="collaboratorForm.get('position')?.errors?.['required']"
+            >La fonction est obligatoire.</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Ligne: Email, Téléphone -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email">Adresse mail <span class="color-danger">*</span></label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="john@gmail.com"
+        />
+        <div
+          *ngIf="
+            collaboratorForm.get('email')?.invalid &&
+            collaboratorForm.get('email')?.touched
+          "
+          class="error-message"
+        >
+          <span *ngIf="collaboratorForm.get('email')?.errors?.['required']"
+            >L'adresse mail est obligatoire.</span
+          >
+          <span *ngIf="collaboratorForm.get('email')?.errors?.['email']"
+            >Entrez une adresse mail valide.</span
+          >
+          <span *ngIf="emailExists">Email déjà pris</span>
+        </div>
+      </div>
+        <div class="form-group">
+        <label for="unique-id">Matricule <span class="color-danger">*</span></label>
+        <input
+          type="text"
+          id="unique-id"
+          formControlName="uniqueIdentifier"
+          placeholder="Identifiant unique"
+        />
+        <div
+          *ngIf="
+            collaboratorForm.get('uniqueIdentifier')?.invalid &&
+            collaboratorForm.get('uniqueIdentifier')?.touched
+          "
+          class="error-message"
+        >
+          <span *ngIf="collaboratorForm.get('uniqueIdentifier')?.errors?.['required']"
+            >L'identifiant unique est obligatoire.</span
+          >
+          <span *ngIf="uniqueIdentifierExists">Identifiant déjà pris par un utilisateur de l'entreprise</span>
+        </div>
+      </div>
+    
+    </div>
+
+    <!-- Ligne: Fonction, Identifiant unique -->
+    <div class="form-row">
+      
+      <div class="form-group">
+        <label for="phone">Téléphone <span class="color-danger">*</span></label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phoneNumber"
+          placeholder="+221770000000"
+        />
+        <div
+          *ngIf="
+            collaboratorForm.get('phoneNumber')?.invalid &&
+            collaboratorForm.get('phoneNumber')?.touched
+          "
+          class="error-message"
+        >
+          <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['required']"
+            >Le numéro de téléphone est obligatoire.</span
+          >
+          <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']"
+            >Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par +221 suivi de 78, 77, 76, 70 ou 75. Ex: +221785238928</span
+          >
+        </div>
+        <div class="error-message"> 
+          <span *ngIf="phoneNumberExists">Numéro déjà pris par un utilisateur de l'entreprise</span>
+        </div>
+      </div>
+       <div class="form-group">
+        <label for="salary">Salaire <span class="color-danger">*</span></label>
+        <input
+          type="number"
+          id="salary"
+          formControlName="salary"
+          placeholder="Salaire"
+        />
+        <div
+          *ngIf="
+            collaboratorForm.get('salary')?.invalid &&
+            collaboratorForm.get('salary')?.touched
+          "
+          class="error-message"
+        >
+          <span *ngIf="collaboratorForm.get('salary')?.errors?.['required']"
+            >Le salaire est obligatoire.</span
+          >
+        </div>
+      </div>
+    </div>
+
+   
+
+    <!-- Ligne: Adresse -->
+    <div class="form-row" style="width: 49%">
+      <div class="form-group">
+        <label for="address">Adresse</label>
+        <input
+          type="text"
+          id="address"
+          formControlName="address"
+          placeholder="Adresse"
+        />
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="form-row">
+      <button type="submit" [disabled]="collaboratorForm.invalid"
+    
+       class="submit-button">{{ formType === 'create' ? 'Enregistrer' : 'Sauvegarder' }}</button>
+      <button
+        type="button"
+        *ngIf="!collaborator?.blocked"
+        class="suspend"
+        requiresConfirmation
+        [message]="'Voulez-vous bloquer cet utilisateur?'"
+        [confirmCallback]="lockUser"
+        [confirmCallbackParam]="collaborator?.id"
+      >
+        <span><mat-icon>lock</mat-icon></span>
+        Suspendre
+      </button>
+      <button
+        type="button"
+        *ngIf="collaborator?.blocked"
+        class="suspend"
+        requiresConfirmation
+        [message]="'Voulez-vous débloquer cet utilisateur?'"
+        [confirmCallback]="unlockUser"
+        [confirmCallbackParam]="collaborator?.id"
+      >
+        <span><mat-icon>lock_open</mat-icon></span>
+        Débloquer
+      </button>
+    </div>
+  </form>
+</div>
