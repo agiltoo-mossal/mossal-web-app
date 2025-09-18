@@ -138,7 +138,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
 
   getOrganization(): void {
     if (this.societyId) {
-      this.title = 'Modification societé';
+      this.title = 'Modification d\'une société';
       this.fetchOrganizationGQL
         .fetch(
           { organizationId: this.societyId },
