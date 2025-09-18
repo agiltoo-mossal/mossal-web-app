@@ -19,6 +19,7 @@ import {
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
   FetchOrganizationAdminsGQL,
+  FetchPaginatedMossallAdminsGQL,
   FetchPaginatedOrganisationAdminsGQL,
   LockUserGQL,
   QueryFetchPaginatedOrganisationAdminsArgs,
@@ -140,8 +141,7 @@ export class OverviewComponent implements AfterViewInit {
   ];
 
   constructor(
-    private fetchOrganizationAdminsGQL: FetchOrganizationAdminsGQL,
-    private paginatedAdminsGQL: FetchPaginatedOrganisationAdminsGQL,
+    private paginatedAdminsGQL: FetchPaginatedMossallAdminsGQL,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL,
     private snackBarService: SnackBarService,
@@ -180,11 +180,7 @@ export class OverviewComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Initialisation avec les données mockées
-    this.loadMockedData();
-
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-    
     this.searchForm
       .get('search')
       .valueChanges.pipe(
@@ -202,25 +198,62 @@ export class OverviewComponent implements AfterViewInit {
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged()
+        // startWith('')
       )
     )
-      .pipe(startWith({}))
-      .subscribe(() => {
-        this.loadMockedData();
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          this.isLoadingResults = true;
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+            // sortField: this.sort.active,
+            // sortOrder: this.sort.direction,
+            search: this.searchForm?.value?.search,
+          };
+
+          return this.paginatedAdminsGQL.fetch(
+            { queryFilter },
+            { fetchPolicy: 'no-cache' }
+          );
+        }),
+        map((result) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingResults = false;
+          this.isRateLimitReached = result === null;
+
+          if (result === null) {
+            return [];
+          }
+
+          // Only refresh the result length if there is new data. In case of rate
+          // limit errors, we do not want to reset the paginator to zero, as that
+          // would prevent users from re-triggering requests
+          return result.data;
+        })
+      )
+      .subscribe((data: any) => {
+        this.data = data.fetchPaginatedMossallAdmins.results as any;
+        this.dataSource.data = this.data as any;
+        this.selectedAdmin = this.data[0];
+        this.resultsLength =
+          data.fetchPaginatedMossallAdmins.pagination.totalItems;
+        // this.selectedAdmin = this.data?.[0];
       });
   }
 
   private loadMockedData() {
     this.isLoadingResults = true;
-    
+
     // Simulation d'un appel API avec délai
     setTimeout(() => {
       let filteredData = [...this.mockAdmins];
-      
+
       // Filtrage par recherche
       const searchTerm = this.searchForm?.value?.search?.toLowerCase() || '';
       if (searchTerm) {
-        filteredData = filteredData.filter(admin => 
+        filteredData = filteredData.filter(admin =>
           admin.firstName.toLowerCase().includes(searchTerm) ||
           admin.lastName.toLowerCase().includes(searchTerm) ||
           admin.email.toLowerCase().includes(searchTerm) ||
@@ -254,7 +287,7 @@ export class OverviewComponent implements AfterViewInit {
       const pageIndex = this.paginator.pageIndex || 0;
       const startIndex = pageIndex * pageSize;
       const endIndex = startIndex + pageSize;
-      
+
       this.data = filteredData.slice(startIndex, endIndex);
       this.dataSource.data = this.data;
       this.selectedAdmin = this.data[0];
