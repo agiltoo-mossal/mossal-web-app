@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, SimpleChanges, OnInit, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -18,16 +18,15 @@ import {
   templateUrl: './form-admin-mossall.component.html',
   styleUrl: './form-admin-mossall.component.scss',
 })
-export class FormAdminMossallComponent {
-  @Input() formType: string;
+export class FormAdminMossallComponent implements OnInit, OnChanges {
+  @Input() formType: string = '';
   formText: string = '';
   collaboratorForm: FormGroup;
   collaborator: User;
-  @Input() collaboratorId: string;
+  @Input() collaboratorId: string = '';
   isLoading: boolean = false;
 
   phoneNumberExists: boolean = false;
-  bankAccountNumberExists: boolean = false;
   uniqueIdentifierExists: boolean = false;
   emailExists: boolean = false;
 
@@ -38,125 +37,145 @@ export class FormAdminMossallComponent {
     private snackBarService: SnackBarService,
     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
-
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
     private unlockUserGQL: UnlockUserGQL
   ) {
     this.collaboratorForm = this.fb.group({
-      email: ['', Validators.required],
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      uniqueIdentifier: ['', Validators.required], // Matricule
+      firstName: ['', Validators.required], // Prénom
+      lastName: ['', Validators.required], // Nom
+      email: ['', [Validators.required, Validators.email]], // Email avec validation email
       phoneNumber: [
         '',
         [
           Validators.required,
-
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/), // Pattern pour numéros sénégalais
         ],
       ],
-      address: [''],
-      position: ['', Validators.required],
-      uniqueIdentifier: ['', Validators.required],
-      salary: [0, Validators.required],
-          });
+      address: [''], // Adresse (optionnelle)
+      position: ['', Validators.required], // Fonction
+    });
   }
 
   ngOnInit(): void {
     this.formText =
-      this.formType == 'edit'
-        ? "Modifier les infos de l'admin mossall "
-        : 'Création compte admin mossall';
+      this.formType === 'edit'
+        ? "Modifier les infos de l'admin mossall"
+        : 'Création compte administrateur';
 
     this.initSearch();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.getCollab();
+    if (changes['collaboratorId'] && this.collaboratorId) {
+      this.getCollab();
+    }
   }
 
-  // Méthode pour soumettre le formulaire
-  submitForm() {
-    console.log(this.collaboratorForm.invalid, this.isLoading);
-    if (this.collaboratorForm.invalid || this.isLoading) {
+  /**
+   * Méthode pour soumettre le formulaire
+   */
+  submitForm(): void {
+    console.log('Form invalid:', this.collaboratorForm.invalid, 'Loading:', this.isLoading);
+    
+    if (this.collaboratorForm.invalid || this.isLoading || this.hasErrors) {
       this.collaboratorForm.markAllAsTouched();
       return;
     }
-    this.isLoading = true;
-    console.log(this.formType);
-    if (this.formType == 'edit') {
-      this.edit();
-      return;
-    }
 
+    this.isLoading = true;
+
+    if (this.formType === 'edit') {
+      this.editAdmin();
+    } else {
+      this.createAdmin();
+    }
+  }
+
+  private createAdmin(): void {
     this.inviteAdminGQL
       .mutate({ adminInput: this.collaboratorForm.value })
-      .subscribe(
-        (result) => {
+      .subscribe({
+        next: (result) => {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admin_mossall']);
             this.snackBarService.showSuccessSnackBar(
-              "Invitation envoyé à l'admin mossall"
+              "Invitation envoyée à l'admin mossall"
             );
           }
         },
-        (error) => {
-          this.snackBarService.showSnackBar('une erreur est survenue');
+        error: (error) => {
+          console.error('Erreur lors de la création:', error);
+          this.snackBarService.showSnackBar('Une erreur est survenue lors de la création');
           this.isLoading = false;
         }
-      );
+      });
   }
 
-  edit() {
-    console.log(this.collaboratorForm.invalid, this.isLoading);
-    console.log(this.collaboratorForm.getRawValue());
-    this.isLoading = true;
-    const value = {
-      ...this.collaboratorForm.value,
-      salary: Number(this.collaboratorForm.value.salary || 0),
-    };
-    delete value.email;
+  
+  private editAdmin(): void {
+    console.log('Editing admin with values:', this.collaboratorForm.getRawValue());
+    
+    const formValue = { ...this.collaboratorForm.value };
+    
+    delete formValue.email;
+
     this.updateCollaboratorGQL
-      .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
-      .subscribe(
-        (result) => {
+      .mutate({ 
+        collaboratorInput: formValue, 
+        collaboratorId: this.collaboratorId 
+      })
+      .subscribe({
+        next: (result) => {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admin_mossall']);
             this.snackBarService.showSuccessSnackBar(
-              'Admin mossall modifié avec succés'
+              'Admin mossall modifié avec succès'
             );
           }
         },
-        (error) => {
+        error: (error) => {
+          console.error('Erreur lors de la modification:', error);
+          this.snackBarService.showSnackBar('Une erreur est survenue lors de la modification');
           this.isLoading = false;
         }
-      );
+      });
   }
 
-  getCollab() {
+
+  private getCollab(): void {
     if (this.collaboratorId) {
       this.fetchOrganizationCollaboratorGQL
         .fetch(
           { collaboratorId: this.collaboratorId },
           { fetchPolicy: 'no-cache' }
         )
-        .subscribe((result) => {
-          this.collaborator = result.data.fetchOrganizationCollaborator as User;
-          this.collaboratorForm.patchValue(this.collaborator);
+        .subscribe({
+          next: (result) => {
+            this.collaborator = result.data.fetchOrganizationCollaborator as User;
+            this.collaboratorForm.patchValue(this.collaborator);
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement du collaborateur:', error);
+            this.snackBarService.showSnackBar('Erreur lors du chargement des données');
+          }
         });
     }
   }
+
 
   get phoneNumber() {
     return this.collaboratorForm.controls['phoneNumber'];
   }
 
-  checkPhone() {
+
+  private checkPhone(): void {
     this.collaboratorForm
-      .get('phoneNumber')
-      .valueChanges.pipe(
+      .get('phoneNumber')?.valueChanges
+      .pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((value) =>
@@ -164,21 +183,27 @@ export class FormAdminMossallComponent {
         )
       )
       .subscribe((result) => {
-        this.collaboratorForm.controls['phoneNumber'].setErrors(null);
-        this.collaboratorForm.controls['phoneNumber'].updateValueAndValidity();
+        const phoneControl = this.collaboratorForm.controls['phoneNumber'];
+        
+        const currentErrors = phoneControl.errors || {};
+        delete currentErrors['phoneNumberExists'];
+        
         this.phoneNumberExists = result;
+        
         if (result) {
-          this.collaboratorForm.controls['phoneNumber'].setErrors({
-            phoneNumberExists: true,
-          });
+          phoneControl.setErrors({ ...currentErrors, phoneNumberExists: true });
+        } else if (Object.keys(currentErrors).length === 0) {
+          phoneControl.setErrors(null);
+        } else {
+          phoneControl.setErrors(currentErrors);
         }
       });
   }
 
-  checkEmail() {
+  private checkEmail(): void {
     this.collaboratorForm
-      .get('email')
-      .valueChanges.pipe(
+      .get('email')?.valueChanges
+      .pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((value) =>
@@ -186,22 +211,29 @@ export class FormAdminMossallComponent {
         )
       )
       .subscribe((result) => {
+        const emailControl = this.collaboratorForm.controls['email'];
+        
+        // Réinitialiser les erreurs
+        const currentErrors = emailControl.errors || {};
+        delete currentErrors['emailExists'];
+        
         this.emailExists = result;
-        this.collaboratorForm.controls['email'].setErrors(null);
-        this.collaboratorForm.controls['email'].updateValueAndValidity();
-
+        
         if (result) {
-          this.collaboratorForm.controls['email'].setErrors({
-            emailExists: true,
-          });
+          emailControl.setErrors({ ...currentErrors, emailExists: true });
+        } else if (Object.keys(currentErrors).length === 0) {
+          emailControl.setErrors(null);
+        } else {
+          emailControl.setErrors(currentErrors);
         }
       });
   }
 
-  checkUniqueIdentifier() {
+
+  private checkUniqueIdentifier(): void {
     this.collaboratorForm
-      .get('uniqueIdentifier')
-      .valueChanges.pipe(
+      .get('uniqueIdentifier')?.valueChanges
+      .pipe(
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((value) =>
@@ -213,55 +245,71 @@ export class FormAdminMossallComponent {
         )
       )
       .subscribe((result) => {
-        this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
-        this.collaboratorForm.controls[
-          'uniqueIdentifier'
-        ].updateValueAndValidity();
-        if (result) {
-          this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
-            uniqueIdentifierExists: true,
-          });
-        }
+        const uniqueIdControl = this.collaboratorForm.controls['uniqueIdentifier'];
+        
+        const currentErrors = uniqueIdControl.errors || {};
+        delete currentErrors['uniqueIdentifierExists'];
+        
         this.uniqueIdentifierExists = result;
+        
+        if (result) {
+          uniqueIdControl.setErrors({ ...currentErrors, uniqueIdentifierExists: true });
+        } else if (Object.keys(currentErrors).length === 0) {
+          uniqueIdControl.setErrors(null);
+        } else {
+          uniqueIdControl.setErrors(currentErrors);
+        }
       });
   }
 
-  initSearch() {
+  private initSearch(): void {
     this.checkPhone();
     this.checkUniqueIdentifier();
     this.checkEmail();
   }
 
-  get hasErrors() {
+  get hasErrors(): boolean {
     return (
-      this.bankAccountNumberExists ||
       this.phoneNumberExists ||
       this.uniqueIdentifierExists ||
       this.emailExists
     );
   }
 
-  lockUser = (userId: string) => {
-    this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur bloqué avec succès!'
-        );
-        this.getCollab();
-      } else {
+  lockUser = (userId: string): void => {
+    this.lockUserGQL.mutate({ userId }).subscribe({
+      next: (result) => {
+        if (result.data?.lockUser) {
+          this.snackBarService.showSuccessSnackBar(
+            'Utilisateur bloqué avec succès!'
+          );
+          this.getCollab();
+        } else {
+          this.snackBarService.showErrorSnackBar();
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du blocage:', error);
         this.snackBarService.showErrorSnackBar();
       }
     });
   };
 
-  unlockUser = (userId: string) => {
-    this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-      if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
-          'Utilisateur débloqué avec succès!'
-        );
-        this.getCollab();
-      } else {
+
+  unlockUser = (userId: string): void => {
+    this.unlockUserGQL.mutate({ userId }).subscribe({
+      next: (result) => {
+        if (result.data?.unlockUser) {
+          this.snackBarService.showSuccessSnackBar(
+            'Utilisateur débloqué avec succès!'
+          );
+          this.getCollab();
+        } else {
+          this.snackBarService.showErrorSnackBar();
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors du déblocage:', error);
         this.snackBarService.showErrorSnackBar();
       }
     });
