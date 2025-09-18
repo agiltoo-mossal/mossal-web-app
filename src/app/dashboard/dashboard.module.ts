@@ -56,6 +56,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
 import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
+import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.compo
     OverviewComponent,
     RequestsListComponent,
     UserComponent,
+    UserAdminMossallComponent,
     RequestEmergencyComponent,
     NotificationsComponent,
     RefundChartsComponent,

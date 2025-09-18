@@ -61,3 +61,26 @@ query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $que
 
 	}
 }
+
+query FetchPaginatedMossallAdmins($queryFilter: QueryDataConfigInput){
+	fetchPaginatedMossallAdmins(queryFilter: $queryFilter){
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results{
+			id
+			firstName
+			lastName
+			email
+			phoneNumber
+			uniqueIdentifier
+			address
+			blocked
+			position
+			createdAt
+		}
+	}
+}
