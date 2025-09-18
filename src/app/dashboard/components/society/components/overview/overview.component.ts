@@ -16,14 +16,12 @@ import {
   FileUploadService,
   UserRole,
 } from 'src/app/shared/services/file-upload.service';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
-  FetchCurrentAdminGQL,
-  FetchOrganizationCollaboratorsGQL,
+  FetchOrganizationGQL,
   FetchPaginatedOrganizationsGQL,
-  LockUserGQL,
   Organization,
-  UnlockUserGQL,
-  User,
+  SuspendOrganizationGQL,
 } from 'src/graphql/generated';
 
 @Component({
@@ -37,7 +35,7 @@ export class OverviewComponent implements AfterViewInit {
   search: string = '';
   searchForm: FormGroup;
   displayedColumns: string[] = [
-    'entreprise',
+    'name',
     'adressePostale',
     'phone',
     'coordSuperAdmin',
@@ -57,16 +55,18 @@ export class OverviewComponent implements AfterViewInit {
 
   page: number = 1;
   data = [];
+  organizations = [];
 
   constructor(
     private router: Router,
     private fileUploadService: FileUploadService,
     private fb: FormBuilder,
-    private fetchPaginatedOrganizationsGQL: FetchPaginatedOrganizationsGQL
+    private fetchPaginatedOrganizationsGQL: FetchPaginatedOrganizationsGQL,
+    private suspendOrganizationGQL: SuspendOrganizationGQL,
+    private snackBarService: SnackBarService,
+    private fetchOrganizationGQL: FetchOrganizationGQL
   ) {
-    effect(() => {
-      const tempData = this.fileUploadService.getDataResponse();
-    });
+
     this.initSearchForm();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
@@ -145,5 +145,36 @@ export class OverviewComponent implements AfterViewInit {
       });
   }
 
+  fetchOrganizations() {
+    this.fetchPaginatedOrganizationsGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        this.organizations = result.data.fetchPaginatedOrganizations
+          .results as Organization[];
+        this.dataSource.data = this.organizations;
+      });
+  }
+
+  suspendOrganization = (organizationId: string) => {
+    this.suspendOrganizationGQL.mutate({ organizationId }).subscribe((result) => {
+      if (result.data.suspendOrganization) {
+        this.fetchOrganizationGQL.fetch(
+          { organizationId },
+          { fetchPolicy: 'no-cache' }
+        ).subscribe((org) => {
+          const organization = org.data.fetchOrganization as Organization;
+
+          let message = organization.blocked
+            ? 'Organisation bloquée avec succès!'
+            : 'Organisation débloquée avec succès!';
+
+          this.snackBarService.showSuccessSnackBar(message);
+        });
+        this.fetchOrganizations();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    });
+  };
 
 }

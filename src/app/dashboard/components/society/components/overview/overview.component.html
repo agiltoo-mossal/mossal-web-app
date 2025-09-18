@@ -35,7 +35,7 @@
 
     <div class="example-table-container">
       <table mat-table [dataSource]="dataSource" class="example-table" matSort>
-        <ng-container matColumnDef="entreprise">
+        <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef class="title">Entreprise</th>
           <td class="radio-container" mat-cell *matCellDef="let row">
             <div class="radio-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="3px">
@@ -86,7 +86,10 @@
             <div class="dropdown" appDropdown="dropdown-action">
               <span fxLayout="row" class="btn-edit-statut">
                 <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
-                  style="padding: 0 8px"><span>Action</span></span>
+                  style="padding: 0 8px"><span>Action</span><span class="statut statut--{{
+                      row?.blocked ? 'rejected' : 'valid'
+                    }}"></span></span>
+
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
               <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
@@ -98,11 +101,16 @@
                 </div>
                 <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
                   fxLayoutAlign="start center" fxLayoutGap="6px" requiresConfirmation
-                  [message]="'Voulez-vous suspendre cette organisation?'">
-                  <!-- [confirmCallback]="lockUser"
-                  [confirmCallbackParam]="row?.id" -->
+                  [message]="'Voulez-vous suspendre cette organisation?'" [confirmCallback]="suspendOrganization"
+                  [confirmCallbackParam]="row?.id">
                   <span><mat-icon>lock</mat-icon></span>
                   <span>Suspendre</span>
+                </div>
+                <div *ngIf="row.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center"
+                  fxLayoutGap="12px" requiresConfirmation [message]="'Voulez-vous débloquer cette organisation?'"
+                  [confirmCallback]="suspendOrganization" [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock_open</mat-icon></span>
+                  <span>Débloquer</span>
                 </div>
               </div>
             </div>

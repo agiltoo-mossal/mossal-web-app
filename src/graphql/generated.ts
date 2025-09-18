@@ -1571,7 +1571,7 @@ export type FetchPaginatedOrganizationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null, logo?: { __typename?: 'OrganizationLogo', data?: string | null } | null }> } };
+export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null, logo?: { __typename?: 'OrganizationLogo', data?: string | null } | null }> } };
 
 export type CreateOrganizationMutationVariables = Exact<{
   organizationInput: OrganizationInput;
@@ -1585,7 +1585,7 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
 
 export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
   queryConfig: QueryDataConfigInput;
@@ -1593,6 +1593,13 @@ export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
 
 
 export type FetchPaginatedFinancialOrganizationQuery = { __typename?: 'Query', fetchPaginatedFinancialOrganization: { __typename?: 'PaginatedFinancialOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'FinancialOrganization', id: any, name: string, description?: string | null }> } };
+
+export type SuspendOrganizationMutationVariables = Exact<{
+  organizationId: Scalars['String']['input'];
+}>;
+
+
+export type SuspendOrganizationMutation = { __typename?: 'Mutation', suspendOrganization: boolean };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2852,6 +2859,7 @@ export const FetchPaginatedOrganizationsDocument = gql`
       logo {
         data
       }
+      blocked
     }
   }
 }
@@ -2909,6 +2917,7 @@ export const FetchOrganizationDocument = gql`
       id
       data
     }
+    blocked
   }
 }
     `;
@@ -2946,6 +2955,22 @@ export const FetchPaginatedFinancialOrganizationDocument = gql`
   })
   export class FetchPaginatedFinancialOrganizationGQL extends Apollo.Query<FetchPaginatedFinancialOrganizationQuery, FetchPaginatedFinancialOrganizationQueryVariables> {
     document = FetchPaginatedFinancialOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SuspendOrganizationDocument = gql`
+    mutation SuspendOrganization($organizationId: String!) {
+  suspendOrganization(organizationId: $organizationId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SuspendOrganizationGQL extends Apollo.Mutation<SuspendOrganizationMutation, SuspendOrganizationMutationVariables> {
+    document = SuspendOrganizationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
