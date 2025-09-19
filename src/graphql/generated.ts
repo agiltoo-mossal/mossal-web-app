@@ -307,6 +307,7 @@ export type Mutation = {
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  lockAdmin: Scalars['Boolean']['output'];
   lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
@@ -477,6 +478,11 @@ export type MutationInviteAdminArgs = {
 export type MutationInviteCollaboratorArgs = {
   categorySocioProId?: InputMaybe<Scalars['String']['input']>;
   collaborator: InviteCollaboratorInput;
+};
+
+
+export type MutationLockAdminArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -837,6 +843,7 @@ export type Query = {
   fetchDemandesMetrics: DemandesMetrics;
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
+  fetchMossallAdmin: User;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
@@ -973,6 +980,11 @@ export type QueryFetchEventArgs = {
 export type QueryFetchEventsArgs = {
   organizationServiceId: Scalars['ID']['input'];
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchMossallAdminArgs = {
+  adminId: Scalars['String']['input'];
 };
 
 
@@ -1338,6 +1350,13 @@ export type FetchPaginatedActivitiesQueryVariables = Exact<{
 
 
 export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+
+export type FetchMossallAdminQueryVariables = Exact<{
+  adminId: Scalars['String']['input'];
+}>;
+
+
+export type FetchMossallAdminQuery = { __typename?: 'Query', fetchMossallAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, position?: string | null, blocked?: boolean | null, createdAt: any } };
 
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1769,6 +1788,13 @@ export type DisableEmailNotificationMutationVariables = Exact<{
 
 export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
 
+export type LockAdminMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type LockAdminMutation = { __typename?: 'Mutation', lockAdmin: boolean };
+
 export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1929,6 +1955,33 @@ export const FetchPaginatedActivitiesDocument = gql`
   })
   export class FetchPaginatedActivitiesGQL extends Apollo.Query<FetchPaginatedActivitiesQuery, FetchPaginatedActivitiesQueryVariables> {
     document = FetchPaginatedActivitiesDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchMossallAdminDocument = gql`
+    query FetchMossallAdmin($adminId: String!) {
+  fetchMossallAdmin(adminId: $adminId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    position
+    blocked
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMossallAdminGQL extends Apollo.Query<FetchMossallAdminQuery, FetchMossallAdminQueryVariables> {
+    document = FetchMossallAdminDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -3626,6 +3679,22 @@ export const DisableEmailNotificationDocument = gql`
   })
   export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
     document = DisableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const LockAdminDocument = gql`
+    mutation LockAdmin($userId: String!) {
+  lockAdmin(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LockAdminGQL extends Apollo.Mutation<LockAdminMutation, LockAdminMutationVariables> {
+    document = LockAdminDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
