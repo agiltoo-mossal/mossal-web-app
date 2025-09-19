@@ -11,19 +11,15 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { FileUploadComponent } from 'src/app/shared/components/file-upload/file-upload.component';
 import {
   FileUploadService,
   UserRole,
 } from 'src/app/shared/services/file-upload.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
-  FetchOrganizationAdminsGQL,
+  FetchMossallAdminGQL,
   FetchPaginatedMossallAdminsGQL,
-  FetchPaginatedOrganisationAdminsGQL,
-  LockUserGQL,
-  QueryFetchPaginatedOrganisationAdminsArgs,
-  UnlockUserGQL,
+  LockAdminGQL,
   User,
 } from 'src/graphql/generated';
 
@@ -52,101 +48,18 @@ export class OverviewComponent implements AfterViewInit {
     'email',
     'phone',
     'createdAt',
+    'fonction',
     'action',
   ];
   type = UserRole.ADMIN;
 
-  // Données mockées
-  private mockAdmins: User[] = [
-    {
-      id: '1',
-      uniqueIdentifier: 'ADM001',
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      email: 'jean.dupont@example.com',
-      phoneNumber: '+33123456789',
-      createdAt: new Date('2024-01-15'),
-      blocked: false
-    } as User,
-    {
-      id: '2',
-      uniqueIdentifier: 'ADM002',
-      firstName: 'Marie',
-      lastName: 'Martin',
-      email: 'marie.martin@example.com',
-      phoneNumber: '+33198765432',
-      createdAt: new Date('2024-02-20'),
-      blocked: true
-    } as User,
-    {
-      id: '3',
-      uniqueIdentifier: 'ADM003',
-      firstName: 'Pierre',
-      lastName: 'Bernard',
-      email: 'pierre.bernard@example.com',
-      phoneNumber: '+33156789123',
-      createdAt: new Date('2024-03-10'),
-      blocked: false
-    } as User,
-    {
-      id: '4',
-      uniqueIdentifier: 'ADM004',
-      firstName: 'Sophie',
-      lastName: 'Dubois',
-      email: 'sophie.dubois@example.com',
-      phoneNumber: '+33187654321',
-      createdAt: new Date('2024-04-05'),
-      blocked: false
-    } as User,
-    {
-      id: '5',
-      uniqueIdentifier: 'ADM005',
-      firstName: 'Laurent',
-      lastName: 'Moreau',
-      email: 'laurent.moreau@example.com',
-      phoneNumber: '+33145678912',
-      createdAt: new Date('2024-05-12'),
-      blocked: true
-    } as User,
-    {
-      id: '6',
-      uniqueIdentifier: 'ADM006',
-      firstName: 'Céline',
-      lastName: 'Leroy',
-      email: 'celine.leroy@example.com',
-      phoneNumber: '+33134567891',
-      createdAt: new Date('2024-06-18'),
-      blocked: false
-    } as User,
-    {
-      id: '7',
-      uniqueIdentifier: 'ADM007',
-      firstName: 'Thomas',
-      lastName: 'Roux',
-      email: 'thomas.roux@example.com',
-      phoneNumber: '+33123987456',
-      createdAt: new Date('2024-07-22'),
-      blocked: false
-    } as User,
-    {
-      id: '8',
-      uniqueIdentifier: 'ADM008',
-      firstName: 'Isabelle',
-      lastName: 'Fournier',
-      email: 'isabelle.fournier@example.com',
-      phoneNumber: '+33167891234',
-      createdAt: new Date('2024-08-14'),
-      blocked: true
-    } as User
-  ];
-
   constructor(
     private paginatedAdminsGQL: FetchPaginatedMossallAdminsGQL,
-    private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL,
+    private lockAdminGQL: LockAdminGQL,
     private snackBarService: SnackBarService,
     private fileUploadService: FileUploadService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private fetchMossallAdmin: FetchMossallAdminGQL
   ) {
     effect(() => {
       const tempData = this.fileUploadService.getDataResponse();
@@ -159,14 +72,15 @@ export class OverviewComponent implements AfterViewInit {
     this.initSearchForm();
   }
 
+
   fetchAdmins() {
-    // Simulation d'un délai de chargement
-    setTimeout(() => {
-      this.admins = [...this.mockAdmins];
-      this.selectedAdmin = this.admins?.[0];
-      this.dataSource.data = this.admins;
-      this.resultsLength = this.admins.length;
-    }, 500);
+    this.paginatedAdminsGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        this.admins = result.data.fetchPaginatedMossallAdmins
+          .results as User[];
+        this.dataSource.data = this.admins;
+      });
   }
 
   initSearchForm() {
@@ -175,9 +89,6 @@ export class OverviewComponent implements AfterViewInit {
     });
   }
 
-  selectAdmin(selected: User) {
-    this.selectedAdmin = selected;
-  }
 
   ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
@@ -243,31 +154,49 @@ export class OverviewComponent implements AfterViewInit {
       });
   }
 
-  private compare(a: string | number | Date, b: string | number | Date, isAsc: boolean): number {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
+  // lockUser = (userId: string) => {
+  //   // Simulation du blocage d'un utilisateur
+  //   const adminIndex = this.mockAdmins.findIndex(admin => admin.id === userId);
+  //   if (adminIndex !== -1) {
+  //     this.mockAdmins[adminIndex].blocked = true;
+  //     this.snackBarService.showSuccessSnackBar('Utilisateur bloqué avec succès!');
+  //     // this.loadMockedData(); // Recharger les données
+  //   } else {
+  //     this.snackBarService.showErrorSnackBar();
+  //   }
+  // };
+
+  // unlockUser = (userId: string) => {
+  //   // Simulation du déblocage d'un utilisateur
+  //   const adminIndex = this.mockAdmins.findIndex(admin => admin.id === userId);
+  //   if (adminIndex !== -1) {
+  //     this.mockAdmins[adminIndex].blocked = false;
+  //     this.snackBarService.showSuccessSnackBar('Utilisateur débloqué avec succès!');
+  //     // this.loadMockedData(); // Recharger les données
+  //   } else {
+  //     this.snackBarService.showErrorSnackBar();
+  //   }
+  // };
 
   lockUser = (userId: string) => {
-    // Simulation du blocage d'un utilisateur
-    const adminIndex = this.mockAdmins.findIndex(admin => admin.id === userId);
-    if (adminIndex !== -1) {
-      this.mockAdmins[adminIndex].blocked = true;
-      this.snackBarService.showSuccessSnackBar('Utilisateur bloqué avec succès!');
-      // this.loadMockedData(); // Recharger les données
-    } else {
-      this.snackBarService.showErrorSnackBar();
-    }
-  };
+    this.lockAdminGQL.mutate({ userId }).subscribe((result) => {
+      if (result.data.lockAdmin) {
+        this.fetchMossallAdmin.fetch(
+          { adminId: userId },
+          { fetchPolicy: 'no-cache' }
+        ).subscribe((org) => {
+          const admin = org.data.fetchMossallAdmin as User;
 
-  unlockUser = (userId: string) => {
-    // Simulation du déblocage d'un utilisateur
-    const adminIndex = this.mockAdmins.findIndex(admin => admin.id === userId);
-    if (adminIndex !== -1) {
-      this.mockAdmins[adminIndex].blocked = false;
-      this.snackBarService.showSuccessSnackBar('Utilisateur débloqué avec succès!');
-      // this.loadMockedData(); // Recharger les données
-    } else {
-      this.snackBarService.showErrorSnackBar();
-    }
+          let message = admin.blocked
+            ? 'Utilisateur bloquée avec succès!'
+            : 'Utilisateur débloquée avec succès!';
+
+          this.snackBarService.showSuccessSnackBar(message);
+        });
+        this.fetchAdmins();
+      } else {
+        this.snackBarService.showErrorSnackBar();
+      }
+    });
   };
 }

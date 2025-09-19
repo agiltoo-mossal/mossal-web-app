@@ -1,0 +1,14 @@
+query FetchMossallAdmin($adminId: String!) {
+  fetchMossallAdmin(adminId: $adminId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    position
+    blocked
+    createdAt
+  }
+}

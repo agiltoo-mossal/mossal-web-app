@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
-  FetchOrganizationCollaboratorGQL,
+  FetchMossallAdminGQL,
   InviteAdminGQL,
   LockUserGQL,
   UnlockUserGQL,
@@ -35,11 +35,11 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
     private inviteAdminGQL: InviteAdminGQL,
     private router: Router,
     private snackBarService: SnackBarService,
-    private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
     private updateCollaboratorGQL: UpdateCollaboratorGQL,
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL
+    private unlockUserGQL: UnlockUserGQL,
+    private fetchMossallAdmin: FetchMossallAdminGQL
   ) {
     this.collaboratorForm = this.fb.group({
       uniqueIdentifier: ['', Validators.required], // Matricule
@@ -61,15 +61,16 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.formText =
       this.formType === 'edit'
-        ? "Modifier les infos de l'admin mossall"
+        ? "Modifier les infos de l'administrateur"
         : 'Création compte administrateur';
 
     this.initSearch();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['collaboratorId'] && this.collaboratorId) {
-      this.getCollab();
+    this.getAdmin();
+    if (this.formType == 'edit') {
+      this.collaboratorForm.controls['email'].disable();
     }
   }
 
@@ -78,7 +79,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
    */
   submitForm(): void {
     console.log('Form invalid:', this.collaboratorForm.invalid, 'Loading:', this.isLoading);
-    
+
     if (this.collaboratorForm.invalid || this.isLoading || this.hasErrors) {
       this.collaboratorForm.markAllAsTouched();
       return;
@@ -114,18 +115,16 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
       });
   }
 
-  
+
   private editAdmin(): void {
-    console.log('Editing admin with values:', this.collaboratorForm.getRawValue());
-    
     const formValue = { ...this.collaboratorForm.value };
-    
+
     delete formValue.email;
 
     this.updateCollaboratorGQL
-      .mutate({ 
-        collaboratorInput: formValue, 
-        collaboratorId: this.collaboratorId 
+      .mutate({
+        collaboratorInput: formValue,
+        collaboratorId: this.collaboratorId
       })
       .subscribe({
         next: (result) => {
@@ -146,16 +145,16 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
   }
 
 
-  private getCollab(): void {
+  private getAdmin(): void {
     if (this.collaboratorId) {
-      this.fetchOrganizationCollaboratorGQL
+      this.fetchMossallAdmin
         .fetch(
-          { collaboratorId: this.collaboratorId },
+          { adminId: this.collaboratorId },
           { fetchPolicy: 'no-cache' }
         )
         .subscribe({
           next: (result) => {
-            this.collaborator = result.data.fetchOrganizationCollaborator as User;
+            this.collaborator = result.data.fetchMossallAdmin as User;
             this.collaboratorForm.patchValue(this.collaborator);
           },
           error: (error) => {
@@ -184,12 +183,12 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
       )
       .subscribe((result) => {
         const phoneControl = this.collaboratorForm.controls['phoneNumber'];
-        
+
         const currentErrors = phoneControl.errors || {};
         delete currentErrors['phoneNumberExists'];
-        
+
         this.phoneNumberExists = result;
-        
+
         if (result) {
           phoneControl.setErrors({ ...currentErrors, phoneNumberExists: true });
         } else if (Object.keys(currentErrors).length === 0) {
@@ -212,13 +211,13 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
       )
       .subscribe((result) => {
         const emailControl = this.collaboratorForm.controls['email'];
-        
+
         // Réinitialiser les erreurs
         const currentErrors = emailControl.errors || {};
         delete currentErrors['emailExists'];
-        
+
         this.emailExists = result;
-        
+
         if (result) {
           emailControl.setErrors({ ...currentErrors, emailExists: true });
         } else if (Object.keys(currentErrors).length === 0) {
@@ -246,12 +245,12 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
       )
       .subscribe((result) => {
         const uniqueIdControl = this.collaboratorForm.controls['uniqueIdentifier'];
-        
+
         const currentErrors = uniqueIdControl.errors || {};
         delete currentErrors['uniqueIdentifierExists'];
-        
+
         this.uniqueIdentifierExists = result;
-        
+
         if (result) {
           uniqueIdControl.setErrors({ ...currentErrors, uniqueIdentifierExists: true });
         } else if (Object.keys(currentErrors).length === 0) {
@@ -283,7 +282,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
           this.snackBarService.showSuccessSnackBar(
             'Utilisateur bloqué avec succès!'
           );
-          this.getCollab();
+          this.getAdmin();
         } else {
           this.snackBarService.showErrorSnackBar();
         }
@@ -303,7 +302,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
           this.snackBarService.showSuccessSnackBar(
             'Utilisateur débloqué avec succès!'
           );
-          this.getCollab();
+          this.getAdmin();
         } else {
           this.snackBarService.showErrorSnackBar();
         }
