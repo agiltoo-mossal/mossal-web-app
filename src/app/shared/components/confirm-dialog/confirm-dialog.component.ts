@@ -18,7 +18,7 @@ export class ConfirmDialogComponent implements OnInit {
     this.reasonRequired = data.reasonRequired;
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onConfirm() {
     if (this.reasonRequired) {
@@ -32,7 +32,7 @@ export class ConfirmDialogComponent implements OnInit {
       // - Starts with capital letter
       // - Contains at least 10 characters
       // - Ends with punctuation (. ! or ?)
-      const reasonPattern = /^[A-Z][a-zA-Z0-9\s\-',.!?]{8,}[.!?]$/;
+      const reasonPattern = /^[\p{Lu}][\p{L}0-9\s\-',]{8,}[.!?]$/u;
 
       if (!reasonPattern.test(this.reason.trim())) {
         this.snackBarService.showSnackBar(

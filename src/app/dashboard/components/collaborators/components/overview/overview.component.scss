@@ -49,6 +49,7 @@
     }
   }
 }
+
 table .mat-mdc-header-cell {
   color: #061e5c;
   text-transform: uppercase;
@@ -57,9 +58,10 @@ table .mat-mdc-header-cell {
   line-height: 120%;
   /* 38.4px */
   letter-spacing: 0.16px;
-    padding: 22px 30px;
+  padding: 22px 30px;
 
 }
+
 .mat-mdc-cell {
   color: #33343d;
   font-size: 16px;
@@ -77,6 +79,7 @@ table .mat-mdc-header-cell {
       height: 14px;
       border: 1px solid #061e5c;
       border-radius: 50%;
+
       &.active {
         position: relative;
 

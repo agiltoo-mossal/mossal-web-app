@@ -1,0 +1,127 @@
+<div class="page-wrapper" style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  ">
+  <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
+
+    <div style="display: flex; gap: 35px; margin: 20px 10px; justify-content: space-between;
+        align-items: center;">
+      <h2 class="container-title-setting">
+        <span>{{ title }}</span>
+      </h2>
+
+      <div style="width: 25%" *ngIf="searchForm" [formGroup]="searchForm" class="search-container"
+        fxLayoutAlign="start center">
+        <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+        <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
+      </div>
+
+      <div style="width: 25%">
+        <button routerLink="/dashboard/society/create-society" class="btn btn-primary" fxLayoutAlign="center center"
+          fxLayoutGap="8px" style="
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;">
+          <mat-icon fxLayoutAlign="center center">add_circle_outline</mat-icon><span style="font-size: 13px">Ajouter
+            une société </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="example-table-container">
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef class="title">Entreprise</th>
+          <td class="radio-container" mat-cell *matCellDef="let row">
+            <div class="radio-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="3px">
+              <!-- Logo de l'organisation s'il existe, sinon icône par défaut -->
+              <span class="organization-logo-container">
+                <img *ngIf="row.logo?.data; else defaultIcon"
+                  [src]="'data:' + row.logo.mimetype + ';base64,' + row.logo.data" [alt]="row.name + ' logo'"
+                  class="organization-logo" [title]="row.name + ' - ' + row.logo.originalName">
+                <ng-template #defaultIcon>
+                  <mat-icon>business</mat-icon>
+                </ng-template>
+              </span>
+              <span>{{ row.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="adressePostale">
+          <th mat-header-cell *matHeaderCellDef class="title">Adresse Postale</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row?.postalAddress }}
+          </td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
+          <td mat-cell *matCellDef="let row"> {{ row?.phone }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="coordSuperAdmin">
+          <th mat-header-cell *matHeaderCellDef class="title">Coordonnées admin</th>
+          <td mat-cell *matCellDef="let row">{{ row.rootEmail }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="adminName">
+          <th mat-header-cell *matHeaderCellDef class="title">Nom admin</th>
+          <td mat-cell *matCellDef="let row">{{ row.user.firstName }} {{ row.user.lastName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear
+            style="text-align: center; min-width: 120px; width: 120px;">
+            Action
+          </th>
+          <td mat-cell *matCellDef="let row" style="min-width: 120px; width: 120px;">
+            <div class="dropdown" appDropdown="dropdown-action">
+              <span fxLayout="row" class="btn-edit-statut">
+                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
+                  style="padding: 0 8px"><span>Action</span><span class="statut statut--{{
+                      row?.blocked ? 'rejected' : 'valid'
+                    }}"></span></span>
+
+                <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+              </span>
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
+                style="min-width: 140px; white-space: nowrap;">
+                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                  routerLink="/dashboard/society/{{ row.id ?? row?._id }}">
+                  <span><mat-icon>edit</mat-icon></span>
+                  <span>Editer</span>
+                </div>
+                <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
+                  fxLayoutAlign="start center" fxLayoutGap="6px" requiresConfirmation
+                  [message]="'Voulez-vous suspendre cette organisation?'" [confirmCallback]="suspendOrganization"
+                  [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock</mat-icon></span>
+                  <span>Suspendre</span>
+                </div>
+                <div *ngIf="row.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center"
+                  fxLayoutGap="12px" requiresConfirmation [message]="'Voulez-vous débloquer cette organisation?'"
+                  [confirmCallback]="suspendOrganization" [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock_open</mat-icon></span>
+                  <span>Débloquer</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
+    </div>
+
+  </div>
+</div>

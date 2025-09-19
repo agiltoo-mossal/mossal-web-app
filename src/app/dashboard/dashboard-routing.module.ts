@@ -14,6 +14,7 @@ import { RequestEventComponent } from './components/request-event/request-event.
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
+import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 
 const routes: Routes = [
   {
@@ -42,10 +43,38 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'society',
+        loadChildren: () =>
+          import('./components/society/society.module').then(
+            (m) => m.SocietyModule
+          ),
+      },
+      {
+        path: 'financial_institutions',
+        loadChildren: () =>
+          import('./components/financial_institutions/financial_institutions.module').then(
+            (m) => m.FinancialInstitutionsModule
+          ),
+      },
+      {
+        path: 'psp',
+        loadChildren: () =>
+          import('./components/psp/psp.module').then(
+            (m) => m.PspModule
+          ),
+      },
+      {
         path: 'admins',
         loadChildren: () =>
           import('./components/admins/admins.module').then(
             (m) => m.AdminsModule
+          ),
+      },
+       {
+        path: 'admin_mossall',
+        loadChildren: () =>
+          import('./components/admin_mossall/admin_mossall.module').then(
+            (m) => m.AdminMossallModule
           ),
       },
       {
@@ -75,6 +104,10 @@ const routes: Routes = [
       {
         path: 'user',
         component: UserComponent,
+      },
+      {
+        path: 'user_admin_mossall',
+        component: UserAdminMossallComponent,
       },
       {
         path: 'organization',

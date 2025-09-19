@@ -15,6 +15,7 @@ query LoginAdmin($loginInput: LoginInput!) {
 		access_token
 		refresh_token
 		expires_in
+		role
 	}
 }
 

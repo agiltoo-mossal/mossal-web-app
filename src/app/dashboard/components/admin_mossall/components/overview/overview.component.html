@@ -1,0 +1,133 @@
+<div class="page-wrapper" style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+  ">
+  <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
+
+    <div style="display: flex; gap: 35px; margin: 20px 10px; justify-content: space-between;
+        align-items: center;">
+      <h2 class="container-title-setting">
+        <span>Liste des administrateurs</span>
+      </h2>
+
+      <div style="width: 25%" *ngIf="searchForm" [formGroup]="searchForm" class="search-container"
+        fxLayoutAlign="start center">
+        <mat-icon class="icon" fxLayoutAlign="center center">search</mat-icon>
+        <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
+      </div>
+
+      <div style="width: 25%">
+        <button routerLink="/dashboard/admin_mossall/create-admin-mossall" class="btn btn-primary"
+          fxLayoutAlign="center center" fxLayoutGap="8px" style="
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;">
+          <mat-icon fxLayoutAlign="center center">add_circle_outline</mat-icon><span style="font-size: 13px">Ajouter un
+            admin</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="example-table-container">
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+        <!-- Number Column -->
+        <ng-container matColumnDef="uniqueIdentifier">
+          <th mat-header-cell *matHeaderCellDef class="title ">Matricule</th>
+          <td class="radio-container" mat-cell *matCellDef="let row">
+            <div class="radio-container">
+              <span>{{ row.uniqueIdentifier }}</span>
+
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="admin">
+          <th mat-header-cell *matHeaderCellDef class="title">Admin</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.firstName }} {{ row.lastName }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef class="title">Adresse mail</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.email }}
+          </td>
+        </ng-container>
+
+        <!-- State Column -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef class="title">Téléphone</th>
+          <td mat-cell *matCellDef="let row">{{ row.phoneNumber }}</td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear>Date</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.createdAt | date : "dd-MM-YYYY" }}
+          </td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="fonction">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear>Fonction</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.position }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="title" disableClear
+            style="text-align: center; min-width: 120px; width: 120px;">
+            Action
+          </th>
+          <td mat-cell *matCellDef="let row" style="min-width: 120px; width: 120px;">
+            <div class="dropdown" appDropdown="dropdown-action">
+              <span fxLayout="row" class="btn-edit-statut">
+                <span class="text" fxFlex="auto" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center"
+                  style="padding: 0 8px"><span>Action</span><span class="statut statut--{{
+                      row?.blocked ? 'rejected' : 'valid'
+                    }}"></span></span>
+
+                <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+              </span>
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
+                style="min-width: 140px; white-space: nowrap;">
+                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                  routerLink="/dashboard/admin_mossall/{{ row.id ?? row?._id }}">
+                  <span><mat-icon>edit</mat-icon></span>
+                  <span>Editer</span>
+                </div>
+                <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
+                  fxLayoutAlign="start center" fxLayoutGap="6px" requiresConfirmation
+                  [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
+                  [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock</mat-icon></span>
+                  <span>Suspendre</span>
+                </div>
+                <div *ngIf="row.blocked" class="dropdown-option" fxLayout="row" fxLayoutAlign="start center"
+                  fxLayoutGap="12px" requiresConfirmation [message]="'Voulez-vous débloquer cet utilisateur?'"
+                  [confirmCallback]="lockUser" [confirmCallbackParam]="row?.id">
+                  <span><mat-icon>lock_open</mat-icon></span>
+                  <span>Débloquer</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
+    </div>
+  </div>
+
+</div>

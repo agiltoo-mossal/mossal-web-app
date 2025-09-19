@@ -18,11 +18,12 @@ export class RequestSalaryComponent {
   organizationServiceId: string;
   organizationId: string; // Titre dynamique
   data = [];
+
   constructor(
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private paginatedRequestGQL: FetchPaginatedOrganizationDemandesGQL
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.fetchCurrentAdminGQL

@@ -25,11 +25,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
+  catchError,
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
   merge,
+  of,
   startWith,
   switchMap,
 } from 'rxjs';
@@ -76,6 +78,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
 
   @Input() title: string = 'Avance salariale remboursable mensuellement'; // Titre dynamique
   @Input() supportLabel: string = 'Support de paie'; // Label du bouton
+  eventName: string = 'Tabaski';
 
   // Les filtres et données du tableau sont également des inputs
   //utiliser un set pour mettre à jour les données du tableau
@@ -124,6 +127,9 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    if (this.title === 'Avance sur évènement') {
+      this.displayedColumns.splice(4, 0, 'eventName'); // ou push selon ton ordre
+    }
     this.fetchCountStatusGQL.fetch().subscribe({
       next: (value) => {
         console.log(value);
@@ -140,6 +146,9 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       endDate: ['2025-12-31'],
     });
   }
+
+  // Variable à définir en haut de votre classe
+
   ngAfterViewInit(): void {
     // if (!this.sort || !this.paginator) {
     //   console.error('MatSort or MatPaginator is not initialized');
@@ -163,7 +172,6 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged()
-
         // startWith('')
       ),
       this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
@@ -174,6 +182,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       .pipe(
         startWith({}),
         switchMap(() => {
+          console.log('Demande: fetchPaginatedOrganizationDemandes');
           this.isLoadingResults = true;
 
           const queryFilter = {
@@ -219,31 +228,199 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
           );
         }),
         map((result) => {
+          console.log('Réponse reçue:', result);
+
           // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
           this.isRateLimitReached = result === null;
 
-          if (result === null) {
-            return [];
+          if (result === null || !result.data) {
+            console.warn('Résultat null ou data manquant');
+            return null;
           }
 
           // Only refresh the result length if there is new data. In case of rate
           // limit errors, we do not want to reset the paginator to zero, as that
           // would prevent users from re-triggering requests
           return result.data;
+        }),
+        catchError((error) => {
+          console.error('Erreur lors de la requête:', error);
+          this.isLoadingResults = false;
+          this.isRateLimitReached = true;
+          return of(null);
         })
       )
       .subscribe((data: any) => {
-        this.requests = data.fetchPaginatedOrganizationDemandes.results;
-        console.log(data);
-        this.dataSource.data = data.fetchPaginatedOrganizationDemandes.results;
+        console.log('Data reçue dans subscribe:', data);
 
-        this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
-        this.resultsLength =
-          data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
-        // this.selectedAdmin = this.data?.[0];
+        if (!data || !data.fetchPaginatedOrganizationDemandes) {
+          console.warn('Aucune donnée valide reçue');
+          this.requests = [];
+          this.dataSource.data = [];
+          this.selectedReq = null;
+          this.resultsLength = 0;
+          this.eventName = ''; // Reset eventName
+          return;
+        }
+
+        const results = data.fetchPaginatedOrganizationDemandes.results;
+
+        // Vérification et traitement des demandes avec events
+        if (results && Array.isArray(results)) {
+          console.log('Vérification des events pour chaque demande:');
+
+          // Parcourir chaque demande et vérifier les events
+          results.forEach((demande, index) => {
+            console.log(`Demande ${index + 1}:`, demande);
+
+            // Vérifier si event existe et n'est pas null
+            if (demande.event && demande.event !== null) {
+              console.log(`✓ Event trouvé pour demande ${index + 1}:`, demande.event);
+
+              // Vérifier si event.title existe et n'est pas null
+              if (demande.event.title && demande.event.title !== null) {
+                console.log(`✓ Event title trouvé: "${demande.event.title}"`);
+
+                // Affecter à eventName (vous pouvez choisir la logique : première trouvée, dernière, etc.)
+                // Ici je prends la première trouvée
+                if (!this.eventName) {
+                  this.eventName = demande.event.title;
+                  console.log(`✓ EventName défini: "${this.eventName}"`);
+                }
+              } else {
+                console.log(`⚠ Event title null ou manquant pour demande ${index + 1}`);
+              }
+            } else {
+              console.log(`⚠ Event null ou manquant pour demande ${index + 1}`);
+            }
+          });
+
+          // Si aucun eventName n'a été trouvé, le signaler
+          if (!this.eventName) {
+            console.log('⚠ Aucun event.title valide trouvé dans les demandes');
+          }
+        }
+
+        // Mise à jour des données du composant
+        this.requests = results || [];
+        console.log('Nombre de demandes:', this.requests.length);
+        this.dataSource.data = this.requests;
+
+        this.selectedReq = this.requests.length > 0 ? this.requests[0] : null;
+        this.resultsLength = data.fetchPaginatedOrganizationDemandes.pagination?.totalItems || 0;
+
+        console.log('EventName final:', this.eventName);
+        console.log('Données mises à jour - Requests:', this.requests.length, 'ResultsLength:', this.resultsLength);
       });
   }
+
+
+
+  // ngAfterViewInit(): void {
+  //   // if (!this.sort || !this.paginator) {
+  //   //   console.error('MatSort or MatPaginator is not initialized');
+  //   //   return;
+  //   // }
+  //   // this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+  //   this.searchForm
+  //     .get('search')
+  //     .valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       startWith('')
+  //     )
+  //     .subscribe((r) => {
+  //       this.paginator.firstPage();
+  //     });
+
+  //   merge(
+  //     // this.sort.sortChange,
+  //     this.paginator.page,
+  //     this.searchForm.get('search').valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged()
+
+  //       // startWith('')
+  //     ),
+  //     this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
+  //     this.searchForm.get('average').valueChanges.pipe(debounceTime(300)),
+  //     this.searchForm.get('startDate').valueChanges.pipe(debounceTime(300)),
+  //     this.searchForm.get('endDate').valueChanges.pipe(debounceTime(300))
+  //   )
+  //     .pipe(
+  //       startWith({}),
+  //       switchMap(() => {
+  //         this.isLoadingResults = true;
+
+  //         const queryFilter = {
+  //           limit: this.paginator.pageSize,
+  //           page: this.paginator.pageIndex + 1,
+  //           // sortField: this.sort.active,
+  //           // sortOrder: this.sort.direction,
+  //           search: this.searchForm?.value?.search,
+  //         };
+  //         const metricsInput = {};
+  //         console.log('status', this.status);
+
+  //         if (this.status) {
+  //           metricsInput['status'] = this.status;
+  //         }
+  //         if (this.searchForm.get('average').value) {
+  //           metricsInput['minimum'] = this.searchForm
+  //             .get('average')
+  //             .getRawValue().min;
+  //           metricsInput['maximum'] = this.searchForm
+  //             .get('average')
+  //             .getRawValue().max;
+  //         }
+  //         console.log(
+  //           this.searchForm.get('startDate').value,
+  //           this.searchForm.get('endDate').value
+  //         );
+
+  //         if (
+  //           this.searchForm.get('startDate').value &&
+  //           this.searchForm.get('endDate').value
+  //         ) {
+  //           metricsInput['startDate'] = this.startDate;
+  //           metricsInput['endDate'] = this.endDate;
+  //         }
+  //         return this.paginatedRequestGQL.fetch(
+  //           {
+  //             queryFilter,
+  //             metricsInput,
+  //             organizationServiceId: this.organisationServiceId,
+  //           },
+  //           { fetchPolicy: 'no-cache' }
+  //         );
+  //       }),
+  //       map((result) => {
+  //         // Flip flag to show that loading has finished.
+  //         this.isLoadingResults = false;
+  //         this.isRateLimitReached = result === null;
+
+  //         if (result === null) {
+  //           return [];
+  //         }
+
+  //         // Only refresh the result length if there is new data. In case of rate
+  //         // limit errors, we do not want to reset the paginator to zero, as that
+  //         // would prevent users from re-triggering requests
+  //         return result.data;
+  //       })
+  //     )
+  //     .subscribe((data: any) => {
+  //       this.requests = data.fetchPaginatedOrganizationDemandes.results;
+  //       console.log(data);
+  //       this.dataSource.data = data.fetchPaginatedOrganizationDemandes.results;
+
+  //       this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
+  //       this.resultsLength =
+  //         data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
+  //       // this.selectedAdmin = this.data?.[0];
+  //     });
+  // }
   isMenuFilterOpen: boolean = false;
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;
@@ -339,8 +516,10 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.validateDemande) {
+          console.log("result.data.validateDemande ==========>>>>>>>>>> ", result.data);
+
           this.snackBarService.showSuccessSnackBar(
-            'demande validée avec succés!'
+            `demande validée avec succés! (${result.data.validateDemande.paymentMean})`
           );
           this.getDemandes(false);
         } else {
@@ -348,9 +527,12 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         }
       },
       (error) => {
+        console.log("error validation =========>>>>>>>> ", error.message)
+        let message = error.message == 4002 ? 'Demande non validé: vous n’avez pas suffisamment de fonds.' :
+          'Vous ne pouvez pas effectuer cette action...';
         this.snackBarService.showErrorSnackBar(
-          5000,
-          'Vous ne pouvez pas effectuer cette action.'
+          7000,
+          message
         );
       }
     );

@@ -1,95 +1,100 @@
 * {
-  font-family: Poppins, sans-serif;
-}
-.title {
-  font-size: 24px;
-  color: #000066;
-  margin-bottom: 20px;
-}
-.creation-compte {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-.error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
+    font-family: Poppins, sans-serif;
 }
 
 .title {
-  text-align: center;
-  color: #000066;
-  margin-bottom: 20px;
+    font-size: 24px;
+    color: #000066;
+    margin-bottom: 20px;
+}
+
+.creation-compte {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.title {
+    text-align: center;
+    color: #000066;
+    margin-bottom: 20px;
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .form-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 label {
-  font-size: calc(0.6em + 0.5vw);
+    font-size: calc(0.6em + 0.5vw);
 
-  margin-bottom: 5px;
-  color: #0c1d58;
-  font-weight: bolder;
+    margin-bottom: 5px;
+    color: #0c1d58;
+    font-weight: bolder;
 }
 
 input,
 select {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  outline: none;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
 }
 
 input:focus,
 select:focus {
-  border-color: #000066;
+    border-color: #000066;
 }
 
 .submit-button {
-  padding: 12px 20px;
-  background-color: #000066;
-  color: #fff;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  align-self: center;
+    padding: 12px 20px;
+    background-color: #000066;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: center;
 }
 
 .submit-button:hover {
-  background-color: #003399;
+    background-color: #003399;
 }
- button{
+
+button {
     padding: 10px 15px;
     background-color: transparent;
     border: none;
-    color:#000066   ;
+    color: #000066;
     font-size: 16px;
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    &.suspend{
+
+    &.suspend {
         color: #ff0000;
     }
-   }
+}
