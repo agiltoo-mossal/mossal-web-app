@@ -70,6 +70,7 @@ query FetchRemboursementByUserId($userId: ID!) {
     createdAt
     updatedAt
     validatedAt
+    toPayedAt
     demande {
       remainingRefundAmount
       organisationService {
