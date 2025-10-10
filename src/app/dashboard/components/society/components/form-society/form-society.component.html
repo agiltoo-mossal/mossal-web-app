@@ -94,7 +94,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="telephone-entreprise">téléphone</label>
-                    <input type="tel" id="phone" formControlName="phone" placeholder="+221 770000000" />
+                    <input type="tel" id="phone" formControlName="phone" placeholder="770000000" />
                 </div>
             </div>
 
@@ -168,13 +168,13 @@
                 </div>
                 <div class="form-group">
                     <label for="telephone-admin" class="required">Numéro téléphone</label>
-                    <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="+221770000000" />
+                    <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="770000000" />
                     <div *ngIf="societyForm.get('adminPhone')?.invalid &&
                                 societyForm.get('adminPhone')?.touched" class="error-message">
                         <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">Le numéro de téléphone
                             est obligatoire.</span>
-                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">Entrez un numéro au
-                            format +221XXXXXXXXX.</span>
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">Le format du numéro est
+                            incorrecte.</span>
                     </div>
                 </div>
             </div>
