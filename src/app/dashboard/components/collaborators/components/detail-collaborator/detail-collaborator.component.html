@@ -160,14 +160,15 @@
         <td>{{remboursement?.demande?.number}}</td>
         <!-- <td>{{ remboursement.validatedAt | date }}</td> -->
         <td>
-          {{ remboursement.status === 'PAYED' ? (remboursement.validatedAt | date) : (remboursement.toPayedAt | date) }}
+          {{ remboursement.status === 'PAYED' ? (remboursement.validatedAt | date:'dd-MM-yyyy') :
+          (remboursement.toPayedAt | date:'dd-MM-yyyy') }}
         </td>
 
         <td>{{remboursement?.demande?.organisationService?.service?.title}}</td>
         <td>{{ remboursement?.demande?.amount }} XOF</td>
-        <td>{{ remboursement.amount + remboursement?.demande?.fees }} XOF</td>
-        <td>{{ remboursement?.demande?.fees }} XOF</td>
-        <td>{{ remboursement.status === 'PAYED' ? 0 : remboursement.amount + remboursement?.demande?.fees }} XOF</td>
+        <td>{{ remboursement.amount + remboursement?.fees }} XOF</td>
+        <td>{{ remboursement?.fees }} XOF</td>
+        <td>{{ remboursement.status === 'PAYED' ? 0 : remboursement.amount + remboursement?.fees }} XOF</td>
         <td>
           <span class="status" [ngClass]="{
               success: remboursement.status === 'PAYED',
