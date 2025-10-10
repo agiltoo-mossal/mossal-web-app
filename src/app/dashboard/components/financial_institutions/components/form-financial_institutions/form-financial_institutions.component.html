@@ -1,0 +1,29 @@
+<div class="creation-compte" (ngSubmit)="submitForm">
+        <form class="form">            
+
+            <div class="form-section">
+                <h3 class="section-title">Informations de l'institut financière </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="institutName" class="required">Nom de l'institut financière</label>
+                        <input type="text" id="institutName" name="institutName" placeholder="BICIS" />
+                    </div>
+                    
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="institutDescription" class="required">Description de l'institut financière</label>
+                        <input type="text" id="institutDescription" name="institutDescription" placeholder="" />
+                    </div>
+                   
+                </div>                
+            </div>
+
+            <!-- Boutons -->
+            <div class="form-buttons">
+                <button type="submit" class="submit-button">Enregistrer</button>
+            </div>
+        </form>
+    </div>

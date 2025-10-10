@@ -17,16 +17,14 @@ import {
   CreateOrganizationGQL,
   FetchCategorySocioprosGQL,
   FetchOrganizationGQL,
+  FetchPaginatedFinancialOrganizationGQL,
+  FinancialOrganization,
   OrganisationService,
   Organization,
   UpdateOrganizationGQL,
   User,
 } from 'src/graphql/generated';
 
-interface PSP {
-  id: string;
-  name: string;
-}
 
 interface SelectedFiles {
   ninea?: File;
@@ -55,22 +53,23 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   companyNameExists: boolean = false;
   selectedFiles: SelectedFiles = {};
   logoPreview: string | null = null;
+  logoBase64: string | null = null;
+
+  existingLogoData: string | null = null;
+  existingLogoMimeType: string | null = null;
+  existingLogoId: string | null = null;
+  logoToDelete: boolean = false;
 
   title = 'Ajout d\'une nouvelle société';
-  categories: Partial<CategorySociopro & { error: boolean }>[] = [];
 
-  psps: PSP[] = [
-    { id: '1', name: 'InTouch' },
-    { id: '2', name: 'Paydunya' },
-    { id: '3', name: 'Cofina' }
-  ];
+  psps: Partial<FinancialOrganization & { error: boolean }>[] = [];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private snackBarService: SnackBarService,
     private searchService: SearchService,
-    private listCategorieGQL: FetchCategorySocioprosGQL,
+    private listFinancialOrgGQL: FetchPaginatedFinancialOrganizationGQL,
     private createOrganizationGQL: CreateOrganizationGQL,
     private fetchOrganizationGQL: FetchOrganizationGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
@@ -82,7 +81,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       city: [''],
       phone: [
         '',
-        [Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)]
+        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/)]
       ],
       ninea: [''],
       psp: ['', Validators.required],
@@ -100,7 +99,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
@@ -113,6 +112,15 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         ? 'Modifier les informations de la société'
         : 'Création nouvelle société';
 
+    this.listFinancialOrgGQL
+      .fetch({
+        queryConfig: {
+          limit: 10,
+        },
+      })
+      .subscribe((result) => {
+        this.psps = result.data.fetchPaginatedFinancialOrganization.results;
+      });
 
     // Initialiser les validations
     if (this.formType !== 'edit') {
@@ -129,7 +137,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
 
   getOrganization(): void {
     if (this.societyId) {
-      this.title = 'Modification societé';
+      this.title = 'Modification d\'une société';
       this.fetchOrganizationGQL
         .fetch(
           { organizationId: this.societyId },
@@ -139,6 +147,13 @@ export class FormSocietyComponent implements OnInit, OnChanges {
           next: (result) => {
             this.society = result.data.fetchOrganization as Organization;
             console.log('Organisation récupérée:', this.society);
+
+            // ✅ RÉCUPÉRER LES DONNÉES DU LOGO EXISTANT
+            if (this.society.logo) {
+              this.existingLogoData = this.society.logo.data;
+              this.existingLogoMimeType = this.society.logo.mimetype;
+              this.existingLogoId = this.society.logo.id;
+            }
 
             // Extraction de l'adresse
             const fullAddress = this.society.postalAddress || '';
@@ -151,7 +166,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
               address: addressParts[0]?.trim() || '',
               city: addressParts[1]?.trim() || '',
               phone: this.society.phone || '',
-              psp: this.society.financialOrganization.name || '',
+              psp: this.society.financialOrganization.id || '',
 
               // Informations admin - adapter selon votre structure Organization
               adminFirstName: this.society.user.firstName,
@@ -164,6 +179,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
             });
 
             console.log('Valeurs appliquées au formulaire:', this.societyForm.value);
+            console.log('this.society.financialOrganization.id:', this.society.financialOrganization);
           },
           error: (error) => {
             console.error('Erreur:', error);
@@ -204,8 +220,20 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         this.logoPreview = e.target?.result as string;
       };
       reader.readAsDataURL(file);
-
       console.log('Logo sélectionné:', file.name);
+
+      // ✅ CONVERSION EN BASE64
+      this.convertFileToBase64(file).then((base64String) => {
+        this.logoBase64 = base64String;
+        console.log('Fichier converti en Base64');
+
+        // Créer l'aperçu de l'image
+        this.logoPreview = `data:${file.type};base64,${base64String}`;
+      }).catch((error) => {
+        console.error('Erreur conversion Base64:', error);
+        this.snackBarService.showErrorSnackBar(5000, 'Erreur lors de la conversion du fichier');
+      });
+
     } else if (fileType === 'ninea') {
       // Validation pour NINEA
       if (file.type !== 'application/pdf') {
@@ -224,13 +252,48 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     }
   }
 
+  // ✅ MÉTHODE DE CONVERSION BASE64
+  private convertFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Extraire seulement la partie Base64 (supprimer "data:image/png;base64,")
+        const base64String = result.split(',')[1];
+        resolve(base64String);
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
   // Supprimer le logo
   removeLogo(): void {
-    this.selectedFiles.logo = undefined;
-    this.logoPreview = null;
-    if (this.logoFileInput) {
-      this.logoFileInput.nativeElement.value = '';
+    if (this.logoPreview) {
+      // Supprimer le nouveau logo en prévisualisation
+      this.selectedFiles.logo = undefined;
+      this.logoPreview = null;
+      if (this.logoFileInput) {
+        this.logoFileInput.nativeElement.value = '';
+      }
+      console.log('Nouveau logo supprimé');
+    } else if (this.existingLogoData) {
+      // Marquer le logo existant pour suppression
+      this.logoToDelete = true;
+      this.existingLogoData = null;
+      this.existingLogoMimeType = null;
+      console.log('Logo existant marqué pour suppression');
     }
+  }
+
+  // Méthode pour vérifier s'il y a un logo (existant ou nouveau)
+  hasLogo(): boolean {
+    return !!(this.logoPreview || this.existingLogoData);
   }
 
   // Initialiser les validations
@@ -240,11 +303,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   }
 
   submitForm(): void {
-    console.log('Heerreeeee: =====>>>>>>>>> ');
     if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
-      console.log('this.hasErrors =====>>>>>>>>> ', this.hasErrors);
-      console.log('societyForm.invalid: =====>>>>>>>>> ', this.societyForm.invalid);
-      console.log('this.isLoading =====>>>>>>>>> ', this.isLoading);
       this.societyForm.markAllAsTouched();
 
       const controls = this.societyForm.controls;
@@ -273,7 +332,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     const formValue = this.societyForm.getRawValue();
 
     // Préparer les données pour la mutation
-    const organizationInput = {
+    const organizationInput: any = {
       name: formValue.companyName,
       rootEmail: formValue.adminEmail,
       rootFirstname: formValue.adminFirstName,
@@ -282,10 +341,20 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationName: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
+
+    // ✅ AJOUTER LE LOGO EN BASE64
+    if (this.logoBase64 && this.selectedFiles.logo) {
+      organizationInput.logo = {
+        filename: this.selectedFiles.logo.name,
+        mimetype: this.selectedFiles.logo.type,
+        size: this.selectedFiles.logo.size,
+        data: this.logoBase64
+      };
+    }
 
     // Variables pour la mutation
     const variables: any = {
@@ -304,6 +373,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       organizationInput: {
         ...organizationInput,
       },
+      // logoFile: this.selectedFiles.logo
       // context: {
       //   useMultipart: true // Important pour l'upload de fichiers
       // }
@@ -348,7 +418,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationName: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };

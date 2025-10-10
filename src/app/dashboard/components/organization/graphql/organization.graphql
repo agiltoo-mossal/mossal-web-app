@@ -378,6 +378,10 @@ query FetchPaginatedOrganizations($queryFilter: QueryDataConfigInput) {
         firstName
         lastName
       }
+      logo {
+        data
+      }
+      blocked
 		}
 	}
 }
@@ -408,8 +412,38 @@ query FetchOrganization($organizationId: ID!) {
       phoneNumber
     }
     financialOrganization {
+      id
       name
     }
+    logo {
+      id
+      data
+    }
+    blocked
 	}
+}
+
+query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
+  fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      name
+      description
+    }
+  }
+}
+
+mutation SuspendOrganization(
+  $organizationId: String!
+) {
+  suspendOrganization(
+    organizationId: $organizationId
+  )
 }
 

@@ -1,0 +1,47 @@
+mutation UpdateMyAdminPassword($oldPassword: String!, $newPassword: String!) {
+  updateMyAdminPassword(oldPassword: $oldPassword, newPassword: $newPassword)
+}
+
+query FetchCurrentAdmin {
+  fetchCurrentAdmin {
+    id
+		firstName
+		lastName
+		email
+		phoneNumber
+		address
+    role
+    position
+    enableEmailNotification
+    organization {
+      id
+      name
+      maxDemandeAmount
+      amountPercent
+      fees
+      demandeDeadlineDay
+      organisationService{
+        id
+        serviceId
+      }
+      
+    }
+  }
+
+}
+
+mutation UpdateMyAdminProfile($userInput: UpdateMyAdminProfileInput!) {
+  updateMyAdminProfile(userInput: $userInput)
+}
+
+mutation EnableEmailNotification($userId: String!) {
+  enableEmailNotification(userId: $userId)
+}
+
+mutation DisableEmailNotification($userId: String!) {
+  disableEmailNotification(userId: $userId)
+}
+
+mutation LockAdmin($userId: String!) {
+  lockAdmin(userId: $userId)
+}

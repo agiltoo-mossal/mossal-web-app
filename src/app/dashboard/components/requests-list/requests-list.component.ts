@@ -283,6 +283,8 @@ export class RequestsListComponent implements AfterViewInit, OnInit {
         }
       },
       (error) => {
+        // console.log("error validation =========>>>>>>>>>>> ", error.graphQLErrors);
+
         this.snackBarService.showErrorSnackBar(
           5000,
           'Vous ne pouvez pas effectuer cette action.'
