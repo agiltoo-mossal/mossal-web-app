@@ -263,6 +263,8 @@ query FetchRemboursementsByDemande($demandeId: ID!) {
     userId
     createdAt
     updatedAt
+    toPayedAt
+    validatedAt
     demande {
       id
       amount
