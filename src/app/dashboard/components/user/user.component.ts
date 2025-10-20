@@ -118,7 +118,8 @@ export class UserComponent {
           this.isLoading = false;
           this.snackBarService.showErrorSnackBar(
             5000,
-            'Mot de passe incorrect'
+            error.message
+            // 'Mot de passe incorrect...'
           );
         }
       );
