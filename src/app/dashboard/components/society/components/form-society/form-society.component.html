@@ -169,12 +169,24 @@
                 <div class="form-group">
                     <label for="telephone-admin" class="required">Numéro téléphone</label>
                     <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="770000000" />
-                    <div *ngIf="societyForm.get('adminPhone')?.invalid &&
+                    <!-- <div *ngIf="societyForm.get('adminPhone')?.invalid &&
                                 societyForm.get('adminPhone')?.touched" class="error-message">
                         <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">Le numéro de téléphone
                             est obligatoire.</span>
                         <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">Le format du numéro est
                             incorrecte.</span>
+                    </div> -->
+                    <div *ngIf="societyForm.get('adminPhone')?.touched && societyForm.get('adminPhone')?.invalid"
+                        class="error-message">
+
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">
+                            Le numéro de téléphone est obligatoire.
+                        </span>
+
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">
+                            Le format du numéro est incorrect. Ex: 770000000
+                        </span>
+
                     </div>
                 </div>
             </div>
