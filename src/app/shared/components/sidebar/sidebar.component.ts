@@ -423,7 +423,7 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/user_admin_mossall',
         icon: 'person_outline',
       },
-      
+
     ];
   }
 
@@ -437,7 +437,6 @@ export class SidebarComponent implements OnInit {
     if (item.children) {
       this.toggleDropdown(item);
     } else {
-      console.log("Item link =========>>>>>>>>>>", item);
       this.router.navigate([item.link]);
     }
   }
