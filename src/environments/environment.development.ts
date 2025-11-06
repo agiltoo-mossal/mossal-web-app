@@ -8,11 +8,16 @@ export const environment = {
   // KEYCLOACK_REALM: "mossall_admins",
   // KEYCLOACK_CLIENT_ID: "mossall_admin_web_public"
 
-  GRAPHQL_URI:
-    'https://mossall-enterprise-service-preprod.onrender.com/graphql',
-  API_URI: 'https://mossall-enterprise-service-preprod.onrender.com/',
-  ENTERPRISE_URI:
-    'https://mossall-enterprise-service-preprod.onrender.com/graphql',
+  // GRAPHQL_URI:
+  //   'https://mossall-enterprise-service-preprod.onrender.com/graphql',
+  // API_URI: 'https://mossall-enterprise-service-preprod.onrender.com/',
+  // ENTERPRISE_URI:
+  //   'https://mossall-enterprise-service-preprod.onrender.com/graphql',
+
+  // New server address
+  GRAPHQL_URI: 'http://65.21.1.184:3003/graphql',
+  API_URI: 'http://65.21.1.184:3003',
+  ENTERPRISE_URI: 'http://65.21.1.184:3003',
 
 
   KEYCLOAK_URL:
