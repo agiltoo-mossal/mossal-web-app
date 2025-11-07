@@ -70,7 +70,6 @@ query FetchRemboursementByUserId($userId: ID!) {
     createdAt
     updatedAt
     validatedAt
-    toPayedAt
     demande {
       remainingRefundAmount
       organisationService {
@@ -263,8 +262,6 @@ query FetchRemboursementsByDemande($demandeId: ID!) {
     userId
     createdAt
     updatedAt
-    toPayedAt
-    validatedAt
     demande {
       id
       amount
