@@ -50,7 +50,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(78|77|76|70|75)\d{7}$/), // Pattern pour numéros sénégalais
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/), // Pattern pour numéros sénégalais
         ],
       ],
       address: [''], // Adresse (optionnelle)

@@ -9,12 +9,12 @@ query FetchOrganizationAdmins {
 		address
 		salary
     blocked
-    #balance
+    balance
     totalDemandeAmount
 		wizallAccountNumber
 		bankAccountNumber
 		position
-    #authorizedAdvance
+    authorizedAdvance
     createdAt
     updatedAt
     # organization {
@@ -36,7 +36,7 @@ query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $que
 			pageSize
 		}
 		results{
-		id
+					id
 		firstName
 		lastName
 		email
@@ -45,12 +45,12 @@ query FetchPaginatedOrganisationAdmins($metricsInput: DemandesMetricsInput, $que
 		address
 		salary
     blocked
-    #balance
+    balance
     totalDemandeAmount
 		wizallAccountNumber
 		bankAccountNumber
 		position
-    #authorizedAdvance
+    authorizedAdvance
     createdAt
     updatedAt
     # organization {

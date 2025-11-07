@@ -81,7 +81,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       city: [''],
       phone: [
         '',
-        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/), Validators.minLength(9)]
+        [Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)]
       ],
       ninea: [''],
       psp: ['', Validators.required],
@@ -99,8 +99,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
-          Validators.minLength(9)
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
@@ -342,7 +341,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganization: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -419,7 +418,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganization: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
