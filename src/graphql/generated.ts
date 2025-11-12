@@ -240,6 +240,7 @@ export type FinalizeForgotPasswordInput = {
 
 export type FinancialOrganization = {
   __typename?: 'FinancialOrganization';
+  activedWallets: Array<WalletInfo>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Any']['output'];
@@ -248,11 +249,13 @@ export type FinancialOrganization = {
 };
 
 export type FinancialOrganizationInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type FinancialOrganizationUpdateInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -307,6 +310,7 @@ export type Mutation = {
   finalizeForgotPassword: Scalars['Boolean']['output'];
   inviteAdmin: Scalars['Boolean']['output'];
   inviteCollaborator: Scalars['Boolean']['output'];
+  lockAdmin: Scalars['Boolean']['output'];
   lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
@@ -477,6 +481,11 @@ export type MutationInviteAdminArgs = {
 export type MutationInviteCollaboratorArgs = {
   categorySocioProId?: InputMaybe<Scalars['String']['input']>;
   collaborator: InviteCollaboratorInput;
+};
+
+
+export type MutationLockAdminArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -666,7 +675,6 @@ export type Organization = {
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
-  financialOrganizationId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   logo?: Maybe<OrganizationLogo>;
   logoId?: Maybe<Scalars['String']['output']>;
@@ -686,7 +694,7 @@ export type OrganizationInput = {
   balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
   /** Nom de l'organisation financière */
-  financialOrganizationId: Scalars['String']['input'];
+  financialOrganization: Scalars['String']['input'];
   logo?: InputMaybe<OrganizationLogoInput>;
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
@@ -725,7 +733,7 @@ export type OrganizationUpdateInput = {
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
-  financialOrganizationId?: InputMaybe<Scalars['String']['input']>;
+  financialOrganization?: InputMaybe<Scalars['String']['input']>;
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -837,6 +845,7 @@ export type Query = {
   fetchDemandesMetrics: DemandesMetrics;
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
+  fetchMossallAdmin: User;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
@@ -973,6 +982,11 @@ export type QueryFetchEventArgs = {
 export type QueryFetchEventsArgs = {
   organizationServiceId: Scalars['ID']['input'];
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchMossallAdminArgs = {
+  adminId: Scalars['String']['input'];
 };
 
 
@@ -1139,6 +1153,7 @@ export type Remboursement = {
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
   status: RemboursementStatus;
+  toPayedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
@@ -1290,6 +1305,19 @@ export enum Wallet {
   Wave = 'WAVE'
 }
 
+export type WalletInfo = {
+  __typename?: 'WalletInfo';
+  fees: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type WalletInfoInput = {
+  fees: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type _Entity = Demande | Organization | Remboursement;
 
 export type _Service = {
@@ -1339,10 +1367,17 @@ export type FetchPaginatedActivitiesQueryVariables = Exact<{
 
 export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
 
+export type FetchMossallAdminQueryVariables = Exact<{
+  adminId: Scalars['String']['input'];
+}>;
+
+
+export type FetchMossallAdminQuery = { __typename?: 'Query', fetchMossallAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, position?: string | null, blocked?: boolean | null, createdAt: any } };
+
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> };
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, createdAt: any, updatedAt: any }> };
 
 export type InviteAdminMutationVariables = Exact<{
   adminInput: InviteCollaboratorInput;
@@ -1357,7 +1392,7 @@ export type FetchPaginatedOrganisationAdminsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> } };
+export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, createdAt: any, updatedAt: any }> } };
 
 export type FetchPaginatedMossallAdminsQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
@@ -1638,7 +1673,7 @@ export type FetchRemboursementByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, demande?: { __typename?: 'Demande', remainingRefundAmount?: number | null, id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, toPayedAt?: any | null, demande?: { __typename?: 'Demande', remainingRefundAmount?: number | null, id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -1719,7 +1754,7 @@ export type FetchRemboursementsByDemandeQueryVariables = Exact<{
 }>;
 
 
-export type FetchRemboursementsByDemandeQuery = { __typename?: 'Query', fetchRemboursementsByDemande: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+export type FetchRemboursementsByDemandeQuery = { __typename?: 'Query', fetchRemboursementsByDemande: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, toPayedAt?: any | null, validatedAt?: any | null, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -1768,6 +1803,13 @@ export type DisableEmailNotificationMutationVariables = Exact<{
 
 
 export type DisableEmailNotificationMutation = { __typename?: 'Mutation', disableEmailNotification: boolean };
+
+export type LockAdminMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type LockAdminMutation = { __typename?: 'Mutation', lockAdmin: boolean };
 
 export type FetchSupportPaiementQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1934,6 +1976,33 @@ export const FetchPaginatedActivitiesDocument = gql`
       super(apollo);
     }
   }
+export const FetchMossallAdminDocument = gql`
+    query FetchMossallAdmin($adminId: String!) {
+  fetchMossallAdmin(adminId: $adminId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    position
+    blocked
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMossallAdminGQL extends Apollo.Query<FetchMossallAdminQuery, FetchMossallAdminQueryVariables> {
+    document = FetchMossallAdminDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationAdminsDocument = gql`
     query FetchOrganizationAdmins {
   fetchOrganizationAdmins {
@@ -1946,12 +2015,10 @@ export const FetchOrganizationAdminsDocument = gql`
     address
     salary
     blocked
-    balance
     totalDemandeAmount
     wizallAccountNumber
     bankAccountNumber
     position
-    authorizedAdvance
     createdAt
     updatedAt
   }
@@ -2006,12 +2073,10 @@ export const FetchPaginatedOrganisationAdminsDocument = gql`
       address
       salary
       blocked
-      balance
       totalDemandeAmount
       wizallAccountNumber
       bankAccountNumber
       position
-      authorizedAdvance
       createdAt
       updatedAt
     }
@@ -3145,6 +3210,7 @@ export const FetchRemboursementByUserIdDocument = gql`
     createdAt
     updatedAt
     validatedAt
+    toPayedAt
     demande {
       remainingRefundAmount
       organisationService {
@@ -3462,6 +3528,8 @@ export const FetchRemboursementsByDemandeDocument = gql`
     userId
     createdAt
     updatedAt
+    toPayedAt
+    validatedAt
     demande {
       id
       amount
@@ -3626,6 +3694,22 @@ export const DisableEmailNotificationDocument = gql`
   })
   export class DisableEmailNotificationGQL extends Apollo.Mutation<DisableEmailNotificationMutation, DisableEmailNotificationMutationVariables> {
     document = DisableEmailNotificationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const LockAdminDocument = gql`
+    mutation LockAdmin($userId: String!) {
+  lockAdmin(userId: $userId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LockAdminGQL extends Apollo.Mutation<LockAdminMutation, LockAdminMutationVariables> {
+    document = LockAdminDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

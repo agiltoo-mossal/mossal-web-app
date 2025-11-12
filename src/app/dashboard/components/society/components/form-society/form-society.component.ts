@@ -81,7 +81,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       city: [''],
       phone: [
         '',
-        [Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)]
+        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/), Validators.minLength(9)]
       ],
       ninea: [''],
       psp: ['', Validators.required],
@@ -99,7 +99,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
+          Validators.minLength(9)
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
@@ -120,7 +121,6 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       })
       .subscribe((result) => {
         this.psps = result.data.fetchPaginatedFinancialOrganization.results;
-        console.log('list des psp ===>>>>>>>>', this.psps);
       });
 
     // Initialiser les validations
@@ -304,11 +304,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   }
 
   submitForm(): void {
-    console.log('Heerreeeee: =====>>>>>>>>> ');
     if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
-      console.log('this.hasErrors =====>>>>>>>>> ', this.hasErrors);
-      console.log('societyForm.invalid: =====>>>>>>>>> ', this.societyForm.invalid);
-      console.log('this.isLoading =====>>>>>>>>> ', this.isLoading);
       this.societyForm.markAllAsTouched();
 
       const controls = this.societyForm.controls;
@@ -346,7 +342,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -413,8 +409,6 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     this.isLoading = true;
     const formValue = this.societyForm.getRawValue();
 
-    console.log('this.financialOrganizationName =====>>>>>>>>> ', formValue.psp);
-
     // Préparer les données pour la mutation
     const organizationInput = {
       name: formValue.companyName,
@@ -425,7 +419,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
