@@ -120,7 +120,8 @@
           " class="error-message">
           <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['required']">Le numéro de téléphone est
             obligatoire.</span>
-          <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']">Le format du numéro incorrecte.</span>
+          <span *ngIf="collaboratorForm.get('phoneNumber')?.errors?.['pattern']">Le numéro de téléphone doit être de 9
+            chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 785238928</span>
           <span *ngIf="phoneNumberExists">Numéro de téléphone déjà utilisé</span>
         </div>
       </div>
