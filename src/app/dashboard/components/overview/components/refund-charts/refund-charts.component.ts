@@ -73,21 +73,10 @@ export class RefundChartsComponent implements OnChanges {
         locales: [{
           name: 'fr',
           options: {
-            months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-            shortMonths: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-            days: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-            shortDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
             toolbar: {
               exportToSVG: 'Télécharger SVG',
               exportToPNG: 'Télécharger PNG',
               exportToCSV: 'Télécharger CSV',
-              menu: 'Menu',
-              selection: 'Sélection',
-              selectionZoom: 'Zoom sur la sélection',
-              zoomIn: 'Zoomer',
-              zoomOut: 'Dézoomer',
-              pan: 'Panoramique',
-              reset: 'Réinitialiser le zoom'
             }
           }
         }]
