@@ -97,7 +97,6 @@ export class RefundChartsComponent implements OnChanges {
           opacityFrom: 0.2,
           opacityTo: 0.4,
           stops: [0, 100],
-
         }
       },
       markers: {

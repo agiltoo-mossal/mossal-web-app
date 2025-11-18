@@ -154,7 +154,7 @@ export class UserComponent {
       (result) => {
         if (result.data.updateMyAdminProfile) {
           this.snackBarService.showSuccessSnackBar(
-            'Profile modifié avec succès'
+            'Profil modifié avec succès'
           );
         } else {
           this.snackBarService.showErrorSnackBar(
