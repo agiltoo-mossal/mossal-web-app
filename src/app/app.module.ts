@@ -32,6 +32,9 @@ import { FooterModule } from './shared/components/footer/footer.module';
 import { ScrolTopModule } from './shared/components/scrol-top/scrol-top.module';
 import { AdminModule } from './admin/admin.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { getFrenchPaginatorIntl } from './custom-paginator-intl';
+
 import {
   KeycloakAngularModule,
   KeycloakService,
@@ -118,6 +121,8 @@ export function createTranslateLoader(http: HttpClient) {
     // },
     // provideHttpClient(withInterceptorsFromDi()),
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }, // Définir la locale en français
+    { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() }
+
   ],
   bootstrap: [AppComponent],
 })
