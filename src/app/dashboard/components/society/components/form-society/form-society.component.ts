@@ -81,7 +81,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       city: [''],
       phone: [
         '',
-        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/), Validators.minLength(9)]
+        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/)]
       ],
       ninea: [''],
       psp: ['', Validators.required],
@@ -99,8 +99,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
-          Validators.minLength(9)
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
@@ -149,7 +148,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
             this.society = result.data.fetchOrganization as Organization;
             console.log('Organisation récupérée:', this.society);
 
-            // ✅ RÉCUPÉRER LES DONNÉES DU LOGO EXISTANT
+            //RÉCUPÉRER LES DONNÉES DU LOGO EXISTANT
             if (this.society.logo) {
               this.existingLogoData = this.society.logo.data;
               this.existingLogoMimeType = this.society.logo.mimetype;
@@ -307,17 +306,18 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
       this.societyForm.markAllAsTouched();
 
-      const controls = this.societyForm.controls;
+      // const controls = this.societyForm.controls;
 
-      Object.keys(controls).forEach(controlName => {
-        const control = controls[controlName];
-        if (control.errors) {
-          console.log(`❌ Erreurs sur "${controlName}":`, control.errors);
-        }
-      });
+      // Object.keys(controls).forEach(controlName => {
+      //   const control = controls[controlName];
+      //   if (control.errors) {
+      //     console.log(`❌ Erreurs sur "${controlName}":`, control.errors);
+      //   }
+      // });
 
       return;
     }
+
 
     if (this.societyId) {
       this.edit();
@@ -481,7 +481,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       )
       .subscribe((result) => {
         this.societyForm.controls['adminPhone'].setErrors(null);
-        this.adminPhoneExists = result;
+        this.societyForm.controls['adminPhone'].updateValueAndValidity();
+        this.phoneNumberExists = result;
         if (result) {
           this.societyForm.controls['adminPhone'].setErrors({
             phoneNumberExists: true,

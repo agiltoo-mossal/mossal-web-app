@@ -16,7 +16,7 @@ export const environment = {
 
   // New server address
   GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
-  API_URI: 'https://mossall-ent-preprod.dynv6.net',
+  API_URI: 'https://mossall-ent-preprod.dynv6.net/',
   ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
 
   KEYCLOAK_URL:
