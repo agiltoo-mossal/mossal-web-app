@@ -133,7 +133,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       .mutate({
         collaboratorInput: {
           ...temp,
-          email: temp.email.toLowercase(),
+          email: temp.email,
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
