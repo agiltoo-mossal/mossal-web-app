@@ -7,10 +7,15 @@ export const environment = {
   // KEYCLOAK_URL: "https://ec2-16-171-29-127.eu-north-1.compute.amazonaws.com:8443",
   // KEYCLOACK_REALM: "mossall_admins",
   // KEYCLOACK_CLIENT_ID: "mossall_admin_web_public"
-  GRAPHQL_URI: 'https://mossall-enterprise-service-9mk2.onrender.com/graphql',
-  API_URI: 'https://mossall-enterprise-service-9mk2.onrender.com/',
-  ENTERPRISE_URI:
-    'https://mossall-enterprise-service-9mk2.onrender.com/graphql',
+  // GRAPHQL_URI: 'https://mossall-enterprise-service-9mk2.onrender.com/graphql',
+  // API_URI: 'https://mossall-enterprise-service-9mk2.onrender.com/',
+  // ENTERPRISE_URI:
+  //   'https://mossall-enterprise-service-9mk2.onrender.com/graphql',
+
+  //Prod Hetzner
+  GRAPHQL_URI: 'https://mossall-ent-prod.dynv6.net/graphql',
+  API_URI: 'https://mossall-ent-prod.dynv6.net/',
+  ENTERPRISE_URI: 'https://mossall-ent-prod.dynv6.net/graphql',
 
   KEYCLOAK_URL:
     'https://ec2-16-171-29-127.eu-north-1.compute.amazonaws.com:8443',
