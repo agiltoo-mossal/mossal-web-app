@@ -1,9 +1,9 @@
-name: Build and Deploy Main
+name: Build and Deploy Prod-hetzner
 
 on:
   push:
     branches:
-      - main
+      - prod-hetzner
 
 jobs:
   build-and-deploy:
@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build (main)
-        if: github.ref == 'refs/heads/main'
+      - name: Build (prod-hetzner)
+        if: github.ref == 'refs/heads/prod-hetzner'
         run: |
           NODE_OPTIONS=--max-old-space-size=4096 npm run build
 
@@ -33,8 +33,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.MOSSALL_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Deploy to S3 and CloudFront (main)
-        if: github.ref == 'refs/heads/main'
+      - name: Deploy to S3 and CloudFront (prod-hetzner)
+        if: github.ref == 'refs/heads/prod-hetzner'
         run: |
           aws configure list
           aws s3 sync --acl public-read --delete dist/mossal-web-app s3://mossall-web

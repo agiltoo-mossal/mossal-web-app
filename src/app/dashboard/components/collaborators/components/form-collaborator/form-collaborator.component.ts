@@ -133,6 +133,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       .mutate({
         collaboratorInput: {
           ...temp,
+          email: temp.email,
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
@@ -165,6 +166,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.isLoading = true;
     const value = {
       ...this.collaboratorForm.getRawValue(),
+      email: this.collaboratorForm.getRawValue().email,
       salary: Number(this.collaboratorForm.value.salary || 0),
       position: 'TESTEUR',
     };
