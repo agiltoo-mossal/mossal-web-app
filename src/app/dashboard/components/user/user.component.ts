@@ -37,29 +37,53 @@ export class UserComponent {
     private disableEmailNotificationGQL: DisableEmailNotificationGQL,
     private authService: AuthService
   ) {
-    this.updatePasswordForm = this.fb.group({
-      oldPassword: ['', Validators.required],
-      newPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-          ),
+    // this.updatePasswordForm = this.fb.group({
+    //   oldPassword: ['', Validators.required],
+    //   newPassword: [
+    //     '',
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(8),
+    //       Validators.pattern(
+    //         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+    //       ),
+    //     ],
+    //   ],
+    //   confirmPassword: [
+    //     '',
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(8),
+    //       Validators.pattern(
+    //         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+    //       ),
+    //     ],
+    //   ],
+    // });
+
+        this.updatePasswordForm = this.fb.group({
+        oldPassword: ['', Validators.required],
+        newPassword: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+            ),
+          ],
         ],
-      ],
-      confirmPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-          ),
+        confirmPassword: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+            ),
+          ],
         ],
-      ],
-    });
+      });
 
     this.updateProfileForm = this.fb.group({
       firstName: ['', Validators.required],
