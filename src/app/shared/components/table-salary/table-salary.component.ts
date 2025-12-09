@@ -611,21 +611,42 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   onEndDateChange() {
     this.searchForm.get('endDate').setValue(this.endDate);
   }
-  resetFilter() {
-    this.min = 0;
-    this.max = 10000;
-    this.startDate = '2025-01-01';
-    this.endDate = '2025-12-31';
-    this.status = null;
-    this.search = '';
-    this.searchForm.patchValue({
-      startDate: '2025-01-01',
-      endDate: '2025-12-31',
+  // resetFilter() {
+  //   this.min = 0;
+  //   this.max = 10000;
+  //   this.startDate = '2025-01-01';
+  //   this.endDate = '2025-12-31';
+  //   this.status = null;
+  //   this.search = '';
+  //   this.searchForm.patchValue({
+  //     startDate: '2025-01-01',
+  //     endDate: '2025-12-31',
 
-      average: {
-        min: 0,
-        max: 10000,
-      },
-    });
-  }
+  //     average: {
+  //       min: 0,
+  //       max: 10000,
+  //     },
+  //   });
+  // }
+
+  resetFilter() {
+  // Réinitialiser les variables locales
+  this.min = 0;
+  this.max = 10000;
+  this.startDate = '2025-01-01';
+  this.endDate = '2025-12-31';
+  this.status = null;
+  this.search = '';
+  
+  this.searchForm.patchValue({
+    search: '',          
+    status: null,         
+    average: null,        
+    startDate: '2025-01-01',
+    endDate: '2025-12-31'
+  });
+  
+
+}
+
 }
