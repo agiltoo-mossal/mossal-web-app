@@ -1,0 +1,49 @@
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
+    <a routerLink="/dashboard/society"><span>{{ "<" }}</span>retour</a>
+</div>
+
+<h2 class="container-title-setting">
+    <span>{{ formText }}</span>
+</h2>
+
+<div class="creation-compte">
+    <form class="form" [formGroup]="creditForm" (ngSubmit)="submitForm()">
+        <div class="form-row single-column">
+            <div class="form-group">
+                <label for="organization">Entreprise</label>
+                <input type="text" id="organization" disabled [value]="society" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="amount">Montant du crédit <span class="color-danger">*</span></label>
+                <input type="number" id="amount" formControlName="amount" placeholder="500 000" />
+                <div *ngIf="creditForm.get('amount')?.invalid && creditForm.get('amount')?.touched"
+                    class="error-message">
+                    <span *ngIf="creditForm.get('amount')?.errors?.['required']">Ce champ est
+                        obligatoire.
+                    </span>
+                    <span *ngIf="creditForm.get('amount')?.errors?.['pattern']">
+                        Le montant doit être positif.
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="operation">Libellé d'opération <span class="color-danger">*</span></label>
+                <input type="text" id="operation" formControlName="operation" placeholder="Recharge" />
+                <div *ngIf="creditForm.get('operation')?.invalid && creditForm.get('operation')?.touched"
+                    class="error-message">
+                    <span *ngIf="creditForm.get('operation')?.errors?.['required']">Ce champ est
+                        obligatoire.</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <button type="submit" [disabled]="creditForm.invalid" class="submit-button">
+                Enregistrer
+            </button>
+        </div>
+    </form>
+</div>

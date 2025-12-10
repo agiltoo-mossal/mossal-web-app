@@ -11,3 +11,16 @@ query FetchDemandesMetrics($metricsInput: DemandesMetricsInput!) {
   }
 }
 
+query FetchOperationsMetrics($metricsInput: DemandesMetricsInput!, $organizationId: ID!) {
+  fetchOperationsMetrics(metricsInput: $metricsInput, organizationId: $organizationId) {
+    credit {
+      y: amount
+      x: date
+    }
+    debit {
+      y: amount
+      x: date
+    }
+  }
+}
+
