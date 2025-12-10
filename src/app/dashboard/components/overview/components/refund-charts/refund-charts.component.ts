@@ -68,7 +68,18 @@ export class RefundChartsComponent implements OnChanges {
         },
         redrawOnParentResize: true,
         redrawOnWindowResize: true,
-
+         // Configuration de la locale française
+        defaultLocale: 'fr',
+        locales: [{
+          name: 'fr',
+          options: {
+            toolbar: {
+              exportToSVG: 'Télécharger SVG',
+              exportToPNG: 'Télécharger PNG',
+              exportToCSV: 'Télécharger CSV',
+            }
+          }
+        }]
       },
       dataLabels: {
         enabled: false
@@ -86,7 +97,6 @@ export class RefundChartsComponent implements OnChanges {
           opacityFrom: 0.2,
           opacityTo: 0.4,
           stops: [0, 100],
-
         }
       },
       markers: {

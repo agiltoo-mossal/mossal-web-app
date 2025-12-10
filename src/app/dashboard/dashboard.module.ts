@@ -57,6 +57,7 @@ import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
 import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
+import { ConfirmationDialogComponent } from './components/organization-setting-general/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { UserAdminMossallComponent } from './components/user_admin_mossall/user_
     RequestMonthlyRepayableAdvanceComponent,
     RequestDetailsComponent,
     DashboardAdminComponent,
+    ConfirmationDialogComponent  
   ],
   imports: [
     CreateEventModule,
@@ -123,6 +125,7 @@ import { UserAdminMossallComponent } from './components/user_admin_mossall/user_
     MatDatepickerModule, // Pour le sélecteur de dates
     MatNativeDateModule, // Fournit la gestion des dates natives
     MatIconModule,
+    MatDialogModule  
   ],
   providers: [NotificationsService],
 })
