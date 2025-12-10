@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -13,7 +13,7 @@ import {
   ApexTitleSubtitle,
   ApexFill
 } from "ng-apexcharts";
-import { DemandesMetrics } from 'src/graphql/generated';
+import { OperationsMetrics } from 'src/graphql/generated';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -30,12 +30,13 @@ export type ChartOptions = {
 };
 
 @Component({
-  selector: 'app-refund-charts',
-  templateUrl: './refund-charts.component.html',
-  styleUrl: './refund-charts.component.scss',
+  selector: 'app-operation-charts',
+  templateUrl: './operation-charts.component.html',
+  styleUrl: './operation-charts.component.scss'
 })
-export class RefundChartsComponent implements OnChanges {
-  @Input() metricsData: DemandesMetrics;
+
+export class OperationChartsComponent {
+  @Input() metricsData: OperationsMetrics;
   @ViewChild("chart") chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
@@ -47,14 +48,14 @@ export class RefundChartsComponent implements OnChanges {
     this.chartOptions = {
       series: [
         {
-          name: "Montant total",
+          name: "Crédit",
           color: "#061E5C",
-          data: this.metricsData.total as any,
+          data: this.metricsData.credit as any,
         },
         {
-          name: "Reste à payer",
+          name: "Débit",
           color: "#FFC708",
-          data: this.metricsData.remaining as any,
+          data: this.metricsData.debit as any,
         }
       ],
       chart: {
@@ -68,18 +69,7 @@ export class RefundChartsComponent implements OnChanges {
         },
         redrawOnParentResize: true,
         redrawOnWindowResize: true,
-         // Configuration de la locale française
-        defaultLocale: 'fr',
-        locales: [{
-          name: 'fr',
-          options: {
-            toolbar: {
-              exportToSVG: 'Télécharger SVG',
-              exportToPNG: 'Télécharger PNG',
-              exportToCSV: 'Télécharger CSV',
-            }
-          }
-        }]
+
       },
       dataLabels: {
         enabled: false
@@ -97,6 +87,7 @@ export class RefundChartsComponent implements OnChanges {
           opacityFrom: 0.2,
           opacityTo: 0.4,
           stops: [0, 100],
+
         }
       },
       markers: {
@@ -106,7 +97,7 @@ export class RefundChartsComponent implements OnChanges {
         }
       },
       title: {
-        text: "Vue d’ensemble des remboursements"
+        text: "Vue d’ensemble des opérations"
       },
       tooltip: {
         intersect: true,
@@ -125,4 +116,20 @@ export class RefundChartsComponent implements OnChanges {
       }
     };
   }
+
+  formatDataForChart(data: any[]) {
+    return data.map(item => ({
+      x: this.getMonthName(item.month) + ' ' + item.year,
+      y: item.amount
+    }));
+  }
+
+  getMonthName(monthNumber: number): string {
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+    return months[monthNumber - 1] || '';
+  }
+
 }

@@ -420,6 +420,7 @@ query FetchOrganization($organizationId: ID!) {
       data
     }
     blocked
+    balance
 	}
 }
 

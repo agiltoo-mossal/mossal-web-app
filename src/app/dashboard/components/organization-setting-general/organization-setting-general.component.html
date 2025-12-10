@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Paramètres généraux</span></h2>
-  <!-- <h2 class="container-title-amount-setting">Solde du compte</h2>
-  <h2 class="container-amount-setting">{{ organizationBalance }} XOF</h2> -->
+  <h2 class="container-title-amount-setting">Solde du compte</h2>
+  <h2 class="container-amount-setting color-danger">{{ organizationBalance | number : '1.0-0':'fr-FR' }} XOF</h2>
   <div class="container-setting">
     <div class="parametres-container">
       <!-- Section des catégories socioprofessionnelles -->

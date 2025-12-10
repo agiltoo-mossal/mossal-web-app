@@ -22,6 +22,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FileUploadModule } from 'src/app/shared/components/file-upload/file-upload.module';
 // import { DetailSocietyComponent } from './components/detail-society/detail-society.component';
 import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande-status.module';
+import { AddCreditComponent } from './components/add-credit/add-credit.component';
+import { DetailSocietyComponent } from './components/detail-society/detail-society.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { Ng2GoogleChartsModule } from 'ng2-google-charts';
+import { OperationChartsComponent } from './components/operation-charts/operation-charts.component';
+import { FrenchDatePipe } from 'src/app/shared/pipes/french-date/french-date.pipe';
 
 @NgModule({
   declarations: [
@@ -30,7 +36,9 @@ import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande
     CreateSocietyComponent,
     EditSocietyComponent,
     FormSocietyComponent,
-    // DetailSocietyComponent,
+    DetailSocietyComponent,
+    AddCreditComponent,
+    OperationChartsComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +59,12 @@ import { DemandeStatusModule } from 'src/app/shared/pipes/demande-status/demande
     FileUploadModule,
     DemandeStatusModule,
     MatIconModule,
+    Ng2GoogleChartsModule,
+    NgApexchartsModule,
+    FrenchDatePipe,
+
+
   ],
   exports: [SocietyComponent],
 })
-export class SocietyModule {}
+export class SocietyModule { }
