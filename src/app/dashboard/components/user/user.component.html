@@ -57,7 +57,7 @@
             <mat-error *ngIf="
                 updatePasswordForm.get('newPassword')?.invalid &&
                 updatePasswordForm.get('newPassword')?.touched && updatePasswordForm.get('newPassword')?.errors?.['pattern']
-              ">Le mot de passe doit contenir au moins 8 caractères, une majuscule au moins, une minuscule au moins et un caractère spécial au moins.</mat-error>
+              ">Le mot de passe doit contenir au moins : 8 caractères, une majuscule, une minuscule, un chiffre, et un caractère spécial (&#64;, #, $, %, etc.)</mat-error>
             <mat-error *ngIf="
                 updatePasswordForm.get('newPassword')?.invalid &&
                 updatePasswordForm.get('newPassword')?.touched && updatePasswordForm.get('newPassword')?.errors?.['required']
@@ -85,7 +85,7 @@
             <mat-error *ngIf="
                 updatePasswordForm.get('confirmPassword')?.invalid &&
                 updatePasswordForm.get('confirmPassword')?.touched && updatePasswordForm.get('confirmPassword')?.errors?.['pattern']
-              ">Le mot de passe doit contenir au moins 8 caractères, une majuscule au moins, une minuscule au moins et un caractère spécial au moins.</mat-error>
+              ">Le mot de passe doit contenir au moins : 8 caractères, une majuscule, une minuscule, un chiffre, et un caractère spécial (&#64;, #, $, %, etc.)</mat-error>
             <mat-error *ngIf="
                 updatePasswordForm.get('confirmPassword')?.invalid &&
                 updatePasswordForm.get('confirmPassword')?.touched && updatePasswordForm.get('confirmPassword')?.errors?.['required']
