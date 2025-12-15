@@ -1,224 +1,225 @@
-// import { AfterViewInit, Component } from '@angular/core';
-// import { ActivatedRoute } from '@angular/router';
-// import { lastValueFrom, map } from 'rxjs';
-// import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-// import { dateToString } from 'src/app/shared/utils/time';
-// import {
-//   CancelDemandeByAdminGQL,
-//   DemandeStatus,
-//   FetchDemandesByCollaboratorGQL,
-//   FetchOrganizationCollaboratorGQL,
-//   FetchRemboursementByUserIdGQL,
-//   FetchRemboursementsByDemandeGQL,
-//   LockUserGQL,
-//   MyRemboursementsGQL,
-//   PayeDemandeGQL,
-//   RejectDemandeByAdminGQL,
-//   UnlockUserGQL,
-//   ValidateDemandeGQL,
-// } from 'src/graphql/generated';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
+import { debounceTime, distinctUntilChanged, lastValueFrom, map, merge, startWith, switchMap } from 'rxjs';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { dateToString } from 'src/app/shared/utils/time';
+import {
+    FetchOperationsMetricsGQL,
+    FetchOrganizationGQL,
+    FetchPaginatedOperationsGQL,
+    OperationsMetrics,
+    Organization,
+} from 'src/graphql/generated';
 
-// @Component({
-//   selector: 'app-detail-society',
-//   templateUrl: './detail-society.component.html',
-//   styleUrl: './detail-society.component.scss',
-// })
-// export class DetailSocietyComponent implements AfterViewInit {
-//   society: any;
-//   societyId: string;
-//   pendingDemandes: any[] = [];
-//   validatedDemandes: any[] = [];
-//   remboursements: any[] = [];
-//   constructor(
-//     private route: ActivatedRoute,
-//     private fetchOrganizationCollaboratorGQL: FetchOrganizationCollaboratorGQL,
-//     private snackBarService: SnackBarService,
-//     private lockUserGQL: LockUserGQL,
-//     private unlockUserGQL: UnlockUserGQL,
-//     private fetchDemandeByCollaboratorIdGQL: FetchDemandesByCollaboratorGQL,
-//     private validateDemandeGQL: ValidateDemandeGQL,
-//     private payeDemandeGQL: PayeDemandeGQL,
-//     private cancelDemandeByAdminGQL: CancelDemandeByAdminGQL,
-//     private rejectDemandeByAdminGQL: RejectDemandeByAdminGQL,
-//     private requestService: MyRemboursementsGQL,
-//     private fetchDemandesByCollaboratorIdGQL: FetchRemboursementByUserIdGQL
-//   ) {
-//     this.route.paramMap.subscribe((params) => {
-//       this.societyId = params.get('id');
-//       this.getCollab();
-//     });
-//   }
-//   ngAfterViewInit() {
-//     this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
-//     this.fetchDemandesByCollaboratorId(DemandeStatus.Validated);
-//     this.fetchRemboursments(this.societyId);
-//   }
-//   fetchRemboursments(userId: string) {
-//     this.fetchDemandesByCollaboratorIdGQL
-//       .fetch({ userId: this.societyId }, { fetchPolicy: 'no-cache' })
-//       .subscribe({
-//         next: (result) => {
-//           this.remboursements = result.data.fetchRemboursementByUserId;
-//         },
-//         error: (error) => {},
-//       });
-//   }
-//   getCollab() {
-//     if (this.societyId) {
-//       this.fetchOrganizationCollaboratorGQL
-//         .fetch(
-//           { societyId: this.societyId },
-//           { fetchPolicy: 'no-cache' }
-//         )
-//         .subscribe((result) => {
-//           this.society = result.data.fetchOrganizationCollaborator;
-//           const birthDate = dateToString(this.society.birthDate);
-//         });
-//     }
-//   }
+@Component({
+    selector: 'app-detail-society',
+    templateUrl: './detail-society.component.html',
+    styleUrl: './detail-society.component.scss',
+})
+export class DetailSocietyComponent implements AfterViewInit {
+    organization: any;
+    societyId: string;
 
-//   lockUser = (userId: string) => {
-//     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
-//       if (result.data.lockUser) {
-//         this.snackBarService.showSuccessSnackBar(
-//           'Utilisateur bloqué avec succès!'
-//         );
-//         this.getCollab();
-//       } else {
-//         this.snackBarService.showErrorSnackBar();
-//       }
-//     });
-//   };
+    resultsLength = 0;
+    isLoadingResults = true;
+    isRateLimitReached = false;
 
-//   unlockUser = (userId: string) => {
-//     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
-//       if (result.data.unlockUser) {
-//         this.snackBarService.showSuccessSnackBar(
-//           'Utilisateur débloqué avec succès!'
-//         );
-//         this.getCollab();
-//       } else {
-//         this.snackBarService.showErrorSnackBar();
-//       }
-//     });
-//   };
+    disableCache: boolean;
+    search: string = '';
+    searchForm: FormGroup;
+    displayedColumns: string[] = [
+        'amount',
+        'date',
+        'operation'
+    ];
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+    @ViewChild(MatSort) sort: MatSort;
+    dataSource = new MatTableDataSource<Organization>();
 
-//   fetchDemandesByCollaboratorId(status: DemandeStatus) {
-//     this.fetchDemandeByCollaboratorIdGQL
-//       .fetch(
-//         { societyId: this.societyId, status },
-//         {
-//           fetchPolicy: 'no-cache',
-//         }
-//       )
-//       .pipe(
-//         map((result) => {
-//           if (result === null) {
-//             return [];
-//           }
-//           return result.data.fetchDemandesByCollaborator;
-//         })
-//       )
-//       .subscribe({
-//         next: (result) => {
-//           if (status === DemandeStatus.Pending) {
-//             this.pendingDemandes = result;
-//           }
-//           if (status === DemandeStatus.Validated) {
-//             this.validatedDemandes = result;
-//           }
-//           this.fetchRemboursments(this.societyId);
-//         },
-//         error: (error) => {
-//           console.log(error);
-//           return [];
-//         },
-//       });
-//   }
+    page: number = 1;
+    data = [];
+    organizations = [];
 
-//   cancelDemande = (demandeId: string) => {
-//     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
-//       (result) => {
-//         if (result.data.cancelDemandeByAdmin) {
-//           this.snackBarService.showSuccessSnackBar(
-//             'demande annulée avec succés!'
-//           );
-//           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
-//         } else {
-//           this.snackBarService.showErrorSnackBar();
-//         }
-//       },
-//       (error) => {
-//         this.snackBarService.showErrorSnackBar(
-//           5000,
-//           'Vous ne pouvez pas effectuer cette action.'
-//         );
-//       }
-//     );
-//   };
+    balanceData = {
+        path: "./assets/img/balance-amount.svg",
+        style: "#40B139",
+    }
+    metricsInput: FormGroup;
+    metricsData: OperationsMetrics;
+    isMenuFilterOpen: boolean = false;
 
-//   rejectDemande = (demandeId: string, reason: string) => {
-//     this.rejectDemandeByAdminGQL
-//       .mutate({ demandeId, rejectedReason: reason })
-//       .subscribe(
-//         (result) => {
-//           if (result.data.rejectDemandeByAdmin) {
-//             this.snackBarService.showSuccessSnackBar(
-//               'demande rejetée avec succés!'
-//             );
-//             this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
-//           } else {
-//             this.snackBarService.showErrorSnackBar();
-//           }
-//         },
-//         (error) => {
-//           this.snackBarService.showErrorSnackBar(
-//             5000,
-//             'Vous ne pouvez pas effectuer cette action.'
-//           );
-//         }
-//       );
-//   };
+    constructor(
+        private route: ActivatedRoute,
+        private snackBarService: SnackBarService,
+        private fetchOrganizationGQL: FetchOrganizationGQL,
+        private fetchPaginatedOperationsGQL: FetchPaginatedOperationsGQL,
+        private fb: FormBuilder,
+        private fetchOperationsMetrics: FetchOperationsMetricsGQL
+    ) {
+        this.route.paramMap.subscribe((params) => {
+            this.societyId = params.get('id');
+            // this.getCollab();
+        });
 
-//   validateDemande = (demandeId: string) => {
-//     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
-//       (result) => {
-//         if (result.data.validateDemande) {
-//           this.snackBarService.showSuccessSnackBar(
-//             'demande validée avec succés!'
-//           );
-//           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
-//         } else {
-//           this.snackBarService.showErrorSnackBar();
-//         }
-//       },
-//       (error) => {
-//         this.snackBarService.showErrorSnackBar(
-//           5000,
-//           'Vous ne pouvez pas effectuer cette action.'
-//         );
-//       }
-//     );
-//   };
+        const today = new Date();
+        const startDateOfCurrentYear = new Date(today.getFullYear(), 0, 1);
+        const endDateOfCurrentYear = new Date(today.getFullYear(), 11, 31);
+        this.metricsInput = this.fb.group({
+            startDate: [
+                `${startDateOfCurrentYear.getFullYear()}-${String(
+                    startDateOfCurrentYear.getMonth() + 1
+                ).padStart(2, '0')}-${String(startDateOfCurrentYear.getDate()).padStart(
+                    2,
+                    '0'
+                )}`,
+            ],
+            endDate: [
+                `${endDateOfCurrentYear.getFullYear()}-${String(
+                    endDateOfCurrentYear.getMonth() + 1
+                ).padStart(2, '0')}-${String(endDateOfCurrentYear.getDate()).padStart(
+                    2,
+                    '0'
+                )}`,
+            ],
+        });
 
-//   payeDemande = (demandeId: string) => {
-//     this.payeDemandeGQL.mutate({ demandeId }).subscribe(
-//       (result) => {
-//         if (result.data.payeDemande) {
-//           this.snackBarService.showSuccessSnackBar(
-//             'demande payée avec succés!'
-//           );
-//           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
-//         } else {
-//           this.snackBarService.showErrorSnackBar();
-//         }
-//       },
-//       (error) => {
-//         this.snackBarService.showErrorSnackBar(
-//           5000,
-//           'Vous ne pouvez pas effectuer cette action.'
-//         );
-//       }
-//     );
-//   };
-// }
+        this.metricsInput.valueChanges.subscribe((r) => {
+            this.getData();
+        });
+        this.getData();
+
+        // this.getOperationsMetrics();
+        // this.getOrganization();
+    }
+
+    getData() {
+        try {
+            Promise.all([
+                this.getOperationsMetrics(),
+                this.getOrganization(),
+            ]).then(() => {
+            });
+        } catch (e) { }
+    }
+
+    startDateMetric() {
+        return this.metricsInput.controls['startDate'];
+    }
+    endDateMetric() {
+        return this.metricsInput.controls['endDate'];
+    }
+    toggleMenuFilterDate() {
+        this.isMenuFilterOpen = !this.isMenuFilterOpen;
+    }
+
+    @ViewChild('dropdownContent') dropdownContent: ElementRef;
+    @ViewChild('btnToggleDropdownDate') btnToggleDropdownDate: ElementRef;
+    @HostListener('document:click', ['$event'])
+    clickOutside(event: Event) {
+        if (!this.isMenuFilterOpen) {
+            return;
+        }
+        const target = event.target as HTMLElement;
+        if (
+            !this.dropdownContent.nativeElement.contains(target) &&
+            !this.btnToggleDropdownDate.nativeElement.contains(target)
+        ) {
+            this.isMenuFilterOpen = false;
+        }
+    }
+
+    get startDate() {
+        return this.metricsInput.controls['startDate'].value;
+    }
+
+    get endDate() {
+        return this.metricsInput.controls['endDate'].value;
+    }
+
+    ngAfterViewInit() {
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(
+            this.sort.sortChange,
+            this.paginator.page
+        )
+            .pipe(
+                startWith({}),
+                switchMap(() => {
+                    this.isLoadingResults = true;
+                    const queryFilter = {
+                        limit: this.paginator.pageSize,
+                        page: this.paginator.pageIndex + 1,
+                    };
+
+                    return this.fetchPaginatedOperationsGQL.fetch(
+                        { queryFilter, organizationId: this.societyId },
+                        { fetchPolicy: 'no-cache' }
+                    );
+                }),
+                map((result) => {
+                    this.isLoadingResults = false;
+                    this.isRateLimitReached = result === null;
+
+                    if (result === null) {
+                        return [];
+                    }
+                    return result.data;
+                })
+            )
+            .subscribe((data: any) => {
+                this.data = data.fetchPaginatedOperations.results;
+                this.dataSource.data = this.data;
+                this.resultsLength =
+                    data.fetchPaginatedOperations.pagination.totalItems;
+            });
+    }
+
+    getOrganization(): void {
+        this.fetchOrganizationGQL
+            .fetch(
+                { organizationId: this.societyId },
+                { fetchPolicy: 'no-cache' }
+            )
+            .subscribe({
+                next: (result) => {
+                    this.organization = result.data.fetchOrganization as Organization;
+                    console.log('Organisation récupérée:', this.organization);
+                },
+                error: (error) => {
+                    console.error('Erreur:', error);
+                    this.snackBarService.showErrorSnackBar(5000, 'Erreur lors du chargement');
+                }
+            });
+    }
+
+    getOperationsMetrics(): Promise<void> {
+        const startDate =
+            this.metricsInput.value.startDate || new Date('2024-01-01');
+        const endDate = this.metricsInput.value.endDate || new Date();
+
+        return lastValueFrom(
+            this.fetchOperationsMetrics.fetch(
+                {
+                    metricsInput: { startDate, endDate },
+                    organizationId: this.societyId
+                },
+                {
+                    fetchPolicy: 'no-cache',
+                }
+            )
+        )
+            .then((result) => {
+                this.metricsData = result.data.fetchOperationsMetrics as any;
+            })
+            .catch((error) => {
+                console.error('Error fetching demandes metrics:', error);
+                throw error;
+            });
+    }
+
+}

@@ -241,6 +241,8 @@ export class OrganizationSettingGeneralComponent {
         if (result.data) {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
+          console.log('organizationBalance ===>>>> ', this.organization);
+
           this.maxPercentage = this.organization.amountPercent;
           this.organizationBalance = this.organization.balance;
           this.itemsCardDate.forEach((element) => {

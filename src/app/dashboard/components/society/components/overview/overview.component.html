@@ -48,7 +48,8 @@
                   <mat-icon>business</mat-icon>
                 </ng-template>
               </span>
-              <span>{{ row.name }}</span>
+              <span routerLink="/dashboard/society/details/{{row?.id ?? row?._id}}" style="cursor: pointer;">{{ row.name
+                }}</span>
             </div>
           </td>
         </ng-container>
@@ -93,7 +94,12 @@
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
               <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
-                style="min-width: 140px; white-space: nowrap;">
+                style="min-width: 150px; white-space: nowrap;">
+                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
+                  routerLink="/dashboard/society/add-credit/{{ row.id ?? row?._id }}">
+                  <span><mat-icon>account_balance_wallet</mat-icon></span>
+                  <span>Ajouter crédit</span>
+                </div>
                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
                   routerLink="/dashboard/society/{{ row.id ?? row?._id }}">
                   <span><mat-icon>edit</mat-icon></span>
