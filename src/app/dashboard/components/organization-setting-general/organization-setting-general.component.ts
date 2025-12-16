@@ -46,7 +46,7 @@ export class OrganizationSettingGeneralComponent {
     private deleteCategoryGQL: DeleteCategorySocioproGQL,
     private dialog: MatDialog  // AJOUTEZ CETTE LIGNE
   ) { }
-  
+
   // Données pour les catégories
   newCategorie: string = '';
   maxPercentage: number = 0;
@@ -56,6 +56,7 @@ export class OrganizationSettingGeneralComponent {
   errorMessage: string = '';
   dayLimite!: number;
   organizationBalance!: number;
+  maxDemandeAmount: number = 0;
 
   ngOnInit() {
     this.getCurrentorganization();
@@ -141,6 +142,7 @@ export class OrganizationSettingGeneralComponent {
         organizationInput: {
           amountPercent: this.maxPercentage,
           demandeDeadlineDay: this.dayLimite,
+          maxDemandeAmount: this.maxDemandeAmount
         } as any,
       })
       .subscribe({
@@ -151,7 +153,8 @@ export class OrganizationSettingGeneralComponent {
               item.active = false;
             });
             this.itemsCardDate[this.dayLimite - 1].active = true;
-            this.snackBarService.showSuccessSnackBar('PLAFOND MODIFIE');
+            this.getCurrentorganization();
+            this.snackBarService.showSuccessSnackBar('Organisation modifiée avec succès.');
           } else {
             this.snackBarService.showErrorSnackBar();
           }
@@ -167,7 +170,7 @@ export class OrganizationSettingGeneralComponent {
       .trim()
       .replace(/\s+/g, ' ')
       .toLowerCase();
-    
+
     const existingCategory = this.categories.find((category) =>
       new RegExp(`^${cleanedCategorie}$`, 'i').test(
         category.title.trim().replace(/\s+/g, ' ').toLowerCase()
@@ -245,6 +248,7 @@ export class OrganizationSettingGeneralComponent {
 
           this.maxPercentage = this.organization.amountPercent;
           this.organizationBalance = this.organization.balance;
+          this.maxDemandeAmount = this.organization.maxDemandeAmount;
           this.itemsCardDate.forEach((element) => {
             element.active = false;
             if (element.day === this.organization.demandeDeadlineDay) {
@@ -344,6 +348,22 @@ export class OrganizationSettingGeneralComponent {
       };
 
       this.itemsCardDate.push(daySelected);
+    }
+  }
+
+  getBalanceClass(): string {
+    if (!this.organization) return '';
+
+    const balance = this.organization.balance;
+    const maxDemandeAmount = this.organization.maxDemandeAmount;
+    const threshold = maxDemandeAmount * 1.5;
+
+    if (balance < maxDemandeAmount) {
+      return 'balance-red';
+    } else if (balance <= threshold) {
+      return 'balance-orange';
+    } else {
+      return 'balance-green';
     }
   }
 }

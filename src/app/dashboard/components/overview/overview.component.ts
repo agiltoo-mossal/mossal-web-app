@@ -16,11 +16,13 @@ import {
   DemandeStatus,
   FetchCollaboratorCountGQL,
   FetchCountStatusGQL,
+  FetchCurrentAdminGQL,
   FetchDemandesMetricsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
   FetchTotalDemandesAmountGQL,
+  Organization,
   User,
 } from 'src/graphql/generated';
 import { dataStatic } from 'src/app/shared/types/data-static';
@@ -71,6 +73,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>();
   page: number = 1;
   nbActifUsers: number;
+  organization: any;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -81,7 +84,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     private userCollaboratorService: OverviewService,
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fetchCollaboratorCountGQL: FetchCollaboratorCountGQL,
-    private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL
+    private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
   ) {
     const now = new Date('2024-12-31');
     const today = new Date();
@@ -162,10 +166,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.getTotalDemandeAmount(),
         this.getTotalDemandeToPay(),
         this.getFetchCountStatus(),
+        this.getCurrentorganization()
       ]).then(() => {
         this.updateStaticData();
       });
-    } catch (e) {}
+    } catch (e) { }
   }
   startDateMetric() {
     return this.metricsInput.controls['startDate'];
@@ -251,80 +256,80 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
-  
 
-fetchCollabs(): Promise<void> {
-  return lastValueFrom(
-    this.fetchOrganizationCollaboratorsGQL.fetch(
-      {
-        queryFilter: {
-          page: this.paginator ? this.paginator.pageIndex + 1 : 1,
-          limit: this.paginator ? this.paginator.pageSize : 10,
+
+  fetchCollabs(): Promise<void> {
+    return lastValueFrom(
+      this.fetchOrganizationCollaboratorsGQL.fetch(
+        {
+          queryFilter: {
+            page: this.paginator ? this.paginator.pageIndex + 1 : 1,
+            limit: this.paginator ? this.paginator.pageSize : 10,
+          },
         },
-      },
-      { fetchPolicy: 'no-cache' }
+        { fetchPolicy: 'no-cache' }
+      )
     )
-  )
-    .then((result) => {
-      const data = result.data.fetchPaginatedOrganizationCollaborators;
+      .then((result) => {
+        const data = result.data.fetchPaginatedOrganizationCollaborators;
 
-      this.collabs = data.results || [];
-      this.dataSource.data = this.collabs;
+        this.collabs = data.results || [];
+        this.dataSource.data = this.collabs;
 
-      this.selectedCollab = this.collabs?.[0] || null;
+        this.selectedCollab = this.collabs?.[0] || null;
 
-      this.resultsLength = data.pagination.totalItems || 0;
+        this.resultsLength = data.pagination.totalItems || 0;
 
-      // Important pour que mat-paginator mette à jour son label !
-      if (this.paginator) {
-        this.paginator.length = this.resultsLength;
-        this.paginator._changePageSize(this.paginator.pageSize);
-      }
-    })
-    .catch((err) => {
-      console.error('Error fetching collaborators:', err);
-      throw err;
-    });
-}
-
+        // Important pour que mat-paginator mette à jour son label !
+        if (this.paginator) {
+          this.paginator.length = this.resultsLength;
+          this.paginator._changePageSize(this.paginator.pageSize);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching collaborators:', err);
+        throw err;
+      });
+  }
 
 
-ngAfterViewInit() {
-  this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-  merge(
-    this.sort.sortChange,
-    this.paginator.page,
-    this.metricsInput.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      startWith('')
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.metricsInput.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
     )
-  )
-    .pipe(
-      switchMap(() => {
-        const queryFilter = {
-          limit: this.paginator.pageSize,
-          page: this.paginator.pageIndex + 1,
-        };
+      .pipe(
+        switchMap(() => {
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+          };
 
-        return this.fetchOrganizationCollaboratorsGQL.fetch(
-          { queryFilter },
-          { fetchPolicy: 'no-cache' }
-        );
-      }),
-      map((result) => result?.data)
-    )
-    .subscribe((data: any) => {
-      this.dataSource.data =
-        data.fetchPaginatedOrganizationCollaborators.results;
+          return this.fetchOrganizationCollaboratorsGQL.fetch(
+            { queryFilter },
+            { fetchPolicy: 'no-cache' }
+          );
+        }),
+        map((result) => result?.data)
+      )
+      .subscribe((data: any) => {
+        this.dataSource.data =
+          data.fetchPaginatedOrganizationCollaborators.results;
 
-      this.resultsLength =
-        data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
+        this.resultsLength =
+          data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
 
-      this.selectedCollab = this.dataSource.data?.[0];
-    });
-}
+        this.selectedCollab = this.dataSource.data?.[0];
+      });
+  }
 
 
   setHasValidatedDemande() {
@@ -377,7 +382,7 @@ ngAfterViewInit() {
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
-          error: (error) => {},
+          error: (error) => { },
         });
     } else {
       this.fetchOrganizationCollaboratorsGQL
@@ -398,7 +403,7 @@ ngAfterViewInit() {
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
-          error: (error) => {},
+          error: (error) => { },
         });
     }
   }
@@ -511,6 +516,18 @@ ngAfterViewInit() {
         r.collaborator.id == collabId && r.status == DemandeStatus.Validated
       );
     });
+  }
+
+  getCurrentorganization(useCache = true) {
+    this.fetchCurrentAdminGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        if (result.data) {
+          this.organization = result.data.fetchCurrentAdmin
+            .organization as Organization;
+          console.log({ org: this.organization });
+        }
+      });
   }
 }
 export enum FilterBy {

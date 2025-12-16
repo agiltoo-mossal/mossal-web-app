@@ -1,7 +1,10 @@
 <div class="container">
   <h2 class="container-title-setting"><span>Paramètres généraux</span></h2>
-  <h2 class="container-title-amount-setting">Solde du compte</h2>
-  <h2 class="container-amount-setting color-danger">{{ organizationBalance | number : '1.0-0':'fr-FR' }} XOF</h2>
+  <div class="balance">
+    <h2 class="container-title-amount-setting">Solde du compte</h2>
+    <h2 class="container-amount-setting" [ngClass]="getBalanceClass()">{{ organizationBalance | number : '1.0-0':'fr-FR'
+      }} XOF</h2>
+  </div>
   <div class="container-setting">
     <div class="parametres-container">
       <!-- Section des catégories socioprofessionnelles -->
@@ -92,6 +95,13 @@
         <div class="percentage-input-group">
           <input type="number" id="percentage-input" [(ngModel)]="maxPercentage" placeholder="50" min="0" max="100" />
           <span class="percentage-symbol">%</span>
+        </div>
+      </div>
+
+      <div style="width: 50%; margin-bottom: 20px;" class="input-section">
+        <label class="seuil" for="categorie-input">Seuil</label>
+        <div class="input-group">
+          <input type="number" id="categorie-input" placeholder="100 000" [(ngModel)]="maxDemandeAmount" />
         </div>
       </div>
       <button class="validate-button" (click)="savePlafond()">

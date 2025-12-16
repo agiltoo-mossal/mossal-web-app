@@ -223,3 +223,195 @@ table .mat-mdc-header-cell {
   border-bottom: 1px solid #E7E8F2;
   margin-top: 30px;
 }
+
+.filters {
+  border: 1px solid #000;
+  height: 66px;
+
+  .filter-item {
+    padding: 0 12px;
+    border-right: 1px solid #0C1D58; // Bordure plus douce
+    position: relative;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    .form-control {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border: none;
+    }
+  }
+
+  >div {
+    padding: 0 12px;
+    border-right: 1px solid #000;
+
+    &:last-of-type {
+      border-right: none;
+    }
+
+    position: relative;
+
+    .form-control {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border: none;
+
+    }
+  }
+
+  .search {
+
+    .icon-search {
+      color: #0C1D58;
+    }
+
+    input,
+    input::placeholder {
+      border: none;
+      outline: none;
+      background-color: transparent;
+      width: 100%;
+      padding: 0 12px 0 4px;
+
+
+      color: color(display-p3 0.6667 0.6667 0.6667);
+      font-size: 18px;
+      font-weight: 400;
+      color: #000;
+    }
+
+    input::placeholder {
+      color: #AAA;
+    }
+
+    .icon-delete {
+      color: #cacaca;
+    }
+
+    .icon-search,
+    .icon-delete {
+      cursor: pointer;
+    }
+  }
+
+  .text {
+    color: #AAA;
+    font-size: 18px;
+    font-weight: 400;
+
+    &.selected {
+      color: #000;
+    }
+  }
+
+  .btn-filter {
+    background: var(--Primary, #001F60);
+    color: var(--Blanc, #FFF);
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-right: none;
+  }
+
+  .icon-dropdown {
+    min-width: 24px;
+    cursor: pointer;
+  }
+}
+
+// .filters {
+//   border: 1px solid #0C1D58; // Bordure plus douce
+//   height: 66px;
+//   border-radius: 4px; // Ajout d'un border-radius pour un look plus moderne
+//   overflow: hidden; // Pour que les bordures internes soient propres
+
+//   .filter-item {
+//     padding: 0 12px;
+//     border-right: 1px solid #0C1D58; // Bordure plus douce
+//     position: relative;
+
+//     &:last-child {
+//       border-right: none;
+//     }
+
+//     .form-control {
+//       position: absolute;
+//       top: 0;
+//       left: 0;
+//       height: 100%;
+//       border: none;
+//     }
+//   }
+
+//   .search {
+//     .icon-search {
+//       color: #0C1D58;
+//     }
+
+//     input,
+//     input::placeholder {
+//       border: none;
+//       outline: none;
+//       background-color: transparent;
+//       width: 100%;
+//       padding: 0 12px 0 4px;
+//       color: #000;
+//       font-size: 18px;
+//       font-weight: 400;
+//     }
+
+//     input::placeholder {
+//       color: #AAA;
+//     }
+
+//     .icon-delete {
+//       color: #cacaca;
+//       cursor: pointer;
+//     }
+
+//     .icon-search,
+//     .icon-delete {
+//       cursor: pointer;
+//     }
+//   }
+
+//   .text {
+//     color: #AAA;
+//     font-size: 18px;
+//     font-weight: 400;
+
+//     &.selected {
+//       color: #000;
+//     }
+//   }
+
+//   .btn-filter {
+//     background: var(--Primary, #001F60);
+//     color: var(--Blanc, #FFF);
+//     font-family: Poppins;
+//     font-size: 16px;
+//     font-weight: 600;
+//     cursor: pointer;
+//     border: none;
+//   }
+
+//   .icon-dropdown {
+//     min-width: 24px;
+//     cursor: pointer;
+//   }
+
+// }
+
+.text-export {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+}

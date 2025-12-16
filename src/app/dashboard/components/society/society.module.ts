@@ -28,6 +28,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { OperationChartsComponent } from './components/operation-charts/operation-charts.component';
 import { FrenchDatePipe } from 'src/app/shared/pipes/french-date/french-date.pipe';
+import { OrganizationBalanceModule } from './components/organization-balance/organization-balance.module';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,7 @@ import { FrenchDatePipe } from 'src/app/shared/pipes/french-date/french-date.pip
     FormSocietyComponent,
     DetailSocietyComponent,
     AddCreditComponent,
-    OperationChartsComponent
+    OperationChartsComponent,
   ],
   imports: [
     CommonModule,
@@ -62,7 +63,7 @@ import { FrenchDatePipe } from 'src/app/shared/pipes/french-date/french-date.pip
     Ng2GoogleChartsModule,
     NgApexchartsModule,
     FrenchDatePipe,
-
+    OrganizationBalanceModule
 
   ],
   exports: [SocietyComponent],

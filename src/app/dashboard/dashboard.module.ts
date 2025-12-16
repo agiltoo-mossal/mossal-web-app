@@ -58,6 +58,7 @@ import { RequestDetailsComponent } from './components/request-details/request-de
 import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 import { ConfirmationDialogComponent } from './components/organization-setting-general/confirmation-dialog.component';
+import { OrganizationBalanceModule } from './components/society/components/organization-balance/organization-balance.module';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,7 @@ import { ConfirmationDialogComponent } from './components/organization-setting-g
     RequestMonthlyRepayableAdvanceComponent,
     RequestDetailsComponent,
     DashboardAdminComponent,
-    ConfirmationDialogComponent  
+    ConfirmationDialogComponent
   ],
   imports: [
     CreateEventModule,
@@ -125,7 +126,8 @@ import { ConfirmationDialogComponent } from './components/organization-setting-g
     MatDatepickerModule, // Pour le sélecteur de dates
     MatNativeDateModule, // Fournit la gestion des dates natives
     MatIconModule,
-    MatDialogModule  
+    MatDialogModule,
+    OrganizationBalanceModule
   ],
   providers: [NotificationsService],
 })
