@@ -636,6 +636,14 @@ export type Notification = {
   viewedByMe: Scalars['Boolean']['output'];
 };
 
+export type OperationSummary = {
+  __typename?: 'OperationSummary';
+  credit: Scalars['Float']['output'];
+  debit: Scalars['Float']['output'];
+  organization: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+};
+
 export enum OperationType {
   Credit = 'CREDIT',
   Debit = 'DEBIT'
@@ -646,6 +654,13 @@ export type OperationsMetrics = {
   credit: Array<OperationsMetricsRow>;
   debit: Array<OperationsMetricsRow>;
   total: Array<OperationsMetricsRow>;
+};
+
+export type OperationsMetricsInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  type?: InputMaybe<OperationType>;
 };
 
 export type OperationsMetricsRow = {
@@ -896,6 +911,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
@@ -1042,6 +1058,11 @@ export type QueryFetchMossallAdminArgs = {
 };
 
 
+export type QueryFetchOperationsArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
 export type QueryFetchOperationsMetricsArgs = {
   metricsInput: DemandesMetricsInput;
   organizationId: Scalars['ID']['input'];
@@ -1106,6 +1127,7 @@ export type QueryFetchPaginatedNotificationsArgs = {
 
 
 export type QueryFetchPaginatedOperationsArgs = {
+  metricsInput?: InputMaybe<OperationsMetricsInput>;
   organizationId: Scalars['ID']['input'];
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
@@ -1697,7 +1719,7 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
 
 export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
   queryConfig: QueryDataConfigInput;
@@ -1839,10 +1861,18 @@ export type AddCreditMutation = { __typename?: 'Mutation', addCredit: { __typena
 export type FetchPaginatedOperationsQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
   organizationId: Scalars['ID']['input'];
+  metricsInput?: InputMaybe<OperationsMetricsInput>;
 }>;
 
 
 export type FetchPaginatedOperationsQuery = { __typename?: 'Query', fetchPaginatedOperations: { __typename?: 'PaginatedCreditResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Credit', id: string, amount: number, operation: string, createdAt: any, type: OperationType }> } };
+
+export type FetchOperationsQueryVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+}>;
+
+
+export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', organization: string, credit: number, debit: number }> };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -3120,6 +3150,7 @@ export const FetchOrganizationDocument = gql`
     }
     blocked
     balance
+    maxDemandeAmount
   }
 }
     `;
@@ -3701,10 +3732,11 @@ export const AddCreditDocument = gql`
     }
   }
 export const FetchPaginatedOperationsDocument = gql`
-    query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organizationId: ID!) {
+    query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organizationId: ID!, $metricsInput: OperationsMetricsInput) {
   fetchPaginatedOperations(
     queryFilter: $queryFilter
     organizationId: $organizationId
+    metricsInput: $metricsInput
   ) {
     pagination {
       totalItems
@@ -3728,6 +3760,26 @@ export const FetchPaginatedOperationsDocument = gql`
   })
   export class FetchPaginatedOperationsGQL extends Apollo.Query<FetchPaginatedOperationsQuery, FetchPaginatedOperationsQueryVariables> {
     document = FetchPaginatedOperationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOperationsDocument = gql`
+    query FetchOperations($organizationId: ID!) {
+  fetchOperations(organizationId: $organizationId) {
+    organization
+    credit
+    debit
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOperationsGQL extends Apollo.Query<FetchOperationsQuery, FetchOperationsQueryVariables> {
+    document = FetchOperationsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -5,8 +5,9 @@ mutation AddCredit($creditInput: CreditInput!, $organizationId: ID!) {
   }
 }
 
-query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organizationId: ID!) {
-	fetchPaginatedOperations(queryFilter: $queryFilter, organizationId: $organizationId) {
+query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organizationId: ID!, 
+								$metricsInput: OperationsMetricsInput) {
+	fetchPaginatedOperations(queryFilter: $queryFilter, organizationId: $organizationId, metricsInput: $metricsInput) {
 		pagination {
 			totalItems
 			pageCount
@@ -21,4 +22,12 @@ query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organization
 			type
 		}
 	}
+}
+
+query FetchOperations($organizationId: ID!) {
+  fetchOperations(organizationId: $organizationId) {
+    organization
+    credit
+    debit
+  }
 }

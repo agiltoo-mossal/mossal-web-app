@@ -1,0 +1,51 @@
+.org-balance-container {
+    padding: 15px 0 24px;
+    border-radius: 6px;
+    border: 1px solid #E7E8F2;
+    background: var(--Blanc, #FFF);
+    margin-top: 20px;
+
+    .top {
+        padding: 0 32px;
+    }
+
+    .balance-label {
+        color: var(--Primary, #061E5C);
+
+        /* h2 semibold */
+        font-family: Poppins;
+        font-size: 22px;
+        font-weight: 600;
+        line-height: 120%;
+        /* 21.6px */
+        letter-spacing: 0.09px;
+    }
+
+    .value {
+        // color: #1E346C;
+
+        font-family: Poppins;
+        font-size: 23px;
+        font-weight: 600;
+    }
+
+    .data-image {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .balance-red {
+        color: #e94916 !important;
+    }
+
+    .balance-orange {
+        color: #FFA500 !important;
+    }
+
+    .balance-green {
+        color: #40B139 !important;
+    }
+}

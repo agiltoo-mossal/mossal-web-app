@@ -315,112 +315,6 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       });
   }
 
-
-
-  // ngAfterViewInit(): void {
-  //   // if (!this.sort || !this.paginator) {
-  //   //   console.error('MatSort or MatPaginator is not initialized');
-  //   //   return;
-  //   // }
-  //   // this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-  //   this.searchForm
-  //     .get('search')
-  //     .valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged(),
-  //       startWith('')
-  //     )
-  //     .subscribe((r) => {
-  //       this.paginator.firstPage();
-  //     });
-
-  //   merge(
-  //     // this.sort.sortChange,
-  //     this.paginator.page,
-  //     this.searchForm.get('search').valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged()
-
-  //       // startWith('')
-  //     ),
-  //     this.searchForm.get('status').valueChanges.pipe(debounceTime(300)),
-  //     this.searchForm.get('average').valueChanges.pipe(debounceTime(300)),
-  //     this.searchForm.get('startDate').valueChanges.pipe(debounceTime(300)),
-  //     this.searchForm.get('endDate').valueChanges.pipe(debounceTime(300))
-  //   )
-  //     .pipe(
-  //       startWith({}),
-  //       switchMap(() => {
-  //         this.isLoadingResults = true;
-
-  //         const queryFilter = {
-  //           limit: this.paginator.pageSize,
-  //           page: this.paginator.pageIndex + 1,
-  //           // sortField: this.sort.active,
-  //           // sortOrder: this.sort.direction,
-  //           search: this.searchForm?.value?.search,
-  //         };
-  //         const metricsInput = {};
-  //         console.log('status', this.status);
-
-  //         if (this.status) {
-  //           metricsInput['status'] = this.status;
-  //         }
-  //         if (this.searchForm.get('average').value) {
-  //           metricsInput['minimum'] = this.searchForm
-  //             .get('average')
-  //             .getRawValue().min;
-  //           metricsInput['maximum'] = this.searchForm
-  //             .get('average')
-  //             .getRawValue().max;
-  //         }
-  //         console.log(
-  //           this.searchForm.get('startDate').value,
-  //           this.searchForm.get('endDate').value
-  //         );
-
-  //         if (
-  //           this.searchForm.get('startDate').value &&
-  //           this.searchForm.get('endDate').value
-  //         ) {
-  //           metricsInput['startDate'] = this.startDate;
-  //           metricsInput['endDate'] = this.endDate;
-  //         }
-  //         return this.paginatedRequestGQL.fetch(
-  //           {
-  //             queryFilter,
-  //             metricsInput,
-  //             organizationServiceId: this.organisationServiceId,
-  //           },
-  //           { fetchPolicy: 'no-cache' }
-  //         );
-  //       }),
-  //       map((result) => {
-  //         // Flip flag to show that loading has finished.
-  //         this.isLoadingResults = false;
-  //         this.isRateLimitReached = result === null;
-
-  //         if (result === null) {
-  //           return [];
-  //         }
-
-  //         // Only refresh the result length if there is new data. In case of rate
-  //         // limit errors, we do not want to reset the paginator to zero, as that
-  //         // would prevent users from re-triggering requests
-  //         return result.data;
-  //       })
-  //     )
-  //     .subscribe((data: any) => {
-  //       this.requests = data.fetchPaginatedOrganizationDemandes.results;
-  //       console.log(data);
-  //       this.dataSource.data = data.fetchPaginatedOrganizationDemandes.results;
-
-  //       this.selectedReq = data.fetchPaginatedOrganizationDemandes.results[0];
-  //       this.resultsLength =
-  //         data.fetchPaginatedOrganizationDemandes.pagination.totalItems;
-  //       // this.selectedAdmin = this.data?.[0];
-  //     });
-  // }
   isMenuFilterOpen: boolean = false;
   toggleMenuFilterDate() {
     this.isMenuFilterOpen = !this.isMenuFilterOpen;
@@ -630,23 +524,23 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   // }
 
   resetFilter() {
-  // Réinitialiser les variables locales
-  this.min = 0;
-  this.max = 10000;
-  this.startDate = '2025-01-01';
-  this.endDate = '2025-12-31';
-  this.status = null;
-  this.search = '';
-  
-  this.searchForm.patchValue({
-    search: '',          
-    status: null,         
-    average: null,        
-    startDate: '2025-01-01',
-    endDate: '2025-12-31'
-  });
-  
+    // Réinitialiser les variables locales
+    this.min = 0;
+    this.max = 10000;
+    this.startDate = '2025-01-01';
+    this.endDate = '2025-12-31';
+    this.status = null;
+    this.search = '';
 
-}
+    this.searchForm.patchValue({
+      search: '',
+      status: null,
+      average: null,
+      startDate: '2025-01-01',
+      endDate: '2025-12-31'
+    });
+
+
+  }
 
 }

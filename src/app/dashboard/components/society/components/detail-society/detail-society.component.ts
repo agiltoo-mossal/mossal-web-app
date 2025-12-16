@@ -4,16 +4,19 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { debounceTime, distinctUntilChanged, lastValueFrom, map, merge, startWith, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, lastValueFrom, map, merge, of, startWith, switchMap } from 'rxjs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { dateToString } from 'src/app/shared/utils/time';
 import {
+    FetchOperationsGQL,
     FetchOperationsMetricsGQL,
     FetchOrganizationGQL,
     FetchPaginatedOperationsGQL,
     OperationsMetrics,
+    OperationType,
     Organization,
 } from 'src/graphql/generated';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'app-detail-society',
@@ -29,7 +32,6 @@ export class DetailSocietyComponent implements AfterViewInit {
     isRateLimitReached = false;
 
     disableCache: boolean;
-    search: string = '';
     searchForm: FormGroup;
     displayedColumns: string[] = [
         'amount',
@@ -51,6 +53,14 @@ export class DetailSocietyComponent implements AfterViewInit {
     metricsInput: FormGroup;
     metricsData: OperationsMetrics;
     isMenuFilterOpen: boolean = false;
+    type: OperationType = null;
+    amount: number = 0;
+    isDateFilterOpen: boolean = false;
+    EXCEL_TYPE =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    EXCEL_EXTENSION = '.xlsx';
+    startFilterDate: string = '2025-01-01';
+    endFilterDate: string = '2025-12-31';
 
     constructor(
         private route: ActivatedRoute,
@@ -58,7 +68,8 @@ export class DetailSocietyComponent implements AfterViewInit {
         private fetchOrganizationGQL: FetchOrganizationGQL,
         private fetchPaginatedOperationsGQL: FetchPaginatedOperationsGQL,
         private fb: FormBuilder,
-        private fetchOperationsMetrics: FetchOperationsMetricsGQL
+        private fetchOperationsMetrics: FetchOperationsMetricsGQL,
+        private fetchOperations: FetchOperationsGQL
     ) {
         this.route.paramMap.subscribe((params) => {
             this.societyId = params.get('id');
@@ -91,9 +102,16 @@ export class DetailSocietyComponent implements AfterViewInit {
             this.getData();
         });
         this.getData();
+        this.initSearchForm();
+    }
 
-        // this.getOperationsMetrics();
-        // this.getOrganization();
+    initSearchForm() {
+        this.searchForm = this.fb.group({
+            amount: [],
+            type: [''],
+            startFilterDate: ['2025-01-01'],
+            endFilterDate: ['2025-12-31'],
+        });
     }
 
     getData() {
@@ -116,6 +134,10 @@ export class DetailSocietyComponent implements AfterViewInit {
         this.isMenuFilterOpen = !this.isMenuFilterOpen;
     }
 
+    toggleOperationFilterDate() {
+        this.isDateFilterOpen = !this.isDateFilterOpen;
+    }
+
     @ViewChild('dropdownContent') dropdownContent: ElementRef;
     @ViewChild('btnToggleDropdownDate') btnToggleDropdownDate: ElementRef;
     @HostListener('document:click', ['$event'])
@@ -129,6 +151,22 @@ export class DetailSocietyComponent implements AfterViewInit {
             !this.btnToggleDropdownDate.nativeElement.contains(target)
         ) {
             this.isMenuFilterOpen = false;
+        }
+    }
+
+    @ViewChild('dropdownFilterContent') dropdownFilterContent: ElementRef;
+    @ViewChild('btnToggleDropdownFilterDate') btnToggleDropdownFilterDate: ElementRef;
+    @HostListener('document:click', ['$event'])
+    clickOutsideDateFilter(event: Event) {
+        if (!this.isDateFilterOpen) {
+            return;
+        }
+        const target = event.target as HTMLElement;
+        if (
+            !this.dropdownFilterContent.nativeElement.contains(target) &&
+            !this.btnToggleDropdownFilterDate.nativeElement.contains(target)
+        ) {
+            this.isDateFilterOpen = false;
         }
     }
 
@@ -220,6 +258,175 @@ export class DetailSocietyComponent implements AfterViewInit {
                 console.error('Error fetching demandes metrics:', error);
                 throw error;
             });
+    }
+
+    changeType(state) {
+        this.type = state;
+        this.searchForm.get('type').setValue(state);
+    }
+    onStartDateChange() {
+        this.searchForm.get('startFilterDate').setValue(this.startDate);
+    }
+    onEndDateChange() {
+        this.searchForm.get('endFilterDate').setValue(this.endDate);
+    }
+
+    applyFilter() {
+        merge(
+            // this.sort.sortChange,
+            this.paginator.page,
+            this.searchForm.get('type').valueChanges.pipe(debounceTime(300)),
+            this.searchForm.get('amount').valueChanges.pipe(debounceTime(300)),
+            this.searchForm.get('startFilterDate').valueChanges.pipe(debounceTime(300)),
+            this.searchForm.get('endFilterDate').valueChanges.pipe(debounceTime(300))
+        )
+            .pipe(
+                startWith({}),
+                switchMap(() => {
+                    console.log('Demande: fetchPaginatedOrganizationDemandes');
+                    this.isLoadingResults = true;
+
+                    const queryFilter = {
+                        limit: this.paginator.pageSize,
+                        page: this.paginator.pageIndex + 1,
+                        // sortField: this.sort.active,
+                        // sortOrder: this.sort.direction,
+                        search: this.searchForm?.value?.search,
+                    };
+                    const metricsInput = {};
+
+                    if (this.searchForm.get('type').value) {
+                        metricsInput['type'] = this.type;
+                    }
+
+                    if (this.searchForm.get('amount')?.value) {
+                        this.amount = this.searchForm.get('amount').value;
+                        metricsInput['amount'] = this.amount
+                    }
+
+                    if (
+                        this.searchForm.get('startFilterDate').value &&
+                        this.searchForm.get('endFilterDate').value
+                    ) {
+                        metricsInput['startDate'] = this.startFilterDate;
+                        metricsInput['endDate'] = this.endFilterDate;
+                    }
+                    console.log('startFilterDate, endFilterDate ===>>>> ', this.startFilterDate, this.endFilterDate);
+
+                    return this.fetchPaginatedOperationsGQL.fetch(
+                        {
+                            queryFilter,
+                            organizationId: this.societyId,
+                            metricsInput,
+                        },
+                        { fetchPolicy: 'no-cache' }
+                    );
+                }),
+                map((result) => {
+                    console.log('Réponse reçue:', result);
+
+                    // Flip flag to show that loading has finished.
+                    this.isLoadingResults = false;
+                    this.isRateLimitReached = result === null;
+
+                    if (result === null || !result.data) {
+                        console.warn('Résultat null ou data manquant');
+                        return null;
+                    }
+
+                    // Only refresh the result length if there is new data. In case of rate
+                    // limit errors, we do not want to reset the paginator to zero, as that
+                    // would prevent users from re-triggering requests
+                    return result.data;
+                }),
+                catchError((error) => {
+                    console.error('Erreur lors de la requête:', error);
+                    this.isLoadingResults = false;
+                    this.isRateLimitReached = true;
+                    return of(null);
+                })
+            )
+            .subscribe((data: any) => {
+                console.log('Data reçue dans subscribe:', data);
+
+                if (!data || !data.fetchPaginatedOperations) {
+                    console.warn('Aucune donnée valide reçue');
+                    this.data = [];
+                    this.dataSource.data = [];
+                    //   this.selectedReq = null;
+                    this.resultsLength = 0;
+                    return;
+                }
+
+                const results = data.fetchPaginatedOperations.results;
+
+
+                // Mise à jour des données du composant
+                this.data = results || [];
+                // console.log('Nombre de demandes:', this.requests.length);
+                this.dataSource.data = this.data;
+
+                // this.selectedReq = this.requests.length > 0 ? this.requests[0] : null;
+                this.resultsLength = data.fetchPaginatedOperations.pagination?.totalItems || 0;
+
+            });
+
+
+
+    }
+
+    exportOperations() {
+        this.fetchOperations.fetch({ organizationId: this.societyId }, { fetchPolicy: 'no-cache' }).subscribe({
+            next: ({ data }) => {
+                const temps = data.fetchOperations;
+                if (temps.length) {
+                    const csvRows = [
+                        [
+                            'Organisation',
+                            'CREDIT',
+                            'DEBIT'
+                        ],
+                        ...temps.map((row) => [
+                            row.organization,
+                            row.credit,
+                            row.debit,
+                            '',
+                        ]),
+                    ];
+                    this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
+                } else {
+                    this.snackBarService.showSnackBar(
+                        "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+                    );
+                }
+            },
+            error: (error) => console.log(error),
+        });
+    }
+
+    convertToXLSX(data: any[], filename: string) {
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+            skipHeader: true,
+        });
+        const workbook: XLSX.WorkBook = {
+            Sheets: { data: worksheet },
+            SheetNames: ['data'],
+        };
+        const excelBuffer: any = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+        });
+        this.saveAsExcelFile(excelBuffer, filename);
+    }
+
+    saveAsExcelFile(buffer: any, fileName: string): void {
+        const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+        a.click();
+        window.URL.revokeObjectURL(url);
     }
 
 }
