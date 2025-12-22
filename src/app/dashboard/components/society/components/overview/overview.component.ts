@@ -141,7 +141,7 @@ export class OverviewComponent implements AfterViewInit {
 
         this.dataSource.data = this.data as any;
         this.resultsLength =
-          data.fetchPaginatedOrganizations.pagination.totalItems;
+          data.fetchPaginatedOrganizations.pagination?.totalItems;
       });
   }
 
