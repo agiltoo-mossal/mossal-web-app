@@ -383,13 +383,15 @@ export class DetailSocietyComponent implements AfterViewInit {
                     const csvRows = [
                         [
                             'Organisation',
-                            'CREDIT',
-                            'DEBIT'
+                            'Opération',
+                            'Montant',
+                            'Date',
                         ],
                         ...temps.map((row) => [
                             row.organization,
-                            row.credit,
-                            row.debit,
+                            row.type,
+                            row.amount,
+                            row.date,
                             '',
                         ]),
                     ];
