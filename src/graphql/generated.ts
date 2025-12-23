@@ -638,10 +638,11 @@ export type Notification = {
 
 export type OperationSummary = {
   __typename?: 'OperationSummary';
-  credit: Scalars['Float']['output'];
-  debit: Scalars['Float']['output'];
+  amount: Scalars['Float']['output'];
+  date: Scalars['String']['output'];
   organization: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
+  type: Scalars['String']['output'];
 };
 
 export enum OperationType {
@@ -1872,7 +1873,7 @@ export type FetchOperationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', organization: string, credit: number, debit: number }> };
+export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', organization: string, type: string, amount: number, date: string }> };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -3769,8 +3770,9 @@ export const FetchOperationsDocument = gql`
     query FetchOperations($organizationId: ID!) {
   fetchOperations(organizationId: $organizationId) {
     organization
-    credit
-    debit
+    type
+    amount
+    date
   }
 }
     `;

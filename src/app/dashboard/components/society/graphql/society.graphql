@@ -27,7 +27,8 @@ query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organization
 query FetchOperations($organizationId: ID!) {
   fetchOperations(organizationId: $organizationId) {
     organization
-    credit
-    debit
+    type
+    amount
+	date
   }
 }
