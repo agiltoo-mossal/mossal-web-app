@@ -1,0 +1,34 @@
+mutation AddCredit($creditInput: CreditInput!, $organizationId: ID!) {
+  addCredit(creditInput: $creditInput, organizationId: $organizationId)
+  {
+    id
+  }
+}
+
+query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organizationId: ID!, 
+								$metricsInput: OperationsMetricsInput) {
+	fetchPaginatedOperations(queryFilter: $queryFilter, organizationId: $organizationId, metricsInput: $metricsInput) {
+		pagination {
+			totalItems
+			pageCount
+			currentPage
+			pageSize
+		}
+		results {
+			id
+			amount
+			operation
+			createdAt
+			type
+		}
+	}
+}
+
+query FetchOperations($organizationId: ID!) {
+  fetchOperations(organizationId: $organizationId) {
+    organization
+    type
+    amount
+	date
+  }
+}

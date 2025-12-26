@@ -13,11 +13,4 @@ export class SocietyComponent {
 
   requests = [{}, {}, {}, {}, {}, {}];
 
-  // title: string = "liste des sociétés"
-
-
-  // addSocity() {
-  //   this.router.navigate(['/dashboard/society/create-society']);
-  // }
-
 }
