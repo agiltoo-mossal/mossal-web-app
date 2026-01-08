@@ -65,7 +65,7 @@
     <!-- Ligne: Email, Téléphone -->
     <div class="form-row">
       <div class="form-group">
-        <label for="email">Adresse mail <span class="color-danger">*</span></label>
+        <label for="email">Adresse email <span class="color-danger">*</span></label>
         <input type="email" id="email" formControlName="email" placeholder="john@gmail.com" />
         <div *ngIf="
             collaboratorForm.get('email')?.invalid &&
@@ -136,12 +136,12 @@
     <div class="form-row">
       <button type="submit" [disabled]="collaboratorForm.invalid" class="submit-button">{{ formType === 'create' ?
         'Enregistrer' : 'Sauvegarder' }}</button>
-      <button type="button" *ngIf="!collaborator?.blocked" class="suspend" requiresConfirmation
+      <!-- <button type="button" *ngIf="!collaborator?.blocked" class="suspend" requiresConfirmation
         [message]="'Voulez-vous bloquer cet utilisateur?'" [confirmCallback]="lockUser"
         [confirmCallbackParam]="collaborator?.id">
         <span><mat-icon>lock</mat-icon></span>
         Suspendre
-      </button>
+      </button> -->
       <button type="button" *ngIf="collaborator?.blocked" class="suspend" requiresConfirmation
         [message]="'Voulez-vous débloquer cet utilisateur?'" [confirmCallback]="unlockUser"
         [confirmCallbackParam]="collaborator?.id">
