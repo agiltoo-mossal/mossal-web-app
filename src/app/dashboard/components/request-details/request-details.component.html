@@ -1,5 +1,8 @@
 <div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
-  <a routerLink="/dashboard/Notifications"><span>{{ "<" }}</span>retour</a>
+  <a routerLink="/dashboard/Notifications"
+    ><span>{{ "<" }}</span
+    >retour</a
+  >
 </div>
 
 <h2 class="container-title-setting">
@@ -42,28 +45,25 @@
         <th>Montant</th>
         <th>Date</th>
         <th>Frais</th>
-        <th>Mensualité</th>
         <th>Statut</th>
-        <th style="display: flex;justify-content: center;">Action</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let remboursement of listRemboursements">
         <td>{{remboursement?.number}}</td>
         <td>{{remboursement?.amount}} XOF</td>
-        <!-- <td>{{remboursement?.toPayedAt | date }}</td> -->
-        <td>{{ remboursement.status === 'PAYED' ? (remboursement.validatedAt | date:'dd-MM-yyyy') :
-          (remboursement.toPayedAt | date:'dd-MM-yyyy') }}</td>
+        <td>{{remboursement?.createdAt | date }}</td>
         <td>{{remboursement?.fees}} XOF</td>
-        <td>{{remboursement?.amount + remboursement?.fees}} XOF</td>
         <td>{{remboursement?.status | demandeStatus | titlecase}}</td>
-        <td style="display: flex;justify-content: end;">
-          <button class="action" (click)="rembourseDemande(remboursement.id)"
-            [disabled]="remboursement?.status === 'PAYED'">
-            Rembourser
-          </button>
+        <td style="display: flex;justify-content: end;" >
+            <button class="action" (click)="rembourseDemande(remboursement.id)" [disabled]="remboursement?.status === 'PAYED'">
+                Rembourser
+            </button>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+
+

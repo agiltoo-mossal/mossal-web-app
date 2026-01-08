@@ -139,6 +139,7 @@ export class OverviewComponent implements AfterViewInit {
           if (result === null) {
             return [];
           }
+
           // Only refresh the result length if there is new data. In case of rate
           // limit errors, we do not want to reset the paginator to zero, as that
           // would prevent users from re-triggering requests

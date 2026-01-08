@@ -342,7 +342,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganization: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -419,7 +419,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganization: formValue.psp,
+      financialOrganizationId: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
