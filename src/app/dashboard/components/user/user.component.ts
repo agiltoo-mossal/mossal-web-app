@@ -93,7 +93,7 @@ export class UserComponent {
         '',
         [
           Validators.required,
-          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
         ],
       ],
       address: [''],
@@ -142,8 +142,7 @@ export class UserComponent {
           this.isLoading = false;
           this.snackBarService.showErrorSnackBar(
             5000,
-            error.message
-            // 'Mot de passe incorrect...'
+            'Mot de passe incorrect'
           );
         }
       );
