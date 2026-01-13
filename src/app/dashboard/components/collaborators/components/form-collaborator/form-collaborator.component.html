@@ -1,10 +1,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
 <div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
-  <a routerLink="/dashboard/collaborators"
-    ><span>{{ "<" }}</span
-    >retour</a
-  >
+  <a routerLink="/dashboard/collaborators"><span>{{ "<" }}</span>retour</a>
 </div>
 
 <h2 class="container-title-setting">
@@ -18,67 +15,36 @@
       <div class="form-row" style="width: 49%">
         <div class="form-group">
           <label for="prenom">Prénom</label>
-          <input
-            type="text"
-            id="prenom"
-            formControlName="firstName"
-            placeholder="Prénom"
-          />
-          <div
-            *ngIf="
+          <input type="text" id="prenom" formControlName="firstName" placeholder="Prénom" />
+          <div *ngIf="
               collaboratorForm.get('firstName')?.invalid &&
               collaboratorForm.get('firstName')?.touched
-            "
-            class="error-message"
-          >
-            <span
-              *ngIf="collaboratorForm.get('firstName')?.errors?.['required']"
-              >Le champ Prénom est obligatoire.</span
-            >
+            " class="error-message">
+            <span *ngIf="collaboratorForm.get('firstName')?.errors?.['required']">Le champ Prénom est
+              obligatoire.</span>
           </div>
         </div>
         <div class="form-group">
           <label for="nom">Nom</label>
-          <input
-            type="text"
-            id="nom"
-            formControlName="lastName"
-            placeholder="Nom"
-          />
-          <div
-            *ngIf="
+          <input type="text" id="nom" formControlName="lastName" placeholder="Nom" />
+          <div *ngIf="
               collaboratorForm.get('lastName')?.invalid &&
               collaboratorForm.get('lastName')?.touched
-            "
-            class="error-message"
-          >
-            <span *ngIf="collaboratorForm.get('lastName')?.errors?.['required']"
-              >Le champ Nom est obligatoire.</span
-            >
+            " class="error-message">
+            <span *ngIf="collaboratorForm.get('lastName')?.errors?.['required']">Le champ Nom est obligatoire.</span>
           </div>
         </div>
       </div>
       <div class="form-group">
         <label for="matricule">Matricule</label>
-        <input
-          type="text"
-          id="matricule"
-          formControlName="uniqueIdentifier"
-        />
-        <div
-          *ngIf="
+        <input type="text" id="matricule" formControlName="uniqueIdentifier" />
+        <div *ngIf="
             collaboratorForm.get('uniqueIdentifier')?.invalid &&
             collaboratorForm.get('uniqueIdentifier')?.touched
-          "
-          class="error-message"
-        >
-          <span
-            *ngIf="collaboratorForm.get('uniqueIdentifier')?.errors?.['required']"
-            >Le champ Matricule est obligatoire.</span
-          >
-          <span *ngIf="uniqueIdentifierExists"
-            >Matricule déjà utilisé</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('uniqueIdentifier')?.errors?.['required']">Le champ Matricule est
+            obligatoire.</span>
+          <span *ngIf="uniqueIdentifierExists">Matricule déjà utilisé</span>
         </div>
       </div>
     </div>
@@ -88,39 +54,24 @@
       <div class="form-group">
         <label for="date-naissance">Date de naissance</label>
         <input type="date" id="date-naissance" formControlName="birthDate" />
-        <div
-          *ngIf="
+        <div *ngIf="
             collaboratorForm.get('birthDate')?.invalid &&
             collaboratorForm.get('birthDate')?.touched
-          "
-          class="error-message"
-        >
-          <span *ngIf="collaboratorForm.get('birthDate')?.errors?.['required']"
-            >La date de naissance est obligatoire.</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('birthDate')?.errors?.['required']">La date de naissance est
+            obligatoire.</span>
         </div>
       </div>
       <div class="form-group">
         <label for="salaire">Salaire</label>
-        <input
-          type="number"
-          id="salaire"
-          formControlName="salary"
-          placeholder="175000"
-        />
-        <div
-          *ngIf="
+        <input type="number" id="salaire" formControlName="salary" placeholder="175000" />
+        <div *ngIf="
             collaboratorForm.get('salary')?.invalid &&
             collaboratorForm.get('salary')?.touched
-          "
-          class="error-message"
-        >
-          <span *ngIf="collaboratorForm.get('salary')?.errors?.['required']"
-            >Le champ Salaire est obligatoire.</span
-          >
-          <span *ngIf="collaboratorForm.get('salary')?.errors?.['pattern']"
-            >Le salaire doit être un nombre valide.</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('salary')?.errors?.['required']">Le champ Salaire est obligatoire.</span>
+          <span *ngIf="collaboratorForm.get('salary')?.errors?.['pattern']">Le salaire doit être un nombre
+            valide.</span>
         </div>
       </div>
     </div>
@@ -129,29 +80,15 @@
     <div class="form-row">
       <div class="form-group">
         <label for="email">Adresse mail</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          placeholder="adresse@email.com"
-        />
-        <div
-          *ngIf="
+        <input type="email" id="email" formControlName="email" placeholder="adresse@email.com" />
+        <div *ngIf="
             collaboratorForm.get('email')?.invalid &&
             collaboratorForm.get('email')?.touched
-          "
-          class="error-message"
-        >
-          <span *ngIf="collaboratorForm.get('email')?.errors?.['required']"
-            >L'adresse mail est obligatoire.</span
-          >
-          <span *ngIf="collaboratorForm.get('email')?.errors?.['email']"
-            >Entrez une adresse mail valide.</span
-          >
-          <span *ngIf="emailExists"
-            >Adresse email déjà utilisé</span
-          >
-          
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('email')?.errors?.['required']">L'adresse mail est obligatoire.</span>
+          <span *ngIf="collaboratorForm.get('email')?.errors?.['email']">Entrez une adresse mail valide.</span>
+          <span *ngIf="emailExists">Adresse email déjà utilisé</span>
+
         </div>
       </div>
       <div class="form-group">
@@ -162,17 +99,12 @@
             {{ category.title }}
           </option>
         </select>
-        <div
-          *ngIf="
+        <div *ngIf="
             collaboratorForm.get('categorySocioProId')?.invalid &&
             collaboratorForm.get('categorySocioProId')?.touched
-          "
-          class="error-message"
-        >
-          <span
-            *ngIf="collaboratorForm.get('categorySocioProId')?.errors?.['required']"
-            >La catégorie socioprofessionnelle est obligatoire.</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('categorySocioProId')?.errors?.['required']">La catégorie
+            socioprofessionnelle est obligatoire.</span>
         </div>
       </div>
     </div>
@@ -181,14 +113,8 @@
     <div class="form-row">
       <div class="form-group">
         <label for="telephone">Téléphone</label>
-        <input
-          type="tel"
-          id="telephone"
-          formControlName="phoneNumber"
-          placeholder="+221770000000"
-        />
-        <div
-          *ngIf="
+        <input type="tel" id="telephone" formControlName="phoneNumber" placeholder="770000000" />
+        <div *ngIf="
             collaboratorForm.get('phoneNumber')?.invalid &&
             collaboratorForm.get('phoneNumber')?.touched
           " class="error-message">
@@ -207,41 +133,26 @@
             {{ wallet }}
           </option>
         </select>
-        <div
-          *ngIf="
+        <div *ngIf="
             collaboratorForm.get('favoriteWallet')?.invalid &&
             collaboratorForm.get('favoriteWallet')?.touched
-          "
-          class="error-message"
-        >
-          <span
-            *ngIf="collaboratorForm.get('favoriteWallet')?.errors?.['required']"
-            >Le choix du mobile money est obligatoire.</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('favoriteWallet')?.errors?.['required']">Le choix du mobile money est
+            obligatoire.</span>
         </div>
       </div>
     </div>
 
     <!-- Ligne: Adresse postale -->
     <div class="form-row" style="width: 49%">
-      <div class="form-group" >
+      <div class="form-group">
         <label for="adresse">Adresse postale</label>
-        <input
-          type="text"
-          id="adresse"
-          formControlName="address"
-          placeholder="Adresse postale"
-        />
-        <div
-          *ngIf="
+        <input type="text" id="adresse" formControlName="address" placeholder="Adresse postale" />
+        <div *ngIf="
             collaboratorForm.get('address')?.invalid &&
             collaboratorForm.get('address')?.touched
-          "
-          class="error-message"
-        >
-          <span *ngIf="collaboratorForm.get('address')?.errors?.['required']"
-            >L'adresse postale est obligatoire.</span
-          >
+          " class="error-message">
+          <span *ngIf="collaboratorForm.get('address')?.errors?.['required']">L'adresse postale est obligatoire.</span>
         </div>
       </div>
     </div>
