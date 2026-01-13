@@ -1,4 +1,4 @@
-<!-- <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
+<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="15px">
     <div fxLayout="row" fxLayoutGap="19px">
       <div *ngIf="searchForm" [formGroup]="searchForm" class="search-container" fxFlex="auto"
@@ -24,81 +24,7 @@
               </div>
             </a>
           </div>
-        </div> -->
-        <div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="20px">
-          <div fxFlex="auto" fxLayout="column" fxLayoutGap="15px">
-
-            <div fxLayout="row" fxLayoutGap="19px">
-
-              <div *ngIf="searchForm"
-                  [formGroup]="searchForm"
-                  class="search-container"
-                  fxFlex="auto"
-                  fxLayoutAlign="start center">
-                <mat-icon class="icon">search</mat-icon>
-                <input formControlName="search"
-                      type="text"
-                      class="form-control"
-                      placeholder="Recherche" />
-              </div>
-
-              <div fxLayout="row" fxLayoutGap="19px">
-
-                <div class="dropdown" appDropdown="downlod-dropdown">
-
-                  <button class="btn btn-primary"
-                          fxLayout="row"
-                          fxLayoutAlign="center center"
-                          fxLayoutGap="8px">
-                    <mat-icon>cloud_download</mat-icon>
-                    <span>Importer un fichier</span>
-                  </button>
-
-                  <div class="dropdown-content"
-                      id="downlod-dropdown"
-                      fxLayout="row"
-                      fxLayoutGap="40px"
-                      fxLayoutAlign="center center">
-
-                    <div fxLayout="column"
-                        fxLayoutAlign="start center"
-                        class="dropdown-option upload-wrapper">
-
-                      <div class="icon">
-                        <img src="./assets/img/icon-upload.png" alt="" />
-                      </div>
-
-                      <div fxLayout="column" fxLayoutAlign="start center">
-                        <span class="type">Importer</span>
-                        <span class="format">Format accepté : XLSX</span>
-                      </div>
-
-                      <app-file-upload
-                        class="upload-hidden"
-                        [type]="type">
-                      </app-file-upload>
-
-                    </div>
-
-                    <a href="./assets/files/template-admin.xlsx"
-                      [download]="'template-admin.xlsx'"
-                      class="dropdown-option"
-                      fxLayout="column"
-                      fxLayoutAlign="start center">
-
-                      <div class="icon">
-                        <img src="./assets/img/icon-download.png" alt="" />
-                      </div>
-
-                      <div fxLayout="column" fxLayoutAlign="start center">
-                        <span class="type">Télécharger le template</span>
-                        <span class="format">template.XLSX</span>
-                      </div>
-
-                    </a>
-
-                  </div>
-                </div>
+        </div>
         <button class="btn btn-primary" fxLayoutAlign="center center" fxLayoutGap="8px"
           routerLink="/dashboard/admins/create-admin">
           <span>+</span> <span>Ajouter un admin</span>
@@ -114,7 +40,7 @@
         matSortDirection="desc" -->
         <!-- Number Column -->
         <ng-container matColumnDef="uniqueIdentifier">
-          <th mat-header-cell *matHeaderCellDef class="title ">matricule</th>
+          <th mat-header-cell *matHeaderCellDef class="title ">Identifiant</th>
           <td class="radio-container" mat-cell *matCellDef="let row">
             <div class="radio-container">
               <span (click)="selectAdmin(row)" class="radio {{ row?.id === selectedAdmin?.id ? 'active' : '' }}"

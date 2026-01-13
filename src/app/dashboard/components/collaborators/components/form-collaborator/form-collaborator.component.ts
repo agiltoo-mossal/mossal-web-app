@@ -66,7 +66,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         [
           Validators.required,
 
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
         ],
       ],
       address: [''],
