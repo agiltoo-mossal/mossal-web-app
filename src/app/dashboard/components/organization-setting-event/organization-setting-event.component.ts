@@ -5,9 +5,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { lastValueFrom, map, switchMap } from 'rxjs';
-import { CreateEventComponent } from 'src/app/shared/components/create-event/create-event.component';
+import { lastValueFrom } from 'rxjs';
 import {
   ActivateEventGQL,
   AmountUnit,
@@ -25,7 +23,6 @@ import {
   FetchCurrentAdminGQL,
   FetchEventsGQL,
   FetchOrganisationServiceByOrganisationIdAndServiceIdGQL,
-  FetchServicesGQL,
   OrganisationService,
   OrganisationServiceInput,
   Organization,
@@ -34,14 +31,9 @@ import {
   UpdateEventGQL,
   UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
-import {
-  EAmountUnit,
-  ERrefundDurationUnit,
-} from '../organization-setting-emergency/organization-setting-emergency.component';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import Swal from 'sweetalert2';
-import { ActivationService } from '../organization/activation.service';
 
 @Component({
   selector: 'app-organization-setting-event',
@@ -96,10 +88,9 @@ export class OrganizationSettingEventComponent {
     private desactiveEvent: DesactiveEventGQL,
     private updateEventGQL: UpdateEventGQL,
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
-    private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -119,8 +110,8 @@ export class OrganizationSettingEventComponent {
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
-            OrganisationService & { categorySociopro: CategorySociopro[] }
-          >;
+              OrganisationService & { categorySociopro: CategorySociopro[] }
+            >;
           this.dataForm = this.info;
           if (this.info) {
             this.fetchEvents(this.organisationServiceId);
@@ -675,7 +666,7 @@ export class OrganizationSettingEventComponent {
     }
   }
 
-  createOrganizationService() {}
+  createOrganizationService() { }
   handleClickEvent(event: any) {
     console.log('event', event);
     if (this.eventSelectedId === event.id) {
@@ -715,5 +706,5 @@ export class OrganizationSettingEventComponent {
     }
     console.log('disableButton', this.disableButton);
   }
-  createOrganizationEvent(EventInput: EventInput) {}
+  createOrganizationEvent(EventInput: EventInput) { }
 }

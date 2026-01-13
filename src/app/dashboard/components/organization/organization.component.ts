@@ -51,7 +51,7 @@ export class OrganizationComponent {
     private activeOrganizationService: ActivateOrganisationServiceGQL,
     private desactiveOrganizationService: DesactivateOrganisationServiceGQL
   ) {
-   
+
 
     this.getCurrentorganization();
     this.generateCardItems();
@@ -66,7 +66,7 @@ export class OrganizationComponent {
         ];
         this.selectedService = this.listServices[0];
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
   get name() {
