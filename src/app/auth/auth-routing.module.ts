@@ -4,6 +4,7 @@ import { AuthComponent } from './auth.component';
 import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
+import { ConfirmPasswordResetComponent } from './confirm-password-reset/confirm-password-reset.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
         path: 'request-password-reset',
         component: RequestResetPasswordComponent,
       },
+      {
+        path: 'confirm-forgot-password',
+        component: ConfirmPasswordResetComponent,
+      },
     ],
   },
 ];
@@ -29,4 +34,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class AuthRoutingModule {}
+export class AuthRoutingModule { }
