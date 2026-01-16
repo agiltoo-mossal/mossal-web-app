@@ -257,6 +257,7 @@ export type FinalizeForgotPasswordInput = {
 
 export type FinancialOrganization = {
   __typename?: 'FinancialOrganization';
+  activedWallets: Array<WalletInfo>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Any']['output'];
@@ -265,11 +266,13 @@ export type FinancialOrganization = {
 };
 
 export type FinancialOrganizationInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type FinancialOrganizationUpdateInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -633,6 +636,15 @@ export type Notification = {
   viewedByMe: Scalars['Boolean']['output'];
 };
 
+export type OperationSummary = {
+  __typename?: 'OperationSummary';
+  amount: Scalars['Float']['output'];
+  date: Scalars['String']['output'];
+  organization: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+  type: Scalars['String']['output'];
+};
+
 export enum OperationType {
   Credit = 'CREDIT',
   Debit = 'DEBIT'
@@ -643,6 +655,13 @@ export type OperationsMetrics = {
   credit: Array<OperationsMetricsRow>;
   debit: Array<OperationsMetricsRow>;
   total: Array<OperationsMetricsRow>;
+};
+
+export type OperationsMetricsInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  type?: InputMaybe<OperationType>;
 };
 
 export type OperationsMetricsRow = {
@@ -716,7 +735,6 @@ export type Organization = {
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
-  financialOrganizationId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   logo?: Maybe<OrganizationLogo>;
   logoId?: Maybe<Scalars['String']['output']>;
@@ -736,7 +754,7 @@ export type OrganizationInput = {
   balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
   /** Nom de l'organisation financière */
-  financialOrganizationId: Scalars['String']['input'];
+  financialOrganization: Scalars['String']['input'];
   logo?: InputMaybe<OrganizationLogoInput>;
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
@@ -775,7 +793,7 @@ export type OrganizationUpdateInput = {
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
-  financialOrganizationId?: InputMaybe<Scalars['String']['input']>;
+  financialOrganization?: InputMaybe<Scalars['String']['input']>;
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -894,6 +912,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
@@ -1040,6 +1059,11 @@ export type QueryFetchMossallAdminArgs = {
 };
 
 
+export type QueryFetchOperationsArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+
 export type QueryFetchOperationsMetricsArgs = {
   metricsInput: DemandesMetricsInput;
   organizationId: Scalars['ID']['input'];
@@ -1104,6 +1128,7 @@ export type QueryFetchPaginatedNotificationsArgs = {
 
 
 export type QueryFetchPaginatedOperationsArgs = {
+  metricsInput?: InputMaybe<OperationsMetricsInput>;
   organizationId: Scalars['ID']['input'];
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
@@ -1215,6 +1240,7 @@ export type Remboursement = {
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
   status: RemboursementStatus;
+  toPayedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
@@ -1467,7 +1493,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null }> };
 
 export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -2240,6 +2266,9 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     blocked
     favoriteWallet
     birthDate
+    categorySociopro {
+      title
+    }
   }
 }
     `;
