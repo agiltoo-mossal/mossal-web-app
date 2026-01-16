@@ -421,6 +421,7 @@ query FetchOrganization($organizationId: ID!) {
     }
     blocked
     balance
+    maxDemandeAmount
 	}
 }
 

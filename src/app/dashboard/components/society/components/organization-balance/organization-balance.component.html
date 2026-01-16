@@ -1,0 +1,17 @@
+<div *ngIf="organization" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
+    <div fxFlex="auto" class="org-balance-container" fxLayout="column" fxLayoutGap="16px">
+        <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="balance-label">Solde actuel</span>
+
+            <!-- <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
+                <div class="data-image" fxLayoutAlign="center center"
+                    [ngStyle]="{ border: '2px solid ' + balanceData.style }">
+                    <img [src]="balanceData.path" alt="" />
+                </div>
+            </div> -->
+        </div>
+        <span *ngIf="organization" class="top value" [ngClass]="getBalanceClass()">
+            {{ organization.balance | number : '1.0-0':'fr-FR' }} XOF
+        </span>
+    </div>
+</div>
