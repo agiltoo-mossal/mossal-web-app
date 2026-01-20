@@ -203,26 +203,34 @@ export class OverviewComponent implements AfterViewInit {
       next: ({ data }) => {
 
         const temps = data.fetchOrganizationCollaborators;
+        console.log('fetchOrganizationCollaborators', data.fetchOrganizationCollaborators);
+        
         if (temps.length) {
           const csvRows = [
             [
               'Nom',
-              'Prenom',
-              'Identifiant unique',
+              'Prénom',
               'Adresse mail',
               'Date de naissance',
               'Numéro de téléphone',
               'Adresse postale',
+              'Fonction',
+              'Matricule',
+              'Salaire',
+              // 'Catégorie socioprofessionnelle', 
               'Date d\'inscription',
             ],
             ...temps.map((row) => [
               row.lastName,
               row.firstName,
-              row.uniqueIdentifier,
               row.email,
               row.birthDate,
               row.phoneNumber,
               row.address,
+              row.position,
+              row.uniqueIdentifier,
+              row.salary,
+              // row.categorySociopro.title,
               row.createdAt,
               '',
             ]),

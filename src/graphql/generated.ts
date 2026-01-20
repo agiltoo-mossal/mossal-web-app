@@ -257,6 +257,7 @@ export type FinalizeForgotPasswordInput = {
 
 export type FinancialOrganization = {
   __typename?: 'FinancialOrganization';
+  activedWallets: Array<WalletInfo>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Any']['output'];
@@ -265,11 +266,13 @@ export type FinancialOrganization = {
 };
 
 export type FinancialOrganizationInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type FinancialOrganizationUpdateInput = {
+  activedWallets?: InputMaybe<Array<WalletInfoInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -732,7 +735,6 @@ export type Organization = {
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
-  financialOrganizationId: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   logo?: Maybe<OrganizationLogo>;
   logoId?: Maybe<Scalars['String']['output']>;
@@ -752,7 +754,7 @@ export type OrganizationInput = {
   balance: Scalars['Float']['input'];
   fees: Scalars['Float']['input'];
   /** Nom de l'organisation financière */
-  financialOrganizationId: Scalars['String']['input'];
+  financialOrganization: Scalars['String']['input'];
   logo?: InputMaybe<OrganizationLogoInput>;
   maxDemandeAmount: Scalars['Float']['input'];
   /** Nom de l'organisation */
@@ -791,7 +793,7 @@ export type OrganizationUpdateInput = {
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
-  financialOrganizationId?: InputMaybe<Scalars['String']['input']>;
+  financialOrganization?: InputMaybe<Scalars['String']['input']>;
   maxDemandeAmount?: InputMaybe<Scalars['Float']['input']>;
   /** Nom de l'organisation */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1238,6 +1240,7 @@ export type Remboursement = {
   id: Scalars['ID']['output'];
   number: Scalars['Float']['output'];
   status: RemboursementStatus;
+  toPayedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
@@ -1490,7 +1493,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null }> };
 
 export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -2271,6 +2274,9 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     blocked
     favoriteWallet
     birthDate
+    categorySociopro {
+      title
+    }
   }
 }
     `;
