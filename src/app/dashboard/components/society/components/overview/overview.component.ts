@@ -145,6 +145,74 @@ export class OverviewComponent implements AfterViewInit {
       });
   }
 
+//  ngAfterViewInit() {
+//   setTimeout(() => {
+//     if (!this.sort.active) {
+//       this.sort.active = 'name';
+//       this.sort.direction = 'asc';
+//     }
+
+//     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+//     this.searchForm
+//       .get('search')
+//       .valueChanges.pipe(
+//         debounceTime(300),
+//         distinctUntilChanged(),
+//         startWith('')
+//       )
+//       .subscribe((r) => {
+//         this.paginator.firstPage();
+//       });
+
+//     merge(
+//       this.sort.sortChange,
+//       this.paginator.page,
+//       this.searchForm.get('search').valueChanges.pipe(
+//         debounceTime(300),
+//         distinctUntilChanged()
+//       )
+//     )
+//       .pipe(
+//         startWith({}),
+//         switchMap(() => {
+//           this.isLoadingResults = true;
+//           const queryFilter = {
+//             limit: this.paginator.pageSize || 10,
+//             page: this.paginator.pageIndex + 1,
+//             sortField: this.sort.active || 'name',
+//             sortOrder: this.sort.direction || 'asc',
+//             search: this.searchForm?.value?.search,
+//           };
+
+//           console.log('Query Filter:', queryFilter); 
+
+//           return this.fetchPaginatedOrganizationsGQL.fetch(
+//             { queryFilter },
+//             { fetchPolicy: 'no-cache' }
+//           );
+//         }),
+//         map((result) => {
+//           this.isLoadingResults = false;
+//           this.isRateLimitReached = result === null;
+
+//           if (result === null) {
+//             return [];
+//           }
+
+//           console.log("list of organizations =========>>>>>>> ", result.data);
+
+//           return result.data;
+//         })
+//       )
+//       .subscribe((data: any) => {
+//         this.data = data.fetchPaginatedOrganizations.results as any;
+//         this.dataSource.data = this.data as any;
+//         this.resultsLength = data.fetchPaginatedOrganizations.pagination.totalItems;
+//       });
+//   });
+// }
+
   fetchOrganizations() {
     this.fetchPaginatedOrganizationsGQL
       .fetch({}, { fetchPolicy: 'no-cache' })
