@@ -50,7 +50,7 @@ export class OverviewComponent implements AfterViewInit {
 
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  // @ViewChild(MatSort) sort: MatSort;
   dataSource = new MatTableDataSource<Organization>();
 
   page: number = 1;
@@ -81,7 +81,7 @@ export class OverviewComponent implements AfterViewInit {
   requests = [{}, {}, {}, {}, {}, {}];
 
   ngAfterViewInit() {
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    // this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     this.searchForm
       .get('search')
       .valueChanges.pipe(
@@ -94,7 +94,7 @@ export class OverviewComponent implements AfterViewInit {
       });
 
     merge(
-      this.sort.sortChange,
+      // this.sort.sortChange,
       this.paginator.page,
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
