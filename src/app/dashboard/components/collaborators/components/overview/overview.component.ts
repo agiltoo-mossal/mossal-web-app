@@ -203,7 +203,9 @@ export class OverviewComponent implements AfterViewInit {
       next: ({ data }) => {
 
         const temps = data.fetchOrganizationCollaborators;
-        console.log('fetchOrganizationCollaborators', data.fetchOrganizationCollaborators);
+        const organizationName = data.fetchOrganizationCollaborators[0].organization?.name;
+        const date = new Date();
+        const formattedDate = date.toISOString().split('T')[0];
 
         if (temps.length) {
           const csvRows = [
@@ -235,7 +237,7 @@ export class OverviewComponent implements AfterViewInit {
               '',
             ]),
           ];
-          this.convertToXLSX(csvRows);
+          this.convertToXLSX(csvRows, organizationName, formattedDate);
         } else {
           this.snackBarService.showSnackBar(
             "Aucun collaborateur trouvé !"
@@ -246,7 +248,7 @@ export class OverviewComponent implements AfterViewInit {
     });
   }
 
-  convertToXLSX(data: any[]) {
+  convertToXLSX(data: any[], organizationName: string, date: string) {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
       skipHeader: true,
     });
@@ -258,7 +260,7 @@ export class OverviewComponent implements AfterViewInit {
       bookType: 'xlsx',
       type: 'array',
     });
-    this.saveAsExcelFile(excelBuffer, 'collaborateurs_Eyone_2025-06-23');
+    this.saveAsExcelFile(excelBuffer, `collaborateurs_${organizationName}_${date}`);
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
