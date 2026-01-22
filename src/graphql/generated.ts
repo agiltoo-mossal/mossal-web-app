@@ -1464,7 +1464,7 @@ export type FetchMossallAdminQuery = { __typename?: 'Query', fetchMossallAdmin: 
 export type FetchOrganizationAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> };
+export type FetchOrganizationAdminsQuery = { __typename?: 'Query', fetchOrganizationAdmins: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, createdAt: any, updatedAt: any }> };
 
 export type InviteAdminMutationVariables = Exact<{
   adminInput: InviteCollaboratorInput;
@@ -1479,7 +1479,7 @@ export type FetchPaginatedOrganisationAdminsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any }> } };
+export type FetchPaginatedOrganisationAdminsQuery = { __typename?: 'Query', fetchPaginatedOrganisationAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, blocked?: boolean | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, createdAt: any, updatedAt: any }> } };
 
 export type FetchPaginatedMossallAdminsQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
@@ -1493,7 +1493,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null, organization?: { __typename?: 'Organization', name: string } | null }> };
 
 export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -1768,7 +1768,7 @@ export type FetchRemboursementByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, demande?: { __typename?: 'Demande', remainingRefundAmount?: number | null, id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+export type FetchRemboursementByUserIdQuery = { __typename?: 'Query', fetchRemboursementByUserId: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, validatedAt?: any | null, toPayedAt?: any | null, demande?: { __typename?: 'Demande', remainingRefundAmount?: number | null, id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, organisationService?: { __typename?: 'OrganisationService', service: { __typename?: 'Service', title: string } } | null, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type FetchPaginatedOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -1849,7 +1849,7 @@ export type FetchRemboursementsByDemandeQueryVariables = Exact<{
 }>;
 
 
-export type FetchRemboursementsByDemandeQuery = { __typename?: 'Query', fetchRemboursementsByDemande: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
+export type FetchRemboursementsByDemandeQuery = { __typename?: 'Query', fetchRemboursementsByDemande: Array<{ __typename?: 'Remboursement', id: string, amount: number, number: number, fees?: number | null, status: RemboursementStatus, demandeId: string, userId?: string | null, createdAt: any, updatedAt: any, toPayedAt?: any | null, validatedAt?: any | null, demande?: { __typename?: 'Demande', id: string, amount: number, status: DemandeStatus, number: number, fees: number, statusText?: string | null, createdAt: any, updatedAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, balance?: number | null, totalDemandeAmount: number, salary?: number | null, authorizedAdvance: number, bankAccountNumber?: string | null, uniqueIdentifier?: string | null } } | null }> };
 
 export type AddCreditMutationVariables = Exact<{
   creditInput: CreditInput;
@@ -2134,12 +2134,10 @@ export const FetchOrganizationAdminsDocument = gql`
     address
     salary
     blocked
-    balance
     totalDemandeAmount
     wizallAccountNumber
     bankAccountNumber
     position
-    authorizedAdvance
     createdAt
     updatedAt
   }
@@ -2194,12 +2192,10 @@ export const FetchPaginatedOrganisationAdminsDocument = gql`
       address
       salary
       blocked
-      balance
       totalDemandeAmount
       wizallAccountNumber
       bankAccountNumber
       position
-      authorizedAdvance
       createdAt
       updatedAt
     }
@@ -2276,6 +2272,9 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     birthDate
     categorySociopro {
       title
+    }
+    organization {
+      name
     }
   }
 }
@@ -3366,6 +3365,7 @@ export const FetchRemboursementByUserIdDocument = gql`
     createdAt
     updatedAt
     validatedAt
+    toPayedAt
     demande {
       remainingRefundAmount
       organisationService {
@@ -3683,6 +3683,8 @@ export const FetchRemboursementsByDemandeDocument = gql`
     userId
     createdAt
     updatedAt
+    toPayedAt
+    validatedAt
     demande {
       id
       amount

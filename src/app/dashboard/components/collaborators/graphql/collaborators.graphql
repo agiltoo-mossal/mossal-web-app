@@ -22,9 +22,9 @@ query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
     categorySociopro {
       title
     }
-    # organization {
-    #   name
-    # }
+    organization {
+      name
+    }
   }
 }
 
