@@ -204,7 +204,7 @@ export class OverviewComponent implements AfterViewInit {
 
         const temps = data.fetchOrganizationCollaborators;
         console.log('fetchOrganizationCollaborators', data.fetchOrganizationCollaborators);
-        
+
         if (temps.length) {
           const csvRows = [
             [
@@ -217,7 +217,7 @@ export class OverviewComponent implements AfterViewInit {
               'Fonction',
               'Matricule',
               'Salaire',
-              // 'Catégorie socioprofessionnelle', 
+              'Catégorie socioprofessionnelle',
               'Date d\'inscription',
             ],
             ...temps.map((row) => [
@@ -230,7 +230,7 @@ export class OverviewComponent implements AfterViewInit {
               row.position,
               row.uniqueIdentifier,
               row.salary,
-              // row.categorySociopro.title,
+              row.categorySociopro?.title,
               row.createdAt,
               '',
             ]),
