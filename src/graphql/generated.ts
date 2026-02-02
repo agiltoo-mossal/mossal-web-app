@@ -732,6 +732,7 @@ export type Organization = {
   amountPercent: Scalars['Float']['output'];
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
@@ -746,6 +747,7 @@ export type Organization = {
   postalAddress: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
   rootEmail: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
 };
 
