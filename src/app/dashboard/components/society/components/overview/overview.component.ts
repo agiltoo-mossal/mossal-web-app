@@ -48,17 +48,15 @@ export class OverviewComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource = new MatTableDataSource<Organization>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   page: number = 1;
-  // data = [];
-  data: Organization[] = [];
-  organizations = [];
+  data = [];
+  organizations: Organization[] = [];
 
   constructor(
     private router: Router,
@@ -72,6 +70,16 @@ export class OverviewComponent implements AfterViewInit {
 
     this.initSearchForm();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
+  }
+
+  fetchOrganizations() {
+    this.fetchPaginatedOrganizationsGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        this.organizations = result.data.fetchPaginatedOrganizations
+          .results as Organization[];
+        this.dataSource.data = this.organizations;
+      });
   }
 
   initSearchForm() {
@@ -116,6 +124,7 @@ export class OverviewComponent implements AfterViewInit {
   //           // sortOrder: this.sort.direction,
   //           search: this.searchForm?.value?.search,
   //         };
+  //         console.log("queryFilter =====>>>>>> ", queryFilter);
 
   //         return this.fetchPaginatedOrganizationsGQL.fetch(
   //           { queryFilter },
@@ -148,29 +157,37 @@ export class OverviewComponent implements AfterViewInit {
   //     });
   // }
 
-  ngAfterViewInit() {
-    this.searchForm.get('search').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.paginator.firstPage();
-    });
+  ngAfterViewInit(): void {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.searchForm
+      .get('search')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
+      .subscribe((r) => {
+        this.paginator.firstPage();
+      });
 
     merge(
+      this.sort.sortChange,
       this.paginator.page,
       this.searchForm.get('search').valueChanges.pipe(
         debounceTime(300),
         distinctUntilChanged()
+        // startWith('')
       )
     )
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-
           const queryFilter = {
-            limit: this.paginator.pageSize || 10,
+            limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
+            // sortField: this.sort.active,
+            // sortOrder: this.sort.direction,
             search: this.searchForm?.value?.search,
           };
 
@@ -180,24 +197,26 @@ export class OverviewComponent implements AfterViewInit {
           );
         }),
         map((result) => {
+          // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
-          return result?.data;
+          this.isRateLimitReached = result === null;
+
+          if (result === null) {
+            return [];
+          }
+          // Only refresh the result length if there is new data. In case of rate
+          // limit errors, we do not want to reset the paginator to zero, as that
+          // would prevent users from re-triggering requests
+          return result.data;
         })
       )
-      .subscribe((data) => {
-        this.dataSource.data = data.fetchPaginatedOrganizations.results as any;
+      .subscribe((data: any) => {
+        this.data = data.fetchPaginatedOrganizations.results as any;
+        this.dataSource.data = this.data as any;
+        // this.selectedAdmin = this.data[0];
         this.resultsLength =
           data.fetchPaginatedOrganizations.pagination.totalItems;
-      });
-  }
-
-  fetchOrganizations() {
-    this.fetchPaginatedOrganizationsGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        this.organizations = result.data.fetchPaginatedOrganizations
-          .results as Organization[];
-        this.dataSource.data = this.organizations;
+        // this.selectedAdmin = this.data?.[0];
       });
   }
 
