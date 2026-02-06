@@ -1,0 +1,76 @@
+<form *ngIf="form" [formGroup]="form" class="form-container" fxLayout="column" fxLayoutGap="40px">
+  <div fxLayout="column" fxLayoutGap="32px">
+    <span class="title" fxLayoutAlign="center center">Vérification OTP</span>
+    <div class="separator"></div>
+  </div>
+
+  <div fxLayout="column" fxLayoutGap="50px" fxLayoutGap.lt-sm="32px">
+    <!-- Message d'information -->
+    <div fxLayout="column" fxLayoutGap="16px" fxLayoutAlign="center center">
+      <mat-icon class="otp-icon" color="primary">mark_email_read</mat-icon>
+      <p class="info-text">
+        Un code de vérification a été envoyé à votre adresse email.
+        <br>
+        Veuillez saisir le code reçu pour continuer.
+      </p>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div class="color-danger" *ngIf="invalidOtp">Code OTP incorrect ou expiré!</div>
+
+    <!-- Champ OTP -->
+    <div fxLayout="column" fxLayoutGap="24px">
+      <label class="form-group" fxLayout="column" fxLayoutGap="8px">
+        <span class="label">Code OTP</span>
+        <div fxLayoutAlign="start center">
+          <input 
+            formControlName="otpCode" 
+            class="form-control otp-input" 
+            type="text" 
+            placeholder="Entrez le code à 6 chiffres"
+            maxlength="6"
+            name="otpCode"
+            (input)="onOtpInput($event)">
+          <span class="icon-control"><mat-icon>dialpad</mat-icon></span>
+        </div>
+        <small class="color-danger" *ngIf="otpCode.touched && otpCode.invalid">
+          Le code OTP doit contenir 6 chiffres
+        </small>
+      </label>
+
+      <!-- Timer et renvoi -->
+      <div fxLayout="row" fxLayoutAlign="space-between center" class="otp-actions">
+        <span class="timer-text" *ngIf="timer > 0">
+          Code valide pendant: <strong>{{ formatTime(timer) }}</strong>
+        </span>
+        <span class="expired-text color-danger" *ngIf="timer === 0">
+          Code expiré
+        </span>
+        <button 
+          type="button" 
+          class="resend-link" 
+          (click)="resendOtp()" 
+          [disabled]="timer > 0 || isResending">
+          {{ isResending ? 'Envoi en cours...' : 'Renvoyer le code' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div fxLayout="column" fxLayoutGap="16px">
+      <button 
+        class="submit" 
+        type="submit" 
+        (click)="verifyOtp()" 
+        [disabled]="form.invalid || isVerifying">
+        {{ isVerifying ? 'Vérification...' : 'Vérifier' }}
+      </button>
+      <button 
+        class="cancel-btn" 
+        type="button" 
+        (click)="cancel()">
+        Annuler
+      </button>
+    </div>
+  </div>
+</form>
