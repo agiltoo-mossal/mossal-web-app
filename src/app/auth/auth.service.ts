@@ -311,7 +311,7 @@ export class AuthService {
       this.snackBarService.showSnackBar(
         "Nom d'utilisateur ou mot de passe incorrect!",
         '',
-        { panelClass: ['red-snackbar'], duration: 2500 }
+        { duration: 2500 }
       );
       throw e;
     }
@@ -362,8 +362,8 @@ export class AuthService {
       this.router.navigate(['/auth/reset']);
     } else {
       session.role === 'SUPER_ADMIN' ?
-        this.router.navigate(['/dashboard']) :
-        this.router.navigate(['/dashboard/society']);
+        this.router.navigate(['/dashboard/society']) :
+        this.router.navigate(['/dashboard']);
     }
   }
 
