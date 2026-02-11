@@ -20,17 +20,17 @@ export enum AuthConstant {
   refreshTokenLocalName = 'rft',
   tokenLocalName = 'tmp_tok',
   sessionLocalName = 'userSession',
+  otpEmailLocalName = 'otpEmail',
+  pendingAuthLocalName = 'pendingAuth',
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // private static token: string;
-  // private static access_token: string;
-  // private static refresh_token: string;
   role: string = '';
   currentUser: User;
+
   constructor(
     private keycloakService: KeycloakService,
     private loginAdminGQL: LoginAdminGQL,
@@ -48,7 +48,6 @@ export class AuthService {
   }
 
   getToken() {
-    // return AuthService.access_token;
     return localStorage.getItem(AuthConstant.access_tokenLocalName);
   }
 
@@ -256,20 +255,14 @@ export class AuthService {
   cleanAuthData() {
     const savedCredentials = localStorage.getItem('savedCredentials');
     localStorage.clear();
+    sessionStorage.clear();
     if (savedCredentials) {
       localStorage.setItem('savedCredentials', savedCredentials);
     }
   }
 
   logout() {
-    // AuthService.access_token = null;
-    // AuthService.refresh_token = null;
-    // AuthService.token = null;
     this.cleanAuthData();
     this.router.navigate(['/auth/login']);
-    // return true;
   }
-
 }
-
-
