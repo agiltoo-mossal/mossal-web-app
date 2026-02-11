@@ -47,8 +47,10 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   selectedReq: Demande;
   min: number = 0;
   max: number = 10000;
-  startDate: string = '2025-01-01';
-  endDate: string = '2025-12-31';
+  // startDate: string = '2025-01-01';
+  // endDate: string = '2025-12-31';
+  startDate: string;
+  endDate: string;
   status: DemandeStatus = null;
   search: string = '';
   searchForm: FormGroup;
@@ -110,7 +112,11 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fb: FormBuilder,
     private router: Router
+  
   ) {
+    const dates = this.getCurrentYearDates();
+    this.startDate = dates.start;
+    this.endDate = dates.end;
     this.initSearchForm();
     this.activatedRoute.queryParams.subscribe((params) => {
       this.search = params['entity'] || '';
@@ -136,14 +142,28 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         this.fetchStatus = value.data.fetchCountStatus;
       },
     });
+  } 
+
+  getCurrentYearDates() {
+    const currentYear = new Date().getFullYear();
+
+    return {
+      start: `${currentYear}-01-01`,
+      end: `${currentYear}-12-31`,
+    };
   }
+
+
   initSearchForm() {
+    const dates = this.getCurrentYearDates();
     this.searchForm = this.fb.group({
       search: [''],
       status: [''],
       average: [''],
-      startDate: ['2025-01-01'],
-      endDate: ['2025-12-31'],
+      // startDate: ['2025-01-01'],
+      // endDate: ['2025-12-31'],
+      startDate: [dates.start],
+      endDate: [dates.end],
     });
   }
 
@@ -524,11 +544,14 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
   // }
 
   resetFilter() {
+    const dates = this.getCurrentYearDates();
     // Réinitialiser les variables locales
     this.min = 0;
     this.max = 10000;
-    this.startDate = '2025-01-01';
-    this.endDate = '2025-12-31';
+    // this.startDate = '2025-01-01';
+    // this.endDate = '2025-12-31';
+    this.startDate = dates.start;
+    this.endDate = dates.end;
     this.status = null;
     this.search = '';
 
@@ -536,8 +559,10 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       search: '',
       status: null,
       average: null,
-      startDate: '2025-01-01',
-      endDate: '2025-12-31'
+      // startDate: '2025-01-01',
+      // endDate: '2025-12-31'
+      startDate: dates.start,
+      endDate: dates.end
     });
 
 
