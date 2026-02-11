@@ -14,7 +14,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   invalidOtp = false;
   isVerifying = false;
   isResending = false;
-  timer = 300; // 5 minutes
+  timer = 30; // 5 minutes
   userEmail = '';
   private timerSubscription?: Subscription;
 
@@ -22,7 +22,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Vérifier si l'utilisateur vient de la page de login
@@ -65,7 +65,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   }
 
   verifyOtp(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.isVerifying) return;
 
     this.isVerifying = true;
     this.invalidOtp = false;
@@ -73,18 +73,15 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
     const otpCode = this.form.value.otpCode;
 
     this.authService.verifyOtp(this.userEmail, otpCode)
-      .then(
-        (result) => {
-          this.isVerifying = false;
-          // La redirection est gérée dans le service
-        },
-        (error) => {
-          this.isVerifying = false;
-          this.invalidOtp = true;
-          this.form.reset();
-        }
-      );
+      .finally(() => {
+        this.isVerifying = false;
+      })
+      .catch(() => {
+        this.invalidOtp = true;
+        this.form.reset();
+      });
   }
+
 
   resendOtp(): void {
     this.isResending = true;
@@ -94,7 +91,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       .then(
         (result) => {
           this.isResending = false;
-          this.timer = 300;
+          this.timer = 30;
           this.startTimer();
           this.form.reset();
         },

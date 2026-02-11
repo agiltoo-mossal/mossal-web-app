@@ -16,6 +16,7 @@ query LoginAdmin($loginInput: LoginInput!) {
 		refresh_token
 		expires_in
 		role
+		otpRequired
 	}
 }
 
@@ -29,4 +30,30 @@ mutation StartForgotPassword($email: String!) {
 
 mutation FinalizeForgotPassword($finalizeForgotPasswordInput: FinalizeForgotPasswordInput!) {
 	finalizeForgotPassword(finalizeForgotPasswordInput: $finalizeForgotPasswordInput)
+}
+
+mutation VerifyOtp($verifyOtpInput: VerifyOtpInput!) {
+	verifyOtp(verifyOtpInput: $verifyOtpInput) {
+		user {
+			id
+			firstName
+			lastName
+			organization {
+				id
+				rootEmail
+				name
+			}
+		}
+		enabled
+		token
+		access_token
+		refresh_token
+		expires_in
+		role
+		otpRequired
+	}
+}
+
+mutation ResendOtp($email: String!) {
+	resendOtp(email: $email)
 }

@@ -204,10 +204,12 @@ import {
   FetchCurrentAdminGQL,
   LoginAdminGQL,
   LoginInput,
+  ResendOtpGQL,
   ResetAdminPasswordGQL,
   StartForgotPasswordGQL,
   User,
-  
+  VerifyOtpGQL,
+
 } from 'src/graphql/generated';
 import { SnackBarService } from '../shared/services/snackbar.service';
 
@@ -226,7 +228,7 @@ export enum AuthConstant {
 export class AuthService {
   role: string = '';
   currentUser: User;
-  
+
   constructor(
     private keycloakService: KeycloakService,
     private loginAdminGQL: LoginAdminGQL,
@@ -235,9 +237,8 @@ export class AuthService {
     private requestResetPwdGQL: StartForgotPasswordGQL,
     private router: Router,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
-    // Ajoutez ces injections
-    // private verifyOtpGQL: VerifyOtpGQL,
-    // private resendOtpGQL: ResendOtpGQL,
+    private verifyOtpGQL: VerifyOtpGQL,
+    private resendOtpGQL: ResendOtpGQL,
   ) { }
 
   saveToken(token: string) {
@@ -279,207 +280,69 @@ export class AuthService {
     return Boolean(this.getSession());
   }
 
-
   async login(credentials: LoginInput) {
-  try {
-    // SIMULATION OTP - Commenter ce bloc pour utiliser l'API réelle
-    // ============================================================
-    sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
-    sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
-    
-    // Simuler une session temporaire
-    const tempSession = {
-      access_token: 'fake-access-token',
-      token: 'fake-token',
-      refresh_token: 'fake-refresh-token',
-      enabled: true,
-      role: 'SUPER_ADMIN',
-      user: {
-        email: credentials.email,
-        name: 'Admin Test'
-      },
-      requiresOtp: true
-    };
-    sessionStorage.setItem('tempSession', JSON.stringify(tempSession));
-    
-    this.snackBarService.showSnackBar(
-      'Un code OTP a été envoyé à votre adresse email.',
-      '',
-      { panelClass: ['green-snackbar'], duration: 3000 }
-    );
-    
-    this.router.navigate(['/auth/verify-otp']);
-    return { requiresOtp: true };
-    // ============================================================
-    // FIN SIMULATION
-
-    /* DECOMMENTEZ CE CODE POUR UTILISER L'API REELLE
-    const res = await lastValueFrom(
-      this.loginAdminGQL.fetch(
-        { loginInput: credentials },
-        { fetchPolicy: 'no-cache' }
-      )
-    );
-    const session = res.data.loginAdmin;
-
-    // Vérifier si l'OTP est requis
-    if (session.requiresOtp) {
-      sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
-      sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
-      sessionStorage.setItem('tempSession', JSON.stringify(session));
-      
-      this.snackBarService.showSnackBar(
-        'Un code OTP a été envoyé à votre adresse email.',
-        '',
-        { panelClass: ['green-snackbar'], duration: 3000 }
+    try {
+      const res = await lastValueFrom(
+        this.loginAdminGQL.fetch(
+          { loginInput: credentials },
+          { fetchPolicy: 'no-cache' }
+        )
       );
-      
-      this.router.navigate(['/auth/verify-otp']);
-      return { requiresOtp: true };
+
+      const session = res.data.loginAdmin;
+
+      if (session.otpRequired) {
+        sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
+        sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
+
+        this.snackBarService.showSnackBar(
+          'Un code OTP a été envoyé à votre adresse email.',
+          '',
+          { duration: 3000 }
+        );
+
+        this.router.navigate(['/auth/verify-otp']);
+        return;
+      }
+
+      this.completeLogin(session);
+
+    } catch (e) {
+      this.snackBarService.showSnackBar(
+        "Nom d'utilisateur ou mot de passe incorrect!",
+        '',
+        { panelClass: ['red-snackbar'], duration: 2500 }
+      );
+      throw e;
     }
-
-    // Si pas besoin d'OTP, connexion normale
-    this.completeLogin(session);
-    return session;
-    */
-  } catch (e) {
-    this.snackBarService.showSnackBar(
-      "Nom d'utilisateur ou mot de passe incorrecte!",
-      '',
-      { panelClass: ['red-snackbar'], duration: 2500 }
-    );
-    throw e;
   }
-}
 
-async verifyOtp(email: string, otpCode: string) {
-  try {
-    // SIMULATION - Accepter le code 123456
-    if (otpCode !== '123456') {
-      throw new Error('Code OTP incorrect');
+  async resendOtp(email: string) {
+    try {
+      await lastValueFrom(
+        this.resendOtpGQL.mutate(
+          { email },
+          { fetchPolicy: 'no-cache' }
+        )
+      );
+
+      this.snackBarService.showSnackBar(
+        'Un nouveau code OTP a été envoyé à votre email.',
+        '',
+        { duration: 3000 }
+      );
+
+      return true;
+    } catch (e) {
+      this.snackBarService.showSnackBar(
+        "Erreur lors de l'envoi du code OTP.",
+        '',
+        { duration: 3000 }
+      );
+      throw e;
     }
-
-    const tempSession = sessionStorage.getItem('tempSession');
-    if (!tempSession) {
-      throw new Error('Session non trouvée');
-    }
-    const session = JSON.parse(tempSession);
-
-    // Nettoyer les données temporaires
-    sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
-    sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
-    sessionStorage.removeItem('tempSession');
-
-    // Finaliser la connexion
-    this.completeLogin(session);
-
-    this.snackBarService.showSnackBar(
-      'Connexion réussie!',
-      '',
-      { panelClass: ['green-snackbar'], duration: 2000 }
-    );
-
-    return session;
-
-    /* DECOMMENTEZ CE CODE POUR UTILISER L'API REELLE
-    const res = await lastValueFrom(
-      this.verifyOtpGQL.mutate(
-        { email, otpCode },
-        { fetchPolicy: 'no-cache' }
-      )
-    );
-    
-    const session = res.data.verifyOtp;
-
-    sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
-    sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
-    sessionStorage.removeItem('tempSession');
-
-    this.completeLogin(session);
-
-    this.snackBarService.showSnackBar(
-      'Connexion réussie!',
-      '',
-      { panelClass: ['green-snackbar'], duration: 2000 }
-    );
-
-    return session;
-    */
-  } catch (e) {
-    this.snackBarService.showSnackBar(
-      'Code OTP incorrect ou expiré!',
-      '',
-      { panelClass: ['red-snackbar'], duration: 2500 }
-    );
-    throw e;
   }
-}
 
-async resendOtp(email: string) {
-  try {
-    // SIMULATION - Attendre 1 seconde
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    this.snackBarService.showSnackBar(
-      'Un nouveau code OTP a été envoyé à votre email. Utilisez 123456 pour tester.',
-      '',
-      { panelClass: ['green-snackbar'], duration: 3000 }
-    );
-
-    return true;
-
-    /* DECOMMENTEZ CE CODE POUR UTILISER L'API REELLE
-    const res = await lastValueFrom(
-      this.resendOtpGQL.mutate(
-        { email },
-        { fetchPolicy: 'no-cache' }
-      )
-    );
-
-    this.snackBarService.showSnackBar(
-      'Un nouveau code OTP a été envoyé à votre email.',
-      '',
-      { panelClass: ['green-snackbar'], duration: 3000 }
-    );
-
-    return true;
-    */
-  } catch (e) {
-    this.snackBarService.showSnackBar(
-      'Erreur lors de l\'envoi du code OTP.',
-      '',
-      { panelClass: ['red-snackbar'], duration: 2500 }
-    );
-    throw e;
-  }
-}
-
-  // async login(credentials: LoginInput) {
-  //   try {
-  //     const res = await lastValueFrom(
-  //       this.loginAdminGQL.fetch(
-  //         { loginInput: credentials },
-  //         { fetchPolicy: 'no-cache' }
-  //       )
-  //     );
-  //     const session = res.data.loginAdmin;
-
-     
-
-  //     // Si pas besoin d'OTP, connexion normale
-  //     this.completeLogin(session);
-  //     return session;
-  //   } catch (e) {
-  //     this.snackBarService.showSnackBar(
-  //       "Nom d'utilisateur ou mot de passe incorrecte!",
-  //       '',
-  //       { panelClass: ['red-snackbar'], duration: 2500 }
-  //     );
-  //     throw e;
-  //   }
-  // }
-
-  // Nouvelle méthode pour finaliser la connexion
   private completeLogin(session: any) {
     localStorage.setItem(
       AuthConstant.access_tokenLocalName,
@@ -504,81 +367,39 @@ async resendOtp(email: string) {
     }
   }
 
-  // // Nouvelle méthode pour vérifier l'OTP
-  // async verifyOtp(email: string, otpCode: string) {
-  //   try {
-  //     // Remplacez ceci par votre mutation GraphQL réelle
-  //     // const res = await lastValueFrom(
-  //     //   this.verifyOtpGQL.mutate(
-  //     //     { email, otpCode },
-  //     //     { fetchPolicy: 'no-cache' }
-  //     //   )
-  //     // );
-      
-  //     // const session = res.data.verifyOtp;
+  async verifyOtp(email: string, otpCode: string) {
+    try {
+      const res = await lastValueFrom(
+        this.verifyOtpGQL.mutate(
+          {
+            verifyOtpInput: {
+              email,
+              code: otpCode
+            }
+          },
+          { fetchPolicy: 'no-cache' }
+        )
+      );
 
-  //     // SIMULATION - À REMPLACER PAR LE CODE CI-DESSUS
-  //     const tempSession = sessionStorage.getItem('tempSession');
-  //     if (!tempSession) {
-  //       throw new Error('Session non trouvée');
-  //     }
-  //     const session = JSON.parse(tempSession);
+      const session = res.data.verifyOtp;
 
-  //     // Nettoyer les données temporaires
-  //     sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
-  //     sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
-  //     sessionStorage.removeItem('tempSession');
+      sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
+      sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
 
-  //     // Finaliser la connexion
-  //     this.completeLogin(session);
+      this.completeLogin(session);
 
-  //     this.snackBarService.showSnackBar(
-  //       'Connexion réussie!',
-  //       '',
-  //       { panelClass: ['green-snackbar'], duration: 2000 }
-  //     );
+      return session;
 
-  //     return session;
-  //   } catch (e) {
-  //     this.snackBarService.showSnackBar(
-  //       'Code OTP incorrect ou expiré!',
-  //       '',
-  //       { panelClass: ['red-snackbar'], duration: 2500 }
-  //     );
-  //     throw e;
-  //   }
-  // }
+    } catch (e) {
+      this.snackBarService.showSnackBar(
+        'Code OTP incorrect ou expiré!',
+        '',
+        { duration: 4000 }
+      );
+      throw e;
+    }
+  }
 
-  // Nouvelle méthode pour renvoyer l'OTP
-  // async resendOtp(email: string) {
-  //   try {
-  //     // Remplacez ceci par votre mutation GraphQL réelle
-  //     // const res = await lastValueFrom(
-  //     //   this.resendOtpGQL.mutate(
-  //     //     { email },
-  //     //     { fetchPolicy: 'no-cache' }
-  //     //   )
-  //     // );
-
-  //     // SIMULATION - À REMPLACER PAR LE CODE CI-DESSUS
-  //     await new Promise(resolve => setTimeout(resolve, 1000));
-
-  //     this.snackBarService.showSnackBar(
-  //       'Un nouveau code OTP a été envoyé à votre email.',
-  //       '',
-  //       { panelClass: ['green-snackbar'], duration: 3000 }
-  //     );
-
-  //     return true;
-  //   } catch (e) {
-  //     this.snackBarService.showSnackBar(
-  //       'Erreur lors de l\'envoi du code OTP.',
-  //       '',
-  //       { panelClass: ['red-snackbar'], duration: 2500 }
-  //     );
-  //     throw e;
-  //   }
-  // }
 
   async resetPassword(password: string) {
     const token = localStorage.getItem(AuthConstant.tokenLocalName);
