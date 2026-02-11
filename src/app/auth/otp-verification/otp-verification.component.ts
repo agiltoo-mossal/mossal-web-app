@@ -14,7 +14,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   invalidOtp = false;
   isVerifying = false;
   isResending = false;
-  timer = 30; // 5 minutes
+  timer = 60;
   userEmail = '';
   private timerSubscription?: Subscription;
 
@@ -91,7 +91,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       .then(
         (result) => {
           this.isResending = false;
-          this.timer = 30;
+          this.timer = 60;
           this.startTimer();
           this.form.reset();
         },
