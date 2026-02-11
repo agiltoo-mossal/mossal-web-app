@@ -23,14 +23,8 @@
       <label class="form-group" fxLayout="column" fxLayoutGap="8px">
         <span class="label">Code OTP</span>
         <div fxLayoutAlign="start center">
-          <input 
-            formControlName="otpCode" 
-            class="form-control otp-input" 
-            type="text" 
-            placeholder="Entrez le code à 6 chiffres"
-            maxlength="6"
-            name="otpCode"
-            (input)="onOtpInput($event)">
+          <input formControlName="otpCode" class="form-control otp-input" type="text"
+            placeholder="Entrez le code à 6 chiffres" maxlength="6" name="otpCode" (input)="onOtpInput($event)">
           <span class="icon-control"><mat-icon>dialpad</mat-icon></span>
         </div>
         <small class="color-danger" *ngIf="otpCode.touched && otpCode.invalid">
@@ -43,14 +37,8 @@
         <span class="timer-text" *ngIf="timer > 0">
           Code valide pendant: <strong>{{ formatTime(timer) }}</strong>
         </span>
-        <span class="expired-text color-danger" *ngIf="timer === 0">
-          Code expiré
-        </span>
-        <button 
-          type="button" 
-          class="resend-link" 
-          (click)="resendOtp()" 
-          [disabled]="timer > 0 || isResending">
+
+        <button type="button" class="resend-link" (click)="resendOtp()" [disabled]="timer > 0 || isResending">
           {{ isResending ? 'Envoi en cours...' : 'Renvoyer le code' }}
         </button>
       </div>
@@ -58,17 +46,10 @@
 
     <!-- Boutons d'action -->
     <div fxLayout="column" fxLayoutGap="16px">
-      <button 
-        class="submit" 
-        type="submit" 
-        (click)="verifyOtp()" 
-        [disabled]="form.invalid || isVerifying">
+      <button class="submit" type="submit" (click)="verifyOtp()" [disabled]="form.invalid || isVerifying">
         {{ isVerifying ? 'Vérification...' : 'Vérifier' }}
       </button>
-      <button 
-        class="cancel-btn" 
-        type="button" 
-        (click)="cancel()">
+      <button class="cancel-btn" type="button" (click)="cancel()">
         Annuler
       </button>
     </div>
