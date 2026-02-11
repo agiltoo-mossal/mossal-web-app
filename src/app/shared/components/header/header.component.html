@@ -23,11 +23,20 @@
       >
       <div class="dropdown" [appDropdown]="'dropdown-notfification'">
         <span class="message-icon" fxLayoutAlign="center center">
-          <span class="icon-wrapper" *ngIf="!newNotificationCounter">
+          <!-- <span class="icon-wrapper" *ngIf="!newNotificationCounter">
             <mat-icon fxLayoutAlign="center center"
               >notifications_none</mat-icon
             >
             <span class="signal-notif" *ngIf="hasUnviewedNotif"></span>
+          </span> -->
+          <span class="icon-wrapper" (click)="viewNotifications()">
+            <mat-icon 
+              fxLayoutAlign="center center"
+              [matBadge]="newNotificationCounter > 0 ? newNotificationCounter : null"
+              matBadgeColor="warn">
+              notifications_none
+            </mat-icon>
+            <span class="signal-notif" *ngIf="hasUnviewedNotif || newNotificationCounter > 0"></span>
           </span>
           <span
             class="icon-wrapper"
