@@ -20,7 +20,7 @@ export class NotificationsService {
   
   constructor(
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
-    private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL  // ← Ajoutez ceci
+    private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL  
   ) {
     this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
       this.organization = result.data?.fetchCurrentAdmin?.organization?.id;
@@ -43,14 +43,14 @@ export class NotificationsService {
     return this.viewOrganizationNotificationsGQL.mutate();
   }
   
-  // Mettre à jour l'état local
+  // Mettre à jour l'état local 
   setHasUnviewedNotifications(hasUnviewed: boolean) {
     this.unViewedNotification.next(hasUnviewed);
   }
 }
 
 
-//Ancien
+//Ancien Code  
 // import { Injectable } from '@angular/core';
 // import { Observable, Subject } from 'rxjs';
 // import { io } from 'socket.io-client';
