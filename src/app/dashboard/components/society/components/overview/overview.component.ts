@@ -48,14 +48,15 @@ export class OverviewComponent implements AfterViewInit {
   isLoadingResults = true;
   isRateLimitReached = false;
 
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dataSource = new MatTableDataSource<Organization>();
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   page: number = 1;
   data = [];
-  organizations = [];
+  organizations: Organization[] = [];
 
   constructor(
     private router: Router,
@@ -71,6 +72,16 @@ export class OverviewComponent implements AfterViewInit {
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
 
+  fetchOrganizations() {
+    this.fetchPaginatedOrganizationsGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        this.organizations = result.data.fetchPaginatedOrganizations
+          .results as Organization[];
+        this.dataSource.data = this.organizations;
+      });
+  }
+
   initSearchForm() {
     this.searchForm = this.fb.group({
       search: [''],
@@ -78,9 +89,75 @@ export class OverviewComponent implements AfterViewInit {
   }
 
   title: string = "liste des sociétés"
-  requests = [{}, {}, {}, {}, {}, {}];
+  // requests = [{}, {}, {}, {}, {}, {}];
 
-  ngAfterViewInit() {
+  // ngAfterViewInit() {
+  //   this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+  //   this.searchForm
+  //     .get('search')
+  //     .valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged(),
+  //       startWith('')
+  //     )
+  //     .subscribe((r) => {
+  //       this.paginator.firstPage();
+  //     });
+
+  //   merge(
+  //     this.sort.sortChange,
+  //     this.paginator.page,
+  //     this.searchForm.get('search').valueChanges.pipe(
+  //       debounceTime(300),
+  //       distinctUntilChanged()
+  //       // startWith('')
+  //     )
+  //   )
+  //     .pipe(
+  //       startWith({}),
+  //       switchMap(() => {
+  //         this.isLoadingResults = true;
+  //         const queryFilter = {
+  //           limit: this.paginator.pageSize,
+  //           page: this.paginator.pageIndex + 1,
+  //           // sortField: this.sort.active,
+  //           // sortOrder: this.sort.direction,
+  //           search: this.searchForm?.value?.search,
+  //         };
+  //         console.log("queryFilter =====>>>>>> ", queryFilter);
+
+  //         return this.fetchPaginatedOrganizationsGQL.fetch(
+  //           { queryFilter },
+  //           { fetchPolicy: 'no-cache' }
+  //         );
+  //       }),
+  //       map((result) => {
+  //         // Flip flag to show that loading has finished.
+  //         this.isLoadingResults = false;
+  //         this.isRateLimitReached = result === null;
+
+  //         if (result === null) {
+  //           return [];
+  //         }
+
+  //         // Only refresh the result length if there is new data. In case of rate
+  //         // limit errors, we do not want to reset the paginator to zero, as that
+  //         // would prevent users from re-triggering requests
+  //         console.log("list of organizations =========>>>>>>> ", result.data);
+
+  //         return result.data;
+  //       })
+  //     )
+  //     .subscribe((data: any) => {
+  //       this.data = data.fetchPaginatedOrganizations.results as any;
+
+  //       this.dataSource.data = this.data as any;
+  //       this.resultsLength =
+  //         data.fetchPaginatedOrganizations.pagination?.totalItems;
+  //     });
+  // }
+
+  ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     this.searchForm
       .get('search')
@@ -127,31 +204,19 @@ export class OverviewComponent implements AfterViewInit {
           if (result === null) {
             return [];
           }
-
           // Only refresh the result length if there is new data. In case of rate
           // limit errors, we do not want to reset the paginator to zero, as that
           // would prevent users from re-triggering requests
-          console.log("list of organizations =========>>>>>>> ", result.data);
-
           return result.data;
         })
       )
       .subscribe((data: any) => {
         this.data = data.fetchPaginatedOrganizations.results as any;
-
         this.dataSource.data = this.data as any;
+        // this.selectedAdmin = this.data[0];
         this.resultsLength =
-          data.fetchPaginatedOrganizations.pagination?.totalItems;
-      });
-  }
-
-  fetchOrganizations() {
-    this.fetchPaginatedOrganizationsGQL
-      .fetch({}, { fetchPolicy: 'no-cache' })
-      .subscribe((result) => {
-        this.organizations = result.data.fetchPaginatedOrganizations
-          .results as Organization[];
-        this.dataSource.data = this.organizations;
+          data.fetchPaginatedOrganizations.pagination.totalItems;
+        // this.selectedAdmin = this.data?.[0];
       });
   }
 

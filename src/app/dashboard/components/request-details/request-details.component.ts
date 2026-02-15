@@ -25,7 +25,7 @@ export class RequestDetailsComponent implements OnInit {
     private remboursementService: ValidateRemboursementGQL,
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
     private snackBarService: SnackBarService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
@@ -84,9 +84,9 @@ export class RequestDetailsComponent implements OnInit {
           this.snackBarService.showSnackBar('Demande remboursée avec succès');
         },
         error: (error) => {
-          console.error('Error remboursing demande:', error);
+          console.error('Error remboursing demande:', error.message);
           this.snackBarService.showSnackBar(
-            'Erreur lors du remboursement de la demande'
+            error.message
           );
         },
       });

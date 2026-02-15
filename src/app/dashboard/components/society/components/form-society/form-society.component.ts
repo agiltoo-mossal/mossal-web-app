@@ -86,8 +86,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       ninea: [''],
       psp: ['', Validators.required],
 
-      balance: [1000000], // Valeur par défaut
-      maxDemandeAmount: [1000000], // Valeur par défaut
+      balance: [0], // Valeur par défaut
+      maxDemandeAmount: [0], // Valeur par défaut
       fees: [0], // Valeur par défaut
       amountPercent: [75],
 
@@ -342,7 +342,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -415,11 +415,11 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       // rootEmail: formValue.adminEmail,
       // rootFirstname: formValue.adminFirstName,
       // rootLastname: formValue.adminLastName,
-      balance: formValue.balance,
-      maxDemandeAmount: formValue.maxDemandeAmount,
-      fees: formValue.fees,
-      amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      // balance: formValue.balance,
+      // maxDemandeAmount: formValue.maxDemandeAmount,
+      // fees: formValue.fees,
+      // amountPercent: formValue.amountPercent,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };

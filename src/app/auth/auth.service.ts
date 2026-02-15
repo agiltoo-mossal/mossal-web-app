@@ -6,9 +6,12 @@ import {
   FetchCurrentAdminGQL,
   LoginAdminGQL,
   LoginInput,
+  ResendOtpGQL,
   ResetAdminPasswordGQL,
   StartForgotPasswordGQL,
   User,
+  VerifyOtpGQL,
+
 } from 'src/graphql/generated';
 import { SnackBarService } from '../shared/services/snackbar.service';
 
@@ -17,17 +20,17 @@ export enum AuthConstant {
   refreshTokenLocalName = 'rft',
   tokenLocalName = 'tmp_tok',
   sessionLocalName = 'userSession',
+  otpEmailLocalName = 'otpEmail',
+  pendingAuthLocalName = 'pendingAuth',
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // private static token: string;
-  // private static access_token: string;
-  // private static refresh_token: string;
   role: string = '';
   currentUser: User;
+
   constructor(
     private keycloakService: KeycloakService,
     private loginAdminGQL: LoginAdminGQL,
@@ -36,7 +39,8 @@ export class AuthService {
     private requestResetPwdGQL: StartForgotPasswordGQL,
     private router: Router,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
-
+    private verifyOtpGQL: VerifyOtpGQL,
+    private resendOtpGQL: ResendOtpGQL,
   ) { }
 
   saveToken(token: string) {
@@ -44,7 +48,6 @@ export class AuthService {
   }
 
   getToken() {
-    // return AuthService.access_token;
     return localStorage.getItem(AuthConstant.access_tokenLocalName);
   }
 
@@ -87,44 +90,118 @@ export class AuthService {
           { fetchPolicy: 'no-cache' }
         )
       );
+
       const session = res.data.loginAdmin;
 
-      // AuthService.token = session.token;
-      // AuthService.access_token = session.access_token;
-      // AuthService.refresh_token = session.refresh_token;
-      localStorage.setItem(
-        AuthConstant.access_tokenLocalName,
-        session.access_token
-      );
-      localStorage.setItem(AuthConstant.tokenLocalName, session.token);
-      localStorage.setItem(
-        AuthConstant.refreshTokenLocalName,
-        session.refresh_token
-      );
-      localStorage.setItem(
-        AuthConstant.sessionLocalName,
-        JSON.stringify(session)
-      );
+      if (session.otpRequired) {
+        sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
+        sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
 
-      if (!session?.enabled) {
-        this.router.navigate(['/auth/reset']);
-      } else {
-        session.role === 'SUPER_ADMIN' ?
-          this.router.navigate(['/dashboard/society']) :
-          // this.router.navigate(['/dashboard/admin-overview']) :
-          this.router.navigate(['/dashboard']);
+        this.snackBarService.showSnackBar(
+          'Un code OTP a été envoyé à votre adresse email.',
+          '',
+          { duration: 3000 }
+        );
 
+        this.router.navigate(['/auth/verify-otp']);
+        return;
       }
-      // return session;
+
+      this.completeLogin(session);
+
     } catch (e) {
       this.snackBarService.showSnackBar(
-        "Nom d'utilisateur ou mot de passe incorrecte!",
+        "Nom d'utilisateur ou mot de passe incorrect!",
         '',
-        { panelClass: ['red-snackbar'], duration: 2500 }
+        { duration: 2500 }
       );
       throw e;
     }
   }
+
+  async resendOtp(email: string) {
+    try {
+      await lastValueFrom(
+        this.resendOtpGQL.mutate(
+          { email },
+          { fetchPolicy: 'no-cache' }
+        )
+      );
+
+      this.snackBarService.showSnackBar(
+        'Un nouveau code OTP a été envoyé à votre email.',
+        '',
+        { duration: 3000 }
+      );
+
+      return true;
+    } catch (e) {
+      this.snackBarService.showSnackBar(
+        "Erreur lors de l'envoi du code OTP.",
+        '',
+        { duration: 3000 }
+      );
+      throw e;
+    }
+  }
+
+  private completeLogin(session: any) {
+    localStorage.setItem(
+      AuthConstant.access_tokenLocalName,
+      session.access_token
+    );
+    localStorage.setItem(AuthConstant.tokenLocalName, session.token);
+    localStorage.setItem(
+      AuthConstant.refreshTokenLocalName,
+      session.refresh_token
+    );
+    localStorage.setItem(
+      AuthConstant.sessionLocalName,
+      JSON.stringify(session)
+    );
+
+    if (!session?.enabled) {
+      this.router.navigate(['/auth/reset']);
+    } else {
+      session.role === 'SUPER_ADMIN' ?
+        this.router.navigate(['/dashboard/society']) :
+        this.router.navigate(['/dashboard']);
+    }
+  }
+
+  async verifyOtp(email: string, otpCode: string) {
+    try {
+      const res = await lastValueFrom(
+        this.verifyOtpGQL.mutate(
+          {
+            verifyOtpInput: {
+              email,
+              code: otpCode
+            }
+          },
+          { fetchPolicy: 'no-cache' }
+        )
+      );
+
+      const session = res.data.verifyOtp;
+
+      sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
+      sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
+
+      this.completeLogin(session);
+
+      return session;
+
+    } catch (e) {
+      this.snackBarService.showSnackBar(
+        'Code OTP incorrect ou expiré!',
+        '',
+        { duration: 4000 }
+      );
+      throw e;
+    }
+  }
+
 
   async resetPassword(password: string) {
     const token = localStorage.getItem(AuthConstant.tokenLocalName);
@@ -178,18 +255,14 @@ export class AuthService {
   cleanAuthData() {
     const savedCredentials = localStorage.getItem('savedCredentials');
     localStorage.clear();
+    sessionStorage.clear();
     if (savedCredentials) {
       localStorage.setItem('savedCredentials', savedCredentials);
     }
   }
 
   logout() {
-    // AuthService.access_token = null;
-    // AuthService.refresh_token = null;
-    // AuthService.token = null;
     this.cleanAuthData();
     this.router.navigate(['/auth/login']);
-    // return true;
   }
-
 }
