@@ -47,6 +47,10 @@ export class OrganizationSettingSalaryComponent {
   dataForm: any;
   disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
 
+  initialStartDate: Date | null = null;
+  initialEndDate: Date | null = null;
+
+
   @Output() activeService: EventEmitter<{
     isActive: boolean;
     organisationServiceId: string;
@@ -75,6 +79,10 @@ export class OrganizationSettingSalaryComponent {
       if (this.formDate.valid) {
         this.calculateRefundDuration(value.startDate, value.endDate);
       }
+      const changed = this.initialStartDate?.getTime() !== value.startDate?.getTime() ||
+        this.initialEndDate?.getTime() !== value.endDate?.getTime();
+
+      this.disableButton = changed;
     });
   }
   get dateStart() {
@@ -105,14 +113,22 @@ export class OrganizationSettingSalaryComponent {
             this.dataForm = data;
             this.activated = data?.activated;
             if (data.activatedAt) {
-              this.dateStart.setValue(new Date(data?.activatedAt));
-              this.dateEnd.setValue(
-                new Date(
-                  new Date(data?.activatedAt).getTime() +
-                    data?.activationDurationDay * 24 * 60 * 60 * 1000
-                )
+              const start = new Date(data?.activatedAt);
+              const end = new Date(
+                new Date(data?.activatedAt).getTime() +
+                data?.activationDurationDay * 24 * 60 * 60 * 1000
               );
-              console.log('dateEnd', this.dateEnd.value);
+
+              this.initialStartDate = start;
+              this.initialEndDate = end;
+
+              this.formDate.setValue({
+                startDate: start,
+                endDate: end,
+              });
+
+              this.formDate.markAsPristine();
+              this.disableButton = false;
             }
 
             this.listCategorieService = [
@@ -176,11 +192,6 @@ export class OrganizationSettingSalaryComponent {
           console.log(err);
         },
       });
-  }
-  onDateChange($event: Event) {
-    if (this.startDate && this.endDate) {
-      this.calculateRefundDuration(this.startDate, this.endDate);
-    }
   }
 
   onChangeCategorie(event: Event) {

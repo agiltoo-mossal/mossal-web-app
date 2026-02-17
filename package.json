@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4500",
-    "build": "ng build --configuration production",
-    "build:dev": "ng build --configuration development",
+    "build": "ng build --configuration production --aot --outputHashing=all",
+    "build:dev": "ng build --configuration development --aot --outputHashing=all",
     "build:preprod": "ng build --configuration preprod",
     "watch": "ng build --watch --configuration local",
     "test": "ng test",
