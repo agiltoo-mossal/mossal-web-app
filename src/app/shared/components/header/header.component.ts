@@ -11,6 +11,7 @@ import {
   FetchCurrentAdminGQL,
   FetchOrganizationNotificationsGQL,
   Notification,
+  ViewOrganizationNotificationsGQL,
 } from 'src/graphql/generated';
 
 @Component({
@@ -42,7 +43,8 @@ export class HeaderComponent implements OnDestroy, OnInit {
     private router: Router,
     private notificationsService: NotificationsService,
     private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL
   ) {
     this.contextSubscription = this.appService.contextAsync.subscribe((ctx) => {
       this.context = ctx;
@@ -80,17 +82,18 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   getNotifications() {
     this.listNotisSubscription = this.fetchOrganizationNotificationsGQL
-      .fetch()
+      .fetch(
+        {},
+        {
+          fetchPolicy: 'no-cache',
+        }
+      )
       .subscribe((result) => {
         this.notificationList =
-          (result.data?.fetchOrganizationNotifications?.slice(0, 5) ||
-            []) as any[];
-        if (
-          this.notificationList.length &&
-          !this.notificationList[0].viewedByMe
-        ) {
-          this.hasUnviewedNotif = true;
-        }
+          (result.data?.fetchOrganizationNotifications?.slice(0, 5) || []) as any[];
+        this.hasUnviewedNotif = this.notificationList.some(
+          (n) => !n.viewedByMe
+        );
       });
   }
 
@@ -113,9 +116,25 @@ export class HeaderComponent implements OnDestroy, OnInit {
     // });
   }
 
+  // viewNotifications() {
+  //   this.newNotificationCounter = 0;
+  // }
+
   viewNotifications() {
     this.newNotificationCounter = 0;
+    this.hasUnviewedNotif = false;
+
+    this.viewOrganizationNotificationsGQL.mutate().subscribe({
+      next: () => {
+        this.getNotifications(); // 🔁 refetch depuis backend
+        this.notificationsService.unViewedNotification.next(false);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
+
 
   fetchCurrentAdmin() {
     this.fetchCurrentAdminGQL
