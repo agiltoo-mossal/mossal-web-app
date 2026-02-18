@@ -13,6 +13,7 @@ export class NotificationsService {
   });
   private organization: string;
   unViewedNotification: Subject<any> = new Subject();
+
   constructor(private fetchCurrentAdminGQL: FetchCurrentAdminGQL) {
     this.fetchCurrentAdminGQL.fetch().subscribe((result) => {
       this.organization = result.data?.fetchCurrentAdmin?.organization?.id;
