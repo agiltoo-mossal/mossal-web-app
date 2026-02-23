@@ -115,10 +115,6 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       rejected: 0,
       payed: 0,
     };
-    // this.metricsInput.valueChanges.subscribe((r) => {
-    //   this.getData();
-    // });
-    // this.getData();
   }
 
   ngOnInit(): void {
@@ -449,9 +445,27 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   get nbPending() {
     return this.fetchStatus.pending;
   }
-  getTotalDemandeAmount() {
-    this.fetchTotalDemandesAmountService
-      .fetch(
+  // getTotalDemandeAmount() {
+  //   this.fetchTotalDemandesAmountService
+  //     .fetch(
+  //       {
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //         status: [DemandeStatus.Validated, DemandeStatus.Payed],
+  //       },
+  //       { fetchPolicy: 'no-cache' }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
+  //       },
+  //     });
+  // }
+  getTotalDemandeAmount(): Promise<void> {
+    return lastValueFrom(
+      this.fetchTotalDemandesAmountService.fetch(
         {
           filter: {
             startDate: this.startDate,
@@ -461,19 +475,37 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         },
         { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
-        },
-      });
+    ).then(value => {
+      this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
+    });
   }
+
 
   totalDemandeAmount: number;
   totalDemandeToPay: number;
 
-  getTotalDemandeToPay() {
-    this.fetchTotalDemandesAmountService
-      .fetch(
+  // getTotalDemandeToPay() {
+  //   this.fetchTotalDemandesAmountService
+  //     .fetch(
+  //       {
+  //         status: [DemandeStatus.Validated],
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //       },
+  //       { fetchPolicy: 'no-cache' }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
+  //       },
+  //     });
+  // }
+
+  getTotalDemandeToPay(): Promise<void> {
+    return lastValueFrom(
+      this.fetchTotalDemandesAmountService.fetch(
         {
           status: [DemandeStatus.Validated],
           filter: {
@@ -483,33 +515,49 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         },
         { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
-        },
-      });
+    ).then(value => {
+      this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
+    });
   }
 
-  getCollaboratorCount() {
-    return this.fetchCollaboratorCountGQL
-      .fetch(
+
+  // getCollaboratorCount() {
+  //   return this.fetchCollaboratorCountGQL
+  //     .fetch(
+  //       {
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //       },
+  //       {
+  //         fetchPolicy: 'no-cache',
+  //       }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         console.log(value);
+  //         this.nbActifUsers = value.data.fetchCollaboratorCount;
+  //       },
+  //     });
+  // }
+
+  getCollaboratorCount(): Promise<void> {
+    return lastValueFrom(
+      this.fetchCollaboratorCountGQL.fetch(
         {
           filter: {
             startDate: this.startDate,
             endDate: this.endDate,
           },
         },
-        {
-          fetchPolicy: 'no-cache',
-        }
+        { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          console.log(value);
-          this.nbActifUsers = value.data.fetchCollaboratorCount;
-        },
-      });
+    ).then(value => {
+      this.nbActifUsers = value.data.fetchCollaboratorCount;
+    });
   }
+
 
   getLastRequest(req: any) {
     return (
