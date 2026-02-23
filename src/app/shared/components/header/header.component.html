@@ -9,12 +9,7 @@
           fxLayoutAlign="center center">settings</mat-icon></span>
       <div class="dropdown" [appDropdown]="'dropdown-notfification'">
         <span class="message-icon" fxLayoutAlign="center center">
-          <!-- <span class="icon-wrapper" *ngIf="!newNotificationCounter">
-            <mat-icon fxLayoutAlign="center center"
-              >notifications_none</mat-icon
-            >
-            <span class="signal-notif" *ngIf="hasUnviewedNotif"></span>
-          </span> -->
+
           <span class="icon-wrapper" (click)="viewNotifications()">
             <mat-icon fxLayoutAlign="center center">
               notifications_none
@@ -22,10 +17,6 @@
             <span class="signal-notif" *ngIf="hasUnviewedNotif || newNotificationCounter"></span>
           </span>
 
-          <!-- <span class="icon-wrapper" (click)="viewNotifications()" *ngIf="newNotificationCounter">
-            <mat-icon fxLayoutAlign="center center" matBadge="{{ newNotificationCounter }}"
-              matBadgeColor="warn">notifications_none</mat-icon>
-          </span> -->
           <div class="dropdown-content" id="dropdown-notfification">
             <div class="notif-content-wrapper personnaliez-sidebar">
               <div [routerLink]="['/dashboard/requests-list']" [queryParams]="{ entity: notif.entityId }"
