@@ -25,7 +25,7 @@
         <div fxLayoutAlign="start center">
           <input formControlName="otpCode" class="form-control otp-input" type="text"
             placeholder="Entrez le code à 6 chiffres" maxlength="6" name="otpCode" (input)="onOtpInput($event)">
-          <span class="icon-control"><mat-icon>dialpad</mat-icon></span>
+          <!-- <span class="icon-control"><mat-icon>dialpad</mat-icon></span> -->
         </div>
         <small class="color-danger" *ngIf="otpCode.touched && otpCode.invalid">
           Le code OTP doit contenir 6 chiffres

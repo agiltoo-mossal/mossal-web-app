@@ -8,13 +8,13 @@ export const environment = {
   // ENTERPRISE_URI: 'http://localhost:3003/graphql',
 
   // New server address
-  GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
-  API_URI: 'https://mossall-ent-preprod.dynv6.net/',
-  ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
+  // GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
+  // API_URI: 'https://mossall-ent-preprod.dynv6.net/',
+  // ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
 
-  // GRAPHQL_URI: 'https://mossall-ent-prod.dynv6.net/graphql',
-  // API_URI: 'https://mossall-ent-prod.dynv6.net/',
-  // ENTERPRISE_URI: 'https://mossall-ent-prod.dynv6.net',
+  GRAPHQL_URI: 'https://mossall-ent-prod.dynv6.net/graphql',
+  API_URI: 'https://mossall-ent-prod.dynv6.net/',
+  ENTERPRISE_URI: 'https://mossall-ent-prod.dynv6.net',
 
   // GRAPHQL_URI: 'http://51.20.69.167:3003/graphql',
   // API_URI: 'http://51.20.69.167:3003',
