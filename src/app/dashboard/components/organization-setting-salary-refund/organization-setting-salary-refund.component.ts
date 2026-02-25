@@ -33,6 +33,9 @@ export class OrganizationSettingSalaryRefundComponent {
   startDate: Date;
   endDate: Date;
 
+  initialStartDate: Date | null = null;
+  initialEndDate: Date | null = null;
+
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
@@ -75,8 +78,15 @@ export class OrganizationSettingSalaryRefundComponent {
       if (this.formDate.valid) {
         this.calculateRefundDuration(value.startDate, value.endDate);
       }
+
+      const changed = this.initialStartDate?.getTime() !== value.startDate?.getTime() ||
+        this.initialEndDate?.getTime() !== value.endDate?.getTime();
+
+      this.disableButton = changed;
+
     });
   }
+
   get dateStart() {
     return this.formDate.get('startDate');
   }
@@ -105,16 +115,25 @@ export class OrganizationSettingSalaryRefundComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-            console.log('data', data);
+            console.log('data ===>>>>> ', data);
             this.activated = data?.activated;
             if (data.activatedAt) {
-              this.dateStart.setValue(new Date(data?.activatedAt));
-              this.dateEnd.setValue(
-                new Date(
-                  new Date(data?.activatedAt).getTime() +
-                    data?.activationDurationDay * 24 * 60 * 60 * 1000
-                )
+              const start = new Date(data?.activatedAt);
+              const end = new Date(
+                new Date(data?.activatedAt).getTime() +
+                data?.activationDurationDay * 24 * 60 * 60 * 1000
               );
+
+              this.initialStartDate = start;
+              this.initialEndDate = end;
+
+              this.formDate.setValue({
+                startDate: start,
+                endDate: end,
+              });
+
+              this.formDate.markAsPristine();
+              this.disableButton = false;
             }
             this.listCategorieService = [
               {
@@ -177,11 +196,6 @@ export class OrganizationSettingSalaryRefundComponent {
           console.log(err);
         },
       });
-  }
-  onDateChange($event: Event) {
-    if (this.startDate && this.endDate) {
-      this.calculateRefundDuration(this.startDate, this.endDate);
-    }
   }
 
   onChangeCategorie(event: Event) {
@@ -307,10 +321,10 @@ export class OrganizationSettingSalaryRefundComponent {
             this.updateOrganisationService(this.organisationServiceId, {
               ...this.dataForm,
               // activatedAt: this.dateStart.getRawValue(),
-              // activationDurationDay: differenceInDays(
-              //   this.dateEnd.getRawValue(),
-              //   this.dateStart.getRawValue()
-              // ),
+              activationDurationDay: differenceInDays(
+                this.dateEnd.getRawValue(),
+                this.dateStart.getRawValue()
+              ),
             });
           } else {
             this.createOrganisationService(
@@ -379,6 +393,7 @@ export class OrganizationSettingSalaryRefundComponent {
       }
     });
   }
+
   createOrganisationService(
     organisationServiceInput: OrganisationServiceInput,
     organisationId: string,
@@ -405,6 +420,7 @@ export class OrganizationSettingSalaryRefundComponent {
         },
       });
   }
+
   updateOrganisationService(
     organisationServiceId: string,
     organisationServiceInput: OrganisationServiceUpdateInput

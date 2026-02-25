@@ -332,6 +332,7 @@ export type Mutation = {
   lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
+  resendOtp: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   suspendOrganization: Scalars['Boolean']['output'];
@@ -349,6 +350,7 @@ export type Mutation = {
   upladFile: Scalars['Boolean']['output'];
   validateDemande: ValidationResponse;
   validateRemboursement: Scalars['Boolean']['output'];
+  verifyOtp: Session;
   viewOrganizationNotifications: Scalars['Boolean']['output'];
 };
 
@@ -529,6 +531,11 @@ export type MutationRejectDemandeByAdminArgs = {
 };
 
 
+export type MutationResendOtpArgs = {
+  email: Scalars['String']['input'];
+};
+
+
 export type MutationResetAdminPasswordArgs = {
   resetPasswordInput: ResetPasswordInput;
 };
@@ -622,6 +629,11 @@ export type MutationValidateDemandeArgs = {
 
 export type MutationValidateRemboursementArgs = {
   remboursementId: Scalars['ID']['input'];
+};
+
+
+export type MutationVerifyOtpArgs = {
+  verifyOtpInput: VerifyOtpInput;
 };
 
 export type Notification = {
@@ -732,6 +744,7 @@ export type Organization = {
   amountPercent: Scalars['Float']['output'];
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
   financialOrganization?: Maybe<FinancialOrganization>;
@@ -746,6 +759,7 @@ export type Organization = {
   postalAddress: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
   rootEmail: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
 };
 
@@ -1296,6 +1310,8 @@ export type Session = {
   enabled: Scalars['Boolean']['output'];
   /** Null if user must reset his password */
   expires_in?: Maybe<Scalars['Float']['output']>;
+  /** Not null if required */
+  otpRequired?: Maybe<Scalars['Boolean']['output']>;
   /** Null if user must reset his password */
   refresh_expires_in?: Maybe<Scalars['Float']['output']>;
   /** Null if user must reset his password */
@@ -1353,8 +1369,12 @@ export type User = {
   favoriteWallet?: Maybe<Wallet>;
   firstName: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  lastLoginAt?: Maybe<Scalars['DateTime']['output']>;
   lastName: Scalars['String']['output'];
+  lastOtpValidationAt?: Maybe<Scalars['DateTime']['output']>;
   organization?: Maybe<Organization>;
+  otpCode?: Maybe<Scalars['String']['output']>;
+  otpExpiresAt?: Maybe<Scalars['DateTime']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
@@ -1384,6 +1404,11 @@ export type ValidationResponse = {
   __typename?: 'ValidationResponse';
   paymentMean: Scalars['String']['output'];
   validateDemande: Scalars['Boolean']['output'];
+};
+
+export type VerifyOtpInput = {
+  code: Scalars['String']['input'];
+  email: Scalars['String']['input'];
 };
 
 /** Possible wallets */
@@ -1424,7 +1449,7 @@ export type LoginAdminQueryVariables = Exact<{
 }>;
 
 
-export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, role?: string | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
+export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, role?: string | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
 
 export type ResetAdminPasswordMutationVariables = Exact<{
   resetPasswordInput: ResetPasswordInput;
@@ -1446,6 +1471,20 @@ export type FinalizeForgotPasswordMutationVariables = Exact<{
 
 
 export type FinalizeForgotPasswordMutation = { __typename?: 'Mutation', finalizeForgotPassword: boolean };
+
+export type VerifyOtpMutationVariables = Exact<{
+  verifyOtpInput: VerifyOtpInput;
+}>;
+
+
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOtp: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, role?: string | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
+
+export type ResendOtpMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type ResendOtpMutation = { __typename?: 'Mutation', resendOtp: boolean };
 
 export type FetchPaginatedActivitiesQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
@@ -1493,7 +1532,7 @@ export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> };
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null, organization?: { __typename?: 'Organization', name: string } | null }> };
 
 export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -1995,6 +2034,7 @@ export const LoginAdminDocument = gql`
     refresh_token
     expires_in
     role
+    otpRequired
   }
 }
     `;
@@ -2054,6 +2094,56 @@ export const FinalizeForgotPasswordDocument = gql`
   })
   export class FinalizeForgotPasswordGQL extends Apollo.Mutation<FinalizeForgotPasswordMutation, FinalizeForgotPasswordMutationVariables> {
     document = FinalizeForgotPasswordDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const VerifyOtpDocument = gql`
+    mutation VerifyOtp($verifyOtpInput: VerifyOtpInput!) {
+  verifyOtp(verifyOtpInput: $verifyOtpInput) {
+    user {
+      id
+      firstName
+      lastName
+      organization {
+        id
+        rootEmail
+        name
+      }
+    }
+    enabled
+    token
+    access_token
+    refresh_token
+    expires_in
+    role
+    otpRequired
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class VerifyOtpGQL extends Apollo.Mutation<VerifyOtpMutation, VerifyOtpMutationVariables> {
+    document = VerifyOtpDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ResendOtpDocument = gql`
+    mutation ResendOtp($email: String!) {
+  resendOtp(email: $email)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ResendOtpGQL extends Apollo.Mutation<ResendOtpMutation, ResendOtpMutationVariables> {
+    document = ResendOtpDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -2270,6 +2360,12 @@ export const FetchOrganizationCollaboratorsDocument = gql`
     blocked
     favoriteWallet
     birthDate
+    categorySociopro {
+      title
+    }
+    organization {
+      name
+    }
   }
 }
     `;

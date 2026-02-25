@@ -15,7 +15,7 @@ export class LoginComponent implements OnInit {
   hidePassword: boolean = true;
   form: FormGroup;
   missingUser = null;
-  private readonly SECRET_KEY = environment.SECRET_KEY; // Clé secrète pour le cryptage
+  private readonly SECRET_KEY = environment.SECRET_KEY;
 
   constructor(
     private authService: AuthService,
@@ -23,7 +23,6 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router
   ) {
-    // Récupérer les credentials sauvegardés s'ils existent
     const savedCredentials = localStorage.getItem('savedCredentials');
     let initialEmail = '';
     let initialPassword = '';
@@ -31,7 +30,6 @@ export class LoginComponent implements OnInit {
     if (savedCredentials) {
       const credentials = JSON.parse(savedCredentials);
       initialEmail = credentials.email || '';
-      // Décrypter le mot de passe
       initialPassword = this.decryptPassword(credentials.password);
     }
 
@@ -42,14 +40,12 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
-  // Méthode pour crypter le mot de passe
   private encryptPassword(password: string): string {
     return CryptoJS.AES.encrypt(password, this.SECRET_KEY).toString();
   }
 
-  // Méthode pour décrypter le mot de passe
   private decryptPassword(encryptedPassword: string): string {
     const bytes = CryptoJS.AES.decrypt(encryptedPassword, this.SECRET_KEY);
     return bytes.toString(CryptoJS.enc.Utf8);
@@ -61,11 +57,11 @@ export class LoginComponent implements OnInit {
     }
     this.missingUser = null;
 
-    // Sauvegarder ou supprimer les credentials selon l'état de la case "Se souvenir de moi"
+    // Sauvegarder ou supprimer les credentials
     if (this.form.value.rememberMe) {
       const credentials = {
         email: this.form.value.email,
-        password: this.encryptPassword(this.form.value.password), // Crypter le mot de passe avant de le sauvegarder
+        password: this.encryptPassword(this.form.value.password),
       };
       localStorage.setItem('savedCredentials', JSON.stringify(credentials));
     } else {
@@ -78,7 +74,10 @@ export class LoginComponent implements OnInit {
         password: this.form.value.password,
       })
       .then(
-        (result) => {},
+        (result) => {
+          // Si requiresOtp est true, la redirection est déjà gérée dans le service
+          // Pas besoin de faire quoi que ce soit ici
+        },
         (error) => {
           this.missingUser = true;
         }
