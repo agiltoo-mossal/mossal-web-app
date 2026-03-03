@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 import { lastValueFrom } from 'rxjs';
@@ -30,6 +30,7 @@ export enum AuthConstant {
 export class AuthService {
   role: string = '';
   currentUser: User;
+  private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private keycloakService: KeycloakService,
@@ -41,6 +42,7 @@ export class AuthService {
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private verifyOtpGQL: VerifyOtpGQL,
     private resendOtpGQL: ResendOtpGQL,
+    private ngZone: NgZone,
   ) { }
 
   saveToken(token: string) {
@@ -79,7 +81,46 @@ export class AuthService {
   }
 
   isLogedIn() {
-    return Boolean(this.getSession());
+    return Boolean(this.getSession()) && !this.isTokenExpired();
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
+  }
+
+  scheduleAutoLogout() {
+    this.cancelAutoLogout();
+    const token = this.getToken();
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiresInMs = payload.exp * 1000 - Date.now();
+      if (expiresInMs <= 0) {
+        this.logout();
+        return;
+      }
+      this.ngZone.runOutsideAngular(() => {
+        this.logoutTimer = setTimeout(() => {
+          this.ngZone.run(() => this.logout());
+        }, expiresInMs);
+      });
+    } catch {
+      this.logout();
+    }
+  }
+
+  cancelAutoLogout() {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+      this.logoutTimer = null;
+    }
   }
 
   async login(credentials: LoginInput) {
@@ -159,6 +200,8 @@ export class AuthService {
       AuthConstant.sessionLocalName,
       JSON.stringify(session)
     );
+
+    this.scheduleAutoLogout();
 
     if (!session?.enabled) {
       this.router.navigate(['/auth/reset']);
@@ -262,6 +305,7 @@ export class AuthService {
   }
 
   logout() {
+    this.cancelAutoLogout();
     this.cleanAuthData();
     this.router.navigate(['/auth/login']);
   }
