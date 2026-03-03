@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // Méthode pour crypter le mot de passe
   private encryptPassword(password: string): string {
