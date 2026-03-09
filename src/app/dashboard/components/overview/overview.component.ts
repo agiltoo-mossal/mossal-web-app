@@ -18,9 +18,11 @@ import {
   FetchCountStatusGQL,
   FetchCurrentAdminGQL,
   FetchDemandesMetricsGQL,
+  FetchOperationsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchPaginatedOperationsGQL,
   FetchTotalDemandesAmountGQL,
   Organization,
   User,
@@ -39,6 +41,7 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-overview',
@@ -46,6 +49,12 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit, AfterViewInit {
+  // displayedTransactionColumns = ['matricule', 'collaborateur', 'date', 'operation', 'numero', 'amount'];
+  displayedTransactionColumns = ['date', 'operation', 'amount'];
+  societyId: string;
+  EXCEL_TYPE =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    EXCEL_EXTENSION = '.xlsx';
   datas = [];
   dataStatics = dataStatic;
   requests: Demande[] = [];
@@ -57,6 +66,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
   resultsLength = 0;
+  transactionResultsLength = 0;
   fetchStatus: {
     pending: number;
     validated: number;
@@ -69,8 +79,10 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   totalNewUsers = 0;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('transactionPaginator') transactionPaginator: MatPaginator;
   // dataSource = new MatTableDataSource<Demande>();
   dataSource = new MatTableDataSource<any>();
+  dataSourceTransaction = new MatTableDataSource<any>();
   page: number = 1;
   nbActifUsers: number;
   organization: any;
@@ -85,7 +97,10 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fetchCollaboratorCountGQL: FetchCollaboratorCountGQL,
     private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fetchOperations: FetchOperationsGQL,
+    private fetchPaginatedOperationsGQL: FetchPaginatedOperationsGQL
+    
   ) {
     const now = new Date('2024-12-31');
     const today = new Date();
@@ -176,7 +191,9 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.getTotalDemandeAmount(),
         this.getTotalDemandeToPay(),
         this.getFetchCountStatus(),
-        this.getCurrentorganization()
+        this.getCurrentorganization(),
+        this.getTransactions()
+
       ]).then(() => {
         this.updateStaticData();
       });
@@ -241,6 +258,53 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         throw error;
       });
   }
+
+  getTransactions(): Promise<void> {
+      return lastValueFrom(
+        this.fetchOperations.fetch(
+          { organizationId: this.societyId },
+          { fetchPolicy: 'no-cache' }
+        )
+      ).then(({ data }) => {
+        const operations = data.fetchOperations || [];
+            console.log('Structure transaction:', operations[0]); 
+        this.dataSourceTransaction.data = operations;
+      }).catch((error) => {
+        console.error('Error fetching transactions:', error);
+      });
+  }
+
+//   getTransactions(): Promise<void> {
+//   if (!this.societyId) return Promise.resolve();
+
+//   return lastValueFrom(
+//     this.fetchPaginatedOperationsGQL.fetch(
+//       {
+//         organizationId: this.societyId,
+//         queryFilter: {
+//           page: this.transactionPaginator ? this.transactionPaginator.pageIndex + 1 : 1,
+//           limit: this.transactionPaginator ? this.transactionPaginator.pageSize : 10,
+//         },
+//       },
+//       { fetchPolicy: 'no-cache' }
+//     )
+//   )
+//   .then((result) => {
+//     const data = result.data.fetchPaginatedOperations;
+
+//     this.dataSourceTransaction.data = data.results || [];
+//     this.transactionResultsLength = data.pagination.totalItems || 0;
+
+//     if (this.transactionPaginator) {
+//       this.transactionPaginator.length = this.transactionResultsLength;
+//       this.transactionPaginator._changePageSize(this.transactionPaginator.pageSize);
+//     }
+//   })
+//   .catch((err) => {
+//     console.error('Error fetching transactions:', err);
+//     throw err;
+//   });
+// }
 
   getDemandesMetrics(): Promise<void> {
     const startDate =
@@ -331,6 +395,10 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.dataSource.data = response.results;
         this.resultsLength = response.pagination.totalItems;
         this.selectedCollab = this.dataSource.data?.[0] || null;
+      });
+
+       this.transactionPaginator.page.subscribe(() => {
+        this.getTransactions();
       });
   }
 
@@ -581,10 +649,69 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         if (result.data) {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
+          this.societyId = this.organization.id; 
+          this.getTransactions(); 
           console.log({ org: this.organization });
+
+          console.log('societyId défini:', this.societyId);
         }
       });
   }
+
+  exportTransactions() {
+        this.fetchOperations.fetch({ organizationId: this.societyId }, { fetchPolicy: 'no-cache' }).subscribe({
+            next: ({ data }) => {
+                const temps = data.fetchOperations;
+                if (temps.length) {
+                    const csvRows = [
+                        [
+                            'Organisation',
+                            'Opération',
+                            'Montant',
+                            'Date',
+                        ],
+                        ...temps.map((row) => [
+                            row.organization,
+                            row.type,
+                            row.amount,
+                            row.date,
+                            '',
+                        ]),
+                    ];
+                    this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
+                } else {
+                    this.snackBarService.showSnackBar(
+                        "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+                    );
+                }
+            },
+            error: (error) => console.log(error),
+        });
+    }
+
+     convertToXLSX(data: any[], filename: string) {
+            const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+                skipHeader: true,
+            });
+            const workbook: XLSX.WorkBook = {
+                Sheets: { data: worksheet },
+                SheetNames: ['data'],
+            };
+            const excelBuffer: any = XLSX.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array',
+            });
+            this.saveAsExcelFile(excelBuffer, filename);
+        }
+        saveAsExcelFile(buffer: any, fileName: string): void {
+        const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
 }
 export enum FilterBy {
   createdAt = 'createdAt',
