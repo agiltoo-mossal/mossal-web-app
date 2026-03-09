@@ -665,17 +665,20 @@ export class OverviewComponent implements OnInit, AfterViewInit {
                 if (temps.length) {
                     const csvRows = [
                         [
-                            'Organisation',
+                            'Matricule',
+                            'Collaborateur',
+                            "Date de l'opération",
                             'Opération',
-                            'Montant',
-                            'Date',
+                            'Numéro opération',
+                            "Montant de l'opération",
                         ],
                         ...temps.map((row) => [
-                            row.organization,
-                            row.type,
-                            row.amount,
+                            row.matricule,
+                            row.collaborator,
                             row.date,
-                            '',
+                            row.operation,
+                            row.numeroOperation,
+                            row.montant,
                         ]),
                     ];
                     this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
