@@ -17,18 +17,22 @@ query FetchPaginatedOperations($queryFilter: QueryDataConfigInput, $organization
 		results {
 			id
 			amount
-			operation
 			createdAt
 			type
+			matricule
+			collaborator
+			numeroOperation
 		}
 	}
 }
 
 query FetchOperations($organizationId: ID!) {
   fetchOperations(organizationId: $organizationId) {
-    organization
-    type
-    amount
-	date
+    matricule
+    collaborator
+    date
+    operation
+    numeroOperation
+    montant
   }
 }

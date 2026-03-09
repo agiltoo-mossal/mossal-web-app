@@ -34,9 +34,12 @@ export class DetailSocietyComponent implements AfterViewInit {
     disableCache: boolean;
     searchForm: FormGroup;
     displayedColumns: string[] = [
-        'amount',
+        'matricule',
+        'collaborator',
         'date',
-        'operation'
+        'operation',
+        'numeroOperation',
+        'amount',
     ];
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
@@ -382,17 +385,20 @@ export class DetailSocietyComponent implements AfterViewInit {
                 if (temps.length) {
                     const csvRows = [
                         [
-                            'Organisation',
+                            'Matricule',
+                            'Collaborateur',
+                            "Date de l'opération",
                             'Opération',
-                            'Montant',
-                            'Date',
+                            'Numéro opération',
+                            "Montant de l'opération",
                         ],
                         ...temps.map((row) => [
-                            row.organization,
-                            row.type,
-                            row.amount,
+                            row.matricule,
+                            row.collaborator,
                             row.date,
-                            '',
+                            row.operation,
+                            row.numeroOperation,
+                            row.montant,
                         ]),
                     ];
                     this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
