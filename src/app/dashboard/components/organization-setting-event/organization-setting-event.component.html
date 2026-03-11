@@ -15,7 +15,7 @@
         (toggleChange)="onServiceActivationChange($event)"
       ></app-toggle-slide>
     </div>
-    <div class="toggle-side" [ngClass]="{ grise: !activated.value }">
+    <div class="toggle-side">
       <!-- Liste des événements prévus -->
       <div class="section">
         <h3>Liste des événements prévus</h3>
@@ -69,7 +69,7 @@
       </div>
 
       <!-- Section des paramètres -->
-      <div class="section">
+      <div class="section" *ngIf="activeEventInRange">
         <div class="category-selection" *ngIf="listCategorieService.length>0">
           <label for="category-selection">Sélectionnez une catégorie</label>
           <select
@@ -107,15 +107,10 @@
         </mat-tab-group>
       </div>
       <button
-        *ngIf="listCategorieService.length > 0"
-        [ngClass]="{
-          'disable-button': disableButton,
-        }"
-        [disabled]="!disableButton"
+        *ngIf="disableButton"
         (click)="saveSettings()"
         class="validate-btn"
       >
-        
         Valider
       </button>
     </div>
