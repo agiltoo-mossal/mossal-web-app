@@ -5,106 +5,80 @@
     <div class="service-activation-container">
       <div class="auto-validation">
         <h3>Activation du service</h3>
-        <app-toggle-slide
-          [firstText]="'Actif'"
-          [secondText]="'Inactif'"
-          [serviceId]="serviceId"
-          [value]="activated"
+        <app-toggle-slide [firstText]="'Actif'" [secondText]="'Inactif'" [serviceId]="serviceId" [value]="activated"
           [uniqueId]="'paramServiceActivationEmergency'"
-          (toggleChange)="onServiceActivationChange($event)"
-        ></app-toggle-slide>
+          (toggleChange)="onServiceActivationChange($event)"></app-toggle-slide>
       </div>
-      <div class="toggle-side" [ngClass]="{ grise: !activated }">
+      <div class="toggle-side">
         <div class="activation-date">
-          <label for="start-date"
-            >Date d'activation
-            <span style="text-transform: capitalize; padding: 0 8px"
-              >début</span
-            ></label
-          >
-          <div class="date-input">
-            <mat-form-field appearance="outline" class="form-field">
-              <!-- formControlName="activatedAt" -->
-
-              <input
-                matInput
-                [(ngModel)]="activatedAt"
-                [matDatepicker]="startPicker"
-                name="activatedAt"
-                placeholder="Choisir une date"
-                (dateChange)="onDateChange($event)"
-                required
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="startPicker"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #startPicker></mat-datepicker>
-              <mat-error
-                *ngIf="
-                  emergencyForm.get('activedAt')?.invalid &&
-                  emergencyForm.get('activatedAt')?.touched
-                "
-              >
-                La date de début est requise.
-              </mat-error>
-            </mat-form-field>
+          <label style="padding: 0 12px">Date d'activation</label>
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <div>
+              <label style="margin-bottom: 8px; padding: 0 12px; display: block">Date de début</label>
+              <div class="date-input">
+                <mat-form-field appearance="outline" class="form-field">
+                  <input matInput [(ngModel)]="activatedAt" [matDatepicker]="startPicker" name="activatedAt"
+                    placeholder="Date de début" (dateChange)="onDateChange($event)" required />
+                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #startPicker></mat-datepicker>
+                  <mat-error
+                    *ngIf="emergencyForm.get('activatedAt')?.invalid && emergencyForm.get('activatedAt')?.touched">
+                    La date de début est requise.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div>
+              <label style="margin-bottom: 8px; padding: 0 12px; display: block">Date de fin</label>
+              <div class="date-input">
+                <mat-form-field appearance="outline" class="form-field">
+                  <input matInput [(ngModel)]="endDateValue" [matDatepicker]="endPicker" name="endDate"
+                    placeholder="Date de fin" (dateChange)="onEndDateChange($event)" required />
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+                  <mat-error *ngIf="endDateControl?.errors?.['required']">
+                    La date de fin est requise.
+                  </mat-error>
+                  <mat-error *ngIf="endDateControl?.errors?.['pastDate']">
+                    La date de fin est déjà dépassée.
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
           </div>
         </div>
         <!-- Ajout d'un message d'erreur général -->
-        <div
-          *ngIf="
+        <div *ngIf="
             emergencyForm.invalid &&
             (emergencyForm.touched || emergencyForm.dirty)
-          "
-          class="error-message"
-        >
+          " class="error-message">
           Un ou plusieurs champs sont invalides. Veuillez vérifier les champs en
           surbrillance.
         </div>
         <div class="category-selection">
           <label for="category-selection">Sélectionnez une catégorie</label>
-          <select
-            [(ngModel)]="selectedCategory"
-            name="selectedCategory"
-            (change)="onChangeCategorie($event)"
-          >
+          <select [(ngModel)]="selectedCategory" name="selectedCategory" (change)="onChangeCategorie($event)">
             <option value="" disabled selected>Toutes les catégories</option>
             <option *ngFor="let categorie of categories" [value]="categorie.id">
               {{ categorie.title }}
             </option>
           </select>
         </div>
-        <mat-tab-group
-          animationDuration="0ms"
-          (selectedTabChange)="onTabChange($event)"
-        >
-          <mat-tab
-            *ngFor="let categorie of listCategorieService; let i = index"
-            [label]="categorie?.categorySociopro?.title"
-          >
-            <app-setting
-              [data]="categorie"
-              [hideRemboursment]="true"
-              [hideToggleService]="
+        <mat-tab-group animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+          <mat-tab *ngFor="let categorie of listCategorieService; let i = index"
+            [label]="categorie?.categorySociopro?.title">
+            <app-setting [data]="categorie" [hideRemboursment]="true" [hideToggleService]="
                 categorie?.categorySociopro?.title !== 'Paramètres généraux'
-              "
-              [serviceId]="serviceId"
-              [categorie]="categorie.categorySociopro"
-              (settingChange)="onSettingChange($event)"
-            ></app-setting>
+              " [serviceId]="serviceId" [categorie]="categorie.categorySociopro"
+              (settingChange)="onSettingChange($event)"></app-setting>
           </mat-tab>
         </mat-tab-group>
 
-        <button
-          [ngClass]="{
-            'disable-button': !disableButton,
-            'validate-button': disableButton
-          }"
-          [disabled]="!disableButton"
-          (click)="saveSettings()"
-          class="validate-button"
-        >
+        <button [ngClass]="{
+            'disable-button': !disableButton || emergencyForm.get('endDate')?.invalid,
+            'validate-button': disableButton && !emergencyForm.get('endDate')?.invalid
+          }" [disabled]="!disableButton || emergencyForm.get('endDate')?.invalid" (click)="saveSettings()"
+          class="validate-button">
           Valider
         </button>
       </div>
