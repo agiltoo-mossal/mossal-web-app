@@ -49,8 +49,14 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit, AfterViewInit {
-  // displayedTransactionColumns = ['matricule', 'collaborateur', 'date', 'operation', 'numero', 'amount'];
-  displayedTransactionColumns = ['date', 'operation', 'amount'];
+    displayedTransactionColumns: string[] = [
+        'matricule',
+        'collaborator',
+        'date',
+        'operation',
+        'numeroOperation',
+        'montant',
+    ];
   societyId: string;
   EXCEL_TYPE =
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -79,6 +85,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   totalNewUsers = 0;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  // @ViewChild(MatPaginator) transactionPaginator: MatPaginator;
   @ViewChild('transactionPaginator') transactionPaginator: MatPaginator;
   // dataSource = new MatTableDataSource<Demande>();
   dataSource = new MatTableDataSource<any>();
@@ -274,37 +281,40 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
-//   getTransactions(): Promise<void> {
-//   if (!this.societyId) return Promise.resolve();
 
-//   return lastValueFrom(
-//     this.fetchPaginatedOperationsGQL.fetch(
-//       {
-//         organizationId: this.societyId,
-//         queryFilter: {
-//           page: this.transactionPaginator ? this.transactionPaginator.pageIndex + 1 : 1,
-//           limit: this.transactionPaginator ? this.transactionPaginator.pageSize : 10,
-//         },
-//       },
-//       { fetchPolicy: 'no-cache' }
+//   getTransactions() {
+//   merge(this.transactionPaginator.page)
+//     .pipe(
+//       startWith({}),
+//       switchMap(() => {
+
+//         const queryFilter = {
+//           limit: this.transactionPaginator.pageSize,
+//           page: this.transactionPaginator.pageIndex + 1
+//         };
+
+//         return this.fetchPaginatedOperationsGQL.fetch(
+//           {
+//             organizationId: this.societyId,
+//             queryFilter
+//           },
+//           { fetchPolicy: 'no-cache' }
+//         );
+//       }),
+//       map(result => result?.data)
 //     )
-//   )
-//   .then((result) => {
-//     const data = result.data.fetchPaginatedOperations;
+//     .subscribe((data: any) => {
 
-//     this.dataSourceTransaction.data = data.results || [];
-//     this.transactionResultsLength = data.pagination.totalItems || 0;
+//       const response = data?.fetchPaginatedOperations;
 
-//     if (this.transactionPaginator) {
-//       this.transactionPaginator.length = this.transactionResultsLength;
-//       this.transactionPaginator._changePageSize(this.transactionPaginator.pageSize);
-//     }
-//   })
-//   .catch((err) => {
-//     console.error('Error fetching transactions:', err);
-//     throw err;
-//   });
+//       if (!response) return;
+
+//       this.dataSourceTransaction.data = response.results;
+//       this.transactionResultsLength = response.pagination.totalItems;
+//     });
 // }
+
+
 
   getDemandesMetrics(): Promise<void> {
     const startDate =
@@ -397,9 +407,10 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.selectedCollab = this.dataSource.data?.[0] || null;
       });
 
-       this.transactionPaginator.page.subscribe(() => {
-        this.getTransactions();
-      });
+      //  this.transactionPaginator.page.subscribe(() => {
+      //   this.getTransactions();
+      // });
+      this.getTransactions();
   }
 
 
