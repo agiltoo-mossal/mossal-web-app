@@ -81,6 +81,8 @@ export class OrganizationSettingEventComponent {
   activated: { value?: boolean } = { value: true };
   selectedCategory: string;
   dataEvent: Event;
+  pendingEventStatusChanges: Map<string, boolean> = new Map();
+  originalActivated: boolean;
 
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -99,7 +101,7 @@ export class OrganizationSettingEventComponent {
     private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -116,11 +118,12 @@ export class OrganizationSettingEventComponent {
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId?.id;
           this.activated.value =
             response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
+          this.originalActivated = this.activated.value;
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
-            OrganisationService & { categorySociopro: CategorySociopro[] }
-          >;
+              OrganisationService & { categorySociopro: CategorySociopro[] }
+            >;
           this.dataForm = this.info;
           if (this.info) {
             this.fetchEvents(this.organisationServiceId);
@@ -157,6 +160,18 @@ export class OrganizationSettingEventComponent {
           console.log(err);
         },
       });
+  }
+
+  get activeEventInRange(): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.events.some((event) => {
+      if (!event.activated) return false;
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+      end.setHours(23, 59, 59, 999);
+      return start <= today && today <= end;
+    });
   }
 
   /**
@@ -355,6 +370,38 @@ export class OrganizationSettingEventComponent {
    * Sauvegarde les paramètres globaux
    */
   async saveSettings() {
+    // 1. Activation du service si changée
+    if (this.organisationServiceId && this.activated.value !== this.originalActivated) {
+      this.updateDefineService
+        .mutate({
+          organisationServiceId: this.organisationServiceId,
+          organisationServiceInput: { activated: this.activated.value },
+        })
+        .subscribe({
+          next: () => { this.originalActivated = this.activated.value; },
+          error: (err) => {
+            this.snackBarService.showSnackBar(err?.message || 'Erreur lors de la mise à jour du service');
+          },
+        });
+    }
+
+    // 2. Statuts d'événements en attente
+    for (const [eventId, status] of this.pendingEventStatusChanges) {
+      const mutation$ = (status
+        ? this.activateEvent.mutate({ eventId })
+        : this.desactiveEvent.mutate({ eventId })) as any;
+      await lastValueFrom(mutation$).catch((err) =>
+        this.snackBarService.showSnackBar(err?.message || 'Erreur lors de la mise à jour de l\'événement')
+      );
+    }
+    this.pendingEventStatusChanges.clear();
+
+    // 3. Paramètres de l'onglet sélectionné
+    if (!this.selectedCategorie) {
+      this.disableButton = false;
+      return;
+    }
+
     console.log('dataForm', this.dataForm);
     if (
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
@@ -532,36 +579,21 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (response) => {
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
   }
 
-  onServiceActivationChange($event) {
-    // this.dataForm.activated = $event;
-    console.log('$event', $event);
-
-    if (this.organisationServiceId) {
-      this.activeService.emit({
-        isActive: $event,
-        organisationServiceId: this.organisationServiceId,
-      });
-      this.activated.value = $event;
-    } else {
-      this.activated.value = true;
-      Swal.fire({
-        icon: 'warning',
-        title: 'Veuillez enregistrer les paramètres avant d activer le service',
-        showCancelButton: false,
-      });
-    }
+  onServiceActivationChange($event: boolean) {
+    this.activated.value = $event;
+    this.disableButton = true;
   }
   createEvent() {
     if (!this.organisationServiceId) {
@@ -627,55 +659,15 @@ export class OrganizationSettingEventComponent {
     // });
   }
 
-  changeStatusEvent(
-    status: boolean,
-    event: {
-      id: string;
-      title: string;
-    }
-  ) {
-    if (status) {
-      this.activateEvent.mutate({ eventId: event.id }).subscribe({
-        next: (response) => {
-          this.snackBarService.showSnackBar('Événement activé avec succès');
-          this.events = this.events.map((e) => {
-            if (e.id === event.id) {
-              return {
-                ...e,
-                activated: true,
-              };
-            }
-            return e;
-          });
-        },
-        error: (err) => {
-          this.snackBarService.showSnackBar('Une erreur est survenue');
-          console.log(err);
-        },
-      });
-    } else {
-      this.desactiveEvent.mutate({ eventId: event.id }).subscribe({
-        next: (response) => {
-          this.snackBarService.showSnackBar('Événement désactivé avec succès');
-          this.events = this.events.map((e) => {
-            if (e.id === event.id) {
-              return {
-                ...e,
-                activated: false,
-              };
-            }
-            return e;
-          });
-        },
-        error: (err) => {
-          this.snackBarService.showSnackBar('Une erreur est survenue');
-          console.log(err);
-        },
-      });
-    }
+  changeStatusEvent(status: boolean, event: { id: string; title: string }) {
+    this.events = this.events.map((e) =>
+      e.id === event.id ? { ...e, activated: status } : e
+    );
+    this.pendingEventStatusChanges.set(event.id, status);
+    this.disableButton = true;
   }
 
-  createOrganizationService() {}
+  createOrganizationService() { }
   handleClickEvent(event: any) {
     console.log('event', event);
     if (this.eventSelectedId === event.id) {
@@ -707,13 +699,13 @@ export class OrganizationSettingEventComponent {
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
   }
-  onSettingChange($event) {
-    this.disableButton = false;
+  onSettingChange($event: any) {
     if ($event.saveData) {
       this.disableButton = true;
       this.dataForm = $event.dataForm;
+    } else {
+      this.disableButton = this.pendingEventStatusChanges.size > 0 || this.activated.value !== this.originalActivated;
     }
-    console.log('disableButton', this.disableButton);
   }
-  createOrganizationEvent(EventInput: EventInput) {}
+  createOrganizationEvent(EventInput: EventInput) { }
 }
