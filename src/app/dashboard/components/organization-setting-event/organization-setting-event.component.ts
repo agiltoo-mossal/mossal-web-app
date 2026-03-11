@@ -99,7 +99,7 @@ export class OrganizationSettingEventComponent {
     private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -119,8 +119,8 @@ export class OrganizationSettingEventComponent {
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
-            OrganisationService & { categorySociopro: CategorySociopro[] }
-          >;
+              OrganisationService & { categorySociopro: CategorySociopro[] }
+            >;
           this.dataForm = this.info;
           if (this.info) {
             this.fetchEvents(this.organisationServiceId);
@@ -532,13 +532,13 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (response) => {
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
@@ -675,7 +675,7 @@ export class OrganizationSettingEventComponent {
     }
   }
 
-  createOrganizationService() {}
+  createOrganizationService() { }
   handleClickEvent(event: any) {
     console.log('event', event);
     if (this.eventSelectedId === event.id) {
@@ -715,5 +715,5 @@ export class OrganizationSettingEventComponent {
     }
     console.log('disableButton', this.disableButton);
   }
-  createOrganizationEvent(EventInput: EventInput) {}
+  createOrganizationEvent(EventInput: EventInput) { }
 }

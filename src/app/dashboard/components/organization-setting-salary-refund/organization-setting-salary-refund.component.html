@@ -9,7 +9,7 @@
       <app-toggle-slide [firstText]="'Actif'" [secondText]="'Inactif'" [value]="activated ?? false"
         [uniqueId]="'serviceActivation'" (toggleChange)="handleServiceActivationChange($event)"></app-toggle-slide>
     </div>
-    <div class="toggle-side" [ngClass]="{ grise: !activated }">
+    <div class="toggle-side">
       <div class="activation-date">
         <label style="margin-bottom: 19px; padding: 0 12px">Date d'activation</label>
         <form class="date-inputs" [formGroup]="formDate">
@@ -32,8 +32,11 @@
                 required />
               <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
-              <mat-error *ngIf="endDate === null">
+              <mat-error *ngIf="dateEnd?.errors?.['required']">
                 La date de fin est requise.
+              </mat-error>
+              <mat-error *ngIf="dateEnd?.errors?.['pastDate']">
+                La date de fin est déjà dépassée.
               </mat-error>
             </mat-form-field>
           </div>
@@ -65,8 +68,8 @@
         </mat-tab-group>
       </div>
       <button [ngClass]="{
-          'disable-button': disableButton,
-        }" [disabled]="!disableButton" (click)="saveSettings()" class="validate-btn">Valider</button>
+          'disable-button': !disableButton || formDate.invalid,
+        }" [disabled]="!disableButton || formDate.invalid" (click)="saveSettings()" class="validate-btn">Valider</button>
     </div>
     <!-- Liste des événements prévus -->
   </div>

@@ -71,7 +71,7 @@ export class OrganizationSettingSalaryComponent {
   ) {
     this.formDate = this.formBuilder.group({
       startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      endDate: ['', [Validators.required, this.pastDateValidator]],
     });
     this.formDate.valueChanges.subscribe((value) => {
       console.log('value', value);
@@ -85,6 +85,11 @@ export class OrganizationSettingSalaryComponent {
       this.disableButton = changed;
     });
   }
+  pastDateValidator(control: { value: Date | null }) {
+    if (!control.value) return null;
+    return new Date(control.value) < new Date() ? { pastDate: true } : null;
+  }
+
   get dateStart() {
     return this.formDate.get('startDate');
   }
@@ -258,18 +263,7 @@ export class OrganizationSettingSalaryComponent {
   handleServiceActivationChange(isActive: boolean) {
     this.isActive = isActive;
     this.activated = isActive;
-    if (this.organisationServiceId) {
-      this.activeService.emit({
-        isActive,
-        organisationServiceId: this.organisationServiceId,
-      });
-    } else {
-      this.activated = true;
-      Swal.fire({
-        title: 'Veuillez enregistrer les paramètres avant d activer le service',
-        showCancelButton: false,
-      });
-    }
+    this.disableButton = true;
     this.activationInformationService.setActivationState(
       this.service.id,
       isActive
@@ -316,14 +310,30 @@ export class OrganizationSettingSalaryComponent {
         if (
           this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
         ) {
+          const startDate = this.dateStart.getRawValue();
+          const endDate = this.dateEnd.getRawValue();
+
+          if (this.formDate.invalid) {
+            this.formDate.markAllAsTouched();
+            return;
+          }
+
+          const activationPayload = {
+            activated: this.activated,
+            activatedAt: startDate ? new Date(startDate).toISOString() : null,
+            activationDurationDay: startDate && endDate ? differenceInDays(new Date(endDate), new Date(startDate)) : null,
+          };
           if (this.organisationServiceId) {
-            this.updateOrganisationService(
-              this.organisationServiceId,
-              this.dataForm
-            );
+            this.updateOrganisationService(this.organisationServiceId, {
+              ...this.dataForm,
+              ...activationPayload,
+            });
           } else {
             this.createOrganisationService(
-              this.dataForm,
+              {
+                ...this.dataForm,
+                ...activationPayload,
+              },
               this.organization.id,
               this.service.id
             );
@@ -356,7 +366,7 @@ export class OrganizationSettingSalaryComponent {
                 },
                 error: (err) => {
                   this.snackBarService.showSnackBar(
-                    "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+                    "Une erreur est survenue lors de l'enregistrement des paramètres du service"
                   );
                 },
               });
@@ -398,13 +408,13 @@ export class OrganizationSettingSalaryComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
@@ -422,13 +432,13 @@ export class OrganizationSettingSalaryComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });

@@ -25,6 +25,7 @@ import {
   UpdateOrganisationServiceGQL,
 } from 'src/graphql/generated';
 import { ActivationService } from '../organization/activation.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-organization-setting-emergency',
@@ -46,6 +47,7 @@ export class OrganizationSettingEmergencyComponent {
 
   // Date d'activation
   activationDate: string = ''; // Format ISO (AAAA-MM-JJ)
+  endDateValue: Date | null = null;
   disableButton: boolean = false; // Par défaut, le bouton de sauvegarde est désactivé
   // Gestion des catégories
   selectedCategory: string; // Catégorie par défaut
@@ -76,13 +78,14 @@ export class OrganizationSettingEmergencyComponent {
     private updateCategorySocioproServiceGQL: UpdateCategorySocioproServiceGQL,
     private listService: FetchServicesGQL,
     private organizationService: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.serviceId = this.service.id;
     this.emergencyForm = this.fb.group({
       activated: [true],
       activatedAt: ['', Validators.required],
+      endDate: [null, [Validators.required, this.pastDateValidator]],
       selectedCategory: [''],
       amountUnit: [AmountUnit.Percentage],
       amount: [0, [, Validators.required]],
@@ -134,6 +137,15 @@ export class OrganizationSettingEmergencyComponent {
               });
             });
             this.activated = data.activated;
+
+            if (data.activatedAt && data.activationDurationDay != null) {
+              const [y, m, d] = data.activatedAt.split('-').map(Number);
+              const startLocal = new Date(y, m - 1, d);
+              const endDate = new Date(startLocal.getTime() + data.activationDurationDay * 24 * 60 * 60 * 1000);
+              this.endDateValue = endDate;
+              this.emergencyForm.get('endDate').setValue(endDate);
+            }
+
             this.emergencyForm.patchValue({
               activated: data.activated,
               activatedAt: data.activatedAt,
@@ -192,29 +204,51 @@ export class OrganizationSettingEmergencyComponent {
     }
     if (
       this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Percentage &&
-      !this.emergencyForm.get('amount')?.value
+      this.emergencyForm.get('amount')?.value == null
     ) {
       this.snackBarService.showSnackBar('Vous devez renseigner le pourcentage');
       return;
     }
     if (
       this.emergencyForm.get('amountUnit')?.value === EAmountUnit.Fixed &&
-      !this.emergencyForm.get('amount')?.value
+      this.emergencyForm.get('amount')?.value == null
     ) {
       this.snackBarService.showSnackBar('Vous devez renseigner le montant');
       return;
     }
+
+    const result = await Swal.fire({
+      title: 'Voulez-vous enregistrer les modifications?',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
+    });
+    if (!result.isConfirmed) return;
+
     const formData = this.emergencyForm.getRawValue();
+    const { endDate, ...restFormData } = formData;
+
+    const parseLocalDate = (str: string): Date => {
+      if (!str) return null;
+      if (str.includes('T') || str.length > 10) return new Date(str);
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    };
+    const activatedAt = restFormData.activatedAt ? parseLocalDate(restFormData.activatedAt) : null;
+    const activationDurationDay = activatedAt && endDate
+      ? Math.max(0, Math.floor((new Date(endDate).getTime() - activatedAt.getTime()) / (1000 * 60 * 60 * 24)))
+      : 0;
 
     const data = {
-      ...formData,
+      ...restFormData,
+      activationDurationDay,
       refundDurationUnit: ERrefundDurationUnit.Month,
       refundDuration: this.service.refundDurationMonth,
     };
     delete data.selectedCategory;
 
     if (
-      this.selectedCategorie.categorySociopro?.title === 'Paramètres généraux'
+      this.selectedCategorie?.categorySociopro?.title === 'Paramètres généraux'
     ) {
       if (this.organisationServiceId) {
         this.updateOrganisationService(this.organisationServiceId, data);
@@ -226,34 +260,56 @@ export class OrganizationSettingEmergencyComponent {
         );
       }
     } else {
-      const temp = this.listCategorieService.filter(
-        (item) => item.categorySociopro?.title !== 'Paramètres généraux'
-      );
+      // Build category input from dataForm (salary-refund pattern)
+      // Strip fields not accepted by CategorySocioproServiceInput
+      const {
+        activatedAt: _at, activationDurationDay: _acd,
+        __typename, organizationId: _oid, serviceId: _sid,
+        amountPercentage: _ap, categoriesocioproservices: _css,
+        events: _ev, service: _svc, organization: _org,
+        id: _id, selectedCategory: _sc, endDate: _ed,
+        ...categoryData
+      } = { ...data, ...(this.dataForm || {}) } as any;
 
-      let selectedUpdate = temp.find(
+      const selectedUpdate = this.listCategorieService.find(
         (item) =>
-          item?.categorySocioproId &&
-          this.selectedCategorie?.categorySocioproId &&
-          item?.categorySocioproId ===
-            this.selectedCategorie?.categorySocioproId
+          item?.id === this.selectedCategorie?.id &&
+          item?.id &&
+          this.selectedCategorie?.id
       );
 
-      if (!selectedUpdate?.id) {
+      const categorySocioproId =
+        this.selectedCategorie?.categorySocioproId ||
+        this.selectedCategorie?.categorySociopro?.id;
+
+      if (!categorySocioproId || !this.organisationServiceId) {
+        console.error('[Emergency] Missing IDs for category save:', {
+          categorySocioproId,
+          organisationServiceId: this.organisationServiceId,
+          selectedCategorie: this.selectedCategorie,
+        });
+        this.snackBarService.showSnackBar(
+          'Veuillez enregistrer les paramètres généraux avant de modifier une catégorie'
+        );
+        return;
+      }
+
+      if (!selectedUpdate) {
         this.createCategorySocioproServiceGQL
           .mutate({
-            categorySocioproId: this.selectedCategorie?.categorySocioproId,
-            categorySocioproServiceInput: data,
+            categorySocioproId,
+            categorySocioproServiceInput: { ...categoryData },
             organisationServiceId: this.organisationServiceId,
           })
           .subscribe({
-            next: (response) => {
+            next: (_) => {
               this.snackBarService.showSnackBar(
-                `Nouvelles Paramètragres de plafond enregistrés sur le service ${this.selectedCategorie.categorySociopro?.title}`
+                `Nouvelles Paramètragres de plafond enregistrés sur le service ${this.selectedCategorie?.categorySociopro?.title}`
               );
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
-                "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+                "Une erreur est survenue lors de l'enregistrement des paramètres du service"
               );
               console.log(err);
             },
@@ -262,18 +318,17 @@ export class OrganizationSettingEmergencyComponent {
         this.updateCategorySocioproServiceGQL
           .mutate({
             categorySocioproServiceId: selectedUpdate.id,
-            categorySocioproServiceInput: data,
+            categorySocioproServiceInput: { ...categoryData },
           })
           .subscribe({
-            next: (response) => {
-              console.log(response);
+            next: (_) => {
               this.snackBarService.showSnackBar(
-                `Mise à jour des paramètres de plafond enregistrée sur le service ${this.selectedCategorie.categorySociopro?.title}`
+                `Mise à jour des paramètres de plafond enregistrée sur le service ${this.selectedCategorie?.categorySociopro?.title}`
               );
             },
             error: (err) => {
               this.snackBarService.showSnackBar(
-                "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+                "Une erreur est survenue lors de l'enregistrement des paramètres du service"
               );
               console.log(err);
             },
@@ -294,7 +349,7 @@ export class OrganizationSettingEmergencyComponent {
       })
       .subscribe({
         next: (response) => {
-          console.log('response', response);
+          this.organisationServiceId = (response.data?.createOrganisationService as any)?.id;
           this.snackBarService.showSnackBar(
             'Nouvelles Paramètres enregistrées avec succès'
           );
@@ -302,7 +357,7 @@ export class OrganizationSettingEmergencyComponent {
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
@@ -326,7 +381,7 @@ export class OrganizationSettingEmergencyComponent {
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
@@ -347,13 +402,13 @@ export class OrganizationSettingEmergencyComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
@@ -371,35 +426,42 @@ export class OrganizationSettingEmergencyComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
   }
 
+  pastDateValidator(control: { value: Date | null }) {
+    if (!control.value) return null;
+    return new Date(control.value) < new Date() ? { pastDate: true } : null;
+  }
+
+  get endDateControl() {
+    return this.emergencyForm.get('endDate');
+  }
+
+  onEndDateChange(event: any) {
+    const date = new Date(event.value);
+    this.endDateValue = date;
+    this.emergencyForm.get('endDate').setValue(date);
+    this.disableButton = true;
+  }
+
   onToggle(event) {
     this.autoValidate.setValue(event);
   }
+
   onServiceActivationChange(isActive: boolean) {
-    console.log('isActive', isActive);
-    if (this.organisationServiceId) {
-      this.serviceActivationChange.emit({
-        isActive,
-        organisationServiceId: this.organisationServiceId,
-      });
-    } else {
-      this.snackBarService.showSnackBar(
-        "Veuillez enregistrer les paramètres de plafond avant d'activer le service"
-      );
-    }
     this.emergencyForm.get('activated').setValue(isActive);
     this.activated = isActive;
+    this.disableButton = true;
   }
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
@@ -415,22 +477,25 @@ export class OrganizationSettingEmergencyComponent {
     return this.emergencyForm.get('amountPercentage');
   }
   onSettingChange($event) {
-    this.dataForm = $event.dataForm;
+    this.disableButton = false;
     if ($event.saveData) {
       this.saveData = true;
-      this.emergencyForm.patchValue({
-        ...$event.dataForm,
-      });
+      this.disableButton = true;
+      const tempForm = $event.dataForm;
+      // Merge like salary-refund to preserve categorySocioproId, id, etc.
+      this.dataForm = { ...this.dataForm, ...tempForm };
+      const { activated, ...rest } = tempForm;
+      this.emergencyForm.patchValue({ ...rest });
     } else {
       this.saveData = false;
     }
-    this.disableButton = this.saveData;
-    console.log('dataForm', this.emergencyForm.getRawValue());
   }
   onDateChange(event: MatDatepickerInputEvent<Date>) {
-    const date = new Date(event.value);
-    const formattedDate = date.toISOString().split('T')[0];
-    this.emergencyForm.get('activatedAt').setValue(formattedDate);
+    const date = event.value;
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    this.emergencyForm.get('activatedAt').setValue(`${y}-${m}-${d}`);
   }
   onChangeCategorie(event: Event) {
     console.log('rvent', (event.target as any).value);
