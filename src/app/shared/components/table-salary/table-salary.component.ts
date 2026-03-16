@@ -112,6 +112,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fb: FormBuilder,
     private router: Router
+  
   ) {
     const { start, end } = this.getCurrentYearRange();
 
@@ -142,7 +143,18 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         this.fetchStatus = value.data.fetchCountStatus;
       },
     });
+  } 
+
+  getCurrentYearDates() {
+    const currentYear = new Date().getFullYear();
+
+    return {
+      start: `${currentYear}-01-01`,
+      end: `${currentYear}-12-31`,
+    };
   }
+
+
   initSearchForm() {
     const { start, end } = this.getCurrentYearRange();
     this.searchForm = this.fb.group({
