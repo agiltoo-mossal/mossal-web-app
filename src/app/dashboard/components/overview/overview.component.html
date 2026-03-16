@@ -66,9 +66,7 @@
       </div>
 
       <div class="example-table-container">
-        <!-- <table mat-table [dataSource]="dataSourceTransaction" class="example-table transaction-table" matSort> -->
           <table mat-table [dataSource]="dataSourceTransaction" class="example-table transaction-table" matSort #transactionSort="matSort">
-
           <ng-container matColumnDef="matricule">
               <th mat-header-cell *matHeaderCellDef class="title">Matricule</th>
               <td mat-cell *matCellDef="let row">{{ row?.matricule }}</td>
@@ -125,12 +123,12 @@
           <tr mat-row *matRowDef="let row; columns: displayedTransactionColumns"></tr>
         </table>
        
-        <!-- <mat-paginator #transactionPaginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="transactionResultsLength" aria-label=""></mat-paginator> -->
+            <mat-paginator #transactionPaginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                          [length]="transactionResultsLength" aria-label="">
+            </mat-paginator>
       </div>
 
     </div>
-
-   
 
     <div class="chart-container" *ngIf="metricsData">
         <app-refund-charts [metricsData]="metricsData"></app-refund-charts>
@@ -161,7 +159,7 @@
        
       </div>
       <div class="example-table-container">
-        <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+        <table mat-table [dataSource]="dataSource" class="example-table" matSort #collaboratorSort="matSort">
           <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
@@ -231,7 +229,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
+        <mat-paginator #collaboratorPaginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
       </div>
       <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
         <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">

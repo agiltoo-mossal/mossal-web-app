@@ -1,5 +1,6 @@
 
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 import {
   AfterViewInit,
   Component,
@@ -36,6 +37,7 @@ import {
   map,
   merge,
   startWith,
+  ReplaySubject,
   switchMap,
 } from 'rxjs';
 import { MatSort } from '@angular/material/sort';
@@ -49,6 +51,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit, AfterViewInit {
+
     displayedTransactionColumns: string[] = [
         'matricule',
         'collaborator',
@@ -83,11 +86,12 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   filterBy = 'createdAt';
   filterByOption = FilterBy;
   totalNewUsers = 0;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  // @ViewChild(MatPaginator) transactionPaginator: MatPaginator;
+
+  @ViewChild('collaboratorSort') sort: MatSort;
+  @ViewChild('collaboratorPaginator') paginator: MatPaginator;
   @ViewChild('transactionPaginator') transactionPaginator: MatPaginator;
-  // dataSource = new MatTableDataSource<Demande>();
+  @ViewChild('transactionSort') transactionSort: MatSort;
+
   dataSource = new MatTableDataSource<any>();
   dataSourceTransaction = new MatTableDataSource<any>();
   page: number = 1;
@@ -199,7 +203,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.getTotalDemandeToPay(),
         this.getFetchCountStatus(),
         this.getCurrentorganization(),
-        this.getTransactions()
+        // this.getTransactions()
 
       ]).then(() => {
         this.updateStaticData();
@@ -266,55 +270,19 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
-  getTransactions(): Promise<void> {
-      return lastValueFrom(
-        this.fetchOperations.fetch(
-          { organizationId: this.societyId },
-          { fetchPolicy: 'no-cache' }
-        )
-      ).then(({ data }) => {
+  getTransactions() {
+    this.fetchOperations
+      .fetch({
+        organizationId: this.societyId 
+      }, { fetchPolicy: 'no-cache' })  
+      .subscribe(({ data }) => {
         const operations = data.fetchOperations || [];
-            console.log('Structure transaction:', operations[0]); 
         this.dataSourceTransaction.data = operations;
-      }).catch((error) => {
-        console.error('Error fetching transactions:', error);
+        this.transactionResultsLength = operations.length;
+        
+        this.dataSourceTransaction.paginator = this.transactionPaginator;
       });
   }
-
-
-//   getTransactions() {
-//   merge(this.transactionPaginator.page)
-//     .pipe(
-//       startWith({}),
-//       switchMap(() => {
-
-//         const queryFilter = {
-//           limit: this.transactionPaginator.pageSize,
-//           page: this.transactionPaginator.pageIndex + 1
-//         };
-
-//         return this.fetchPaginatedOperationsGQL.fetch(
-//           {
-//             organizationId: this.societyId,
-//             queryFilter
-//           },
-//           { fetchPolicy: 'no-cache' }
-//         );
-//       }),
-//       map(result => result?.data)
-//     )
-//     .subscribe((data: any) => {
-
-//       const response = data?.fetchPaginatedOperations;
-
-//       if (!response) return;
-
-//       this.dataSourceTransaction.data = response.results;
-//       this.transactionResultsLength = response.pagination.totalItems;
-//     });
-// }
-
-
 
   getDemandesMetrics(): Promise<void> {
     const startDate =
@@ -374,14 +342,18 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
-  ngAfterViewInit(): void {
-    this.sort.sortChange.subscribe(() => {
-      this.paginator.pageIndex = 0;
-    });
+
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(
       this.sort.sortChange,
-      this.paginator.page
+      this.paginator.page,
+      this.metricsInput.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
     )
       .pipe(
         switchMap(() => {
@@ -389,30 +361,24 @@ export class OverviewComponent implements OnInit, AfterViewInit {
             limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
           };
-
           return this.fetchOrganizationCollaboratorsGQL.fetch(
             { queryFilter },
             { fetchPolicy: 'no-cache' }
           );
         }),
-        map(result => result?.data)
+        map((result) => {
+          if (result == null) return [];
+          return result.data;
+        })
       )
       .subscribe((data: any) => {
-        const response = data?.fetchPaginatedOrganizationCollaborators;
-
-        if (!response) return;
-
-        this.dataSource.data = response.results;
-        this.resultsLength = response.pagination.totalItems;
-        this.selectedCollab = this.dataSource.data?.[0] || null;
+        this.dataSource.data = data.fetchPaginatedOrganizationCollaborators.results;
+        this.selectedCollab = this.collabs?.[0];
+        this.resultsLength = data.fetchPaginatedOrganizationCollaborators?.pagination?.totalItems;
       });
 
-      //  this.transactionPaginator.page.subscribe(() => {
-      //   this.getTransactions();
-      // });
-      this.getTransactions();
+    this.getTransactions();
   }
-
 
 
   setHasValidatedDemande() {
@@ -669,6 +635,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
+
   exportTransactions() {
         this.fetchOperations.fetch({ organizationId: this.societyId }, { fetchPolicy: 'no-cache' }).subscribe({
             next: ({ data }) => {
@@ -726,9 +693,9 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         a.click();
         window.URL.revokeObjectURL(url);
     }
-}
-export enum FilterBy {
-  createdAt = 'createdAt',
-  hasValidatedDemande = 'hasValidatedDemande',
-}
+  }
+  export enum FilterBy {
+    createdAt = 'createdAt',
+    hasValidatedDemande = 'hasValidatedDemande',
+  }
 
