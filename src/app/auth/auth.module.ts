@@ -23,7 +23,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
-import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
+// import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +32,7 @@ import { OtpVerificationComponent } from './otp-verification/otp-verification.co
     ResetPasswordComponent,
     RequestResetPasswordComponent,
 
-    OtpVerificationComponent
+    // OtpVerificationComponent
   ],
   imports: [
     CommonModule,

@@ -116,6 +116,21 @@ export class OrganizationSettingEmergencyComponent {
             this.organisationServiceId = data.id;
             this.dataForm = data;
 
+            // this.listCategorieService = [
+            //   {
+            //     amount: this.dataForm.amount,
+            //     amountUnit: this.dataForm.amountUnit,
+            //     refundDuration: this.dataForm.refundDuration,
+            //     refundDurationUnit: this.dataForm.refundDurationUnit,
+            //     activated: this.dataForm.activated,
+            //     activatedAt: this.dataForm.activatedAt,
+            //     autoValidate: this.dataForm.autoValidate,
+            //     categorySociopro: {
+            //       title: 'Paramètres généraux',
+            //     } as any,
+            //   },
+            // ];
+
             this.listCategorieService = [
               {
                 amount: this.dataForm.amount,
@@ -126,10 +141,12 @@ export class OrganizationSettingEmergencyComponent {
                 activatedAt: this.dataForm.activatedAt,
                 autoValidate: this.dataForm.autoValidate,
                 categorySociopro: {
+                  id: 'general',
                   title: 'Paramètres généraux',
                 } as any,
               },
             ];
+
             this.selectedCategorie = this.listCategorieService[0];
             this.dataForm?.categoriesocioproservices.forEach((item) => {
               this.listCategorieService.push({
