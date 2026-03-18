@@ -39,11 +39,11 @@
                   <mat-error *ngIf="endDateControl?.errors?.['required']">
                     La date de fin est requise.
                   </mat-error>
-                  <mat-error *ngIf="endDateControl?.errors?.['pastDate']">
-                    La date de fin est déjà dépassée.
-                  </mat-error>
                 </mat-form-field>
               </div>
+              <mat-error *ngIf="endDateControl?.touched && endDateControl?.errors?.['pastDate']">
+                La date de fin est déjà dépassée.
+              </mat-error>
             </div>
           </div>
         </div>

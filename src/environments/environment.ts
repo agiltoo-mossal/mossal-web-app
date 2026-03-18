@@ -3,14 +3,14 @@ export const environment = {
   // API_URI: 'https://mossall-enterprise-service-preprod.onrender.com/',
   // ENTERPRISE_URI: 'https://mossall-enterprise-service-preprod.onrender.com/graphql',
 
-  // GRAPHQL_URI: 'http://localhost:3003/graphql',
-  // API_URI: 'http://localhost:3003/',
-  // ENTERPRISE_URI: 'http://localhost:3003/graphql',
+  GRAPHQL_URI: 'http://localhost:3003/graphql',
+  API_URI: 'http://localhost:3003/',
+  ENTERPRISE_URI: 'http://localhost:3003/graphql',
 
   // New server address
-  GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
-  API_URI: 'https://mossall-ent-preprod.dynv6.net/',
-  ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
+  // GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
+  // API_URI: 'https://mossall-ent-preprod.dynv6.net/',
+  // ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
 
   // GRAPHQL_URI: 'https://mossall-ent-prod.dynv6.net/graphql',
   // API_URI: 'https://mossall-ent-prod.dynv6.net/',
