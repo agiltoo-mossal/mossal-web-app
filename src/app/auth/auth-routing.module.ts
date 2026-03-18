@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
 import { ConfirmPasswordResetComponent } from './confirm-password-reset/confirm-password-reset.component';
+import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       { path: 'login', component: LoginComponent },
+      { path: 'verify-otp', component: OtpVerificationComponent },
       { path: 'reset', component: ResetPasswordComponent },
       {
         path: 'request-password-reset',
