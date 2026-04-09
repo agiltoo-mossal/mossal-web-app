@@ -246,7 +246,7 @@ export class OrganizationSettingEmergencyComponent {
       activatedAt: startNormalized ? startNormalized.toISOString() : restFormData.activatedAt,
       activationDurationDay,
       refundDurationUnit: ERrefundDurationUnit.Month,
-      refundDuration: this.service.refundDurationMonth,
+      refundDuration: 1,
     };
     delete data.selectedCategory;
 
