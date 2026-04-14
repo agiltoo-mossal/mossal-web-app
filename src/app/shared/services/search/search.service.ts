@@ -32,18 +32,35 @@ export class SearchService {
     return result.data.phoneNumberExists;
   }
 
+  // async uniqueIdentifierExists(
+  //   uniqueIdentifier: string,
+  //   isAdmin = false,
+  //   userId = null
+  // ) {
+  //   const result = await lastValueFrom(
+  //     this.uniqueIdentifierExistsGQL.fetch({
+  //       uniqueIdentifier,
+  //       isAdmin,
+  //       userId,
+  //     })
+  //   );
+  //   return result.data.uniqueIdentifierExists;
+  // }
+
   async uniqueIdentifierExists(
-    uniqueIdentifier: string,
-    isAdmin = false,
-    userId = null
-  ) {
-    const result = await lastValueFrom(
-      this.uniqueIdentifierExistsGQL.fetch({
-        uniqueIdentifier,
-        isAdmin,
-        userId,
-      })
-    );
-    return result.data.uniqueIdentifierExists;
-  }
+  uniqueIdentifier: string,
+  isAdmin = false,
+  userId = null,
+  organizationScoped = false 
+): Promise<boolean> {
+  const result = await lastValueFrom(
+    this.uniqueIdentifierExistsGQL.fetch({
+      uniqueIdentifier,
+      isAdmin,
+      userId,
+      organizationScoped
+    })
+  );
+  return result.data.uniqueIdentifierExists as boolean;
+}
 }
