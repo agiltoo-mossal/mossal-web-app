@@ -51,8 +51,7 @@ export class OrganizationComponent {
     private activeOrganizationService: ActivateOrganisationServiceGQL,
     private desactiveOrganizationService: DesactivateOrganisationServiceGQL
   ) {
-   
-
+    this.form = this.fb.group({});
     this.getCurrentorganization();
     this.generateCardItems();
   }

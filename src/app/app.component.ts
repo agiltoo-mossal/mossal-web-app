@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { APP_CONTEXT } from './shared/enums/app-context.enum';
 import { ProgressBarService } from './shared/services/progress-bar.service';
@@ -18,6 +18,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   constructor(
     private progressBarService: ProgressBarService, // private translationService: TranslationService
     private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {
     // this.translationService.loadTranslations('en');
   }
@@ -33,6 +34,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   ngAfterViewInit(): void {
     this.progressBarService.showProgressBar$.subscribe((show) => {
       this.showProgressBar = show;
+      this.cdr.detectChanges();
     });
   }
 

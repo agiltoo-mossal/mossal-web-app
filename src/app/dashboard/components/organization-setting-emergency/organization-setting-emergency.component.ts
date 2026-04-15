@@ -26,6 +26,7 @@ import {
 } from 'src/graphql/generated';
 import { ActivationService } from '../organization/activation.service';
 import Swal from 'sweetalert2';
+import { differenceInDays } from 'date-fns';
 
 @Component({
   selector: 'app-organization-setting-emergency',
@@ -116,21 +117,6 @@ export class OrganizationSettingEmergencyComponent {
             this.organisationServiceId = data.id;
             this.dataForm = data;
 
-            // this.listCategorieService = [
-            //   {
-            //     amount: this.dataForm.amount,
-            //     amountUnit: this.dataForm.amountUnit,
-            //     refundDuration: this.dataForm.refundDuration,
-            //     refundDurationUnit: this.dataForm.refundDurationUnit,
-            //     activated: this.dataForm.activated,
-            //     activatedAt: this.dataForm.activatedAt,
-            //     autoValidate: this.dataForm.autoValidate,
-            //     categorySociopro: {
-            //       title: 'Paramètres généraux',
-            //     } as any,
-            //   },
-            // ];
-
             this.listCategorieService = [
               {
                 amount: this.dataForm.amount,
@@ -156,11 +142,11 @@ export class OrganizationSettingEmergencyComponent {
             this.activated = data.activated;
 
             if (data.activatedAt && data.activationDurationDay != null) {
-              const [y, m, d] = data.activatedAt.split('-').map(Number);
-              const startLocal = new Date(y, m - 1, d);
-              const endDate = new Date(startLocal.getTime() + data.activationDurationDay * 24 * 60 * 60 * 1000);
-              this.endDateValue = endDate;
-              this.emergencyForm.get('endDate').setValue(endDate);
+              const start = new Date(data.activatedAt);
+              start.setHours(0, 0, 0, 0);
+              const end = new Date(start.getTime() + data.activationDurationDay * 24 * 60 * 60 * 1000);
+              this.endDateValue = end;
+              this.emergencyForm.get('endDate').setValue(end);
             }
 
             this.emergencyForm.patchValue({
@@ -245,22 +231,22 @@ export class OrganizationSettingEmergencyComponent {
     const formData = this.emergencyForm.getRawValue();
     const { endDate, ...restFormData } = formData;
 
-    const parseLocalDate = (str: string): Date => {
-      if (!str) return null;
-      if (str.includes('T') || str.length > 10) return new Date(str);
-      const [y, m, d] = str.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    };
-    const activatedAt = restFormData.activatedAt ? parseLocalDate(restFormData.activatedAt) : null;
-    const activationDurationDay = activatedAt && endDate
-      ? Math.max(0, Math.floor((new Date(endDate).getTime() - activatedAt.getTime()) / (1000 * 60 * 60 * 24)))
+    const startNormalized = restFormData.activatedAt
+      ? (() => { const d = new Date(restFormData.activatedAt); d.setHours(0, 0, 0, 0); return d; })()
+      : null;
+    const endNormalized = endDate
+      ? (() => { const d = new Date(endDate); d.setHours(0, 0, 0, 0); return d; })()
+      : null;
+    const activationDurationDay = startNormalized && endNormalized
+      ? differenceInDays(endNormalized, startNormalized)
       : 0;
 
     const data = {
       ...restFormData,
+      activatedAt: startNormalized ? startNormalized.toISOString() : restFormData.activatedAt,
       activationDurationDay,
       refundDurationUnit: ERrefundDurationUnit.Month,
-      refundDuration: this.service.refundDurationMonth,
+      refundDuration: 1,
     };
     delete data.selectedCategory;
 
@@ -468,6 +454,7 @@ export class OrganizationSettingEmergencyComponent {
     const date = new Date(event.value);
     this.endDateValue = date;
     this.emergencyForm.get('endDate').setValue(date);
+    this.emergencyForm.get('endDate').markAsTouched();
     this.disableButton = true;
   }
 

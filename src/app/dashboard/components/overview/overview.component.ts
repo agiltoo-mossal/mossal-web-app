@@ -376,8 +376,6 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.selectedCollab = this.collabs?.[0];
         this.resultsLength = data.fetchPaginatedOrganizationCollaborators?.pagination?.totalItems;
       });
-
-    this.getTransactions();
   }
 
 
