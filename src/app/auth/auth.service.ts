@@ -258,14 +258,12 @@ export class AuthService {
         this.router.navigate(['/auth/login']);
       } else {
         this.snackBarService.showSnackBar('Session expirée!', '', {
-          panelClass: ['red-snackbar'],
           duration: 2500,
         });
         throw res.data.resetAdminPassword;
       }
     } catch (e) {
       this.snackBarService.showSnackBar('Session expirée!', '', {
-        panelClass: ['red-snackbar'],
         duration: 2500,
       });
       throw e;
@@ -283,13 +281,11 @@ export class AuthService {
         this.router.navigate(['/auth/login']);
       } else {
         this.snackBarService.showSnackBar('email invalide', '', {
-          panelClass: ['red-snackbar'],
           duration: 2500,
         });
       }
     } catch (e) {
       this.snackBarService.showSnackBar('Email est invalide!', '', {
-        panelClass: ['red-snackbar'],
         duration: 2500,
       });
     }

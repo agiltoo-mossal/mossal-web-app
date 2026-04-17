@@ -750,6 +750,8 @@ export type Organization = {
   amountPercent: Scalars['Float']['output'];
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
+  /** Code unique de l'organisation (5 premiers caractères du nom) */
+  code?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
@@ -966,6 +968,7 @@ export type Query = {
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
   myRemboursements: Array<Remboursement>;
+  organizationNameExists: Scalars['Boolean']['output'];
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
 };
@@ -1227,6 +1230,12 @@ export type QueryFetchTotalDemandesAmountArgs = {
 
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
+};
+
+
+export type QueryOrganizationNameExistsArgs = {
+  name: Scalars['String']['input'];
+  organizationId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2020,6 +2029,14 @@ export type EmailExistsQueryVariables = Exact<{
 
 
 export type EmailExistsQuery = { __typename?: 'Query', emailExists: boolean };
+
+export type OrganizationNameExistsQueryVariables = Exact<{
+  name: Scalars['String']['input'];
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type OrganizationNameExistsQuery = { __typename?: 'Query', organizationNameExists: boolean };
 
 export const LoginAdminDocument = gql`
     query LoginAdmin($loginInput: LoginInput!) {
@@ -4184,6 +4201,22 @@ export const EmailExistsDocument = gql`
   })
   export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
     document = EmailExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const OrganizationNameExistsDocument = gql`
+    query OrganizationNameExists($name: String!, $organizationId: String) {
+  organizationNameExists(name: $name, organizationId: $organizationId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class OrganizationNameExistsGQL extends Apollo.Query<OrganizationNameExistsQuery, OrganizationNameExistsQueryVariables> {
+    document = OrganizationNameExistsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
