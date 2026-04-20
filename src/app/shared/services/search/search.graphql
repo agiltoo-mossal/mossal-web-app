@@ -39,3 +39,7 @@ query UniqueIdentifierExists(
 query EmailExists($email: String!, $isAdmin: Boolean, $userId: String) {
   emailExists(email: $email, isAdmin: $isAdmin, userId: $userId)
 }
+
+query OrganizationNameExists($name: String!, $organizationId: String) {
+  organizationNameExists(name: $name, organizationId: $organizationId)
+}

@@ -66,6 +66,8 @@
                                     societyForm.get('companyName')?.touched" class="error-message">
                         <span *ngIf="societyForm.get('companyName')?.errors?.['required']">Le nom de la société
                             est obligatoire.</span>
+                        <span *ngIf="societyForm.get('companyName')?.errors?.['companyNameExists']">Ce nom de société
+                            existe déjà.</span>
                     </div>
                 </div>
             </div>
