@@ -240,6 +240,10 @@ export class SidebarComponent implements OnInit {
     });
   }
 
+  isActive(link: string): boolean {
+    return this.router.url === link || this.router.url.startsWith(link);
+  }
+
   getCurrentUser() {
     this.fetchCurrentAdminGQL
       .fetch(
@@ -276,27 +280,27 @@ export class SidebarComponent implements OnInit {
       },
       {
         label: 'Liste des demandes',
-        link: 'requests-list',
+        link: '/dashboard/requests-list',
         icon: 'list_alt',
         children: [
           {
             label: "Dépannage d'urgence",
-            link: 'emergency-repair',
+            link: '/dashboard/emergency-repair',
             icon: 'build', // Icône pour un dépannage ou réparation
           },
           {
             label: 'Avance sur événement',
-            link: 'event-advance',
+            link: '/dashboard/event-advance',
             icon: 'event', // Icône pour un événement
           },
           {
             label: 'Avance salariale',
-            link: 'salary-advance',
+            link: '/dashboard/salary-advance',
             icon: 'attach_money', // Icône pour un paiement/avance d'argent
           },
           {
             label: 'Avance salariale remboursable mensuellement',
-            link: 'monthly-repayable-advance',
+            link: '/dashboard/monthly-repayable-advance',
             icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
           },
         ],
@@ -328,27 +332,27 @@ export class SidebarComponent implements OnInit {
       },
       {
         label: 'Liste des demandes',
-        link: 'requests-list',
+        link: '/dashboard/requests-list',
         icon: 'list_alt',
         children: [
           {
             label: "Dépannage d'urgence",
-            link: 'emergency-repair',
+            link: '/dashboard/emergency-repair',
             icon: 'build', // Icône pour un dépannage ou réparation
           },
           {
             label: 'Avance sur événement',
-            link: 'event-advance',
+            link: '/dashboard/event-advance',
             icon: 'event', // Icône pour un événement
           },
           {
             label: 'Avance salariale',
-            link: 'salary-advance',
+            link: '/dashboard/salary-advance',
             icon: 'attach_money', // Icône pour un paiement/avance d'argent
           },
           {
             label: 'Avance salariale remboursable mensuellement',
-            link: 'monthly-repayable-advance',
+            link: '/dashboard/monthly-repayable-advance',
             icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
           },
         ],
@@ -373,10 +377,25 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/user',
         icon: 'person_outline',
       },
+    
       {
         label: 'Organisation',
         link: '/dashboard/organization',
         icon: 'business',
+        children: [
+             {
+              label: 'Avances',
+              link: '/dashboard/organization/avances',
+              icon: 'admin_panel_settings',
+            },
+            {
+              label: 'Paiements',
+              link: '/dashboard/organization/payments',
+              icon: 'payments',
+            },
+           
+          ],
+     
       },
       {
         label: 'Activités',
@@ -427,20 +446,43 @@ export class SidebarComponent implements OnInit {
     ];
   }
 
-  toggleDropdown(item) {
-    if (item?.children) {
-      this.isDropdownOpened = !this.isDropdownOpened;
-    }
-  }
+  // toggleDropdown(item) {
+  //   if (item?.children) {
+  //     this.isDropdownOpened = !this.isDropdownOpened;
+  //   }
+  // }
 
-  handleClick(item) {
-    if (item.children) {
-      this.toggleDropdown(item);
-    } else {
-      console.log("Item link =========>>>>>>>>>>", item);
-      this.router.navigate([item.link]);
+  // handleClick(item) {
+  //   if (item.children) {
+  //     this.toggleDropdown(item);
+  //   } else {
+  //     console.log("Item link =========>>>>>>>>>>", item);
+  //     this.router.navigate([item.link]);
+  //   }
+  // }
+
+      toggleDropdown(item) {
+      if (item?.children) {
+        item.isOpen = !item.isOpen; // ✅ état propre à chaque item
+      }
     }
-  }
+
+    // handleClick(item) {
+    //   if (item.children) {
+    //     this.toggleDropdown(item);
+    //   } else {
+    //     this.router.navigate([item.link]);
+    //   }
+    // }
+
+    handleClick(item) {
+      if (item.children) {
+        item.isOpen = !item.isOpen;
+            this.router.navigate([item.link]);
+      } else {
+        this.router.navigate([item.link]);
+      }
+    }
 
   logout() {
     this.keycloakService.logout().then((result) => {

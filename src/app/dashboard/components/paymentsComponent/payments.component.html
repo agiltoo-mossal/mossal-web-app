@@ -1,0 +1,82 @@
+<div class="payments-container">
+
+  <!-- Cartes du haut -->
+  <div class="cards-row">
+
+    <!-- Importer un fichier -->
+    <div class="card">
+      <mat-icon class="card-icon">attach_file</mat-icon>
+      <h3>Importer un fichier</h3>
+      <p>Importer plusieurs paiements</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>cloud_upload</mat-icon> Importer
+      </button>
+    </div>
+
+    <!-- Gestion manuelle -->
+    <div class="card">
+      <mat-icon class="card-icon">edit_document</mat-icon>
+      <h3>Gestion manuelle</h3>
+      <p>Ajouter des paiements ligne par ligne</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>cloud_upload</mat-icon> Créer
+      </button>
+    </div>
+
+    <!-- Avances événements spéciaux -->
+    <div class="card">
+      <mat-icon class="card-icon">calendar_month</mat-icon>
+      <h3>Avances événements spéciaux</h3>
+      <p>Ajouter des paiements ligne par ligne</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>cloud_upload</mat-icon> Créer
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Section bas -->
+  <div class="bottom-row">
+
+    <!-- Historique des paiements en masse -->
+    <div class="historique-card">
+      <h3>Historique des paiements en masse</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Téléphone</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let paiement of paiements">
+            <td>{{ paiement.nom }}</td>
+            <td>{{ paiement.prenom }}</td>
+            <td>{{ paiement.telephone }}</td>
+            <td>{{ paiement.montant }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a class="voir-plus">Voir L'historique Complet <mat-icon>chevron_right</mat-icon></a>
+    </div>
+
+    <!-- Modèles Préenregistrés -->
+    <div class="modeles-card">
+      <h3>Modèles Préenregistrés</h3>
+      <div class="modele-item">
+        <mat-icon>table_view</mat-icon>
+        <span>Modèle d'import fichier excel</span>
+        <a class="telecharger">Télécharger</a>
+      </div>
+      <div class="modele-item">
+        <mat-icon>table_view</mat-icon>
+        <span>Modèle d'import fichier excel</span>
+        <a class="telecharger">Télécharger</a>
+      </div>
+      <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
+    </div>
+
+  </div>
+</div>

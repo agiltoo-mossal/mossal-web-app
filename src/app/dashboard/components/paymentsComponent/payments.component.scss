@@ -1,0 +1,142 @@
+.payments-container {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cards-row {
+  display: flex;
+  gap: 1.5rem;
+
+  .card {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    .card-icon {
+      font-size: 3rem;
+      height: 3rem;
+      width: 3rem;
+      color: #1a2f6e;
+    }
+
+    h3 {
+      font-weight: 600;
+      color: #1a2f6e;
+      margin: 0;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 0;
+    }
+
+    button {
+      margin-top: 0.5rem;
+      background-color: #1a2f6e;
+    }
+  }
+}
+
+.bottom-row {
+  display: flex;
+  gap: 1.5rem;
+
+  .historique-card {
+    flex: 2;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    h3 {
+      font-weight: 600;
+      color: #1a2f6e;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        text-align: left;
+        font-weight: 600;
+        padding: 0.5rem 0;
+        color: #333;
+      }
+
+      td {
+        padding: 0.6rem 0;
+        border-top: 1px solid #f0f0f0;
+        color: #555;
+      }
+    }
+
+    .voir-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+      color: #1a2f6e;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+
+  .modeles-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    h3 {
+      font-weight: 600;
+      color: #1a2f6e;
+      margin-bottom: 1rem;
+    }
+
+    .modele-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 0;
+      border-top: 1px solid #f0f0f0;
+
+      span {
+        flex: 1;
+        font-size: 0.9rem;
+        color: #333;
+      }
+
+      .telecharger {
+        color: #1a2f6e;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+    }
+
+    .gerer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 1rem;
+      color: #1a2f6e;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+}

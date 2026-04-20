@@ -10,28 +10,52 @@
   </div>
 
   <div fxFlex="auto" class="navigation" fxLayout="column" fxLayoutGap="2px">
-    <!-- Navigation items -->
     <span class="nav-item-container" *ngFor="let item of dashboardNav">
-      <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" class="nav-item" (click)="handleClick(item)"
-        [routerLink]="!item.children ? item.link : null" routerLinkActive="active">
-        <span class="icon" fxLayoutAlign="center center"><mat-icon>{{ item.icon }}</mat-icon></span>
-        <span class="label" *ngIf="isSidebarOpened">{{ item.label }}</span>
-        <mat-icon *ngIf="item.children">{{ isDropdownOpened ? 'expand_less' : 'expand_more' }}</mat-icon>
-      </span>
 
-      <!-- Dropdown children -->
-      <div class="dropdown-menu" *ngIf="item.children && isDropdownOpened" fxLayout="column" fxLayoutGap="2px">
-        <span class="nav-item" *ngFor="let child of item.children" fxLayout="row" fxLayoutAlign="start center"
-          fxLayoutGap="12px" [routerLink]="child.link" routerLinkActive="active">
-          <span class="icon" fxLayoutAlign="center center"><mat-icon>{{ child.icon }}</mat-icon></span>
-          <span class="label" *ngIf="isSidebarOpened">{{ child.label }}</span>
+        <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" class="nav-item"
+          (click)="handleClick(item)"
+          routerLinkActive="active">
+          <span class="icon" fxLayoutAlign="center center">
+            <mat-icon>{{ item.icon }}</mat-icon>
+          </span>
+          <span class="label" *ngIf="isSidebarOpened">{{ item.label }}</span>
+          <mat-icon *ngIf="item.children">{{ item.isOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
         </span>
-      </div>
+
+        <div class="dropdown-menu" *ngIf="item.children && item.isOpen" fxLayout="column" fxLayoutGap="2px">
+          <span class="nav-item-container" *ngFor="let child of item.children">
+           <span class="nav-item child-item" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+              (click)="handleClick(child)"
+              routerLinkActive="active">
+              <span class="icon" fxLayoutAlign="center center"
+                [ngClass]="{'icon-active': isActive(child.link)}">
+                <mat-icon>{{ child.icon }}</mat-icon>
+              </span>
+              <span class="label" *ngIf="isSidebarOpened">{{ child.label }}</span>
+              <mat-icon *ngIf="child.children">{{ child.isOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </span>
+
+            <div class="dropdown-menu dropdown-menu--level3" *ngIf="child.children && child.isOpen"
+              fxLayout="column" fxLayoutGap="2px">
+              <span class="nav-item grandchild-item" *ngFor="let grandchild of child.children"
+                fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
+                [routerLink]="grandchild.link"
+                routerLinkActive="active">
+                <span class="icon" fxLayoutAlign="center center"
+                  [ngClass]="{'icon-active': isActive(grandchild.link)}">
+                  <mat-icon>{{ grandchild.icon }}</mat-icon>
+                </span>
+                <span class="label" *ngIf="isSidebarOpened">{{ grandchild.label }}</span>
+              </span>
+            </div>
+
+          </span>
+        </div>
     </span>
   </div>
 
   <div class="btn-logout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" (click)="logout()">
-    <span class="icon" fxLayoutAlign="start center"><mat-icon>business</mat-icon></span><span *ngIf="isSidebarOpened">{{
-      currentUser?.organization?.name }}</span>
+    <span class="icon" fxLayoutAlign="start center"><mat-icon>business</mat-icon></span>
+    <span *ngIf="isSidebarOpened">{{ currentUser?.organization?.name }}</span>
   </div>
 </div>
