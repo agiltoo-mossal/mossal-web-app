@@ -300,6 +300,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   initValidations(): void {
     this.checkAdminPhone();
     this.checkAdminEmail();
+    this.checkCompanyName();
   }
 
   submitForm(): void {
@@ -522,10 +523,34 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       });
   }
 
+  checkCompanyName(): void {
+    this.societyForm
+      .get('companyName')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((value) => {
+          if (!value || value.trim().length < 2) {
+            return [false];
+          }
+          return this.searchService.organizationNameExists(value, this.societyId);
+        })
+      )
+      .subscribe((result) => {
+        this.companyNameExists = result;
+        this.societyForm.controls['companyName'].setErrors(null);
+        this.societyForm.controls['companyName'].updateValueAndValidity({ emitEvent: false });
+        if (result) {
+          this.societyForm.controls['companyName'].setErrors({ companyNameExists: true });
+        }
+      });
+  }
+
   get hasErrors(): boolean {
     return (
       this.adminPhoneExists ||
-      this.adminEmailExists
+      this.adminEmailExists ||
+      this.companyNameExists
     );
   }
 }

@@ -31,8 +31,7 @@ import { OtpVerificationComponent } from './otp-verification/otp-verification.co
     LoginComponent,
     ResetPasswordComponent,
     RequestResetPasswordComponent,
-
-    OtpVerificationComponent
+    OtpVerificationComponent,
   ],
   imports: [
     CommonModule,

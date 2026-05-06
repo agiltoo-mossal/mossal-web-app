@@ -45,14 +45,102 @@
 
       }
     </div>
-    <div class="chart-container" *ngIf="metricsData">
-      <app-refund-charts [metricsData]="metricsData"></app-refund-charts>
+    
+    <div fxLayout="row" fxLayoutAlign="end center">
+        <div (click)="exportTransactions()" class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="center center">
+                <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon>
+                <span class="text-export">Exporter l'historique des transactions</span>
+            </span>
+        </div>
     </div>
+   
+    <div class="transaction-history-container" fxLayout="column" fxLayoutGap="16px">
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <span class="transaction-title">Historique des transactions</span>
+        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+          <span class="voir-tout" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="4px">
+            Tout afficher <mat-icon>chevron_right</mat-icon>
+          </span>
+        </div> -->
+      </div>
+
+      <div class="example-table-container">
+          <table mat-table [dataSource]="dataSourceTransaction" class="example-table transaction-table" matSort #transactionSort="matSort">
+          <ng-container matColumnDef="matricule">
+              <th mat-header-cell *matHeaderCellDef class="title">Matricule</th>
+              <td mat-cell *matCellDef="let row">{{ row?.matricule }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="collaborator">
+              <th mat-header-cell *matHeaderCellDef class="title">Collaborateur</th>
+              <td mat-cell *matCellDef="let row">{{ row?.collaborator }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center;">
+              Date de l'opération
+            </th>
+            <td mat-cell *matCellDef="let row" style="text-align: center;">
+              <span>{{ row?.date }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center;">
+              Opération
+            </th>
+            <td mat-cell *matCellDef="let row" style="text-align: center;">
+              <div style="display: flex; justify-content: center; align-items: center; gap: 6px;">
+                <span class="statut" [ngClass]="{
+                  'statut--credit': row?.type?.toLowerCase() === 'credit',
+                  'statut--debit': row?.type?.toLowerCase() === 'debit'}">
+                </span>
+             
+                <span>{{ row?.operation }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="numeroOperation">
+              <th mat-header-cell *matHeaderCellDef class="title">N° de l'opération</th>
+              <td mat-cell *matCellDef="let row">{{ row?.numeroOperation }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="montant">
+            <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center;">
+              Montant de l'opération
+            </th>
+            <td mat-cell *matCellDef="let row" class="advance">
+              <div style="display: flex; justify-content: center; align-items: center; gap: 6px;">
+               
+                <span>{{ row?.montant | number : '1.0-0':'fr-FR' }} Xof</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedTransactionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedTransactionColumns"></tr>
+        </table>
+       
+            <mat-paginator #transactionPaginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                          [length]="transactionResultsLength" aria-label="">
+            </mat-paginator>
+      </div>
+
+    </div>
+
+    <div class="chart-container" *ngIf="metricsData">
+        <app-refund-charts [metricsData]="metricsData"></app-refund-charts>
+    </div>
+ 
   </div>
+
   <div fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
     <div fxFlex="auto" class="user-list-container" fxLayout="column" fxLayoutGap="16px">
       <div class="top" fxLayout="row" fxLayoutAlign="space-between center">
         <span class="nbr-user">Utilisateurs enregistrés ({{totalNewUsers }})</span>
+        
         <div class="dropdown dropdown-filter" [appDropdown]="'dropdown-filter-user-list-saved'">
           <div class="btn-filter" fxLayout="row" fxLayoutAlign="space-between center">
             <span class="icon" fxLayoutAlign="center center"><mat-icon
@@ -68,9 +156,10 @@
             </div>
           </div>
         </div>
+       
       </div>
       <div class="example-table-container">
-        <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+        <table mat-table [dataSource]="dataSource" class="example-table" matSort #collaboratorSort="matSort">
           <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
@@ -140,7 +229,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
+        <mat-paginator #collaboratorPaginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
       </div>
       <div class="legends" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
         <div class="valid" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="8px">

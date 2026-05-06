@@ -1,5 +1,6 @@
 
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 import {
   AfterViewInit,
   Component,
@@ -18,9 +19,11 @@ import {
   FetchCountStatusGQL,
   FetchCurrentAdminGQL,
   FetchDemandesMetricsGQL,
+  FetchOperationsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchPaginatedOperationsGQL,
   FetchTotalDemandesAmountGQL,
   Organization,
   User,
@@ -34,11 +37,13 @@ import {
   map,
   merge,
   startWith,
+  ReplaySubject,
   switchMap,
 } from 'rxjs';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-overview',
@@ -46,6 +51,19 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit, AfterViewInit {
+
+    displayedTransactionColumns: string[] = [
+        'matricule',
+        'collaborator',
+        'date',
+        'operation',
+        'numeroOperation',
+        'montant',
+    ];
+  societyId: string;
+  EXCEL_TYPE =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    EXCEL_EXTENSION = '.xlsx';
   datas = [];
   dataStatics = dataStatic;
   requests: Demande[] = [];
@@ -57,6 +75,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
   resultsLength = 0;
+  transactionResultsLength = 0;
   fetchStatus: {
     pending: number;
     validated: number;
@@ -67,10 +86,14 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   filterBy = 'createdAt';
   filterByOption = FilterBy;
   totalNewUsers = 0;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  // dataSource = new MatTableDataSource<Demande>();
+
+  @ViewChild('collaboratorSort') sort: MatSort;
+  @ViewChild('collaboratorPaginator') paginator: MatPaginator;
+  @ViewChild('transactionPaginator') transactionPaginator: MatPaginator;
+  @ViewChild('transactionSort') transactionSort: MatSort;
+
   dataSource = new MatTableDataSource<any>();
+  dataSourceTransaction = new MatTableDataSource<any>();
   page: number = 1;
   nbActifUsers: number;
   organization: any;
@@ -85,7 +108,10 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fetchCollaboratorCountGQL: FetchCollaboratorCountGQL,
     private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fetchOperations: FetchOperationsGQL,
+    private fetchPaginatedOperationsGQL: FetchPaginatedOperationsGQL
+    
   ) {
     const now = new Date('2024-12-31');
     const today = new Date();
@@ -176,7 +202,9 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.getTotalDemandeAmount(),
         this.getTotalDemandeToPay(),
         this.getFetchCountStatus(),
-        this.getCurrentorganization()
+        this.getCurrentorganization(),
+        // this.getTransactions()
+
       ]).then(() => {
         this.updateStaticData();
       });
@@ -242,6 +270,20 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
+  getTransactions() {
+    this.fetchOperations
+      .fetch({
+        organizationId: this.societyId 
+      }, { fetchPolicy: 'no-cache' })  
+      .subscribe(({ data }) => {
+        const operations = data.fetchOperations || [];
+        this.dataSourceTransaction.data = operations;
+        this.transactionResultsLength = operations.length;
+        
+        this.dataSourceTransaction.paginator = this.transactionPaginator;
+      });
+  }
+
   getDemandesMetrics(): Promise<void> {
     const startDate =
       this.metricsInput.value.startDate || new Date('2024-01-01');
@@ -300,14 +342,18 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       });
   }
 
-  ngAfterViewInit(): void {
-    this.sort.sortChange.subscribe(() => {
-      this.paginator.pageIndex = 0;
-    });
+
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(
       this.sort.sortChange,
-      this.paginator.page
+      this.paginator.page,
+      this.metricsInput.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      )
     )
       .pipe(
         switchMap(() => {
@@ -315,25 +361,22 @@ export class OverviewComponent implements OnInit, AfterViewInit {
             limit: this.paginator.pageSize,
             page: this.paginator.pageIndex + 1,
           };
-
           return this.fetchOrganizationCollaboratorsGQL.fetch(
             { queryFilter },
             { fetchPolicy: 'no-cache' }
           );
         }),
-        map(result => result?.data)
+        map((result) => {
+          if (result == null) return [];
+          return result.data;
+        })
       )
       .subscribe((data: any) => {
-        const response = data?.fetchPaginatedOrganizationCollaborators;
-
-        if (!response) return;
-
-        this.dataSource.data = response.results;
-        this.resultsLength = response.pagination.totalItems;
-        this.selectedCollab = this.dataSource.data?.[0] || null;
+        this.dataSource.data = data.fetchPaginatedOrganizationCollaborators.results;
+        this.selectedCollab = this.collabs?.[0];
+        this.resultsLength = data.fetchPaginatedOrganizationCollaborators?.pagination?.totalItems;
       });
   }
-
 
 
   setHasValidatedDemande() {
@@ -581,13 +624,76 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         if (result.data) {
           this.organization = result.data.fetchCurrentAdmin
             .organization as Organization;
+          this.societyId = this.organization.id; 
+          this.getTransactions(); 
           console.log({ org: this.organization });
+
+          console.log('societyId défini:', this.societyId);
         }
       });
   }
-}
-export enum FilterBy {
-  createdAt = 'createdAt',
-  hasValidatedDemande = 'hasValidatedDemande',
-}
+
+
+  exportTransactions() {
+        this.fetchOperations.fetch({ organizationId: this.societyId }, { fetchPolicy: 'no-cache' }).subscribe({
+            next: ({ data }) => {
+                const temps = data.fetchOperations;
+                if (temps.length) {
+                    const csvRows = [
+                        [
+                            'Matricule',
+                            'Collaborateur',
+                            "Date de l'opération",
+                            'Opération',
+                            'Numéro opération',
+                            "Montant de l'opération",
+                        ],
+                        ...temps.map((row) => [
+                            row.matricule,
+                            row.collaborator,
+                            row.date,
+                            row.operation,
+                            row.numeroOperation,
+                            row.montant,
+                        ]),
+                    ];
+                    this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
+                } else {
+                    this.snackBarService.showSnackBar(
+                        "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+                    );
+                }
+            },
+            error: (error) => console.log(error),
+        });
+    }
+
+     convertToXLSX(data: any[], filename: string) {
+            const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+                skipHeader: true,
+            });
+            const workbook: XLSX.WorkBook = {
+                Sheets: { data: worksheet },
+                SheetNames: ['data'],
+            };
+            const excelBuffer: any = XLSX.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array',
+            });
+            this.saveAsExcelFile(excelBuffer, filename);
+        }
+        saveAsExcelFile(buffer: any, fileName: string): void {
+        const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+  }
+  export enum FilterBy {
+    createdAt = 'createdAt',
+    hasValidatedDemande = 'hasValidatedDemande',
+  }
 

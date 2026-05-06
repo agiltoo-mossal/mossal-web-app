@@ -229,3 +229,77 @@ table .mat-mdc-header-cell {
     font-weight: 400;
   }
 }
+
+.transaction-history-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+  .transaction-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0d1f5c;
+  }
+
+  .voir-tout {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0d1f5c;
+    cursor: pointer;
+    mat-icon { font-size: 18px; }
+  }
+
+  .transaction-table {
+    width: 100%;
+
+    th { color: #0d1f5c; font-weight: 700; font-size: 13px; border-bottom: none; }
+    td { color: #333; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+
+    tr:last-child td { border-bottom: none; }
+  }
+
+  .statut {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block; 
+
+  &--credit { background: #22c55e; }
+  &--debit  { background: #ef4444; }
+}
+
+  .transaction-header {
+  margin-bottom: 16px;
+}
+}
+
+.btn-filter {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background-color: #1E346C;
+  cursor: pointer;
+  border: none;
+
+  .value {
+    color: #FFFFFF;
+
+    mat-icon {
+      color: #FFFFFF;
+    }
+
+    .text-export {
+      color: #FFFFFF;
+      font-family: Poppins;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  &:hover {
+    background-color: #142550;
+  }
+}
+

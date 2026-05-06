@@ -129,9 +129,14 @@ export type CountStatusDemande = {
 export type Credit = {
   __typename?: 'Credit';
   amount: Scalars['Float']['output'];
+  collaborator?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  createdBy?: Maybe<Scalars['String']['output']>;
+  demande?: Maybe<Scalars['String']['output']>;
   enterprise: Organization;
   id: Scalars['ID']['output'];
+  matricule?: Maybe<Scalars['String']['output']>;
+  numeroOperation?: Maybe<Scalars['String']['output']>;
   operation: Scalars['String']['output'];
   organization?: Maybe<Scalars['String']['output']>;
   type: OperationType;
@@ -650,11 +655,12 @@ export type Notification = {
 
 export type OperationSummary = {
   __typename?: 'OperationSummary';
-  amount: Scalars['Float']['output'];
+  collaborator?: Maybe<Scalars['String']['output']>;
   date: Scalars['String']['output'];
-  organization: Scalars['String']['output'];
-  organizationId: Scalars['ID']['output'];
-  type: Scalars['String']['output'];
+  matricule?: Maybe<Scalars['String']['output']>;
+  montant: Scalars['Float']['output'];
+  numeroOperation?: Maybe<Scalars['String']['output']>;
+  operation: Scalars['String']['output'];
 };
 
 export enum OperationType {
@@ -744,6 +750,8 @@ export type Organization = {
   amountPercent: Scalars['Float']['output'];
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
+  /** Code unique de l'organisation (5 premiers caractères du nom) */
+  code?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   demandeDeadlineDay?: Maybe<Scalars['Float']['output']>;
   fees: Scalars['Float']['output'];
@@ -960,6 +968,7 @@ export type Query = {
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
   myRemboursements: Array<Remboursement>;
+  organizationNameExists: Scalars['Boolean']['output'];
   phoneNumberExists: Scalars['Boolean']['output'];
   uniqueIdentifierExists: Scalars['Boolean']['output'];
 };
@@ -1221,6 +1230,12 @@ export type QueryFetchTotalDemandesAmountArgs = {
 
 export type QueryLoginAdminArgs = {
   loginInput: LoginInput;
+};
+
+
+export type QueryOrganizationNameExistsArgs = {
+  name: Scalars['String']['input'];
+  organizationId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1905,14 +1920,14 @@ export type FetchPaginatedOperationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOperationsQuery = { __typename?: 'Query', fetchPaginatedOperations: { __typename?: 'PaginatedCreditResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Credit', id: string, amount: number, operation: string, createdAt: any, type: OperationType }> } };
+export type FetchPaginatedOperationsQuery = { __typename?: 'Query', fetchPaginatedOperations: { __typename?: 'PaginatedCreditResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Credit', id: string, amount: number, createdAt: any, type: OperationType, matricule?: string | null, collaborator?: string | null, numeroOperation?: string | null }> } };
 
 export type FetchOperationsQueryVariables = Exact<{
   organizationId: Scalars['ID']['input'];
 }>;
 
 
-export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', organization: string, type: string, amount: number, date: string }> };
+export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', matricule?: string | null, collaborator?: string | null, date: string, operation: string, numeroOperation?: string | null, montant: number }> };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -2014,6 +2029,14 @@ export type EmailExistsQueryVariables = Exact<{
 
 
 export type EmailExistsQuery = { __typename?: 'Query', emailExists: boolean };
+
+export type OrganizationNameExistsQueryVariables = Exact<{
+  name: Scalars['String']['input'];
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type OrganizationNameExistsQuery = { __typename?: 'Query', organizationNameExists: boolean };
 
 export const LoginAdminDocument = gql`
     query LoginAdmin($loginInput: LoginInput!) {
@@ -3844,9 +3867,11 @@ export const FetchPaginatedOperationsDocument = gql`
     results {
       id
       amount
-      operation
       createdAt
       type
+      matricule
+      collaborator
+      numeroOperation
     }
   }
 }
@@ -3865,10 +3890,12 @@ export const FetchPaginatedOperationsDocument = gql`
 export const FetchOperationsDocument = gql`
     query FetchOperations($organizationId: ID!) {
   fetchOperations(organizationId: $organizationId) {
-    organization
-    type
-    amount
+    matricule
+    collaborator
     date
+    operation
+    numeroOperation
+    montant
   }
 }
     `;
@@ -4174,6 +4201,22 @@ export const EmailExistsDocument = gql`
   })
   export class EmailExistsGQL extends Apollo.Query<EmailExistsQuery, EmailExistsQueryVariables> {
     document = EmailExistsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const OrganizationNameExistsDocument = gql`
+    query OrganizationNameExists($name: String!, $organizationId: String) {
+  organizationNameExists(name: $name, organizationId: $organizationId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class OrganizationNameExistsGQL extends Apollo.Query<OrganizationNameExistsQuery, OrganizationNameExistsQueryVariables> {
+    document = OrganizationNameExistsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
