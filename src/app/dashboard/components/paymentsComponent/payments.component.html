@@ -8,7 +8,11 @@
       </div>
       <h3>Importer un fichier Excel</h3>
       <p>Importer plusieurs paiements dans un fichier</p>
-      <button mat-raised-button color="primary" class="card-btn">
+      <!-- <button mat-raised-button color="primary" class="card-btn">
+        <mat-icon>cloud_upload</mat-icon> Importer
+      </button> -->
+      <!-- Remplacer le bouton Importer dans la carte -->
+      <button mat-raised-button color="primary" class="card-btn" (click)="onImporterFichier()">
         <mat-icon>cloud_upload</mat-icon> Importer
       </button>
     </div>

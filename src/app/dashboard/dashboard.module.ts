@@ -61,6 +61,7 @@ import { ConfirmationDialogComponent } from './components/organization-setting-g
 import { OrganizationBalanceModule } from './components/society/components/organization-balance/organization-balance.module';
 import { PaymentsComponent } from './components/paymentsComponent/payments.component';
 import { AvancesComponent } from './components/avancesComponent/avances.component';
+import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { AvancesComponent } from './components/avancesComponent/avances.componen
     ConfirmationDialogComponent,
     PaymentsComponent,
     AvancesComponent,
+    ImportFichierComponent,
   ],
   imports: [
     CreateEventModule,

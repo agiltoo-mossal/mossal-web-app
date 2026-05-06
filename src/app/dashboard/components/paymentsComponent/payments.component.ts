@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router ,ActivatedRoute } from '@angular/router';
 
 interface Paiement {
   id: string;
@@ -14,6 +15,15 @@ interface Paiement {
   styleUrls: ['./payments.component.scss']
 })
 export class PaymentsComponent implements OnInit {
+
+   constructor(private router: Router,
+      private route: ActivatedRoute   
+
+   ) {}
+
+  onImporterFichier(): void {
+  this.router.navigate(['../payments/import'], { relativeTo: this.route });
+  }
 
   searchText = '';
   selectedStatut = '';

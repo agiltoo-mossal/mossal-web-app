@@ -17,6 +17,7 @@ import { RequestDetailsComponent } from './components/request-details/request-de
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 import { PaymentsComponent } from './components/paymentsComponent/payments.component';
 import { AvancesComponent } from './components/avancesComponent/avances.component';
+import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 
 const routes: Routes = [
   {
@@ -127,6 +128,10 @@ const routes: Routes = [
         path: 'activities',
         component: ActivitiesComponent,
       },
+      { path: 'organization/payments/import',
+        component: ImportFichierComponent 
+      },
+
     ],
   },
 ];
