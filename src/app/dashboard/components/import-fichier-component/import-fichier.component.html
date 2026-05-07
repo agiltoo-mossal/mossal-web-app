@@ -1,0 +1,138 @@
+<div class="import-container">
+
+  <div class="upload-step" *ngIf="step === 'upload'">
+    <h2 class="step-title">Importer un fichier Excel</h2>
+    <p class="step-subtitle">Formats acceptés : <strong>.xlsx</strong> et <strong>.xls</strong> uniquement</p>
+
+    <div
+      class="drop-zone"
+      [class.drag-over]="isDragging"
+      [class.has-file]="selectedFile && !fileError"
+      [class.has-error]="fileError"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+      (click)="fileInput.click()"
+    >
+      <input
+        #fileInput
+        type="file"
+        accept=".xlsx,.xls"
+        hidden
+        (change)="onFileSelected($event)"
+      />
+
+      <!-- État : erreur -->
+      <ng-container *ngIf="fileError">
+        <mat-icon class="zone-icon icon-error">error_outline</mat-icon>
+        <p class="zone-message error-msg">{{ fileError }}</p>
+        <p class="zone-hint">Cliquez pour choisir un autre fichier</p>
+      </ng-container>
+
+      <!-- État : fichier valide sélectionné -->
+      <ng-container *ngIf="selectedFile && !fileError">
+        <mat-icon class="zone-icon icon-success">check_circle_outline</mat-icon>
+        <p class="zone-filename">{{ selectedFile.name }}</p>
+        <p class="zone-filesize">{{ formatSize(selectedFile.size) }}</p>
+        <p class="zone-hint">Cliquez pour changer de fichier</p>
+      </ng-container>
+
+      <!-- État : vide -->
+      <ng-container *ngIf="!selectedFile && !fileError">
+        <mat-icon class="zone-icon">cloud_upload</mat-icon>
+        <p class="zone-message">Glissez-déposez votre fichier ici</p>
+        <p class="zone-hint">ou cliquez pour parcourir</p>
+      </ng-container>
+    </div>
+
+    <!-- Actions -->
+    <div class="upload-actions">
+      <button class="btn-secondary" (click)="onCancel()">
+        <mat-icon>close</mat-icon> Annuler
+      </button>
+      <button
+        class="btn-primary"
+        [disabled]="!selectedFile || !!fileError"
+        (click)="onConfirmImport()"
+      >
+        <mat-icon>cloud_upload</mat-icon> Confirmer l'import
+      </button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 : Validation fichier  -->
+  <div class="validation-step" *ngIf="step === 'validation'">
+
+    <!-- Stepper -->
+    <div class="stepper">
+      <span class="step-item active">Validation fichier</span>
+      <span class="step-item">Récapitulatif</span>
+      <span class="step-item">Approbation</span>
+      <span class="step-item">Validation</span>
+    </div>
+
+    <!-- Alerte erreurs -->
+    <div class="error-banner" *ngIf="errorCount > 0">
+      <p class="error-count"><strong>{{ errorCount }} lignes contiennent des erreurs</strong></p>
+      <p class="error-hint">Corrigez directement dans le tableau ci-dessous</p>
+    </div>
+
+    <h2 class="file-title">{{ selectedFile?.name }}</h2>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>NOM</th>
+            <th>PRÉNOM</th>
+            <th>TÉLÉPHONE</th>
+            <th>MONTANT</th>
+            <th>OPÉRATEUR</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of validationRows; let i = index">
+            <td>{{ row.nom }}</td>
+            <td>{{ row.prenom }}</td>
+            <td>
+              <span [class.cell-error]="row.errors?.includes('telephone')">
+                {{ row.telephone || '————' }}
+              </span>
+            </td>
+            <td>
+              <span [class.cell-error]="row.errors?.includes('montant')">
+                {{ row.montant || '————' }}
+              </span>
+            </td>
+            <td>{{ row.operateur }}</td>
+            <td>
+              <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
+                <span class="dot dot-green"></span> OK
+              </span>
+              <span class="badge badge-error" *ngIf="row.errors?.includes('telephone')">
+                <span class="dot dot-red"></span> N° Invalide
+              </span>
+              <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
+                <span class="dot dot-red"></span> Montant vide
+              </span>
+              <span class="badge badge-error" *ngIf="row.errors?.includes('telephone_vide')">
+                <span class="dot dot-red"></span> Téléphone vide
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="validation-actions">
+      <button class="btn-secondary" (click)="step = 'upload'">
+        <mat-icon>arrow_back</mat-icon> Réimporter un fichier
+      </button>
+      <button class="btn-primary" (click)="onValidate()">
+        Corriger et valider <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+
+  </div>
+</div>
