@@ -15,6 +15,8 @@ import { RequestSalaryComponent } from './components/request-salary/request-sala
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
+import { PaymentsComponent } from './components/paymentsComponent/payments.component';
+import { AvancesComponent } from './components/avancesComponent/avances.component';
 
 const routes: Routes = [
   {
@@ -112,6 +114,14 @@ const routes: Routes = [
       {
         path: 'organization',
         component: OrganizationComponent,
+      },
+      {
+        path: 'organization/payments',  
+        component: PaymentsComponent,
+      },
+      {
+        path: 'organization/avances',
+        component: AvancesComponent,
       },
       {
         path: 'activities',

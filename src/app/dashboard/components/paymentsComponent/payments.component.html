@@ -1,0 +1,145 @@
+<div class="payments-container">
+
+  <div class="cards-row">
+
+    <div class="card">
+      <div class="card-icon-wrapper">
+        <mat-icon class="card-icon">attach_file</mat-icon>
+      </div>
+      <h3>Importer un fichier Excel</h3>
+      <p>Importer plusieurs paiements dans un fichier</p>
+      <button mat-raised-button color="primary" class="card-btn">
+        <mat-icon>cloud_upload</mat-icon> Importer
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon-wrapper">
+        <mat-icon class="card-icon">edit_document</mat-icon>
+      </div>
+      <h3>Gestion manuelle</h3>
+      <p>Ajouter des paiements ligne par ligne</p>
+      <button mat-raised-button color="primary" class="card-btn">
+        <mat-icon>cloud_upload</mat-icon> Créer
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon-wrapper">
+        <mat-icon class="card-icon">calendar_month</mat-icon>
+      </div>
+      <h3>Avances événements spéciaux</h3>
+      <p>Ajouter des paiements ligne par ligne</p>
+      <button mat-raised-button class="card-btn card-btn-dark">
+        <mat-icon>cloud_upload</mat-icon> Créer
+      </button>
+    </div>
+
+  </div>
+
+  <div class="filters-row">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" placeholder="Rechercher" [(ngModel)]="searchText" />
+      <mat-icon *ngIf="searchText" class="clear-icon" (click)="searchText=''">close</mat-icon>
+    </div>
+    <div class="filter-select">
+      <select [(ngModel)]="selectedStatut">
+        <option value="">Statut</option>
+        <option value="En attente">En attente</option>
+        <option value="Validé">Validé</option>
+        <option value="Rejeté">Rejeté</option>
+      </select>
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </div>
+    <div class="filter-select">
+      <select [(ngModel)]="selectedDate">
+        <option value="">Date</option>
+        <option value="mars">Mars 2026</option>
+        <option value="fevrier">Février 2026</option>
+      </select>
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </div>
+    <div>
+      <button class="btn-reinitialiser" (click)="reinitialiser()">
+          <mat-icon>tune</mat-icon> Réinitialiser
+      </button>
+    </div>
+   
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Approbateur</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filteredPaiements">
+          <td>{{ p.id }}</td>
+          <td>{{ p.date }}</td>
+          <td>{{ p.montant }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'badge-attente': p.statut === 'En attente',
+              'badge-valide': p.statut === 'Validé',
+              'badge-rejete': p.statut === 'Rejeté'
+            }">
+              <span class="dot"></span> {{ p.statut }}
+            </span>
+          </td>
+          <td>{{ p.approbateur }}</td>
+          <td><a class="voir-details">Voir les détails</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bottom-row">
+
+    <div class="historique-card">
+      <h3>Historique des paiements en masse</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Téléphone</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of historique">
+            <td>{{ h.nom }}</td>
+            <td>{{ h.prenom }}</td>
+            <td>{{ h.telephone }}</td>
+            <td class="montant-col">{{ h.montant }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a class="voir-plus">Voir L'historique Complet <mat-icon>chevron_right</mat-icon></a>
+    </div>
+
+    <div class="modeles-card">
+      <h3>Modèles Préenregistrés</h3>
+      <div class="modele-item">
+        <mat-icon class="modele-icon">table_view</mat-icon>
+        <span>Modèle d'import fichier excel</span>
+        <a class="telecharger">Télécharger</a>
+      </div>
+      <div class="modele-item">
+        <mat-icon class="modele-icon">table_view</mat-icon>
+        <span>Modèle d'import fichier excel</span>
+        <a class="telecharger">Télécharger</a>
+      </div>
+      <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
+    </div>
+
+  </div>
+</div>

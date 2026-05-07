@@ -59,6 +59,8 @@ import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.compo
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 import { ConfirmationDialogComponent } from './components/organization-setting-general/confirmation-dialog.component';
 import { OrganizationBalanceModule } from './components/society/components/organization-balance/organization-balance.module';
+import { PaymentsComponent } from './components/paymentsComponent/payments.component';
+import { AvancesComponent } from './components/avancesComponent/avances.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +85,9 @@ import { OrganizationBalanceModule } from './components/society/components/organ
     RequestMonthlyRepayableAdvanceComponent,
     RequestDetailsComponent,
     DashboardAdminComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    PaymentsComponent,
+    AvancesComponent,
   ],
   imports: [
     CreateEventModule,

@@ -1,3 +1,5 @@
+  import { from } from 'rxjs'; 
+
 import {
   Component,
   Input,
@@ -321,6 +323,36 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         this.uniqueIdentifierExists = result;
       });
   }
+
+
+// checkUniqueIdentifier() {
+//   this.collaboratorForm
+//     .get('uniqueIdentifier')
+//     .valueChanges.pipe(
+//       debounceTime(300),
+//       distinctUntilChanged(),
+//       switchMap((value) =>
+//         from(
+//           this.searchService.uniqueIdentifierExists(
+//             value,
+//             false,
+//             this.collaboratorId,
+//             true  // ← organizationScoped
+//           )
+//         )
+//       )
+//     )
+//     .subscribe((result: boolean) => {
+//       this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+//       this.collaboratorForm.controls['uniqueIdentifier'].updateValueAndValidity();
+//       if (result) {
+//         this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+//           uniqueIdentifierExists: true,
+//         });
+//       }
+//       this.uniqueIdentifierExists = result;
+//     });
+// }
 
   initSearch() {
     this.checkPhone();
