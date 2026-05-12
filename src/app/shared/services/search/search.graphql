@@ -26,13 +26,11 @@ query UniqueIdentifierExists(
   $uniqueIdentifier: String!
   $isAdmin: Boolean
   $userId: String
-  $organizationScoped: Boolean
 ) {
   uniqueIdentifierExists(
     uniqueIdentifier: $uniqueIdentifier
     isAdmin: $isAdmin
     userId: $userId
-    organizationScoped: $organizationScoped
   )
 }
 

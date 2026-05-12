@@ -59,7 +59,7 @@ import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.compo
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 import { ConfirmationDialogComponent } from './components/organization-setting-general/confirmation-dialog.component';
 import { OrganizationBalanceModule } from './components/society/components/organization-balance/organization-balance.module';
-import { PaymentsComponent } from './components/paymentsComponent/payments.component';
+import { OverviewComponent as PaymentsOverviewComponent } from './components/payments/overview/overview.component';
 import { AvancesComponent } from './components/avancesComponent/avances.component';
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 
@@ -87,7 +87,7 @@ import { ImportFichierComponent } from './components/import-fichier-component/im
     RequestDetailsComponent,
     DashboardAdminComponent,
     ConfirmationDialogComponent,
-    PaymentsComponent,
+    PaymentsOverviewComponent,
     AvancesComponent,
     ImportFichierComponent,
   ],

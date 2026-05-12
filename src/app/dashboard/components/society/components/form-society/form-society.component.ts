@@ -174,7 +174,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
               adminEmail: this.society.rootEmail,
               // Ces champs peuvent ne pas exister dans votre entité Organization
               // Vérifiez votre interface/type Organization
-              adminFunction: this.society.user.role || '',
+              adminFunction: this.society.user.roles?.[0] || '',
               adminPhone: this.society.phone || '',
             });
 

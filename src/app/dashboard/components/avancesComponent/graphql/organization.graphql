@@ -398,33 +398,6 @@ mutation CreateOrganization(
   }
 }
 
-query FetchOrganization($organizationId: ID!) {
-	fetchOrganization(organizationId: $organizationId) {
-    id
-    name
-    rootEmail
-    postalAddress
-    phone
-    user {
-      firstName
-      lastName
-      role
-      phoneNumber
-    }
-    financialOrganization {
-      id
-      name
-    }
-    logo {
-      id
-      data
-    }
-    blocked
-    balance
-    maxDemandeAmount
-	}
-}
-
 query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
   fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
     pagination {

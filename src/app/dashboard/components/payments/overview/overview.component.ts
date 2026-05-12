@@ -11,10 +11,10 @@ interface Paiement {
 
 @Component({
   selector: 'app-payments',
-  templateUrl: './payments.component.html',
-  styleUrls: ['./payments.component.scss']
+  templateUrl: './overview.component.html',
+  styleUrls: ['./overview.component.scss']
 })
-export class PaymentsComponent implements OnInit {
+export class OverviewComponent implements OnInit {
 
    constructor(private router: Router,
       private route: ActivatedRoute   
