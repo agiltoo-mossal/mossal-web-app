@@ -256,23 +256,23 @@ export class SidebarComponent implements OnInit {
         this.currentUser = result.data.fetchCurrentAdmin as User;
 
         // Attribution du menu selon le rôle de l'utilisateur
-        switch (this.currentUser.role) {
-          case 'SUPER_ADMIN_ORG':
-            this.dashboardNav = this.menuSuperAdmin;
-            break;
-          case 'SUPER_ADMIN':
-            this.dashboardNav = this.menuAdminMossall;
-            break;
-          case 'ADMIN':
-            this.dashboardNav = this.menuAdmin;
-            break;
+        const roles = this.currentUser.roles ?? [];
+        const isPaymentManagerOnly = roles.length === 1 && roles[0] === 'PAYMENT_MANAGER';
+        if (roles.includes('SUPER_ADMIN')) {
+          this.dashboardNav = this.menuAdminMossall;
+        } else if (isPaymentManagerOnly) {
+          this.dashboardNav = this.menuPaymentManager;
+        } else if (roles.includes('SUPER_ADMIN_ORG')) {
+          this.dashboardNav = this.getMenuSuperAdmin(roles);
+        } else if (roles.includes('ADMIN')) {
+          this.dashboardNav = this.getMenuAdmin(roles);
         }
         // console.log({ user: this.currentUser });
       });
   }
 
-  get menuAdmin() {
-    return [
+  getMenuAdmin(roles: string[]) {
+    const items: any[] = [
       {
         label: 'Tableau de bord',
         link: '/dashboard/overview',
@@ -286,22 +286,22 @@ export class SidebarComponent implements OnInit {
           {
             label: "Dépannage d'urgence",
             link: '/dashboard/emergency-repair',
-            icon: 'build', // Icône pour un dépannage ou réparation
+            icon: 'build',
           },
           {
             label: 'Avance sur événement',
             link: '/dashboard/event-advance',
-            icon: 'event', // Icône pour un événement
+            icon: 'event',
           },
           {
             label: 'Avance salariale',
             link: '/dashboard/salary-advance',
-            icon: 'attach_money', // Icône pour un paiement/avance d'argent
+            icon: 'attach_money',
           },
           {
             label: 'Avance salariale remboursable mensuellement',
             link: '/dashboard/monthly-repayable-advance',
-            icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
+            icon: 'schedule',
           },
         ],
       },
@@ -315,6 +315,29 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
+    ];
+    if (roles.includes('PAYMENT_MANAGER')) {
+      items.push({
+        label: 'Paiements',
+        link: '/dashboard/organization/payments',
+        icon: 'payments',
+      });
+    }
+    items.push({
+      label: 'Mon Compte',
+      link: '/dashboard/user',
+      icon: 'person_outline',
+    });
+    return items;
+  }
+
+  get menuPaymentManager() {
+    return [
+      {
+        label: 'Paiements',
+        link: '/dashboard/organization/payments',
+        icon: 'payments',
+      },
       {
         label: 'Mon Compte',
         link: '/dashboard/user',
@@ -323,7 +346,21 @@ export class SidebarComponent implements OnInit {
     ];
   }
 
-  get menuSuperAdmin() {
+  getMenuSuperAdmin(roles: string[]) {
+    const orgChildren: any[] = [
+      {
+        label: 'Avances',
+        link: '/dashboard/organization/avances',
+        icon: 'admin_panel_settings',
+      },
+    ];
+    if (roles.includes('PAYMENT_MANAGER')) {
+      orgChildren.push({
+        label: 'Paiements',
+        link: '/dashboard/organization/payments',
+        icon: 'payments',
+      });
+    }
     return [
       {
         label: 'Tableau de bord',
@@ -338,22 +375,22 @@ export class SidebarComponent implements OnInit {
           {
             label: "Dépannage d'urgence",
             link: '/dashboard/emergency-repair',
-            icon: 'build', // Icône pour un dépannage ou réparation
+            icon: 'build',
           },
           {
             label: 'Avance sur événement',
             link: '/dashboard/event-advance',
-            icon: 'event', // Icône pour un événement
+            icon: 'event',
           },
           {
             label: 'Avance salariale',
             link: '/dashboard/salary-advance',
-            icon: 'attach_money', // Icône pour un paiement/avance d'argent
+            icon: 'attach_money',
           },
           {
             label: 'Avance salariale remboursable mensuellement',
             link: '/dashboard/monthly-repayable-advance',
-            icon: 'schedule', // Icône pour un remboursement mensuel ou une échéance
+            icon: 'schedule',
           },
         ],
       },
@@ -377,25 +414,11 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/user',
         icon: 'person_outline',
       },
-    
       {
         label: 'Organisation',
         link: '/dashboard/organization',
         icon: 'business',
-        children: [
-             {
-              label: 'Avances',
-              link: '/dashboard/organization/avances',
-              icon: 'admin_panel_settings',
-            },
-            {
-              label: 'Paiements',
-              link: '/dashboard/organization/payments',
-              icon: 'payments',
-            },
-           
-          ],
-     
+        children: orgChildren,
       },
       {
         label: 'Activités',

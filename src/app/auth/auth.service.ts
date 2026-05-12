@@ -28,7 +28,7 @@ export enum AuthConstant {
   providedIn: 'root',
 })
 export class AuthService {
-  role: string = '';
+  roles: string[] = [];
   currentUser: User;
   private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -206,9 +206,15 @@ export class AuthService {
     if (!session?.enabled) {
       this.router.navigate(['/auth/reset']);
     } else {
-      session.role === 'SUPER_ADMIN' ?
-        this.router.navigate(['/dashboard/society']) :
+      const roles = session.roles ?? [];
+      const isPaymentManagerOnly = roles.length === 1 && roles[0] === 'PAYMENT_MANAGER';
+      if (roles.includes('SUPER_ADMIN')) {
+        this.router.navigate(['/dashboard/society']);
+      } else if (isPaymentManagerOnly) {
+        this.router.navigate(['/dashboard/organization/payments']);
+      } else {
         this.router.navigate(['/dashboard']);
+      }
     }
   }
 

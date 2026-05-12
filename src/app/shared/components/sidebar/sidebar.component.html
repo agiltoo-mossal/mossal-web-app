@@ -14,7 +14,7 @@
 
         <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px" class="nav-item"
           (click)="handleClick(item)"
-          routerLinkActive="active">
+          [ngClass]="{'active': isActive(item.link)}">
           <span class="icon" fxLayoutAlign="center center">
             <mat-icon>{{ item.icon }}</mat-icon>
           </span>
@@ -26,9 +26,8 @@
           <span class="nav-item-container" *ngFor="let child of item.children">
            <span class="nav-item child-item" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
               (click)="handleClick(child)"
-              routerLinkActive="active">
-              <span class="icon" fxLayoutAlign="center center"
-                [ngClass]="{'icon-active': isActive(child.link)}">
+              [ngClass]="{'active': isActive(child.link)}">
+              <span class="icon" fxLayoutAlign="center center">
                 <mat-icon>{{ child.icon }}</mat-icon>
               </span>
               <span class="label" *ngIf="isSidebarOpened">{{ child.label }}</span>
