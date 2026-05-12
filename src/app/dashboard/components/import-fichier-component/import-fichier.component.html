@@ -135,4 +135,90 @@
     </div>
 
   </div>
+
+
+  <!-- ÉTAPE 3 : Récapitulatif -->
+<div class="recapitulatif-step" *ngIf="step === 'recapitulatif'">
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <span class="step-item">Validation fichier</span>
+    <span class="step-item active">Récapitulatif</span>
+    <span class="step-item">Approbation</span>
+    <span class="step-item">Validation</span>
+  </div>
+
+  <!-- Titre -->
+  <div class="recap-header">
+    <p class="recap-label">Récapitulatif</p>
+    <h2 class="file-title">{{ recapitulatif.fichier }}</h2>
+  </div>
+
+  <!-- Cartes KPI -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <p class="kpi-label">Bénéficiaires</p>
+      <p class="kpi-value">{{ recapitulatif.beneficiaires }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Montant total</p>
+      <p class="kpi-value kpi-green">{{ recapitulatif.montantTotal }}</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Opérateurs</p>
+      <p class="kpi-value">{{ recapitulatif.operateurs }}</p>
+    </div>
+  </div>
+
+  <!-- Répartition par opérateur -->
+  <div class="repartition-card">
+    <h3 class="section-title">Répartition par opérateur</h3>
+    <div class="operateurs-grid">
+      <div
+        class="operateur-card"
+        *ngFor="let op of recapitulatif.repartition"
+        [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}"
+      >
+        <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
+        <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaires</p>
+        <p class="op-montant">{{ op.montant }}</p>
+        <div class="progress-bar-bg">
+          <div
+            class="progress-bar-fill"
+            [ngStyle]="{'width': op.pourcentage + '%', 'background': op.couleur}"
+          ></div>
+        </div>
+        <p class="op-pct">{{ op.pourcentage }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="validation-actions">
+    <button class="btn-secondary" (click)="step = 'validation'">
+      <mat-icon>arrow_back</mat-icon> Précédent
+    </button>
+    <button class="btn-primary" (click)="onSoumettre()">
+      Soumettre l'ordre <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+
+  <!-- Workflow de validation -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <h3>Workflow de validation</h3>
+      <span class="badge-selected">{{ recapitulatif.approbateurs.length }}/{{ recapitulatif.approbateurs.length }} sélectionnés</span>
+    </div>
+    <div class="approbateur-row" *ngFor="let app of recapitulatif.approbateurs">
+      <div class="avatar">{{ app.avatar }}</div>
+      <div class="app-info">
+        <p class="app-nom">{{ app.nom }}</p>
+        <p class="app-role">{{ app.role }}</p>
+      </div>
+      <span class="badge-attente">{{ app.statut }}</span>
+    </div>
+  </div>
+
+</div>
+
 </div>

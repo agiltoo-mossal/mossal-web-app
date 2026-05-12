@@ -243,3 +243,160 @@ $white:     #ffffff;
   justify-content: space-between;
   gap: 12px;
 }
+
+
+// ── ÉTAPE 3 : Récapitulatif ──────────────────────────────────
+.recapitulatif-step {
+  width: 100%;
+  max-width: 700px;
+  align-self: flex-start;
+}
+
+.recap-header {
+  margin-bottom: 20px;
+  .recap-label {
+    font-size: 13px;
+    color: $muted;
+    margin: 0 0 4px;
+  }
+}
+
+// KPI
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+
+  .kpi-label {
+    font-size: 12px;
+    color: $muted;
+    margin: 0 0 6px;
+  }
+
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: $text;
+    margin: 0;
+
+    &.kpi-green { color: #16a34a; }
+  }
+}
+
+// Répartition
+.repartition-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  margin-bottom: 24px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text;
+    margin: 0 0 16px;
+  }
+}
+
+.operateurs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.operateur-card {
+  border: 1.5px solid;
+  border-radius: 10px;
+  padding: 16px;
+
+  .op-nom          { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .op-beneficiaires{ font-size: 12px; color: $muted; margin: 0 0 4px; }
+  .op-montant      { font-size: 15px; font-weight: 600; color: $text; margin: 0 0 10px; }
+  .op-pct          { font-size: 12px; color: $muted; margin: 4px 0 0; }
+}
+
+.progress-bar-bg {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+}
+
+// Workflow
+.workflow-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  margin-top: 24px;
+}
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h3 { font-size: 14px; font-weight: 700; color: $text; margin: 0; }
+}
+
+.badge-selected {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.approbateur-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid $border;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.app-info {
+  flex: 1;
+  .app-nom  { font-size: 13.5px; font-weight: 600; color: $text; margin: 0; }
+  .app-role { font-size: 11px; color: $muted; margin: 0; }
+}
+
+.badge-attente {
+  // background: $attente-bg;
+  // color: $attente-text;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
