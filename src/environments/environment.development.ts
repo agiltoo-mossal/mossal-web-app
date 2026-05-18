@@ -15,9 +15,9 @@ export const environment = {
   //   'https://mossall-enterprise-service-preprod.onrender.com/graphql',
 
   // New server address
-  GRAPHQL_URI: 'https://mossall-ent-preprod.dynv6.net/graphql',
-  API_URI: 'https://mossall-ent-preprod.dynv6.net/',
-  ENTERPRISE_URI: 'https://mossall-ent-preprod.dynv6.net',
+  GRAPHQL_URI: 'https://mossall-ent-preprod.mossall.com/graphql',
+  API_URI: 'https://mossall-ent-preprod.mossall.com/',
+  ENTERPRISE_URI: 'https://mossall-ent-preprod.mossall.com',
 
   KEYCLOAK_URL:
     'https://ec2-16-171-29-127.eu-north-1.compute.amazonaws.com:8443',
