@@ -18,6 +18,7 @@ import { UserAdminMossallComponent } from './components/user_admin_mossall/user_
 import { OverviewComponent as PaymentsOverviewComponent } from './components/payments/overview/overview.component';
 import { AvancesComponent } from './components/avancesComponent/avances.component';
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
+import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
 
 const routes: Routes = [
   {
@@ -131,7 +132,7 @@ const routes: Routes = [
       { path: 'organization/payments/import',
         component: ImportFichierComponent 
       },
-
+      { path: 'organization/payments/manual', component: ManualPaymentComponent }
     ],
   },
 ];

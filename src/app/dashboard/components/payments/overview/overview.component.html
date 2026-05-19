@@ -11,7 +11,6 @@
       <!-- <button mat-raised-button color="primary" class="card-btn">
         <mat-icon>cloud_upload</mat-icon> Importer
       </button> -->
-      <!-- Remplacer le bouton Importer dans la carte -->
       <button mat-raised-button color="primary" class="card-btn" (click)="onImporterFichier()">
         <mat-icon>cloud_upload</mat-icon> Importer
       </button>
@@ -23,8 +22,11 @@
       </div>
       <h3>Gestion manuelle</h3>
       <p>Ajouter des paiements ligne par ligne</p>
-      <button mat-raised-button color="primary" class="card-btn">
+      <!-- <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()">
         <mat-icon>cloud_upload</mat-icon> Créer
+      </button> -->
+      <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()">
+        <mat-icon>edit_document</mat-icon> Créer
       </button>
     </div>
 

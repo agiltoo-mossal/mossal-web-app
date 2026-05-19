@@ -62,6 +62,7 @@ import { OrganizationBalanceModule } from './components/society/components/organ
 import { OverviewComponent as PaymentsOverviewComponent } from './components/payments/overview/overview.component';
 import { AvancesComponent } from './components/avancesComponent/avances.component';
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
+import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { ImportFichierComponent } from './components/import-fichier-component/im
     PaymentsOverviewComponent,
     AvancesComponent,
     ImportFichierComponent,
+    ManualPaymentComponent,
   ],
   imports: [
     CreateEventModule,

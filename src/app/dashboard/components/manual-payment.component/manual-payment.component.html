@@ -1,0 +1,290 @@
+<div class="manual-payment-container">
+
+  <!-- STEPPER HEADER -->
+  <div class="stepper-header">
+    <button class="back-btn" (click)="retour()">
+      <mat-icon>arrow_back</mat-icon> Retour
+    </button>
+    <div class="steps">
+      <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
+        <span class="step-circle">
+          <mat-icon *ngIf="currentStep > 1">check</mat-icon>
+          <span *ngIf="currentStep <= 1">1</span>
+        </span>
+        <span class="step-label">Saisie des bénéficiaires</span>
+      </div>
+      <div class="step-line" [class.done]="currentStep > 1"></div>
+      <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">
+        <span class="step-circle">
+          <mat-icon *ngIf="currentStep > 2">check</mat-icon>
+          <span *ngIf="currentStep <= 2">2</span>
+        </span>
+        <span class="step-label">Récapitulatif</span>
+      </div>
+      <div class="step-line" [class.done]="currentStep > 2"></div>
+      <div class="step" [class.active]="currentStep === 3">
+        <span class="step-circle">3</span>
+        <span class="step-label">Validation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 : Saisie des bénéficiaires -->
+  <div class="step-content" *ngIf="currentStep === 1">
+    <div class="two-col-layout">
+
+       <!-- LEFT: Formulaire -->
+    <div class="form-card">
+      <h2>Ajouter un bénéficiaire</h2>
+      <p class="form-subtitle">Renseignez les informations de la transaction</p>
+
+      <form #beneficiaireForm="ngForm" (ngSubmit)="ajouterBeneficiaire(beneficiaireForm)">
+
+        <div class="form-group">
+          <label>Prénom <span class="color-danger">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="form.prenom"
+            name="prenom"
+            #prenom="ngModel"
+            required
+            placeholder="Ex : Laurent"
+          />
+          <div *ngIf="prenom.invalid && prenom.touched" class="error-message">
+            <span *ngIf="prenom.errors?.['required']">Le champ Prénom est obligatoire.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nom <span class="color-danger">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="form.nom"
+            name="nom"
+            #nom="ngModel"
+            required
+            placeholder="Ex : Diop"
+          />
+          <div *ngIf="nom.invalid && nom.touched" class="error-message">
+            <span *ngIf="nom.errors?.['required']">Le champ Nom est obligatoire.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Téléphone <span class="color-danger">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="form.telephone"
+            name="telephone"
+            #telephone="ngModel"
+            required
+            pattern="^(70|75|76|77|78)[0-9]{7}$"
+            placeholder="Ex : 770000000"
+          />
+          <div *ngIf="telephone.invalid && telephone.touched" class="error-message">
+            <span *ngIf="telephone.errors?.['required']">Le numéro de téléphone est obligatoire.</span>
+            <span *ngIf="telephone.errors?.['pattern']">
+              Le numéro doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75. Ex: 770000000
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Montant de la transaction <span class="color-danger">*</span></label>
+          <div class="input-suffix">
+            <input
+              type="number"
+              [(ngModel)]="form.montant"
+              name="montant"
+              #montant="ngModel"
+              required
+              min="1"
+              placeholder="0"
+            />
+            <span class="suffix">XOF</span>
+          </div>
+          <div *ngIf="montant.invalid && montant.touched" class="error-message">
+            <span *ngIf="montant.errors?.['required']">Le montant est obligatoire.</span>
+            <span *ngIf="montant.errors?.['min']">Le montant doit être supérieur à 0.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Motif de la transaction <span class="color-danger">*</span></label>
+          <textarea
+            [(ngModel)]="form.motif"
+            name="motif"
+            #motif="ngModel"
+            required
+            placeholder="Ex : Avance salaire, Prime, ..."
+          ></textarea>
+          <div *ngIf="motif.invalid && motif.touched" class="error-message">
+            <span *ngIf="motif.errors?.['required']">Le motif est obligatoire.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Opérateur <span class="color-danger">*</span></label>
+          <div class="select-wrapper">
+            <select
+              [(ngModel)]="form.operateur"
+              name="operateur"
+              #operateur="ngModel"
+              required
+            >
+              <option value="">Sélectionner un opérateur</option>
+              <option value="Wave">Wave</option>
+              <option value="Orange Money">Orange Money</option>
+              <option value="Free Money">Free Money</option>
+            </select>
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </div>
+          <div *ngIf="operateur.invalid && operateur.touched" class="error-message">
+            <span *ngIf="operateur.errors?.['required']">L'opérateur est obligatoire.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-ajouter" [disabled]="beneficiaireForm.invalid">
+          <mat-icon>add</mat-icon> Ajouter à la liste
+        </button>
+
+      </form>
+    </div>
+
+      <!-- RIGHT: Liste des bénéficiaires -->
+      <div class="list-card">
+        <div class="list-header">
+          <h2>Liste des bénéficiaires
+            <span class="count-badge">{{ beneficiaires.length }} bénéficiaire{{ beneficiaires.length > 1 ? 's' : '' }}</span>
+          </h2>
+          <button class="btn-vider" (click)="viderListe()" *ngIf="beneficiaires.length > 0">
+            <mat-icon>delete</mat-icon> Vider la liste
+          </button>
+        </div>
+
+        <div class="table-wrapper" *ngIf="beneficiaires.length > 0; else emptyState">
+          <table>
+            <thead>
+              <tr>
+                <th>NOM</th>
+                <th>PRÉNOM</th>
+                <th>TÉLÉPHONE</th>
+                <th>MONTANT</th>
+                <th>OPÉRATEUR</th>
+                <th>MOTIF</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of beneficiaires; let i = index">
+                <td>{{ b.nom }}</td>
+                <td>{{ b.prenom }}</td>
+                <td>{{ b.telephone }}</td>
+                <td>{{ b.montant | number }} XOF</td>
+                <td>{{ b.operateur }}</td>
+                <td>{{ b.motif }}</td>
+                <td>
+                  <button class="btn-delete" (click)="supprimerBeneficiaire(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="total-row">
+            <span>Total</span>
+            <span class="total-amount">{{ totalMontant | number }} XOF</span>
+          </div>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <mat-icon>group_add</mat-icon>
+            <p>Aucun bénéficiaire ajouté pour le moment</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="bottom-actions">
+      <button class="btn-secondary" (click)="ajouterAutre()">
+        <mat-icon>add</mat-icon> Ajouter un autre bénéficiaire
+      </button>
+      <button class="btn-primary" (click)="passerRecap()" [disabled]="beneficiaires.length === 0">
+        Passer au récapitulatif <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2 : Récapitulatif -->
+  <div class="step-content" *ngIf="currentStep === 2">
+    <div class="recap-card">
+      <h2>Récapitulatif des paiements</h2>
+      <p class="form-subtitle">Vérifiez les informations avant de valider</p>
+
+      <table class="recap-table">
+        <thead>
+          <tr>
+            <th>NOM</th>
+            <th>PRÉNOM</th>
+            <th>TÉLÉPHONE</th>
+            <th>MONTANT</th>
+            <th>OPÉRATEUR</th>
+            <th>MOTIF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of beneficiaires">
+            <td>{{ b.nom }}</td>
+            <td>{{ b.prenom }}</td>
+            <td>{{ b.telephone }}</td>
+            <td>{{ b.montant | number }} XOF</td>
+            <td>{{ b.operateur }}</td>
+            <td>{{ b.motif }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="recap-total">
+        <span>Montant total</span>
+        <span class="total-amount">{{ totalMontant | number }} XOF</span>
+      </div>
+
+      <div class="recap-info">
+        <div class="info-item">
+          <span class="info-label">Nombre de bénéficiaires</span>
+          <span class="info-value">{{ beneficiaires.length }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Date d'exécution</span>
+          <span class="info-value">Immédiate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn-secondary" (click)="currentStep = 1">
+        <mat-icon>arrow_back</mat-icon> Modifier
+      </button>
+      <button class="btn-primary" (click)="passerValidation()">
+        Valider <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3 : Validation -->
+  <div class="step-content" *ngIf="currentStep === 3">
+    <div class="validation-card">
+      <div class="success-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h2>Paiements soumis avec succès</h2>
+      <p>Vos {{ beneficiaires.length }} paiements ont été soumis pour approbation.<br/>
+         Montant total : <strong>{{ totalMontant | number }} XOF</strong></p>
+      <button class="btn-primary" (click)="retourAccueil()">
+        Retour à l'accueil
+      </button>
+    </div>
+  </div>
+</div>
