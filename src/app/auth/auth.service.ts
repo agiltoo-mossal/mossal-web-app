@@ -201,11 +201,10 @@ export class AuthService {
       JSON.stringify(session)
     );
 
-    this.scheduleAutoLogout();
-
     if (!session?.enabled) {
       this.router.navigate(['/auth/reset']);
     } else {
+      this.scheduleAutoLogout();
       session.role === 'SUPER_ADMIN' ?
         this.router.navigate(['/dashboard/society']) :
         this.router.navigate(['/dashboard']);
