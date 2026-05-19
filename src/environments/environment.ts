@@ -12,10 +12,10 @@ export const environment = {
   API_URI: 'https://mossall-ent-preprod.mossall.com/',
   ENTERPRISE_URI: 'https://mossall-ent-preprod.mossall.com',
 
-  // GRAPHQL_URI: 'https://mossall-ent-prod.mossall.com/graphql/graphql',
-  // API_URI: 'https://mossall-ent-prod.mossall.com/graphql/',
-  // ENTERPRISE_URI: 'https://mossall-ent-prod.mossall.com/graphql', 
-  
+
+  // GRAPHQL_URI: 'https://mossall-ent-prod.mossall.com/graphql',
+  // API_URI: 'https://mossall-ent-prod.mossall.com/',
+  // ENTERPRISE_URI: 'https://mossall-ent-prod.mossall.com',
 
   KEYCLOAK_URL:
     'https://ec2-16-171-29-127.eu-north-1.compute.amazonaws.com:8443',
