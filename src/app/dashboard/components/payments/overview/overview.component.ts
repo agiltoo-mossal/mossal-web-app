@@ -22,9 +22,12 @@ export class OverviewComponent implements OnInit {
    ) {}
 
   onImporterFichier(): void {
-  this.router.navigate(['../payments/import'], { relativeTo: this.route });
+    this.router.navigate(['../payments/import'], { relativeTo: this.route });
   }
 
+  onGestionManuelle(): void {
+    this.router.navigate(['../payments/manual'], { relativeTo: this.route });
+  }
   searchText = '';
   selectedStatut = '';
   selectedDate = '';
