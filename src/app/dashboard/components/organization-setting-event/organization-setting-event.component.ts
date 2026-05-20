@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, map, switchMap } from 'rxjs';
@@ -83,6 +84,7 @@ export class OrganizationSettingEventComponent {
   dataEvent: Event;
   pendingEventStatusChanges: Map<string, boolean> = new Map();
   originalActivated: boolean;
+  @ViewChild(CreateEventComponent) createEventComp: CreateEventComponent;
 
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -239,6 +241,12 @@ export class OrganizationSettingEventComponent {
           } as any,
         },
       ];
+      this.selectedCategorie = this.listCategorieService[0];
+      if (!this.dataForm) {
+        const { categorySociopro, ...defaults } = this.listCategorieService[0] as any;
+        this.dataForm = defaults;
+      }
+      this.disableButton = true;
     }
     this.showLineEvent = true;
     this.showComponent = false;
@@ -358,8 +366,23 @@ export class OrganizationSettingEventComponent {
 
     this.listCategorieService = temp;
   }
-  updateEvent(event: Event): void {
-    // this.eventSelectedId = event.id;
+  updateEvent(event: any): void {
+    this.eventSelectedId = event.id;
+    this.dataForm = this.events.find((e) => e.id === event.id) || event;
+    this.listCategorieService = [
+      {
+        amount: event.amount,
+        amountUnit: event.amountUnit,
+        refundDuration: event.refundDuration,
+        refundDurationUnit: event.refundDurationMonth,
+        activated: event.activated,
+        activatedAt: event.activatedAt,
+        autoValidate: event.autoValidate,
+        categorySociopro: { title: 'Paramètres généraux' } as any,
+      },
+      ...(event.categorySocioproServices || []),
+    ];
+    this.selectedCategorie = this.listCategorieService[0];
     this.dataEvent = event;
     this.showLineEvent = false;
     this.showComponent = true;
@@ -407,7 +430,18 @@ export class OrganizationSettingEventComponent {
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
       if (this.eventSelectedId) {
-        console.log('dataForm', this.dataForm);
+        if (this.showComponent && this.createEventComp?.eventForm?.valid) {
+          const fv = this.createEventComp.eventForm.getRawValue();
+          this.eventToCreate = { title: fv.title, startDate: fv.startDate, endDate: fv.endDate };
+          const fmt = (d: any) => new Date(d).toISOString().split('T')[0];
+          this.events = this.events.map((e) =>
+            e.id === this.eventSelectedId
+              ? { ...e, title: fv.title, startDate: fmt(fv.startDate), endDate: fmt(fv.endDate) }
+              : e
+          );
+          this.showComponent = false;
+          this.showLineEvent = true;
+        }
 
         const {
           __typename,
@@ -448,10 +482,28 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
+        const {
+          __typename,
+          id,
+          activationDurationDay,
+          organizationId,
+          serviceId,
+          service,
+          organization,
+          categoriesocioproservices,
+          organisationService,
+          createdAt,
+          updatedAt,
+          categorySocioproServices,
+          events,
+          categorySociopro,
+          ...cleanDataForm
+        } = (this.dataForm || {}) as any;
+
         this.createEventGQL
           .mutate({
             eventInput: {
-              ...this.dataForm,
+              ...cleanDataForm,
               ...this.eventToCreate,
             },
             organizationServiceId: this.organisationServiceId,
@@ -459,14 +511,16 @@ export class OrganizationSettingEventComponent {
           .subscribe({
             next: (response) => {
               this.snackBarService.showSnackBar('Paramètres enregistrés');
-              this.organisationServiceId =
-                response.data.createEvent.organisationService.id;
-              this.eventSelectedId = response.data.createEvent.id;
+              const createdEvent = response.data.createEvent;
+              this.organisationServiceId = createdEvent.organisationService.id;
+              this.eventSelectedId = createdEvent.id;
+              const noIdIdx = this.events.findIndex((e) => !e.id);
+              if (noIdIdx !== -1) {
+                this.events[noIdIdx] = { ...this.events[noIdIdx], id: createdEvent.id };
+              }
             },
-            error: (err) => {
-              this.snackBarService.showSnackBar(
-                err.message || 'Une erreur est survenue'
-              );
+            error: () => {
+              this.snackBarService.showSnackBar('Une erreur est survenue');
             },
           });
 
