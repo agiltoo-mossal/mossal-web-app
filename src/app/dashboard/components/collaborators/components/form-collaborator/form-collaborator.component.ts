@@ -107,6 +107,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         this.categories = result.data.fetchCategorySociopros.results;
         console.log('list', this.categories);
       });
+    this.collaboratorForm.get('uniqueIdentifier')?.valueChanges.subscribe(() => {
+      this.uniqueIdentifierExists = false;
+    });
     this.initSearch();
   }
 
@@ -154,7 +157,12 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           }
         },
         (error) => {
-          this.snackBarService.showErrorSnackBar();
+          const message = error?.graphQLErrors?.[0]?.message;
+          if (message === 'Matricule déjà utilisé') {
+            this.uniqueIdentifierExists = true;
+          } else {
+            this.snackBarService.showErrorSnackBar(4000, message);
+          }
           this.isLoading = false;
         }
       );

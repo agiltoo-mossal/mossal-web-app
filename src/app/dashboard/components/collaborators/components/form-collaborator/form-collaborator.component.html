@@ -44,7 +44,9 @@
           " class="error-message">
           <span *ngIf="collaboratorForm.get('uniqueIdentifier')?.errors?.['required']">Le champ Matricule est
             obligatoire.</span>
-          <span *ngIf="uniqueIdentifierExists">Matricule déjà utilisé</span>
+        </div>
+        <div *ngIf="uniqueIdentifierExists" class="error-message">
+          <span>Matricule déjà utilisé</span>
         </div>
       </div>
     </div>
