@@ -57,7 +57,7 @@
       </div>
 
       <!-- Section des paramètres -->
-      <div class="section" *ngIf="activeEventInRange">
+      <div class="section" *ngIf="eventSelectedId">
         <div class="category-selection" *ngIf="listCategorieService.length>0">
           <label for="category-selection">Sélectionnez une catégorie</label>
           <select [(ngModel)]="selectedCategory" class="custom-select" (change)="onChangeCategorie($event)">
