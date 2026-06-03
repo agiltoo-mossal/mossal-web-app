@@ -508,3 +508,32 @@ table {
 
   .btn-primary { margin: 0 auto; }
 }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-edit,
+.btn-delete {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-edit mat-icon {
+  color: #0b1f66;
+  font-size: 18px;
+}
+
+.btn-delete mat-icon {
+  color: #0b1f66;
+  font-size: 18px;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+  opacity: 0.7;
+}

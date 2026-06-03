@@ -3,7 +3,7 @@
   <!-- STEPPER HEADER -->
   <div class="stepper-header">
     <button class="back-btn" (click)="retour()">
-      <mat-icon>arrow_back</mat-icon> Retour
+      <mat-icon>arrow_back</mat-icon> Retour à l'accueil
     </button>
     <div class="steps">
       <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
@@ -144,8 +144,20 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-ajouter" [disabled]="beneficiaireForm.invalid">
+        <!-- <button type="submit" class="btn-ajouter" [disabled]="beneficiaireForm.invalid">
           <mat-icon>add</mat-icon> Ajouter à la liste
+        </button> -->
+
+        <button
+          type="submit"
+          class="btn-ajouter"
+          [disabled]="beneficiaireForm.invalid">
+
+          <mat-icon>
+            {{ editingIndex !== null ? 'edit' : 'add' }}
+          </mat-icon>
+
+          {{ editingIndex !== null ? 'Mettre à jour' : 'Ajouter à la liste' }}
         </button>
 
       </form>
@@ -183,8 +195,23 @@
                 <td>{{ b.montant | number }} XOF</td>
                 <td>{{ b.operateur }}</td>
                 <td>{{ b.motif }}</td>
-                <td>
-                  <button class="btn-delete" (click)="supprimerBeneficiaire(i)">
+                  <!-- <button class="btn-delete" (click)="supprimerBeneficiaire(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button> -->
+                <td class="actions">
+                  <button
+                    class="btn-edit"
+                    type="button"
+                    (click)="modifierBeneficiaire(i)"
+                    matTooltip="Modifier">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <button
+                    class="btn-delete"
+                    type="button"
+                    (click)="supprimerBeneficiaire(i)"
+                    matTooltip="Supprimer">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>

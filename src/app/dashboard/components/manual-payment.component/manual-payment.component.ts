@@ -20,6 +20,8 @@ export class ManualPaymentComponent implements OnInit {
 
   currentStep = 1;
 
+  editingIndex: number | null = null;
+
   form: Beneficiaire = {
     prenom: '',
     nom: '',
@@ -54,16 +56,45 @@ export class ManualPaymentComponent implements OnInit {
   }
 
 
-    ajouterBeneficiaire(form: NgForm): void {
+  //   ajouterBeneficiaire(form: NgForm): void {
+  //   if (form.invalid) {
+  //     form.control.markAllAsTouched(); 
+  //     return;
+  //   }
+
+  //   this.beneficiaires.push({ ...this.form });
+
+  //   // Réinitialiser le formulaire
+  //   form.resetForm();
+  //   this.form = {
+  //     prenom: '',
+  //     nom: '',
+  //     telephone: '',
+  //     montant: null,
+  //     motif: '',
+  //     operateur: ''
+  //   };
+  // }
+  
+  ajouterBeneficiaire(form: NgForm): void {
     if (form.invalid) {
-      form.control.markAllAsTouched(); 
+      form.control.markAllAsTouched();
       return;
     }
 
-    this.beneficiaires.push({ ...this.form });
+    const beneficiaire = { ...this.form };
 
-    // Réinitialiser le formulaire
+    if (this.editingIndex !== null) {
+      // Mise à jour
+      this.beneficiaires[this.editingIndex] = beneficiaire;
+      this.editingIndex = null;
+    } else {
+      // Ajout
+      this.beneficiaires.push(beneficiaire);
+    }
+
     form.resetForm();
+
     this.form = {
       prenom: '',
       nom: '',
@@ -76,6 +107,26 @@ export class ManualPaymentComponent implements OnInit {
 
   ajouterAutre(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  modifierBeneficiaire(index: number): void {
+    const beneficiaire = this.beneficiaires[index];
+
+    this.form = {
+      prenom: beneficiaire.prenom,
+      nom: beneficiaire.nom,
+      telephone: beneficiaire.telephone,
+      montant: beneficiaire.montant,
+      motif: beneficiaire.motif,
+      operateur: beneficiaire.operateur
+    };
+
+    this.editingIndex = index;
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 
   supprimerBeneficiaire(index: number): void {
