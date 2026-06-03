@@ -201,11 +201,10 @@ export class AuthService {
       JSON.stringify(session)
     );
 
-    this.scheduleAutoLogout();
-
     if (!session?.enabled) {
       this.router.navigate(['/auth/reset']);
     } else {
+      this.scheduleAutoLogout();
       const roles = session.roles ?? [];
       const isPaymentManagerOnly = roles.length === 1 && roles[0] === 'PAYMENT_MANAGER';
       if (roles.includes('SUPER_ADMIN')) {
