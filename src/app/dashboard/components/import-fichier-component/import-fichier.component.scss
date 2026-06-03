@@ -1,0 +1,402 @@
+$primary:   #0d2354;
+$blue-mid:  #1a3a6e;
+$border:    #e2e8f0;
+$text:      #1e293b;
+$muted:     #64748b;
+$error:     #dc2626;
+$success:   #16a34a;
+$white:     #ffffff;
+
+.import-container {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f7fc;
+  min-height: 100vh;
+  padding: 40px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+// ── ÉTAPE 1 : Upload ─────────────────────────────────────────
+.upload-step {
+  background: $white;
+  border-radius: 14px;
+  padding: 40px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+  align-self: flex-start;
+  margin-top: 20px;
+}
+
+.step-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $primary;
+  margin: 0 0 6px;
+}
+
+.step-subtitle {
+  font-size: 13px;
+  color: $muted;
+  margin: 0 0 28px;
+}
+
+// Zone de drop
+.drop-zone {
+  border: 2px dashed $border;
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s ease;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #fafbfd;
+
+  &:hover { border-color: $primary; background: #f0f4fb; }
+
+  &.drag-over {
+    border-color: $primary;
+    background: #e8eef8;
+    transform: scale(1.01);
+  }
+
+  &.has-file {
+    border-color: $success;
+    border-style: solid;
+    background: #f0fdf4;
+  }
+
+  &.has-error {
+    border-color: $error;
+    border-style: solid;
+    background: #fef2f2;
+  }
+}
+
+.zone-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: $primary;
+}
+.icon-error   { color: $error; }
+.icon-success { color: $success; }
+
+.zone-message  { font-size: 15px; font-weight: 600; color: $text; margin: 0; }
+.zone-filename { font-size: 15px; font-weight: 700; color: $primary; margin: 0; }
+.zone-filesize { font-size: 12px; color: $muted; margin: 0; }
+.zone-hint     { font-size: 12px; color: $muted; margin: 0; }
+.error-msg     { color: $error; }
+
+// Boutons
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  justify-content: flex-end;
+}
+
+.btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background .2s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.btn-primary {
+  background: $primary;
+  color: $white;
+  &:hover:not(:disabled) { background: darken($primary, 8%); }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+}
+
+.btn-secondary {
+  background: $white;
+  color: $primary;
+  border: 1.5px solid $border;
+  &:hover { border-color: $primary; background: #f0f4fb; }
+}
+
+// ── ÉTAPE 2 : Validation ─────────────────────────────────────
+.validation-step {
+  width: 100%;
+  max-width: 860px;
+  align-self: flex-start;
+}
+
+// Stepper
+.stepper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  background: $white;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+
+  .step-item {
+    font-size: 14px;
+    color: $muted;
+    padding-bottom: 6px;
+    cursor: pointer;
+
+    &.active {
+      color: $primary;
+      font-weight: 700;
+      border-bottom: 2.5px solid $primary;
+    }
+  }
+}
+
+// Bannière erreurs
+.error-banner {
+  margin-bottom: 12px;
+  .error-count { color: $error; font-size: 15px; margin: 0; }
+  .error-hint  { color: $error; font-size: 12px; margin: 2px 0 0; }
+}
+
+.file-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: $text;
+  margin: 0 0 20px;
+}
+
+// Table
+.table-wrapper {
+  background: $white;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  overflow: hidden;
+  margin-bottom: 24px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead th {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: $muted;
+      text-align: left;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-top: 1px solid $border;
+      &:hover { background: #f8fafc; }
+
+      td {
+        padding: 12px 16px;
+        font-size: 13.5px;
+        color: $text;
+      }
+    }
+  }
+}
+
+.cell-error {
+  color: $error;
+  font-weight: 600;
+  text-decoration: underline dotted;
+}
+
+// Badges
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &-ok    { background: #f0fdf4; color: $success; .dot-green { background: $success; } }
+  &-error { background: #fef2f2; color: $error;   .dot-red   { background: $error;   } }
+}
+
+.validation-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+
+// ── ÉTAPE 3 : Récapitulatif ──────────────────────────────────
+.recapitulatif-step {
+  width: 100%;
+  max-width: 700px;
+  align-self: flex-start;
+}
+
+.recap-header {
+  margin-bottom: 20px;
+  .recap-label {
+    font-size: 13px;
+    color: $muted;
+    margin: 0 0 4px;
+  }
+}
+
+// KPI
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+
+  .kpi-label {
+    font-size: 12px;
+    color: $muted;
+    margin: 0 0 6px;
+  }
+
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: $text;
+    margin: 0;
+
+    &.kpi-green { color: #16a34a; }
+  }
+}
+
+// Répartition
+.repartition-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  margin-bottom: 24px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text;
+    margin: 0 0 16px;
+  }
+}
+
+.operateurs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.operateur-card {
+  border: 1.5px solid;
+  border-radius: 10px;
+  padding: 16px;
+
+  .op-nom          { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .op-beneficiaires{ font-size: 12px; color: $muted; margin: 0 0 4px; }
+  .op-montant      { font-size: 15px; font-weight: 600; color: $text; margin: 0 0 10px; }
+  .op-pct          { font-size: 12px; color: $muted; margin: 4px 0 0; }
+}
+
+.progress-bar-bg {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+}
+
+// Workflow
+.workflow-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  margin-top: 24px;
+}
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h3 { font-size: 14px; font-weight: 700; color: $text; margin: 0; }
+}
+
+.badge-selected {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.approbateur-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid $border;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.app-info {
+  flex: 1;
+  .app-nom  { font-size: 13.5px; font-weight: 600; color: $text; margin: 0; }
+  .app-role { font-size: 11px; color: $muted; margin: 0; }
+}
+
+.badge-attente {
+  // background: $attente-bg;
+  // color: $attente-text;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}

@@ -408,7 +408,7 @@ query FetchOrganization($organizationId: ID!) {
     user {
       firstName
       lastName
-      role
+      roles
       phoneNumber
     }
     financialOrganization {
@@ -420,6 +420,8 @@ query FetchOrganization($organizationId: ID!) {
       data
     }
     blocked
+    balance
+    maxDemandeAmount
 	}
 }
 

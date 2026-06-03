@@ -33,7 +33,11 @@ export class CreateEventComponent implements OnInit {
   }
   ngOnInit(): void {
     if (this.event) {
-      this.eventForm.patchValue(this.event);
+      this.eventForm.patchValue({
+        ...this.event,
+        startDate: this.event.startDate ? new Date(this.event.startDate as any) : null,
+        endDate: this.event.endDate ? new Date(this.event.endDate as any) : null,
+      });
       this.action = 'Modifier';
     }
     this.startDate.valueChanges.subscribe({

@@ -81,13 +81,13 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       city: [''],
       phone: [
         '',
-        [Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)]
+        [Validators.pattern(/^(78|77|76|70|75)\d{7}$/)]
       ],
       ninea: [''],
       psp: ['', Validators.required],
 
-      balance: [1000000], // Valeur par défaut
-      maxDemandeAmount: [1000000], // Valeur par défaut
+      balance: [0], // Valeur par défaut
+      maxDemandeAmount: [0], // Valeur par défaut
       fees: [0], // Valeur par défaut
       amountPercent: [75],
 
@@ -99,7 +99,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/)
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/)
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
@@ -148,7 +148,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
             this.society = result.data.fetchOrganization as Organization;
             console.log('Organisation récupérée:', this.society);
 
-            // ✅ RÉCUPÉRER LES DONNÉES DU LOGO EXISTANT
+            //RÉCUPÉRER LES DONNÉES DU LOGO EXISTANT
             if (this.society.logo) {
               this.existingLogoData = this.society.logo.data;
               this.existingLogoMimeType = this.society.logo.mimetype;
@@ -174,7 +174,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
               adminEmail: this.society.rootEmail,
               // Ces champs peuvent ne pas exister dans votre entité Organization
               // Vérifiez votre interface/type Organization
-              adminFunction: this.society.user.role || '',
+              adminFunction: this.society.user.roles?.[0] || '',
               adminPhone: this.society.phone || '',
             });
 
@@ -300,23 +300,25 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   initValidations(): void {
     this.checkAdminPhone();
     this.checkAdminEmail();
+    this.checkCompanyName();
   }
 
   submitForm(): void {
     if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
       this.societyForm.markAllAsTouched();
 
-      const controls = this.societyForm.controls;
+      // const controls = this.societyForm.controls;
 
-      Object.keys(controls).forEach(controlName => {
-        const control = controls[controlName];
-        if (control.errors) {
-          console.log(`❌ Erreurs sur "${controlName}":`, control.errors);
-        }
-      });
+      // Object.keys(controls).forEach(controlName => {
+      //   const control = controls[controlName];
+      //   if (control.errors) {
+      //     console.log(`❌ Erreurs sur "${controlName}":`, control.errors);
+      //   }
+      // });
 
       return;
     }
+
 
     if (this.societyId) {
       this.edit();
@@ -341,7 +343,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       maxDemandeAmount: formValue.maxDemandeAmount,
       fees: formValue.fees,
       amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -414,11 +416,11 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       // rootEmail: formValue.adminEmail,
       // rootFirstname: formValue.adminFirstName,
       // rootLastname: formValue.adminLastName,
-      balance: formValue.balance,
-      maxDemandeAmount: formValue.maxDemandeAmount,
-      fees: formValue.fees,
-      amountPercent: formValue.amountPercent,
-      financialOrganizationId: formValue.psp,
+      // balance: formValue.balance,
+      // maxDemandeAmount: formValue.maxDemandeAmount,
+      // fees: formValue.fees,
+      // amountPercent: formValue.amountPercent,
+      financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
       phone: formValue.phone
     };
@@ -480,7 +482,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       )
       .subscribe((result) => {
         this.societyForm.controls['adminPhone'].setErrors(null);
-        this.adminPhoneExists = result;
+        this.societyForm.controls['adminPhone'].updateValueAndValidity();
+        this.phoneNumberExists = result;
         if (result) {
           this.societyForm.controls['adminPhone'].setErrors({
             phoneNumberExists: true,
@@ -520,10 +523,34 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       });
   }
 
+  checkCompanyName(): void {
+    this.societyForm
+      .get('companyName')
+      ?.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((value) => {
+          if (!value || value.trim().length < 2) {
+            return [false];
+          }
+          return this.searchService.organizationNameExists(value, this.societyId);
+        })
+      )
+      .subscribe((result) => {
+        this.companyNameExists = result;
+        this.societyForm.controls['companyName'].setErrors(null);
+        this.societyForm.controls['companyName'].updateValueAndValidity({ emitEvent: false });
+        if (result) {
+          this.societyForm.controls['companyName'].setErrors({ companyNameExists: true });
+        }
+      });
+  }
+
   get hasErrors(): boolean {
     return (
       this.adminPhoneExists ||
-      this.adminEmailExists
+      this.adminEmailExists ||
+      this.companyNameExists
     );
   }
 }

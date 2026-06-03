@@ -69,7 +69,7 @@ export class UserAdminMossallComponent {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
         ],
       ],
       address: [''],
@@ -153,7 +153,7 @@ export class UserAdminMossallComponent {
       (result) => {
         if (result.data.updateMyAdminProfile) {
           this.snackBarService.showSuccessSnackBar(
-            'Profile modifié avec succès'
+            'Profil modifié avec succès'
           );
         } else {
           this.snackBarService.showErrorSnackBar(

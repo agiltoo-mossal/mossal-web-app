@@ -66,6 +66,8 @@
                                     societyForm.get('companyName')?.touched" class="error-message">
                         <span *ngIf="societyForm.get('companyName')?.errors?.['required']">Le nom de la société
                             est obligatoire.</span>
+                        <span *ngIf="societyForm.get('companyName')?.errors?.['companyNameExists']">Ce nom de société
+                            existe déjà.</span>
                     </div>
                 </div>
             </div>
@@ -94,7 +96,14 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="telephone-entreprise">téléphone</label>
-                    <input type="tel" id="phone" formControlName="phone" placeholder="+221 770000000" />
+                    <input type="tel" id="phone" formControlName="phone" placeholder="770000000" />
+                    <div *ngIf="societyForm.get('phone')?.touched && societyForm.get('phone')?.invalid"
+                        class="error-message">
+                        <span *ngIf="societyForm.get('phone')?.errors?.['pattern']">
+                            Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70
+                            ou 75. Ex: 785238928
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -168,13 +177,18 @@
                 </div>
                 <div class="form-group">
                     <label for="telephone-admin" class="required">Numéro téléphone</label>
-                    <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="+221770000000" />
-                    <div *ngIf="societyForm.get('adminPhone')?.invalid &&
-                                societyForm.get('adminPhone')?.touched" class="error-message">
-                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">Le numéro de téléphone
-                            est obligatoire.</span>
-                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">Entrez un numéro au
-                            format +221XXXXXXXXX.</span>
+                    <input type="tel" id="adminPhone" formControlName="adminPhone" placeholder="770000000" />
+                    <div *ngIf="societyForm.get('adminPhone')?.touched && societyForm.get('adminPhone')?.invalid"
+                        class="error-message">
+
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['required']">
+                            Le numéro de téléphone est obligatoire.
+                        </span>
+
+                        <span *ngIf="societyForm.get('adminPhone')?.errors?.['pattern']">
+                            Le numéro de téléphone doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70
+                            ou 75. Ex: 785238928
+                        </span>
                     </div>
                 </div>
             </div>

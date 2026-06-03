@@ -33,6 +33,9 @@ export class OrganizationSettingSalaryRefundComponent {
   startDate: Date;
   endDate: Date;
 
+  initialStartDate: Date | null = null;
+  initialEndDate: Date | null = null;
+
   isPercentage: boolean = true;
   categories: Partial<CategorySociopro & { error: boolean }>[] = [];
   listCategorieService: Partial<CategorySocioproService>[] = [];
@@ -69,14 +72,26 @@ export class OrganizationSettingSalaryRefundComponent {
   ) {
     this.formDate = this.formBuilder.group({
       startDate: [null, Validators.required],
-      endDate: [null, Validators.required],
+      endDate: [null, [Validators.required, this.pastDateValidator]],
     });
     this.formDate.valueChanges.subscribe((value) => {
       if (this.formDate.valid) {
         this.calculateRefundDuration(value.startDate, value.endDate);
       }
+
+      const changed = this.initialStartDate?.getTime() !== value.startDate?.getTime() ||
+        this.initialEndDate?.getTime() !== value.endDate?.getTime();
+
+      this.disableButton = changed;
+
     });
   }
+
+  pastDateValidator(control: { value: Date | null }) {
+    if (!control.value) return null;
+    return new Date(control.value) < new Date() ? { pastDate: true } : null;
+  }
+
   get dateStart() {
     return this.formDate.get('startDate');
   }
@@ -105,16 +120,25 @@ export class OrganizationSettingSalaryRefundComponent {
               ?.fetchOrganisationServiceByOrganisationIdAndServiceId as any;
             this.organisationServiceId = data?.id;
             this.dataForm = data;
-            console.log('data', data);
+            console.log('data ===>>>>> ', data);
             this.activated = data?.activated;
             if (data.activatedAt) {
-              this.dateStart.setValue(new Date(data?.activatedAt));
-              this.dateEnd.setValue(
-                new Date(
-                  new Date(data?.activatedAt).getTime() +
-                    data?.activationDurationDay * 24 * 60 * 60 * 1000
-                )
+              const start = new Date(data?.activatedAt);
+              const end = new Date(
+                new Date(data?.activatedAt).getTime() +
+                data?.activationDurationDay * 24 * 60 * 60 * 1000
               );
+
+              this.initialStartDate = start;
+              this.initialEndDate = end;
+
+              this.formDate.setValue({
+                startDate: start,
+                endDate: end,
+              });
+
+              this.formDate.markAsPristine();
+              this.disableButton = false;
             }
             this.listCategorieService = [
               {
@@ -178,11 +202,6 @@ export class OrganizationSettingSalaryRefundComponent {
         },
       });
   }
-  onDateChange($event: Event) {
-    if (this.startDate && this.endDate) {
-      this.calculateRefundDuration(this.startDate, this.endDate);
-    }
-  }
 
   onChangeCategorie(event: Event) {
     const temp = [...this.listCategorieService];
@@ -245,18 +264,7 @@ export class OrganizationSettingSalaryRefundComponent {
   handleServiceActivationChange(isActive: boolean) {
     this.isActive = isActive;
     this.activated = isActive;
-    if (this.organisationServiceId) {
-      this.activeService.emit({
-        isActive,
-        organisationServiceId: this.organisationServiceId,
-      });
-    } else {
-      this.activated = true;
-      Swal.fire({
-        title: 'Veuillez enregistrer les paramètres avant d activer le service',
-        showCancelButton: false,
-      });
-    }
+    this.disableButton = true;
     this.activationInformationService.setActivationState(
       this.service.id,
       isActive
@@ -303,24 +311,29 @@ export class OrganizationSettingSalaryRefundComponent {
         if (
           this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
         ) {
+          const startDate = this.dateStart.getRawValue();
+          const endDate = this.dateEnd.getRawValue();
+
+          if (this.formDate.invalid) {
+            this.formDate.markAllAsTouched();
+            return;
+          }
+
+          const activationPayload = {
+            activated: this.activated,
+            activatedAt: startDate ? new Date(startDate).toISOString() : null,
+            activationDurationDay: startDate && endDate ? differenceInDays(new Date(endDate), new Date(startDate)) : null,
+          };
           if (this.organisationServiceId) {
             this.updateOrganisationService(this.organisationServiceId, {
               ...this.dataForm,
-              // activatedAt: this.dateStart.getRawValue(),
-              // activationDurationDay: differenceInDays(
-              //   this.dateEnd.getRawValue(),
-              //   this.dateStart.getRawValue()
-              // ),
+              ...activationPayload,
             });
           } else {
             this.createOrganisationService(
               {
                 ...this.dataForm,
-                // activatedAt: this.dateStart.getRawValue(),
-                // activationDurationDay: differenceInDays(
-                //   this.dateEnd.getRawValue(),
-                //   this.dateStart.getRawValue()
-                // ),
+                ...activationPayload,
               },
               this.organization.id,
               this.service.id
@@ -352,7 +365,7 @@ export class OrganizationSettingSalaryRefundComponent {
                 },
                 error: (err) => {
                   this.snackBarService.showSnackBar(
-                    "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+                    "Une erreur est survenue lors de l'enregistrement des paramètres du service"
                   );
                 },
               });
@@ -379,6 +392,7 @@ export class OrganizationSettingSalaryRefundComponent {
       }
     });
   }
+
   createOrganisationService(
     organisationServiceInput: OrganisationServiceInput,
     organisationId: string,
@@ -394,17 +408,18 @@ export class OrganizationSettingSalaryRefundComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
   }
+
   updateOrganisationService(
     organisationServiceId: string,
     organisationServiceInput: OrganisationServiceUpdateInput
@@ -418,13 +433,13 @@ export class OrganizationSettingSalaryRefundComponent {
         next: (response) => {
           console.log('response', response);
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });

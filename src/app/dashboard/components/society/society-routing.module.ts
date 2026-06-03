@@ -5,6 +5,8 @@ import { SocietyComponent } from './society.component';
 import { OverviewComponent } from './components/overview/overview.component';
 import { CreateSocietyComponent } from './components/create-society/create-society.component';
 import { EditSocietyComponent } from './components/edit-society/edit-society.component';
+import { AddCreditComponent } from './components/add-credit/add-credit.component';
+import { DetailSocietyComponent } from './components/detail-society/detail-society.component';
 // import { DetailSocietyComponent } from './components/detail-society/detail-society.component';
 
 const routes: Routes = [
@@ -25,10 +27,14 @@ const routes: Routes = [
         path: ':id',
         component: EditSocietyComponent,
       },
-      // {
-      //   path: 'details/:id',
-      //   component: DetailSocietyComponent,
-      // },
+      {
+        path: 'details/:id',
+        component: DetailSocietyComponent,
+      },
+      {
+        path: 'add-credit/:id',
+        component: AddCreditComponent,
+      },
     ],
   },
 ];

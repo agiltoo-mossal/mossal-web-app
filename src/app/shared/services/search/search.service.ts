@@ -3,6 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import {
   BankAccountNumberExistsGQL,
   EmailExistsGQL,
+  OrganizationNameExistsGQL,
   PhoneNumberExistsGQL,
   UniqueIdentifierExistsGQL,
 } from 'src/graphql/generated';
@@ -15,7 +16,8 @@ export class SearchService {
     private phoneNumberExistsGQL: PhoneNumberExistsGQL,
     private uniqueIdentifierExistsGQL: UniqueIdentifierExistsGQL,
     private bankAccountNumberExistsGQL: BankAccountNumberExistsGQL,
-    private emailExistsGQL: EmailExistsGQL
+    private emailExistsGQL: EmailExistsGQL,
+    private organizationNameExistsGQL: OrganizationNameExistsGQL,
   ) {}
 
   async emailExists(email: string, isAdmin = false, userId = null) {
@@ -45,5 +47,12 @@ export class SearchService {
       })
     );
     return result.data.uniqueIdentifierExists;
+  }
+
+  async organizationNameExists(name: string, organizationId: string = null) {
+    const result = await lastValueFrom(
+      this.organizationNameExistsGQL.fetch({ name, organizationId })
+    );
+    return result.data.organizationNameExists;
   }
 }

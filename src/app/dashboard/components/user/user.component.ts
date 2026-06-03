@@ -37,29 +37,53 @@ export class UserComponent {
     private disableEmailNotificationGQL: DisableEmailNotificationGQL,
     private authService: AuthService
   ) {
-    this.updatePasswordForm = this.fb.group({
-      oldPassword: ['', Validators.required],
-      newPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-          ),
+    // this.updatePasswordForm = this.fb.group({
+    //   oldPassword: ['', Validators.required],
+    //   newPassword: [
+    //     '',
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(8),
+    //       Validators.pattern(
+    //         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+    //       ),
+    //     ],
+    //   ],
+    //   confirmPassword: [
+    //     '',
+    //     [
+    //       Validators.required,
+    //       Validators.minLength(8),
+    //       Validators.pattern(
+    //         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+    //       ),
+    //     ],
+    //   ],
+    // });
+
+        this.updatePasswordForm = this.fb.group({
+        oldPassword: ['', Validators.required],
+        newPassword: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+            ),
+          ],
         ],
-      ],
-      confirmPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-          ),
+        confirmPassword: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
+            ),
+          ],
         ],
-      ],
-    });
+      });
 
     this.updateProfileForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -69,7 +93,7 @@ export class UserComponent {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
         ],
       ],
       address: [''],
@@ -118,7 +142,8 @@ export class UserComponent {
           this.isLoading = false;
           this.snackBarService.showErrorSnackBar(
             5000,
-            'Mot de passe incorrect'
+            error.message
+            // 'Mot de passe incorrect...'
           );
         }
       );
@@ -153,7 +178,7 @@ export class UserComponent {
       (result) => {
         if (result.data.updateMyAdminProfile) {
           this.snackBarService.showSuccessSnackBar(
-            'Profile modifié avec succès'
+            'Profil modifié avec succès'
           );
         } else {
           this.snackBarService.showErrorSnackBar(

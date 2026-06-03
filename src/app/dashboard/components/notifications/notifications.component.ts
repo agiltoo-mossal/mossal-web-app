@@ -26,7 +26,7 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
     private paginatedNofif: FetchPaginatedNotificationsGQL
-  ) {}
+  ) { }
 
   getNotifications() {
     const subscription = this.fetchPaginatedNotificationsGQL.fetch().subscribe({

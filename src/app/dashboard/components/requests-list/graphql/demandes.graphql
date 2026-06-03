@@ -70,6 +70,7 @@ query FetchRemboursementByUserId($userId: ID!) {
     createdAt
     updatedAt
     validatedAt
+    toPayedAt
     demande {
       remainingRefundAmount
       organisationService {
@@ -225,7 +226,7 @@ query FetchOrganisationService($organisationServiceId: ID!) {
         wizallAccountNumber
         bankAccountNumber
         totalDemandeAmount
-        role
+        roles
         blocked
         birthDate
         favoriteWallet
@@ -262,6 +263,8 @@ query FetchRemboursementsByDemande($demandeId: ID!) {
     userId
     createdAt
     updatedAt
+    toPayedAt
+    validatedAt
     demande {
       id
       amount

@@ -1,248 +1,189 @@
-<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px">
-  <a routerLink="/dashboard/society"
-    ><span>{{ "<" }}</span
-    >retour</a
-  >
+<div style="display: flex; gap: 5px; color: #11167a; font-size: 16px; margin-bottom: 20px;">
+    <a routerLink="/dashboard/society"><span>{{ "<" }}</span>retour</a>
 </div>
 
-<h2 class="container-title-setting">
-  <span>Information de la société</span>
-</h2>
-<div class="container">
-  <!-- Section gauche : Profil collaborateur -->
-  <div class="profile-section">
-    <div>
-      <h2>{{ society?.firstName }} {{ society?.lastName }}</h2>
-      <p><strong>Matricule :</strong> {{ society?.uniqueIdentifier }}</p>
-      <p>{{ society?.categorySociopro?.title }}</p>
-      <p><strong>Email:</strong> {{ society?.email }}</p>
-      <p><strong>Téléphone:</strong>{{ society?.phoneNumber }}</p>
-      <p>
-        <strong>Date de naissance :</strong>
-        {{ society?.birthDate | date }}
-      </p>
-      <p><strong>Adresse :</strong> {{ society?.address }}</p>
-      <p>
-        <strong>Mobile money favori :</strong>
-        {{ society?.favoriteWallet }}
-      </p>
-    </div>
-    <div class="profile-actions">
-      <button [routerLink]="'/dashboard/society/' + societyId">
-        <span><mat-icon>edit</mat-icon></span>
-        Modifier
-      </button>
-      <button
-        *ngIf="!society?.blocked"
-        class="suspend"
-        requiresConfirmation
-        [message]="'Voulez-vous bloquer cet utilisateur?'"
-        [confirmCallback]="lockUser"
-        [confirmCallbackParam]="society?.id"
-      >
-        <span><mat-icon>lock</mat-icon></span>
-        Suspendre
-      </button>
-      <button
-        *ngIf="society?.blocked"
-        class="suspend"
-        requiresConfirmation
-        [message]="'Voulez-vous débloquer cet utilisateur?'"
-        [confirmCallback]="unlockUser"
-        [confirmCallbackParam]="society?.id"
-      >
-        <span><mat-icon>lock_open</mat-icon></span>
-        Débloquer
-      </button>
-    </div>
-  </div>
-
-  <!-- Section droite : Informations financières -->
-  <div class="finance-section">
-    <div>
-      <p>
-        <strong>Salaire net mensuel :</strong> {{ society?.salary }} XOF
-      </p>
-      <p>
-        <strong>Acompte autorisé :</strong>
-        {{ society?.authorizedAdvance }} XOF
-      </p>
-      <p>
-        <strong>Total demandé :</strong>
-        {{ society?.totalDemandeAmount }} XOF
-      </p>
-      <p><strong>Balance :</strong>{{ society?.balance }} XOF</p>
-    </div>
-    <app-user-details [user]="society"></app-user-details>
-  </div>
-</div>
-
-<!-- Section centrale : Demande en attente -->
-<div class="request-section">
-  <h2>Demande en attente</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>N° de la demande</th>
-        <th>Type de demande </th>
-        <th>Montant</th>
-        <th>Date</th>
-        <th>Durée de remboursement</th>
-        <th>Solde</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let pending of pendingDemandes">
-        <td>{{ pending.number }}</td>
-        <td>{{ pending.organisationService.service.title }}</td>
-        <td>{{ pending.amount }} XOF</td>
-        <td>{{ pending.createdAt | date }}</td>
-        <td>{{ pending?.refundDuration }}</td>
-        <td>{{ pending.society?.balance }} XOF</td>
-        <td>
-          <div class="dropdown" appDropdown="dropdown-action">
-            <span fxLayout="row" class="btn-edit-statut">
-              <span
-                class="text"
-                fxFlex="auto"
-                fxLayout="row"
-                fxLayoutGap="8px"
-                fxLayoutAlign="center center"
-                ><span>{{ pending?.status | demandeStatus | titlecase }}</span
-                ><span
-                  class="statut statut--{{ pending?.status | lowercase }}"
-                ></span
-              ></span>
-              <mat-icon class="dropdown-icon" fxLayoutAlign="center center"
-                >keyboard_arrow_down</mat-icon
-              >
-            </span>
-            <div
-              class="dropdown-content dropdown-content-filter"
-              id="dropdown-action"
-            >
-              <div
-                *ngIf="pending.status === 'PENDING'"
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="space-between center"
-                requiresConfirmation
-                [message]="'Voulez-vous valider cette demande?'"
-                [confirmCallback]="validateDemande"
-                [confirmCallbackParam]="pending?.id"
-              >
-                Validée
-                <span class="statut statut--valid"></span>
-              </div>
-              <div
-                *ngIf="
-                  pending.status === 'VALIDATED' &&
-                  pending.statusText === 'VALIDATED'
-                "
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="space-between center"
-                requiresConfirmation
-                [message]="'Voulez-vous payer cette demande?'"
-                [confirmCallback]="payeDemande"
-                [confirmCallbackParam]="pending?.id"
-              >
-                Remboursée
-                <span class="statut statut--payed"></span>
-              </div>
-              <div
-                *ngIf="pending.status === 'PENDING'"
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="space-between center"
-                requiresConfirmation
-                [message]="'Voulez-vous rejeter cette demande?'"
-                [confirmCallback]="rejectDemande"
-                [reasonRequired]="true"
-                [confirmCallbackParam]="pending?.id"
-              >
-                Rejetée
-                <span class="statut statut--rejected"></span>
-              </div>
-              <!-- <div class="dropdown-option" fxLayout="row" fxLayoutAlign="space-between center">En
-                                    attente
-                                    <span class="statut statut--pending"></span>
-                                </div> -->
-              <div
-                *ngIf="pending.status === 'PENDING'"
-                class="dropdown-option"
-                fxLayout="row"
-                fxLayoutAlign="space-between center"
-                requiresConfirmation
-                [message]="'Voulez-vous annuler cette demande?'"
-                [confirmCallback]="cancelDemande"
-                [confirmCallbackParam]="pending?.id"
-              >
-                Annulée
-                <span class="statut statut--cancel"></span>
-              </div>
+<div class="data-first-preview" fxLayout="column" fxLayoutGap="32px">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <span class="dashboard-title"></span>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
+            <div class="current-time-interval" fxLayout="row" fxLayoutAlign="start center">
+                <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center"><span>{{ startDate |
+                        frenchDate }}</span> <span>au</span>
+                    <span>{{ endDate | frenchDate }}</span></span>
+                <div fxLayout="row" fxLayoutAlign="space-between center" class="dropdown">
+                    <span class="icon" #btnToggleDropdownDate (click)="toggleMenuFilterDate()">
+                        <mat-icon fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
+                    </span>
+                    <form [formGroup]="metricsInput" class="dropdown-content" id="filter-date-dropdown"
+                        *ngIf="isMenuFilterOpen" #dropdownContent>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="debut">Du</label>
+                            <input formControlName="startDate" type="date" id="debut" />
+                        </div>
+                        <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                            <label for="fin">Au</label>
+                            <input formControlName="endDate" type="date" id="fin" />
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+            <span class="dashboard-title">Filtrer</span>
+        </div>
+    </div>
 </div>
 
-<!-- Section inférieure : Demande en cours -->
-<div class="current-request-section">
-  <h2>Avance salariale remboursable mensuellement</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>N° Demande</th>
-        <th>Date</th>
-        <th>Type de Demande</th>
-        <th>Montant demandé</th>
-        <th>Mensualité</th>
-        <th>Frais</th>
-        <th>Reliquat</th>
-        <th>État</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tbody>
-      <tr *ngFor="let remboursement of remboursements">
-        <td>{{remboursement?.demande?.number}}</td>
-        <td>{{ remboursement.validatedAt | date }}</td>
-        <td>{{remboursement?.demande?.organisationService?.service?.title}}</td>
-        <td>{{ remboursement?.demande?.amount }} XOF</td>
-        <td>{{ remboursement.amount }} XOF</td>
-        <td>{{ remboursement?.demande?.fees }} XOF</td>
-        <td>{{ remboursement?.demande?.remainingRefundAmount }} XOF</td>
-        <td>
-          <span
-            class="status"
-            [ngClass]="{
-              success: remboursement.status === 'PAYED',
-              failure: remboursement.status === 'PENDING'
-            }"
-            >{{ remboursement.status === 'PAYED' ? '✔' : '✘' }}</span
-          >
-        </td>
-      </tr>
-      <!-- <tr>
-        <td>03/06/2024</td>
-        <td>1 500 XOF</td>
-        <td>500 XOF</td>
-        <td>10 XOF</td>
-        <td>650 XOF</td>
-        <td><span class="status success">✔</span></td>
-      </tr>
-      <tr>
-        <td>03/09/2024</td>
-        <td>1 500 XOF</td>
-        <td>500 XOF</td>
-        <td>10 XOF</td>
-        <td>650 XOF</td>
-        <td><span class="status failure">✘</span></td>
-      </tr> -->
-    </tbody>
-  </table>
+<app-organization-balance [organization]="organization"></app-organization-balance>
+
+<div class="page-wrapper" style="display: flex; flex-direction: column; background-color: white;
+    padding: 5px; margin-top: 30px; ">
+    <div class="data-first-preview" fxLayout="column" fxLayoutGap="32px">
+        <div class="chart-container" *ngIf="metricsData">
+            <app-operation-charts [metricsData]="metricsData"></app-operation-charts>
+        </div>
+    </div>
+</div>
+
+<div class="data-first-preview" fxLayout="column" fxLayoutGap="32px" style="margin-top: 30px;">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+        <span class="dashboard-title"></span>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="32px">
+            <div (click)="exportOperations()" class="current-time-interval" fxLayout="row" fxLayoutAlign="start center">
+                <span class="value" fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="start center">
+                    <mat-icon fxLayoutAlign="center center">cloud_download</mat-icon>
+                    <span class="text-export">Exporter l'historique des opérations</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-wrapper" style="
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+    margin-top: 30px;
+  ">
+
+    <div class="filters" fxLayout="row" [formGroup]="searchForm">
+        <div fxFlex="25" fxLayout="row" fxLayoutAlign="space-between center" class="dropdown filter-item"
+            appDropdown="dropdown-statut">
+            <span class="text" [ngClass]="type ? 'selected' : ''" fxFlex="auto">{{ type ? type :
+                "Type" }}</span>
+            <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+            <div class="dropdown-content dropdown-content-filter" id="dropdown-statut">
+                <div (click)="changeType('CREDIT')" class="dropdown-option" fxLayout="row"
+                    fxLayoutAlign="space-between center">
+                    Crédit <span class="statut statut--credit"></span>
+                </div>
+                <div (click)="changeType('DEBIT')" class="dropdown-option" fxLayout="row"
+                    fxLayoutAlign="space-between center">
+                    Débit <span class="statut statut--debit"></span>
+                </div>
+            </div>
+        </div>
+        <form fxFlex="25" class="dropdown filter-item">
+            <span #btnToggleDropdownFilterDate fxFill fxLayout="row" fxLayoutAlign="space-between center"
+                (click)="toggleOperationFilterDate()">
+                <span>Du {{ startFilterDate | frenchDate }} au
+                    {{ endFilterDate | frenchDate }}</span>
+                <mat-icon class="icon-dropdown" fxLayoutAlign="space-between center">keyboard_arrow_down</mat-icon>
+            </span>
+            <div class="dropdown-content" id="filter-date-dropdown" *ngIf="isDateFilterOpen" #dropdownFilterContent>
+                <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                    <label for="debut">Du</label>
+                    <input name="startFilterDate" [(ngModel)]="startFilterDate" type="date" id="debut"
+                        (change)="onStartDateChange()" />
+                </div>
+                <div class="dropdown-option" fxLayout="column" fxLayoutGap="8px">
+                    <label for="fin">Au</label>
+                    <input name="endFilterDate" [(ngModel)]="endFilterDate" type="date" id="fin"
+                        (change)="onEndDateChange()" />
+                </div>
+            </div>
+        </form>
+        <div class="search filter-item" fxFlex="25" fxLayout="row" fxLayoutAlign="center center">
+            <input formControlName="amount" type="number" placeholder="Montant" />
+        </div>
+        <div (click)="applyFilter()" fxFlex="25" class="btn-filter filter-item" fxLayout="row" fxLayoutGap="16px"
+            fxLayoutAlign="center center">
+            <mat-icon>tune</mat-icon>
+            <span>Filtrer</span>
+        </div>
+    </div>
+
+    <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
+        <div class="example-table-container">
+            <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+                <ng-container matColumnDef="matricule">
+                    <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center">
+                        Matricule
+                    </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center;">
+                        {{ row?.matricule }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="collaborator">
+                    <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center">
+                        Collaborateur
+                    </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center;">
+                        {{ row?.collaborator }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef class="title"
+                        style="text-align: center; justify-content: center;">
+                        Date
+                    </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center; justify-content: center;">
+                        <span>{{ row?.createdAt | date : "dd-MM-YYYY" }} </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="operation">
+                    <th mat-header-cell *matHeaderCellDef class="title"
+                        style="text-align: center; justify-content: center;">
+                        Opération
+                    </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center; justify-content: center;">
+                        {{ row?.type }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="numeroOperation">
+                    <th mat-header-cell *matHeaderCellDef class="title"
+                        style="text-align: center; justify-content: center;">
+                        Numéro opération
+                    </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center; justify-content: center;">
+                        {{ row?.numeroOperation }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="amount">
+                    <th mat-header-cell *matHeaderCellDef class="title" style="text-align: center">
+                        Montant
+                    </th>
+                    <td mat-cell *matCellDef="let row" class="advance" style="width: 17%">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 6px;">
+                            <span class="statut" [ngClass]="{
+                                'statut--credit': row?.type?.toLowerCase() === 'credit',
+                                'statut--debit': row?.type?.toLowerCase() === 'debit'}">
+                            </span>
+                            <span>{{ row?.amount | number : '1.0-0':'fr-FR' }} Xof</span>
+                        </div>
+                    </td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" aria-label=""></mat-paginator>
+        </div>
+
+    </div>
 </div>

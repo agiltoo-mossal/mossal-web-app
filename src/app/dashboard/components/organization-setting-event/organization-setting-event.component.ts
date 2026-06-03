@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, map, switchMap } from 'rxjs';
@@ -81,6 +82,9 @@ export class OrganizationSettingEventComponent {
   activated: { value?: boolean } = { value: true };
   selectedCategory: string;
   dataEvent: Event;
+  pendingEventStatusChanges: Map<string, boolean> = new Map();
+  originalActivated: boolean;
+  @ViewChild(CreateEventComponent) createEventComp: CreateEventComponent;
 
   constructor(
     private listCategorieGQL: FetchCategorySocioprosGQL,
@@ -99,7 +103,7 @@ export class OrganizationSettingEventComponent {
     private cdr: ChangeDetectorRef, // Inject ChangeDetectorRef
 
     private fetchOrganisationServiceByOrganisationIdAndServiceIdGQL: FetchOrganisationServiceByOrganisationIdAndServiceIdGQL // private fetchEventGQL: FetchAllEventGQL
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.organization = (await lastValueFrom(this.fetchCurrentAdminGQL.fetch()))
@@ -116,11 +120,12 @@ export class OrganizationSettingEventComponent {
             response.data.fetchOrganisationServiceByOrganisationIdAndServiceId?.id;
           this.activated.value =
             response?.data?.fetchOrganisationServiceByOrganisationIdAndServiceId?.activated;
+          this.originalActivated = this.activated.value;
 
           this.info = response.data
             .fetchOrganisationServiceByOrganisationIdAndServiceId as Partial<
-            OrganisationService & { categorySociopro: CategorySociopro[] }
-          >;
+              OrganisationService & { categorySociopro: CategorySociopro[] }
+            >;
           this.dataForm = this.info;
           if (this.info) {
             this.fetchEvents(this.organisationServiceId);
@@ -157,6 +162,18 @@ export class OrganizationSettingEventComponent {
           console.log(err);
         },
       });
+  }
+
+  get activeEventInRange(): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.events.some((event) => {
+      if (!event.activated) return false;
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+      end.setHours(23, 59, 59, 999);
+      return start <= today && today <= end;
+    });
   }
 
   /**
@@ -224,6 +241,12 @@ export class OrganizationSettingEventComponent {
           } as any,
         },
       ];
+      this.selectedCategorie = this.listCategorieService[0];
+      if (!this.dataForm) {
+        const { categorySociopro, ...defaults } = this.listCategorieService[0] as any;
+        this.dataForm = defaults;
+      }
+      this.disableButton = true;
     }
     this.showLineEvent = true;
     this.showComponent = false;
@@ -343,8 +366,23 @@ export class OrganizationSettingEventComponent {
 
     this.listCategorieService = temp;
   }
-  updateEvent(event: Event): void {
-    // this.eventSelectedId = event.id;
+  updateEvent(event: any): void {
+    this.eventSelectedId = event.id;
+    this.dataForm = this.events.find((e) => e.id === event.id) || event;
+    this.listCategorieService = [
+      {
+        amount: event.amount,
+        amountUnit: event.amountUnit,
+        refundDuration: event.refundDuration,
+        refundDurationUnit: event.refundDurationMonth,
+        activated: event.activated,
+        activatedAt: event.activatedAt,
+        autoValidate: event.autoValidate,
+        categorySociopro: { title: 'Paramètres généraux' } as any,
+      },
+      ...(event.categorySocioproServices || []),
+    ];
+    this.selectedCategorie = this.listCategorieService[0];
     this.dataEvent = event;
     this.showLineEvent = false;
     this.showComponent = true;
@@ -355,12 +393,55 @@ export class OrganizationSettingEventComponent {
    * Sauvegarde les paramètres globaux
    */
   async saveSettings() {
+    // 1. Activation du service si changée
+    if (this.organisationServiceId && this.activated.value !== this.originalActivated) {
+      this.updateDefineService
+        .mutate({
+          organisationServiceId: this.organisationServiceId,
+          organisationServiceInput: { activated: this.activated.value },
+        })
+        .subscribe({
+          next: () => { this.originalActivated = this.activated.value; },
+          error: (err) => {
+            this.snackBarService.showSnackBar(err?.message || 'Erreur lors de la mise à jour du service');
+          },
+        });
+    }
+
+    // 2. Statuts d'événements en attente
+    for (const [eventId, status] of this.pendingEventStatusChanges) {
+      const mutation$ = (status
+        ? this.activateEvent.mutate({ eventId })
+        : this.desactiveEvent.mutate({ eventId })) as any;
+      await lastValueFrom(mutation$).catch((err) =>
+        this.snackBarService.showSnackBar(err?.message || 'Erreur lors de la mise à jour de l\'événement')
+      );
+    }
+    this.pendingEventStatusChanges.clear();
+
+    // 3. Paramètres de l'onglet sélectionné
+    if (!this.selectedCategorie) {
+      this.disableButton = false;
+      return;
+    }
+
     console.log('dataForm', this.dataForm);
     if (
       this.selectedCategorie.categorySociopro.title == 'Paramètres généraux'
     ) {
       if (this.eventSelectedId) {
-        console.log('dataForm', this.dataForm);
+        if (this.showComponent && this.createEventComp?.eventForm?.valid) {
+          const fv = this.createEventComp.eventForm.getRawValue();
+          this.eventToCreate = { title: fv.title, startDate: fv.startDate, endDate: fv.endDate };
+          const fmt = (d: any) => new Date(d).toISOString().split('T')[0];
+          this.events = this.events.map((e) =>
+            e.id === this.eventSelectedId
+              ? { ...e, title: fv.title, startDate: fmt(fv.startDate), endDate: fmt(fv.endDate) }
+              : e
+          );
+          this.showComponent = false;
+          this.showLineEvent = true;
+        }
 
         const {
           __typename,
@@ -401,10 +482,28 @@ export class OrganizationSettingEventComponent {
             },
           });
       } else {
+        const {
+          __typename,
+          id,
+          activationDurationDay,
+          organizationId,
+          serviceId,
+          service,
+          organization,
+          categoriesocioproservices,
+          organisationService,
+          createdAt,
+          updatedAt,
+          categorySocioproServices,
+          events,
+          categorySociopro,
+          ...cleanDataForm
+        } = (this.dataForm || {}) as any;
+
         this.createEventGQL
           .mutate({
             eventInput: {
-              ...this.dataForm,
+              ...cleanDataForm,
               ...this.eventToCreate,
             },
             organizationServiceId: this.organisationServiceId,
@@ -412,14 +511,16 @@ export class OrganizationSettingEventComponent {
           .subscribe({
             next: (response) => {
               this.snackBarService.showSnackBar('Paramètres enregistrés');
-              this.organisationServiceId =
-                response.data.createEvent.organisationService.id;
-              this.eventSelectedId = response.data.createEvent.id;
+              const createdEvent = response.data.createEvent;
+              this.organisationServiceId = createdEvent.organisationService.id;
+              this.eventSelectedId = createdEvent.id;
+              const noIdIdx = this.events.findIndex((e) => !e.id);
+              if (noIdIdx !== -1) {
+                this.events[noIdIdx] = { ...this.events[noIdIdx], id: createdEvent.id };
+              }
             },
-            error: (err) => {
-              this.snackBarService.showSnackBar(
-                err.message || 'Une erreur est survenue'
-              );
+            error: () => {
+              this.snackBarService.showSnackBar('Une erreur est survenue');
             },
           });
 
@@ -532,36 +633,21 @@ export class OrganizationSettingEventComponent {
       .subscribe({
         next: (response) => {
           this.snackBarService.showSnackBar(
-            'Paramètres de plafond enregistrés'
+            'Paramètres du service enregistrés'
           );
         },
         error: (err) => {
           console.log(err);
           this.snackBarService.showSnackBar(
-            "Une erreur est survenue lors de l'enregistrement des paramètres de plafond"
+            "Une erreur est survenue lors de l'enregistrement des paramètres du service"
           );
         },
       });
   }
 
-  onServiceActivationChange($event) {
-    // this.dataForm.activated = $event;
-    console.log('$event', $event);
-
-    if (this.organisationServiceId) {
-      this.activeService.emit({
-        isActive: $event,
-        organisationServiceId: this.organisationServiceId,
-      });
-      this.activated.value = $event;
-    } else {
-      this.activated.value = true;
-      Swal.fire({
-        icon: 'warning',
-        title: 'Veuillez enregistrer les paramètres avant d activer le service',
-        showCancelButton: false,
-      });
-    }
+  onServiceActivationChange($event: boolean) {
+    this.activated.value = $event;
+    this.disableButton = true;
   }
   createEvent() {
     if (!this.organisationServiceId) {
@@ -627,55 +713,15 @@ export class OrganizationSettingEventComponent {
     // });
   }
 
-  changeStatusEvent(
-    status: boolean,
-    event: {
-      id: string;
-      title: string;
-    }
-  ) {
-    if (status) {
-      this.activateEvent.mutate({ eventId: event.id }).subscribe({
-        next: (response) => {
-          this.snackBarService.showSnackBar('Événement activé avec succès');
-          this.events = this.events.map((e) => {
-            if (e.id === event.id) {
-              return {
-                ...e,
-                activated: true,
-              };
-            }
-            return e;
-          });
-        },
-        error: (err) => {
-          this.snackBarService.showSnackBar('Une erreur est survenue');
-          console.log(err);
-        },
-      });
-    } else {
-      this.desactiveEvent.mutate({ eventId: event.id }).subscribe({
-        next: (response) => {
-          this.snackBarService.showSnackBar('Événement désactivé avec succès');
-          this.events = this.events.map((e) => {
-            if (e.id === event.id) {
-              return {
-                ...e,
-                activated: false,
-              };
-            }
-            return e;
-          });
-        },
-        error: (err) => {
-          this.snackBarService.showSnackBar('Une erreur est survenue');
-          console.log(err);
-        },
-      });
-    }
+  changeStatusEvent(status: boolean, event: { id: string; title: string }) {
+    this.events = this.events.map((e) =>
+      e.id === event.id ? { ...e, activated: status } : e
+    );
+    this.pendingEventStatusChanges.set(event.id, status);
+    this.disableButton = true;
   }
 
-  createOrganizationService() {}
+  createOrganizationService() { }
   handleClickEvent(event: any) {
     console.log('event', event);
     if (this.eventSelectedId === event.id) {
@@ -707,13 +753,13 @@ export class OrganizationSettingEventComponent {
   onTabChange(event: MatTabChangeEvent) {
     this.selectedCategorie = this.listCategorieService[event.index];
   }
-  onSettingChange($event) {
-    this.disableButton = false;
+  onSettingChange($event: any) {
     if ($event.saveData) {
       this.disableButton = true;
       this.dataForm = $event.dataForm;
+    } else {
+      this.disableButton = this.pendingEventStatusChanges.size > 0 || this.activated.value !== this.originalActivated;
     }
-    console.log('disableButton', this.disableButton);
   }
-  createOrganizationEvent(EventInput: EventInput) {}
+  createOrganizationEvent(EventInput: EventInput) { }
 }

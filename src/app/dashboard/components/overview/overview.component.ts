@@ -1,5 +1,8 @@
+
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   HostListener,
@@ -14,11 +17,15 @@ import {
   DemandeStatus,
   FetchCollaboratorCountGQL,
   FetchCountStatusGQL,
+  FetchCurrentAdminGQL,
   FetchDemandesMetricsGQL,
+  FetchOperationsGQL,
   FetchOrganizationCollaboratorsGQL,
   FetchOrganizationDemandesGQL,
   FetchPaginatedOrganizationCollaboratorsGQL,
+  FetchPaginatedOperationsGQL,
   FetchTotalDemandesAmountGQL,
+  Organization,
   User,
 } from 'src/graphql/generated';
 import { dataStatic } from 'src/app/shared/types/data-static';
@@ -30,18 +37,33 @@ import {
   map,
   merge,
   startWith,
+  ReplaySubject,
   switchMap,
 } from 'rxjs';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
 })
-export class OverviewComponent implements OnInit {
+export class OverviewComponent implements OnInit, AfterViewInit {
+
+    displayedTransactionColumns: string[] = [
+        'matricule',
+        'collaborator',
+        'date',
+        'operation',
+        'numeroOperation',
+        'montant',
+    ];
+  societyId: string;
+  EXCEL_TYPE =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    EXCEL_EXTENSION = '.xlsx';
   datas = [];
   dataStatics = dataStatic;
   requests: Demande[] = [];
@@ -53,6 +75,7 @@ export class OverviewComponent implements OnInit {
   metricsData: DemandesMetrics;
   isMenuFilterOpen: boolean = false;
   resultsLength = 0;
+  transactionResultsLength = 0;
   fetchStatus: {
     pending: number;
     validated: number;
@@ -63,11 +86,17 @@ export class OverviewComponent implements OnInit {
   filterBy = 'createdAt';
   filterByOption = FilterBy;
   totalNewUsers = 0;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  dataSource = new MatTableDataSource<Demande>();
+
+  @ViewChild('collaboratorSort') sort: MatSort;
+  @ViewChild('collaboratorPaginator') paginator: MatPaginator;
+  @ViewChild('transactionPaginator') transactionPaginator: MatPaginator;
+  @ViewChild('transactionSort') transactionSort: MatSort;
+
+  dataSource = new MatTableDataSource<any>();
+  dataSourceTransaction = new MatTableDataSource<any>();
   page: number = 1;
   nbActifUsers: number;
+  organization: any;
 
   constructor(
     private fetchOrganizationDemandesGQL: FetchOrganizationDemandesGQL,
@@ -78,7 +107,11 @@ export class OverviewComponent implements OnInit {
     private userCollaboratorService: OverviewService,
     private fetchCountStatusGQL: FetchCountStatusGQL,
     private fetchCollaboratorCountGQL: FetchCollaboratorCountGQL,
-    private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL
+    private fetchTotalDemandesAmountService: FetchTotalDemandesAmountGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fetchOperations: FetchOperationsGQL,
+    private fetchPaginatedOperationsGQL: FetchPaginatedOperationsGQL
+    
   ) {
     const now = new Date('2024-12-31');
     const today = new Date();
@@ -102,14 +135,23 @@ export class OverviewComponent implements OnInit {
         )}`,
       ],
     });
-    this.metricsInput.valueChanges.subscribe((r) => {
-      this.getData();
-    });
-    this.getData();
+    this.fetchStatus = {
+      pending: 0,
+      validated: 0,
+      rejected: 0,
+      payed: 0,
+    };
   }
 
   ngOnInit(): void {
-    this.getFetchCountStatus;
+    this.getFetchCountStatus();
+    this.getData();
+
+    this.metricsInput.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        this.getData();
+      });
   }
   getFetchCountStatus() {
     this.fetchCountStatusGQL
@@ -126,6 +168,7 @@ export class OverviewComponent implements OnInit {
         next: (value) => {
           console.log(value);
           this.fetchStatus = value.data.fetchCountStatus;
+          console.log("fetchCountStatus ==>> ", this.fetchStatus);
         },
       });
   }
@@ -159,10 +202,13 @@ export class OverviewComponent implements OnInit {
         this.getTotalDemandeAmount(),
         this.getTotalDemandeToPay(),
         this.getFetchCountStatus(),
+        this.getCurrentorganization(),
+        // this.getTransactions()
+
       ]).then(() => {
         this.updateStaticData();
       });
-    } catch (e) {}
+    } catch (e) { }
   }
   startDateMetric() {
     return this.metricsInput.controls['startDate'];
@@ -224,6 +270,20 @@ export class OverviewComponent implements OnInit {
       });
   }
 
+  getTransactions() {
+    this.fetchOperations
+      .fetch({
+        organizationId: this.societyId 
+      }, { fetchPolicy: 'no-cache' })  
+      .subscribe(({ data }) => {
+        const operations = data.fetchOperations || [];
+        this.dataSourceTransaction.data = operations;
+        this.transactionResultsLength = operations.length;
+        
+        this.dataSourceTransaction.paginator = this.transactionPaginator;
+      });
+  }
+
   getDemandesMetrics(): Promise<void> {
     const startDate =
       this.metricsInput.value.startDate || new Date('2024-01-01');
@@ -251,25 +311,38 @@ export class OverviewComponent implements OnInit {
   fetchCollabs(): Promise<void> {
     return lastValueFrom(
       this.fetchOrganizationCollaboratorsGQL.fetch(
-        { metricsInput: this.metricsInput.value },
+        {
+          queryFilter: {
+            page: this.paginator ? this.paginator.pageIndex + 1 : 1,
+            limit: this.paginator ? this.paginator.pageSize : 10,
+          },
+        },
         { fetchPolicy: 'no-cache' }
       )
     )
       .then((result) => {
-        this.collabs = result.data.fetchPaginatedOrganizationCollaborators
-          .results as User[];
+        const data = result.data.fetchPaginatedOrganizationCollaborators;
+
+        this.collabs = data.results || [];
         this.dataSource.data = this.collabs;
-        this.selectedCollab = this.collabs?.[0];
-        this.totalNewUsers =
-          result.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
-        this.resultsLength =
-          result.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
+
+        this.selectedCollab = this.collabs?.[0] || null;
+
+        this.resultsLength = data.pagination.totalItems || 0;
+
+        // Important pour que mat-paginator mette à jour son label !
+        if (this.paginator) {
+          this.paginator.length = this.resultsLength;
+          this.paginator._changePageSize(this.paginator.pageSize);
+        }
       })
-      .catch((error) => {
-        console.error('Error fetching collaborators:', error);
-        throw error;
+      .catch((err) => {
+        console.error('Error fetching collaborators:', err);
+        throw err;
       });
   }
+
+
   ngAfterViewInit() {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
@@ -299,14 +372,13 @@ export class OverviewComponent implements OnInit {
         })
       )
       .subscribe((data: any) => {
-        console.log(data);
-        this.dataSource.data = data.fetchPaginatedOrganizationCollaborators
-          .results as Demande[];
+        this.dataSource.data = data.fetchPaginatedOrganizationCollaborators.results;
         this.selectedCollab = this.collabs?.[0];
-        this.resultsLength =
-          data.fetchOrganizationCollaborators?.pagination?.totalItems;
+        this.resultsLength = data.fetchPaginatedOrganizationCollaborators?.pagination?.totalItems;
       });
   }
+
+
   setHasValidatedDemande() {
     return this.collabs.map((c) => {
       c.hasValidatedDemande = false;
@@ -357,7 +429,7 @@ export class OverviewComponent implements OnInit {
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
-          error: (error) => {},
+          error: (error) => { },
         });
     } else {
       this.fetchOrganizationCollaboratorsGQL
@@ -378,7 +450,7 @@ export class OverviewComponent implements OnInit {
             this.totalNewUsers =
               value.data.fetchPaginatedOrganizationCollaborators.pagination.totalItems;
           },
-          error: (error) => {},
+          error: (error) => { },
         });
     }
   }
@@ -416,9 +488,27 @@ export class OverviewComponent implements OnInit {
   get nbPending() {
     return this.fetchStatus.pending;
   }
-  getTotalDemandeAmount() {
-    this.fetchTotalDemandesAmountService
-      .fetch(
+  // getTotalDemandeAmount() {
+  //   this.fetchTotalDemandesAmountService
+  //     .fetch(
+  //       {
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //         status: [DemandeStatus.Validated, DemandeStatus.Payed],
+  //       },
+  //       { fetchPolicy: 'no-cache' }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
+  //       },
+  //     });
+  // }
+  getTotalDemandeAmount(): Promise<void> {
+    return lastValueFrom(
+      this.fetchTotalDemandesAmountService.fetch(
         {
           filter: {
             startDate: this.startDate,
@@ -428,19 +518,37 @@ export class OverviewComponent implements OnInit {
         },
         { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
-        },
-      });
+    ).then(value => {
+      this.totalDemandeAmount = value.data.fetchTotalDemandesAmount;
+    });
   }
+
 
   totalDemandeAmount: number;
   totalDemandeToPay: number;
 
-  getTotalDemandeToPay() {
-    this.fetchTotalDemandesAmountService
-      .fetch(
+  // getTotalDemandeToPay() {
+  //   this.fetchTotalDemandesAmountService
+  //     .fetch(
+  //       {
+  //         status: [DemandeStatus.Validated],
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //       },
+  //       { fetchPolicy: 'no-cache' }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
+  //       },
+  //     });
+  // }
+
+  getTotalDemandeToPay(): Promise<void> {
+    return lastValueFrom(
+      this.fetchTotalDemandesAmountService.fetch(
         {
           status: [DemandeStatus.Validated],
           filter: {
@@ -450,33 +558,49 @@ export class OverviewComponent implements OnInit {
         },
         { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
-        },
-      });
+    ).then(value => {
+      this.totalDemandeToPay = value.data.fetchTotalDemandesAmount;
+    });
   }
 
-  getCollaboratorCount() {
-    return this.fetchCollaboratorCountGQL
-      .fetch(
+
+  // getCollaboratorCount() {
+  //   return this.fetchCollaboratorCountGQL
+  //     .fetch(
+  //       {
+  //         filter: {
+  //           startDate: this.startDate,
+  //           endDate: this.endDate,
+  //         },
+  //       },
+  //       {
+  //         fetchPolicy: 'no-cache',
+  //       }
+  //     )
+  //     .subscribe({
+  //       next: (value) => {
+  //         console.log(value);
+  //         this.nbActifUsers = value.data.fetchCollaboratorCount;
+  //       },
+  //     });
+  // }
+
+  getCollaboratorCount(): Promise<void> {
+    return lastValueFrom(
+      this.fetchCollaboratorCountGQL.fetch(
         {
           filter: {
             startDate: this.startDate,
             endDate: this.endDate,
           },
         },
-        {
-          fetchPolicy: 'no-cache',
-        }
+        { fetchPolicy: 'no-cache' }
       )
-      .subscribe({
-        next: (value) => {
-          console.log(value);
-          this.nbActifUsers = value.data.fetchCollaboratorCount;
-        },
-      });
+    ).then(value => {
+      this.nbActifUsers = value.data.fetchCollaboratorCount;
+    });
   }
+
 
   getLastRequest(req: any) {
     return (
@@ -492,8 +616,84 @@ export class OverviewComponent implements OnInit {
       );
     });
   }
-}
-export enum FilterBy {
-  createdAt = 'createdAt',
-  hasValidatedDemande = 'hasValidatedDemande',
-}
+
+  getCurrentorganization(useCache = true) {
+    this.fetchCurrentAdminGQL
+      .fetch({}, { fetchPolicy: 'no-cache' })
+      .subscribe((result) => {
+        if (result.data) {
+          this.organization = result.data.fetchCurrentAdmin
+            .organization as Organization;
+          this.societyId = this.organization.id; 
+          this.getTransactions(); 
+          console.log({ org: this.organization });
+
+          console.log('societyId défini:', this.societyId);
+        }
+      });
+  }
+
+
+  exportTransactions() {
+        this.fetchOperations.fetch({ organizationId: this.societyId }, { fetchPolicy: 'no-cache' }).subscribe({
+            next: ({ data }) => {
+                const temps = data.fetchOperations;
+                if (temps.length) {
+                    const csvRows = [
+                        [
+                            'Matricule',
+                            'Collaborateur',
+                            "Date de l'opération",
+                            'Opération',
+                            'Numéro opération',
+                            "Montant de l'opération",
+                        ],
+                        ...temps.map((row) => [
+                            row.matricule,
+                            row.collaborator,
+                            row.date,
+                            row.operation,
+                            row.numeroOperation,
+                            row.montant,
+                        ]),
+                    ];
+                    this.convertToXLSX(csvRows, `Operations-${this.organization.name}`);
+                } else {
+                    this.snackBarService.showSnackBar(
+                        "Aucune Demande de paiement n'a encore été effectue sur ce mois !"
+                    );
+                }
+            },
+            error: (error) => console.log(error),
+        });
+    }
+
+     convertToXLSX(data: any[], filename: string) {
+            const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+                skipHeader: true,
+            });
+            const workbook: XLSX.WorkBook = {
+                Sheets: { data: worksheet },
+                SheetNames: ['data'],
+            };
+            const excelBuffer: any = XLSX.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array',
+            });
+            this.saveAsExcelFile(excelBuffer, filename);
+        }
+        saveAsExcelFile(buffer: any, fileName: string): void {
+        const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+  }
+  export enum FilterBy {
+    createdAt = 'createdAt',
+    hasValidatedDemande = 'hasValidatedDemande',
+  }
+

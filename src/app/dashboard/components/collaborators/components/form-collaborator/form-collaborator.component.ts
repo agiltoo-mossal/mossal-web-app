@@ -1,3 +1,5 @@
+  import { from } from 'rxjs'; 
+
 import {
   Component,
   Input,
@@ -66,7 +68,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         [
           Validators.required,
 
-          Validators.pattern(/^\+221(78|77|76|70|75)\d{7}$/),
+          Validators.pattern(/^(78|77|76|70|75)\d{7}$/),
         ],
       ],
       address: [''],
@@ -105,6 +107,9 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         this.categories = result.data.fetchCategorySociopros.results;
         console.log('list', this.categories);
       });
+    this.collaboratorForm.get('uniqueIdentifier')?.valueChanges.subscribe(() => {
+      this.uniqueIdentifierExists = false;
+    });
     this.initSearch();
   }
 
@@ -133,6 +138,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       .mutate({
         collaboratorInput: {
           ...temp,
+          email: temp.email,
           position: 'TESTEUR',
           bankAccountNumber: Math.random().toString(36).substring(2, 15),
         },
@@ -151,7 +157,12 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           }
         },
         (error) => {
-          this.snackBarService.showErrorSnackBar();
+          const message = error?.graphQLErrors?.[0]?.message;
+          if (message === 'Matricule déjà utilisé') {
+            this.uniqueIdentifierExists = true;
+          } else {
+            this.snackBarService.showErrorSnackBar(4000, message);
+          }
           this.isLoading = false;
         }
       );
@@ -165,6 +176,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
     this.isLoading = true;
     const value = {
       ...this.collaboratorForm.getRawValue(),
+      email: this.collaboratorForm.getRawValue().email,
       salary: Number(this.collaboratorForm.value.salary || 0),
       position: 'TESTEUR',
     };
@@ -319,6 +331,36 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
         this.uniqueIdentifierExists = result;
       });
   }
+
+
+// checkUniqueIdentifier() {
+//   this.collaboratorForm
+//     .get('uniqueIdentifier')
+//     .valueChanges.pipe(
+//       debounceTime(300),
+//       distinctUntilChanged(),
+//       switchMap((value) =>
+//         from(
+//           this.searchService.uniqueIdentifierExists(
+//             value,
+//             false,
+//             this.collaboratorId,
+//             true  // ← organizationScoped
+//           )
+//         )
+//       )
+//     )
+//     .subscribe((result: boolean) => {
+//       this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+//       this.collaboratorForm.controls['uniqueIdentifier'].updateValueAndValidity();
+//       if (result) {
+//         this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+//           uniqueIdentifierExists: true,
+//         });
+//       }
+//       this.uniqueIdentifierExists = result;
+//     });
+// }
 
   initSearch() {
     this.checkPhone();

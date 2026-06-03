@@ -6,62 +6,39 @@
     <!-- Section Activation du service -->
     <div class="section flex-center">
       <h3>Activation du service</h3>
-      <app-toggle-slide
-        [firstText]="'Actif'"
-        [secondText]="'Inactif'"
-        [value]="activated"
+      <app-toggle-slide [firstText]="'Actif'" [secondText]="'Inactif'" [value]="activated"
         [uniqueId]="'serviceActivationSalary'"
-        (toggleChange)="handleServiceActivationChange($event)"
-      ></app-toggle-slide>
+        (toggleChange)="handleServiceActivationChange($event)"></app-toggle-slide>
     </div>
 
-    <div class="toggle-side" [ngClass]="{ grise: !activated }">
+    <div class="toggle-side">
       <div class="activation-date">
-        <label style="margin-bottom: 19px; padding: 0 12px"
-          >Date d'activation</label
-        >
+        <label style="margin-bottom: 19px; padding: 0 12px">Date d'activation</label>
         <form class="date-inputs" [formGroup]="formDate">
-          <label style="margin-bottom: 19px; padding: 0 12px" for=""
-            >Date de début</label
-          >
+          <label style="margin-bottom: 19px; padding: 0 12px" for="">Date de début</label>
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
-              <input
-                matInput
-                [matDatepicker]="startPicker"
-                formControlName="startDate"
-                placeholder="Date de début"
-                required
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="startPicker"
-              ></mat-datepicker-toggle>
+              <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="Date de début"
+                required />
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
               <mat-datepicker #startPicker></mat-datepicker>
               <mat-error *ngIf="startDate === null">
                 La date de début est requise.
               </mat-error>
             </mat-form-field>
           </div>
-          <label style="margin-bottom: 19px; padding: 0 12px" for=""
-            >Date de fin</label
-          >
+          <label style="margin-bottom: 19px; padding: 0 12px" for="">Date de fin</label>
           <div class="date-input">
             <mat-form-field appearance="outline" class="form-field">
-              <input
-                matInput
-                [matDatepicker]="endPicker"
-                formControlName="endDate"
-                placeholder="Date de fin"
-                required
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="endPicker"
-              ></mat-datepicker-toggle>
+              <input matInput [matDatepicker]="endPicker" formControlName="endDate" placeholder="Date de fin"
+                required />
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
-              <mat-error *ngIf="endDate === null">
+              <mat-error *ngIf="dateEnd?.errors?.['required']">
                 La date de fin est requise.
+              </mat-error>
+              <mat-error *ngIf="dateEnd?.errors?.['pastDate']">
+                La date de fin est déjà dépassée.
               </mat-error>
             </mat-form-field>
           </div>
@@ -76,46 +53,27 @@
         <div class="category-selection">
           <label for="category-selection">Sélectionnez une catégorie</label>
 
-          <select
-            [(ngModel)]="selectedCategorieId"
-            class="custom-select"
-            (change)="onChangeCategorie($event)"
-            name="selectedCategorieId"
-          >
+          <select [(ngModel)]="selectedCategorieId" class="custom-select" (change)="onChangeCategorie($event)"
+            name="selectedCategorieId">
             <option value="" disabled selected>Toutes les catégories</option>
-            <option
-              *ngFor="let categorie of categories"
-              [value]="categorie?.id"
-            >
+            <option *ngFor="let categorie of categories" [value]="categorie?.id">
               {{ categorie?.title }}
             </option>
           </select>
         </div>
 
-        <mat-tab-group
-          animationDuration="0ms"
-          (selectedTabChange)="onTabChange($event)"
-        >
-          <mat-tab
-            *ngFor="let categorie of listCategorieService"
-            [label]="categorie?.categorySociopro?.title"
-          >
-            <app-setting
-              [data]="categorie"
-              [hideRemboursment]="true"
-              [hideToggleService]="
+        <mat-tab-group animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+          <mat-tab *ngFor="let categorie of listCategorieService" [label]="categorie?.categorySociopro?.title">
+            <app-setting [data]="categorie" [hideRemboursment]="true" [hideToggleService]="
                 categorie?.categorySociopro?.title !== 'Paramètres généraux'
-              "
-              [categorie]="categorie.categorySociopro"
-              (settingChange)="onSettingChange($event)"
-            ></app-setting>
+              " [categorie]="categorie.categorySociopro" (settingChange)="onSettingChange($event)"></app-setting>
           </mat-tab>
         </mat-tab-group>
       </div>
-      <button  [ngClass]="{
-          'disable-button': disableButton,
-        }"
-        [disabled]="!disableButton" (click)="saveSettings()" class="validate-btn">Valider</button>
+      <button [ngClass]="{
+          'disable-button': !disableButton || formDate.invalid,
+        }" [disabled]="!disableButton || formDate.invalid" (click)="saveSettings()"
+        class="validate-btn">Valider</button>
     </div>
   </form>
 </div>

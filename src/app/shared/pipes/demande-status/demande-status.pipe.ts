@@ -8,7 +8,7 @@ export class DemandeStatusPipe implements PipeTransform {
   private statusMapping: { [key in DemandeStatus]: string } = {
     [DemandeStatus.Cancelled]: 'Annulée',
     [DemandeStatus.InProcess]: 'En cours',
-    [DemandeStatus.Payed]: 'Rembousée',
+    [DemandeStatus.Payed]: 'Remboursée',
     [DemandeStatus.Pending]: 'En attente',
     [DemandeStatus.Rejected]: 'Rejetée',
     [DemandeStatus.Validated]: 'Validée',
