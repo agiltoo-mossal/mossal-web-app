@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { BulkPaymentInput, CreateBulkPaymentOrderGQL, Wallet } from 'src/graphql/generated';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
-interface Beneficiaire {
-  prenom: string;
-  nom: string;
-  telephone: string;
-  montant: number;
-  motif: string;
-  operateur: string;
+interface BeneficiaryForm {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  amount: number;
+  reason: string;
+  wallet: Wallet | '';
 }
 
 @Component({
@@ -19,149 +21,98 @@ interface Beneficiaire {
 export class ManualPaymentComponent implements OnInit {
 
   currentStep = 1;
-
   editingIndex: number | null = null;
+  isSubmitting = false;
 
-  form: Beneficiaire = {
-    prenom: '',
-    nom: '',
-    telephone: '',
-    montant: 0,
-    motif: '',
-    operateur: ''
-  };
+  readonly walletOptions: { label: string; value: Wallet }[] = [
+    { label: 'Wave', value: Wallet.Wave },
+    { label: 'Orange Money', value: Wallet.OrangeMoney },
+  ];
 
-  beneficiaires: Beneficiaire[] = [];
+  form: BeneficiaryForm = this.emptyForm();
+
+  beneficiaries: BeneficiaryForm[] = [];
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private snackBarService: SnackBarService,
   ) {}
 
   ngOnInit(): void {}
 
-  get totalMontant(): number {
-    return this.beneficiaires.reduce((sum, b) => sum + (b.montant || 0), 0);
+  get totalAmount(): number {
+    return this.beneficiaries.reduce((sum, b) => sum + (b.amount || 0), 0);
   }
 
-  isFormValid(): boolean {
-    return !!(
-      this.form.prenom.trim() &&
-      this.form.nom.trim() &&
-      this.form.telephone.trim() &&
-      this.form.montant > 0 &&
-      this.form.motif.trim() &&
-      this.form.operateur
-    );
-  }
-
-
-  //   ajouterBeneficiaire(form: NgForm): void {
-  //   if (form.invalid) {
-  //     form.control.markAllAsTouched(); 
-  //     return;
-  //   }
-
-  //   this.beneficiaires.push({ ...this.form });
-
-  //   // Réinitialiser le formulaire
-  //   form.resetForm();
-  //   this.form = {
-  //     prenom: '',
-  //     nom: '',
-  //     telephone: '',
-  //     montant: null,
-  //     motif: '',
-  //     operateur: ''
-  //   };
-  // }
-  
-  ajouterBeneficiaire(form: NgForm): void {
+  addBeneficiary(form: NgForm): void {
     if (form.invalid) {
       form.control.markAllAsTouched();
       return;
     }
 
-    const beneficiaire = { ...this.form };
+    const beneficiary = { ...this.form };
 
     if (this.editingIndex !== null) {
-      // Mise à jour
-      this.beneficiaires[this.editingIndex] = beneficiaire;
+      this.beneficiaries[this.editingIndex] = beneficiary;
       this.editingIndex = null;
     } else {
-      // Ajout
-      this.beneficiaires.push(beneficiaire);
+      this.beneficiaries.push(beneficiary);
     }
 
     form.resetForm();
-
-    this.form = {
-      prenom: '',
-      nom: '',
-      telephone: '',
-      montant: null,
-      motif: '',
-      operateur: ''
-    };
+    this.form = this.emptyForm();
   }
 
-  ajouterAutre(): void {
+  editBeneficiary(index: number): void {
+    this.form = { ...this.beneficiaries[index] };
+    this.editingIndex = index;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  modifierBeneficiaire(index: number): void {
-    const beneficiaire = this.beneficiaires[index];
-
-    this.form = {
-      prenom: beneficiaire.prenom,
-      nom: beneficiaire.nom,
-      telephone: beneficiaire.telephone,
-      montant: beneficiaire.montant,
-      motif: beneficiaire.motif,
-      operateur: beneficiaire.operateur
-    };
-
-    this.editingIndex = index;
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+  deleteBeneficiary(index: number): void {
+    this.beneficiaries.splice(index, 1);
   }
 
-  supprimerBeneficiaire(index: number): void {
-    this.beneficiaires.splice(index, 1);
-  }
-
-  viderListe(): void {
+  clearList(): void {
     if (confirm('Voulez-vous vraiment vider la liste des bénéficiaires ?')) {
-      this.beneficiaires = [];
+      this.beneficiaries = [];
     }
   }
 
-  resetForm(): void {
-    this.form = {
-      prenom: '',
-      nom: '',
-      telephone: '',
-      montant: 0,
-      motif: '',
-      operateur: ''
-    };
-  }
-
-  passerRecap(): void {
-    if (this.beneficiaires.length === 0) return;
+  goToRecap(): void {
+    if (this.beneficiaries.length === 0) return;
     this.currentStep = 2;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  passerValidation(): void {
-    this.currentStep = 3;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  submitOrder(): void {
+    this.isSubmitting = true;
+
+    const inputs: BulkPaymentInput[] = this.beneficiaries.map((b) => ({
+      firstName: b.firstName,
+      lastName: b.lastName,
+      phoneNumber: b.phoneNumber,
+      amount: b.amount,
+      reason: b.reason || undefined,
+      wallet: b.wallet as Wallet,
+    }));
+
+    this.createBulkPaymentOrderGQL.mutate({ inputs }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.currentStep = 3;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
+      },
+    });
   }
 
-  retour(): void {
+  back(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
     } else {
@@ -169,7 +120,11 @@ export class ManualPaymentComponent implements OnInit {
     }
   }
 
-  retourAccueil(): void {
+  backToHome(): void {
     this.router.navigate(['../payments'], { relativeTo: this.route });
+  }
+
+  private emptyForm(): BeneficiaryForm {
+    return { firstName: '', lastName: '', phoneNumber: '', amount: null, reason: '', wallet: '' };
   }
 }
