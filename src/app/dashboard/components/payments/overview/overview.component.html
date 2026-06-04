@@ -80,7 +80,7 @@
       <table *ngIf="filteredPayments.length > 0; else emptyState">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>NUMÉRO</th>
             <th>DATE</th>
             <th>BÉNÉFICIAIRE</th>
             <th>MONTANT</th>
@@ -92,7 +92,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let p of filteredPayments">
-            <td>{{ formatNumber(p.number) }}</td>
+            <td>{{ p.number ?? '—' }}</td>
             <td>{{ p.createdAt | date:'dd MMM yyyy' }}</td>
             <td>{{ p.firstName }} {{ p.lastName }}</td>
             <td>{{ p.amount | number }} XOF</td>

@@ -217,6 +217,41 @@ $white:     #ffffff;
   text-decoration: underline dotted;
 }
 
+.cell-input {
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: $text;
+  background: #fff;
+  width: 100%;
+  outline: none;
+  transition: border-color .15s;
+
+  &:focus { border-color: $primary; }
+
+  &-error {
+    border-color: $error;
+    background: #fff5f5;
+  }
+}
+
+.cell-select {
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: $text;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+
+  &:focus { border-color: $primary; }
+}
+
+.row-error td { background: #fff8f8; }
+
 // Badges
 .badge {
   display: inline-flex;
