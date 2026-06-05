@@ -19,6 +19,7 @@ import { OverviewComponent as PaymentsOverviewComponent } from './components/pay
 import { AvancesComponent } from './components/avancesComponent/avances.component';
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
+import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
 
 const routes: Routes = [
   {
@@ -124,6 +125,10 @@ const routes: Routes = [
       {
         path: 'organization/avances',
         component: AvancesComponent,
+      },
+      {
+        path: 'organization/fluxAppro',
+        component: FluxApprobationComponent,
       },
       {
         path: 'activities',

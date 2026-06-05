@@ -1,0 +1,77 @@
+<div class="page-container">
+  <h1 class="page-title">Paramétrage du flux d'approbation</h1>
+
+  <!-- Nombre de niveaux -->
+  <div class="card">
+    <div class="card-row">
+      <div class="card-info">
+        <p class="card-label">Nombre de niveaux de validation</p>
+        <p class="card-desc">Sélectionnez le nombre de niveaux requis pour valider un paiement de masse.</p>
+      </div>
+      <div class="card-control">
+        <label class="select-label">Niveaux</label>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-select [(ngModel)]="nombreNiveaux" (ngModelChange)="onNiveauxChange()">
+            <mat-option [value]="1">1 niveau</mat-option>
+            <mat-option [value]="2">2 niveaux</mat-option>
+            <mat-option [value]="3">3 niveaux</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Désignation des approbateurs -->
+  <div class="card approbateurs-card">
+    <h2 class="section-title">Designation des approbateurs</h2>
+
+    <div class="niveaux-list">
+      <div class="niveau-item" *ngFor="let niveau of niveaux; let i = index">
+        <!-- Indicateur de niveau -->
+        <div class="niveau-indicator">
+          <div class="niveau-badge">{{ i + 1 }}</div>
+          <div class="niveau-line" *ngIf="i < niveaux.length - 1"></div>
+        </div>
+
+        <!-- Contenu du niveau -->
+        <div class="niveau-content">
+          <div class="niveau-header">
+            <p class="niveau-title">Niveau {{ i + 1 }}</p>
+            <p class="niveau-subtitle">{{ getNiveauSubtitle(i) }}</p>
+          </div>
+
+          <div class="approbateur-field">
+            <label class="field-label">Approbateur <span class="required">*</span></label>
+            <mat-form-field appearance="outline" class="approbateur-select">
+              <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur">
+                <mat-option *ngFor="let user of users" [value]="user">
+                  <div class="user-option">
+                    <img [src]="user.avatar" [alt]="user.nom" class="user-avatar-small" />
+                    <span>{{ user.nom }} ({{ user.poste }})</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-select-trigger *ngIf="niveau.approbateur">
+                <div class="selected-user">
+                  <img [src]="niveau.approbateur.avatar" [alt]="niveau.approbateur.nom" class="user-avatar-small" />
+                  <span>{{ niveau.approbateur.nom }} ({{ niveau.approbateur.poste }})</span>
+                </div>
+              </mat-select-trigger>
+            </mat-form-field>
+            <p class="field-hint">{{ getNiveauHint(i) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button mat-stroked-button class="btn-reset" (click)="reinitialiser()">
+        Réinitialiser
+      </button>
+      <button mat-flat-button class="btn-save" (click)="enregistrer()">
+        Enregistrer le paramétrage
+      </button>
+    </div>
+  </div>
+</div>

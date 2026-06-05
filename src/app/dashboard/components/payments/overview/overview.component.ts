@@ -69,4 +69,34 @@ export class OverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+    showEventModal = false;
+
+    onEvenementsSpeciaux(): void {
+      this.showEventModal = true;
+    }
+
+    onEventImport(): void {
+      this.showEventModal = false;
+      this.router.navigate(['../payments/import'], { relativeTo: this.route });
+    }
+
+    onEventManual(): void {
+      this.showEventModal = false;
+      this.router.navigate(['../payments/manual'], { relativeTo: this.route });
+    }
+
+    onCloseModal(): void {
+      this.showEventModal = false;
+    }
+
+    eventSelection: 'excel' | 'manual' = 'excel';
+
+    onContinuerEvent(): void {
+      if (this.eventSelection === 'excel') {
+        this.onEventImport();
+      } else {
+        this.onEventManual();
+      }
+    }
 }

@@ -30,16 +30,20 @@
       </button>
     </div>
 
-    <div class="card">
+    <!-- <div class="card">
       <div class="card-icon-wrapper">
         <mat-icon class="card-icon">calendar_month</mat-icon>
       </div>
-      <h3>Avances événements spéciaux</h3>
+      <h3>Avances évènements spéciaux</h3>
       <p>Ajouter des paiements ligne par ligne</p>
       <button mat-raised-button class="card-btn card-btn-dark">
         <mat-icon>cloud_upload</mat-icon> Créer
       </button>
-    </div>
+
+      <button mat-raised-button class="card-btn card-btn-dark" (click)="onEvenementsSpeciaux()">
+        <mat-icon>calendar_month</mat-icon> Créer
+      </button>
+    </div> -->
 
   </div>
 
@@ -146,6 +150,49 @@
       </div>
       <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
     </div>
+  </div>
+<!-- POPUP -->
+    <div class="modal-overlay" *ngIf="showEventModal" (click)="onCloseModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
 
+      <h2 class="modal-title">Avances événements spèciaux</h2>
+      <p class="modal-subtitle">Choisissez comment vous souhaitez saisir les bénéficiaires</p>
+
+      <div class="modal-options">
+
+        <div class="modal-option" [class.selected]="eventSelection === 'excel'" (click)="eventSelection = 'excel'">
+          <div class="radio-btn" [class.checked]="eventSelection === 'excel'">
+            <mat-icon *ngIf="eventSelection === 'excel'">check</mat-icon>
+          </div>
+          <mat-icon class="option-icon">attach_file</mat-icon>
+          <h3>Importer un fichier Excel</h3>
+          <p>Importer plusieurs paiements dans un fichier</p>
+          <button mat-raised-button color="primary" class="option-btn" (click)="$event.stopPropagation(); eventSelection='excel'">
+            <mat-icon>download</mat-icon> Importer
+          </button>
+        </div>
+
+        <div class="modal-option" [class.selected]="eventSelection === 'manual'" (click)="eventSelection = 'manual'">
+          <div class="radio-btn" [class.checked]="eventSelection === 'manual'">
+            <mat-icon *ngIf="eventSelection === 'manual'">check</mat-icon>
+          </div>
+          <mat-icon class="option-icon">edit_document</mat-icon>
+          <h3>Gestion manuelle</h3>
+          <p>Ajouter des paiements ligne par ligne</p>
+          <button mat-raised-button color="primary" class="option-btn" (click)="$event.stopPropagation(); eventSelection='manual'">
+            <mat-icon>edit</mat-icon> Créer
+          </button>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button mat-stroked-button (click)="onCloseModal()">Annuler</button>
+        <button mat-raised-button color="primary" (click)="onContinuerEvent()">
+          Continuer <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+
+    </div>
   </div>
 </div>
