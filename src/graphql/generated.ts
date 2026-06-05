@@ -51,6 +51,49 @@ export enum AmountUnit {
   Percentage = 'Percentage'
 }
 
+export type BulkPayment = {
+  __typename?: 'BulkPayment';
+  amount: Scalars['Float']['output'];
+  approvers?: Maybe<Array<User>>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastName: Scalars['String']['output'];
+  number?: Maybe<Scalars['Int']['output']>;
+  organization: Scalars['String']['output'];
+  phoneNumber: Scalars['String']['output'];
+  reason?: Maybe<Scalars['String']['output']>;
+  status: BulkPaymentStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  wallet: Wallet;
+};
+
+export type BulkPaymentInput = {
+  amount: Scalars['Float']['input'];
+  approvers?: InputMaybe<Array<Scalars['ID']['input']>>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+  wallet: Wallet;
+};
+
+export enum BulkPaymentStatus {
+  Cancelled = 'CANCELLED',
+  InProcess = 'IN_PROCESS',
+  Payed = 'PAYED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+  Validated = 'VALIDATED'
+}
+
+export type BulkPaymentUpdateInput = {
+  id: Scalars['ID']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<BulkPaymentStatus>;
+};
+
 export type CategorySociopro = {
   __typename?: 'CategorySociopro';
   activated?: Maybe<Scalars['Boolean']['output']>;
@@ -310,7 +353,10 @@ export type Mutation = {
   activateOrganisationService: Scalars['Boolean']['output'];
   activateService: Scalars['Boolean']['output'];
   addCredit: Credit;
+  cancelBulkPayment: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
+  createBulkPayment: BulkPayment;
+  createBulkPaymentOrder: Array<BulkPayment>;
   createCategorySociopro: CategorySociopro;
   createCategorySocioproService: CategorySocioproService;
   createEvent: Event;
@@ -342,6 +388,7 @@ export type Mutation = {
   startForgotPassword: Scalars['Boolean']['output'];
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateBulkPaymentStatus: Scalars['Boolean']['output'];
   updateCategorySociopro: Scalars['Boolean']['output'];
   updateCategorySocioproService: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
@@ -392,8 +439,23 @@ export type MutationAddCreditArgs = {
 };
 
 
+export type MutationCancelBulkPaymentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateBulkPaymentArgs = {
+  input: BulkPaymentInput;
+};
+
+
+export type MutationCreateBulkPaymentOrderArgs = {
+  inputs: Array<BulkPaymentInput>;
 };
 
 
@@ -558,6 +620,11 @@ export type MutationSuspendOrganizationArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateBulkPaymentStatusArgs = {
+  input: BulkPaymentUpdateInput;
 };
 
 
@@ -916,6 +983,7 @@ export type Query = {
   emailExists: Scalars['Boolean']['output'];
   fetchAccountantData: Array<Demande>;
   fetchActivity: Activity;
+  fetchAllBulkPayments: Array<BulkPayment>;
   fetchAllCategorySocioproServices: Array<CategorySocioproService>;
   fetchAllCategorySociopros: Array<CategorySociopro>;
   fetchAllEvents: Array<Event>;
@@ -934,6 +1002,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchMyBulkPayments: Array<BulkPayment>;
   fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
   fetchOrganisationService: OrganisationService;
@@ -1448,7 +1517,7 @@ export type WalletInfoInput = {
   value: Scalars['String']['input'];
 };
 
-export type _Entity = Credit | Demande | Organization | Remboursement;
+export type _Entity = BulkPayment | Credit | Demande | Organization | Remboursement;
 
 export type _Service = {
   __typename?: '_Service';
@@ -1768,6 +1837,13 @@ export type UpdateCollaboratorMutationVariables = Exact<{
 
 export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
 
+export type CreateBulkPaymentOrderMutationVariables = Exact<{
+  inputs: Array<BulkPaymentInput> | BulkPaymentInput;
+}>;
+
+
+export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, reason?: string | null, wallet: Wallet, organization: string, createdBy: string, createdAt: any }> };
+
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1807,6 +1883,11 @@ export type FetchOperationsMetricsQueryVariables = Exact<{
 
 
 export type FetchOperationsMetricsQuery = { __typename?: 'Query', fetchOperationsMetrics: { __typename?: 'OperationsMetrics', credit: Array<{ __typename?: 'OperationsMetricsRow', y: number, x: string }>, debit: Array<{ __typename?: 'OperationsMetricsRow', y: number, x: string }> } };
+
+export type FetchMyBulkPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, reason?: string | null, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -3212,6 +3293,35 @@ export const UpdateCollaboratorDocument = gql`
       super(apollo);
     }
   }
+export const CreateBulkPaymentOrderDocument = gql`
+    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!) {
+  createBulkPaymentOrder(inputs: $inputs) {
+    id
+    number
+    firstName
+    lastName
+    phoneNumber
+    amount
+    status
+    reason
+    wallet
+    organization
+    createdBy
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateBulkPaymentOrderGQL extends Apollo.Mutation<CreateBulkPaymentOrderMutation, CreateBulkPaymentOrderMutationVariables> {
+    document = CreateBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const FetchOrganizationNotificationsDocument = gql`
     query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
@@ -3380,6 +3490,41 @@ export const FetchOperationsMetricsDocument = gql`
   })
   export class FetchOperationsMetricsGQL extends Apollo.Query<FetchOperationsMetricsQuery, FetchOperationsMetricsQueryVariables> {
     document = FetchOperationsMetricsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchMyBulkPaymentsDocument = gql`
+    query FetchMyBulkPayments {
+  fetchMyBulkPayments {
+    id
+    number
+    firstName
+    lastName
+    phoneNumber
+    amount
+    status
+    reason
+    wallet
+    organization
+    createdBy
+    approvers {
+      id
+      firstName
+      lastName
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMyBulkPaymentsGQL extends Apollo.Query<FetchMyBulkPaymentsQuery, FetchMyBulkPaymentsQueryVariables> {
+    document = FetchMyBulkPaymentsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

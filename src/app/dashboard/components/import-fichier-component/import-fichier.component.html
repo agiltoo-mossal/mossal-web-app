@@ -87,50 +87,95 @@
             <th>PRÉNOM</th>
             <th>TÉLÉPHONE</th>
             <th>MONTANT</th>
+            <th>MOTIF</th>
             <th>OPÉRATEUR</th>
             <th>ACTION</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of validationRows; let i = index">
-            <td>{{ row.nom }}</td>
-            <td>{{ row.prenom }}</td>
-            <td>
-              <span [class.cell-error]="row.errors?.includes('telephone')">
-                {{ row.telephone || '————' }}
-              </span>
-            </td>
-            <td>
-              <span [class.cell-error]="row.errors?.includes('montant')">
-                {{ row.montant || '————' }}
-              </span>
-            </td>
-            <td>{{ row.operateur }}</td>
-            <td>
-              <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
-                <span class="dot dot-green"></span> OK
-              </span>
-              <span class="badge badge-error" *ngIf="row.errors?.includes('telephone')">
-                <span class="dot dot-red"></span> N° Invalide
-              </span>
-              <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
-                <span class="dot dot-red"></span> Montant vide
-              </span>
-              <span class="badge badge-error" *ngIf="row.errors?.includes('telephone_vide')">
-                <span class="dot dot-red"></span> Téléphone vide
-              </span>
-            </td>
+          <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
+            <!-- Lecture -->
+            <ng-container *ngIf="!isEditing">
+              <td>{{ row.nom }}</td>
+              <td>{{ row.prenom }}</td>
+              <td>
+                <span [class.cell-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')">
+                  {{ row.telephone || '————' }}
+                </span>
+              </td>
+              <td>
+                <span [class.cell-error]="row.errors?.includes('montant')">
+                  {{ row.montant || '————' }}
+                </span>
+              </td>
+              <td>{{ row.motif || '—' }}</td>
+              <td>{{ row.operateur }}</td>
+              <td>
+                <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
+                  <span class="dot dot-green"></span> OK
+                </span>
+                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone')">
+                  <span class="dot dot-red"></span> N° Invalide
+                </span>
+                <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
+                  <span class="dot dot-red"></span> Montant vide
+                </span>
+                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone_vide')">
+                  <span class="dot dot-red"></span> Téléphone vide
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Édition -->
+            <ng-container *ngIf="isEditing">
+              <td><input class="cell-input" [(ngModel)]="row.nom" /></td>
+              <td><input class="cell-input" [(ngModel)]="row.prenom" /></td>
+              <td>
+                <input
+                  class="cell-input"
+                  [(ngModel)]="row.telephone"
+                  [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
+                />
+              </td>
+              <td>
+                <input
+                  class="cell-input"
+                  [(ngModel)]="row.montant"
+                  [class.cell-input-error]="row.errors?.includes('montant')"
+                />
+              </td>
+              <td><input class="cell-input" [(ngModel)]="row.motif" /></td>
+              <td>
+                <select class="cell-select" [(ngModel)]="row.operateur">
+                  <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
+                </select>
+              </td>
+              <td>
+                <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
+                  <span class="dot dot-green"></span> OK
+                </span>
+                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')">
+                  <span class="dot dot-red"></span> N° Invalide
+                </span>
+                <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
+                  <span class="dot dot-red"></span> Montant vide
+                </span>
+              </td>
+            </ng-container>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="validation-actions">
-      <button class="btn-secondary" (click)="step = 'upload'">
+      <button class="btn-secondary" (click)="step = 'upload'; isEditing = false">
         <mat-icon>arrow_back</mat-icon> Réimporter un fichier
       </button>
-      <button class="btn-primary" (click)="onValidate()">
-        Corriger et valider <mat-icon>arrow_forward</mat-icon>
+      <button class="btn-primary" *ngIf="!isEditing" (click)="onValidate()">
+        {{ errorCount > 0 ? 'Corriger et valider' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
+      </button>
+      <button class="btn-primary" *ngIf="isEditing" (click)="onSaveEdits()">
+        Enregistrer les corrections <mat-icon>check</mat-icon>
       </button>
     </div>
 
@@ -198,8 +243,9 @@
     <button class="btn-secondary" (click)="step = 'validation'">
       <mat-icon>arrow_back</mat-icon> Précédent
     </button>
-    <button class="btn-primary" (click)="onSoumettre()">
-      Soumettre l'ordre <mat-icon>arrow_forward</mat-icon>
+    <button class="btn-primary" (click)="onSoumettre()" [disabled]="isSubmitting">
+      <span *ngIf="!isSubmitting">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
+      <span *ngIf="isSubmitting">Envoi en cours...</span>
     </button>
   </div>
 

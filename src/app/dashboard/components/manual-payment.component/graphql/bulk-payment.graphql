@@ -1,0 +1,16 @@
+mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!) {
+  createBulkPaymentOrder(inputs: $inputs) {
+    id
+    number
+    firstName
+    lastName
+    phoneNumber
+    amount
+    status
+    reason
+    wallet
+    organization
+    createdBy
+    createdAt
+  }
+}

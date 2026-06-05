@@ -1,13 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { Router ,ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { BulkPayment, BulkPaymentStatus, FetchMyBulkPaymentsGQL } from 'src/graphql/generated';
 
-interface Paiement {
-  id: string;
-  date: string;
-  montant: string;
-  statut: 'En attente' | 'Validé' | 'Rejeté';
-  approbateur: string;
-}
+const STATUS_LABELS: Record<BulkPaymentStatus, string> = {
+  [BulkPaymentStatus.Pending]:   'En attente',
+  [BulkPaymentStatus.InProcess]: 'En cours',
+  [BulkPaymentStatus.Validated]: 'Validé',
+  [BulkPaymentStatus.Payed]:     'Payé',
+  [BulkPaymentStatus.Rejected]:  'Rejeté',
+  [BulkPaymentStatus.Cancelled]: 'Annulé',
+};
+
+const STATUS_BADGE: Record<BulkPaymentStatus, string> = {
+  [BulkPaymentStatus.Pending]:   'badge-attente',
+  [BulkPaymentStatus.InProcess]: 'badge-en-cours',
+  [BulkPaymentStatus.Validated]: 'badge-valide',
+  [BulkPaymentStatus.Payed]:     'badge-valide',
+  [BulkPaymentStatus.Rejected]:  'badge-rejete',
+  [BulkPaymentStatus.Cancelled]: 'badge-rejete',
+};
 
 @Component({
   selector: 'app-payments',
@@ -16,10 +27,81 @@ interface Paiement {
 })
 export class OverviewComponent implements OnInit {
 
-   constructor(private router: Router,
-      private route: ActivatedRoute   
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private fetchMyBulkPaymentsGQL: FetchMyBulkPaymentsGQL,
+  ) {}
 
-   ) {}
+  isLoading = true;
+  searchText = '';
+  selectedStatut = '';
+  selectedDate = '';
+
+  bulkPayments: BulkPayment[] = [];
+
+  readonly statusOptions = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }));
+
+  readonly dateOptions: { value: string; label: string }[] = (() => {
+    const now = new Date();
+    const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    const options: { value: string; label: string }[] = [];
+    for (let m = 0; m <= now.getMonth(); m++) {
+      options.push({ value: `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`, label: `${months[m]} ${now.getFullYear()}` });
+    }
+    return options;
+  })();
+
+  ngOnInit(): void {
+    this.fetchMyBulkPaymentsGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: (res) => {
+        this.bulkPayments = (res.data?.fetchMyBulkPayments ?? []) as BulkPayment[];
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  get filteredPayments(): BulkPayment[] {
+    const search = this.searchText.toLowerCase();
+    return this.bulkPayments.filter((p) => {
+      const matchSearch = !search ||
+        p.firstName?.toLowerCase().includes(search) ||
+        p.lastName?.toLowerCase().includes(search) ||
+        p.phoneNumber?.includes(search) ||
+        String(p.number)?.includes(search);
+      const matchStatut = !this.selectedStatut || p.status === this.selectedStatut;
+      const matchDate = !this.selectedDate || (() => {
+        if (!p.createdAt) return false;
+        const d = new Date(p.createdAt);
+        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        return ym === this.selectedDate;
+      })();
+      return matchSearch && matchStatut && matchDate;
+    });
+  }
+
+  statusLabel(status: BulkPaymentStatus): string {
+    return STATUS_LABELS[status] ?? status;
+  }
+
+  statusBadge(status: BulkPaymentStatus): string {
+    return STATUS_BADGE[status] ?? 'badge-attente';
+  }
+
+  formatNumber(n?: number | null): string {
+    if (n == null) return '—';
+    const year = new Date().getFullYear().toString().slice(-2);
+    return `${year}-${String(n).padStart(3, '0')}`;
+  }
+
+  reinitialiser(): void {
+    this.searchText = '';
+    this.selectedStatut = '';
+    this.selectedDate = '';
+  }
 
   onImporterFichier(): void {
     this.router.navigate(['../payments/import'], { relativeTo: this.route });
@@ -28,75 +110,4 @@ export class OverviewComponent implements OnInit {
   onGestionManuelle(): void {
     this.router.navigate(['../payments/manual'], { relativeTo: this.route });
   }
-  searchText = '';
-  selectedStatut = '';
-  selectedDate = '';
-
-  paiements: Paiement[] = [
-    { id: '26-001', date: '15 Mars 2026',    montant: '2 320 000 XOF', statut: 'En attente', approbateur: 'Awa Fall' },
-    { id: '26-001', date: '14 Mars 2026',    montant: '950 000 XOF',   statut: 'Validé',     approbateur: 'Mamadou Diop' },
-    { id: '26-001', date: '12 Mars 2026',    montant: '1 10 000 XOF',  statut: 'Rejeté',     approbateur: 'Sophia Ndiaye' },
-    { id: '26-001', date: '12 Mars 2026',    montant: '748 000 XOF',   statut: 'Validé',     approbateur: 'Babacar Sylla' },
-    { id: '26-001', date: '02 Mars 2026',    montant: '1 230 000 XOF', statut: 'En attente', approbateur: 'Marie Niang' },
-    { id: '26-001', date: '02 Février 2026', montant: '320 000 XOF',   statut: 'Validé',     approbateur: 'Awa Fall' },
-  ];
-
-  historique = [
-    { nom: 'Diop', prenom: 'Laurent', telephone: '77 743 34 43', montant: '120.000 XOF' },
-    { nom: 'Diop', prenom: 'Laurent', telephone: '77 743 34 43', montant: '120.000 XOF' },
-    { nom: 'Diop', prenom: 'Laurent', telephone: '77 743 34 43', montant: '120.000 XOF' },
-    { nom: 'Diop', prenom: 'Laurent', telephone: '77 743 34 43', montant: '120.000 XOF' },
-  ];
-
-  get filteredPaiements(): Paiement[] {
-    return this.paiements.filter(p => {
-      const matchSearch = !this.searchText ||
-        p.approbateur.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        p.id.includes(this.searchText) ||
-        p.montant.includes(this.searchText);
-      const matchStatut = !this.selectedStatut || p.statut === this.selectedStatut;
-      const matchDate = !this.selectedDate ||
-        (this.selectedDate === 'mars' && p.date.includes('Mars')) ||
-        (this.selectedDate === 'fevrier' && p.date.includes('Février'));
-      return matchSearch && matchStatut && matchDate;
-    });
-  }
-
-  reinitialiser() {
-    this.searchText = '';
-    this.selectedStatut = '';
-    this.selectedDate = '';
-  }
-
-  ngOnInit(): void {}
-
-    showEventModal = false;
-
-    onEvenementsSpeciaux(): void {
-      this.showEventModal = true;
-    }
-
-    onEventImport(): void {
-      this.showEventModal = false;
-      this.router.navigate(['../payments/import'], { relativeTo: this.route });
-    }
-
-    onEventManual(): void {
-      this.showEventModal = false;
-      this.router.navigate(['../payments/manual'], { relativeTo: this.route });
-    }
-
-    onCloseModal(): void {
-      this.showEventModal = false;
-    }
-
-    eventSelection: 'excel' | 'manual' = 'excel';
-
-    onContinuerEvent(): void {
-      if (this.eventSelection === 'excel') {
-        this.onEventImport();
-      } else {
-        this.onEventManual();
-      }
-    }
 }
