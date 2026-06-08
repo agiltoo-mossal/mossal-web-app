@@ -1,0 +1,242 @@
+/* ===== Page ===== */
+.page-container {
+  padding: 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f6fa;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 24px;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+/* ===== Nombre de niveaux ===== */
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.card-label {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.card-desc {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.card-control {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.select-label {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.select-field {
+  width: 100%;
+}
+
+/* ===== Section approbateurs ===== */
+.approbateurs-card {
+  padding-bottom: 28px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+}
+
+/* ===== Liste des niveaux ===== */
+.niveaux-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.niveau-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Indicateur latéral */
+.niveau-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.niveau-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e8edf5;
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.niveau-line {
+  width: 2px;
+  flex: 1;
+  min-height: 40px;
+  background-color: #e0e5ef;
+  margin: 6px 0;
+}
+
+/* Contenu du niveau */
+.niveau-content {
+  flex: 1;
+  padding-bottom: 24px;
+}
+
+.niveau-header {
+  margin-bottom: 12px;
+}
+
+.niveau-title {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+}
+
+.niveau-subtitle {
+  color: #6b7280;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* Champ approbateur */
+.approbateur-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.required {
+  color: #e53935;
+  margin-left: 2px;
+}
+
+.approbateur-select {
+  width: 100%;
+  max-width: 480px;
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 6px 0 0;
+}
+
+/* Option utilisateur dans le select */
+.user-option,
+.selected-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #e0e5ef;
+}
+
+/* ===== Actions ===== */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-reset {
+  border: 1.5px solid #1a1a2e !important;
+  color: #1a1a2e !important;
+  border-radius: 8px !important;
+  padding: 0 28px !important;
+  height: 42px;
+  font-weight: 500;
+  background: transparent !important;
+}
+
+.btn-reset:hover {
+  background-color: #f0f2f7 !important;
+}
+
+.btn-save {
+  background-color: #1a1a2e !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 0 28px !important;
+  height: 42px;
+  font-weight: 500;
+}
+
+.btn-save:hover {
+  background-color: #2d2d4e !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .page-container {
+    padding: 16px;
+  }
+
+  .card-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-control {
+    width: 100%;
+  }
+
+  .approbateur-select {
+    max-width: 100%;
+  }
+}

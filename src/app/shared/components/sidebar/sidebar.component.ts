@@ -353,6 +353,11 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/organization/avances',
         icon: 'admin_panel_settings',
       },
+      {
+        label: 'Flux d\'approbation',
+        link: '/dashboard/organization/fluxAppro',
+        icon: 'approval',
+      },
     ];
     if (roles.includes('PAYMENT_MANAGER')) {
       orgChildren.push({
