@@ -31,6 +31,21 @@ export class ImportFichierComponent {
 
   readonly OPERATEURS = ['Wave', 'Orange Money'];
 
+  private readonly ERROR_LABELS: Record<string, string> = {
+    nom_vide:        'Nom vide',
+    prenom_vide:     'Prénom vide',
+    motif_vide:      'Motif vide',
+    operateur_vide:  'Opérateur vide',
+    telephone_vide:  'Téléphone vide',
+    telephone:       'N° invalide',
+    montant_vide:    'Montant vide',
+    montant_negatif: 'Montant invalide',
+  };
+
+  errorLabels(row: ValidationRow): string[] {
+    return (row.errors ?? []).map(e => this.ERROR_LABELS[e] ?? e);
+  }
+
   readonly ACCEPTED_EXTENSIONS = ['.xlsx', '.xls'];
 
   private readonly COLUMN_MAP: Record<string, keyof Omit<ValidationRow, 'errors'>> = {
@@ -154,7 +169,7 @@ export class ImportFichierComponent {
         });
 
         if (rawRows.length === 0) {
-          this.fileError = 'Le fichier est vide ou ne contient pas de données.';
+          this.fileError = 'Le fichier est vide. Veuillez ajouter au moins une ligne.';
           return;
         }
 
@@ -187,23 +202,14 @@ export class ImportFichierComponent {
     const nom       = get('nom');
     const prenom    = get('prenom');
     const telephone = get('telephone');
-    const montant   = get('montant');
     const motif     = get('motif');
     const operateur = get('operateur');
 
-    const errors: string[] = [];
+    const rawMontant = get('montant');
+    const amount     = this.parseMontant(rawMontant);
+    const montant    = amount > 0 ? this.formatMontant(amount) : rawMontant;
 
-    if (!telephone) {
-      errors.push('telephone_vide');
-    } else if (!this.isValidSenegalPhone(telephone)) {
-      errors.push('telephone');
-    }
-
-    if (!montant) {
-      errors.push('montant');
-    }
-
-    return { nom, prenom, telephone, montant, motif, operateur, errors };
+    return this.revalidateRow({ nom, prenom, telephone, montant, motif, operateur });
   }
 
   private normalize(str: string): string {
@@ -216,8 +222,8 @@ export class ImportFichierComponent {
 
   private isValidSenegalPhone(phone: string): boolean {
     const digits = phone.replace(/[\s\-\+\(\)\.]/g, '');
-    if (/^[73]\d{8}$/.test(digits)) return true;
-    if (/^221[73]\d{8}$/.test(digits)) return true;
+    if (/^(77|78|75|76|70)\d{7}$/.test(digits)) return true;
+    if (/^221(77|78|75|76|70)\d{7}$/.test(digits)) return true;
     return false;
   }
 
@@ -235,15 +241,31 @@ export class ImportFichierComponent {
     this.isEditing = false;
   }
 
+  onRowBlur(index: number): void {
+    const row = { ...this.validationRows[index] };
+    const amount = this.parseMontant(row.montant);
+    if (amount > 0) {
+      row.montant = this.formatMontant(amount);
+    }
+    this.validationRows[index] = this.revalidateRow(row);
+  }
+
   private revalidateRow(row: ValidationRow): ValidationRow {
     const errors: string[] = [];
-    if (!row.telephone) {
+    if (!row.nom?.trim())       errors.push('nom_vide');
+    if (!row.prenom?.trim())    errors.push('prenom_vide');
+    if (!row.motif?.trim())     errors.push('motif_vide');
+    if (!row.operateur?.trim()) errors.push('operateur_vide');
+    if (!row.telephone?.trim()) {
       errors.push('telephone_vide');
     } else if (!this.isValidSenegalPhone(row.telephone)) {
       errors.push('telephone');
     }
-    if (!row.montant) {
-      errors.push('montant');
+    const amount = this.parseMontant(row.montant);
+    if (!row.montant?.trim()) {
+      errors.push('montant_vide');
+    } else if (amount <= 0) {
+      errors.push('montant_negatif');
     }
     return { ...row, errors };
   }
@@ -288,14 +310,19 @@ export class ImportFichierComponent {
   private parseMontant(montant: string): number {
     const cleaned = montant
       .replace(/\s/g, '')
-      .replace('XOF', '')
+      .replace(/XOF/gi, '')
+      .replace(/F$/i, '')
       .replace(/\./g, '');
     const num = parseFloat(cleaned);
     return isNaN(num) ? 0 : num;
   }
 
+  private formatMontant(amount: number): string {
+    return 'XOF ' + Math.round(amount);
+  }
+
   private formatAmount(amount: number): string {
-    return amount.toLocaleString('fr-FR') + ' XOF';
+    return 'XOF ' + Math.round(amount);
   }
 
   private normalizePhone(phone: string): string {
