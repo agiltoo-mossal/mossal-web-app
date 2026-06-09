@@ -114,39 +114,43 @@
                 <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
                   <span class="dot dot-green"></span> OK
                 </span>
-                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone')">
-                  <span class="dot dot-red"></span> N° Invalide
-                </span>
-                <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
-                  <span class="dot dot-red"></span> Montant vide
-                </span>
-                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone_vide')">
-                  <span class="dot dot-red"></span> Téléphone vide
+                <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
+                  <span class="dot dot-red"></span> {{ label }}
                 </span>
               </td>
             </ng-container>
 
             <!-- Édition -->
             <ng-container *ngIf="isEditing">
-              <td><input class="cell-input" [(ngModel)]="row.nom" /></td>
-              <td><input class="cell-input" [(ngModel)]="row.prenom" /></td>
               <td>
-                <input
-                  class="cell-input"
-                  [(ngModel)]="row.telephone"
+                <input class="cell-input" [(ngModel)]="row.nom"
+                  [class.cell-input-error]="row.errors?.includes('nom_vide')"
+                  (blur)="onRowBlur(i)" />
+              </td>
+              <td>
+                <input class="cell-input" [(ngModel)]="row.prenom"
+                  [class.cell-input-error]="row.errors?.includes('prenom_vide')"
+                  (blur)="onRowBlur(i)" />
+              </td>
+              <td>
+                <input class="cell-input" [(ngModel)]="row.telephone"
                   [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
-                />
+                  (blur)="onRowBlur(i)" />
               </td>
               <td>
-                <input
-                  class="cell-input"
-                  [(ngModel)]="row.montant"
-                  [class.cell-input-error]="row.errors?.includes('montant')"
-                />
+                <input class="cell-input" [(ngModel)]="row.montant"
+                  [class.cell-input-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')"
+                  (blur)="onRowBlur(i)" />
               </td>
-              <td><input class="cell-input" [(ngModel)]="row.motif" /></td>
               <td>
-                <select class="cell-select" [(ngModel)]="row.operateur">
+                <input class="cell-input" [(ngModel)]="row.motif"
+                  [class.cell-input-error]="row.errors?.includes('motif_vide')"
+                  (blur)="onRowBlur(i)" />
+              </td>
+              <td>
+                <select class="cell-select" [(ngModel)]="row.operateur"
+                  [class.cell-input-error]="row.errors?.includes('operateur_vide')"
+                  (blur)="onRowBlur(i)">
                   <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
                 </select>
               </td>
@@ -154,11 +158,8 @@
                 <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
                   <span class="dot dot-green"></span> OK
                 </span>
-                <span class="badge badge-error" *ngIf="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')">
-                  <span class="dot dot-red"></span> N° Invalide
-                </span>
-                <span class="badge badge-error" *ngIf="row.errors?.includes('montant')">
-                  <span class="dot dot-red"></span> Montant vide
+                <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
+                  <span class="dot dot-red"></span> {{ label }}
                 </span>
               </td>
             </ng-container>
@@ -174,7 +175,7 @@
       <button class="btn-primary" *ngIf="!isEditing" (click)="onValidate()">
         {{ errorCount > 0 ? 'Corriger et valider' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
       </button>
-      <button class="btn-primary" *ngIf="isEditing" (click)="onSaveEdits()">
+      <button class="btn-primary" *ngIf="isEditing" (click)="onSaveEdits()" [disabled]="errorCount > 0">
         Enregistrer les corrections <mat-icon>check</mat-icon>
       </button>
     </div>
