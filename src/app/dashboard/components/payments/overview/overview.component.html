@@ -99,7 +99,7 @@
             <td>{{ p.number ?? '—' }}</td>
             <td>{{ p.createdAt | date:'dd MMM yyyy' }}</td>
             <td>{{ p.firstName }} {{ p.lastName }}</td>
-            <td>{{ p.amount | number }} XOF</td>
+            <td>{{ p.amount | number:'1.0-0':'fr' }} XOF</td>
             <td>{{ p.wallet }}</td>
             <td>
               <span class="badge" [ngClass]="statusBadge(p.status)">
@@ -167,9 +167,9 @@
       <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
     </div>
   </div>
-<!-- POPUP -->
-    <!-- <div class="modal-overlay" *ngIf="showEventModal" (click)="onCloseModal()"> -->
-    <!-- <div class="modal-box" (click)="$event.stopPropagation()">
+  <!-- POPUP -->
+  <!-- <div class="modal-overlay" *ngIf="showEventModal" (click)="onCloseModal()"> -->
+  <!-- <div class="modal-box" (click)="$event.stopPropagation()">
 
       <h2 class="modal-title">Avances événements spèciaux</h2>
       <p class="modal-subtitle">Choisissez comment vous souhaitez saisir les bénéficiaires</p>
