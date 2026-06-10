@@ -434,6 +434,103 @@ table {
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+  background: $white;
+  border-radius: $radius;
+  padding: 20px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: $muted;
+  margin: 0 0 6px;
+}
+
+.kpi-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+
+  &.kpi-green { color: #16a34a; }
+}
+
+.repartition-card {
+  background: $white;
+  border-radius: $radius;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 16px;
+}
+
+.operateurs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.operateur-card {
+  border: 1.5px solid;
+  border-radius: $radius;
+  padding: 18px 20px;
+}
+
+.op-nom {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.op-beneficiaires {
+  font-size: 13px;
+  color: $muted;
+  margin: 0 0 4px;
+}
+
+.op-montant {
+  font-size: 15px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 12px;
+}
+
+.progress-bar-bg {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.op-pct {
+  font-size: 12px;
+  color: $muted;
+  margin: 0;
+}
+
 .recap-card {
   max-width: 900px;
   margin: 0 auto;
