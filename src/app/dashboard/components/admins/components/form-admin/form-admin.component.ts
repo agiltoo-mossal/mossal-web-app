@@ -31,6 +31,14 @@ export class FormAdminComponent {
   uniqueIdentifierExists: boolean = false;
   emailExists: boolean = false;
 
+  isRoleDropdownOpen: boolean = false;
+  selectedRoles: string[] = [];
+  availableRoles = [
+    { value: 'ADMINISTRATEUR', label: 'Administrateur' },
+    { value: 'GESTIONNAIRE', label: 'Gestionnaire' },
+    { value: 'APPROBATEUR', label: 'Approbateur' },
+  ];
+
   constructor(
     private fb: FormBuilder,
     private inviteAdminGQL: InviteAdminGQL,
@@ -61,8 +69,13 @@ export class FormAdminComponent {
       salary: [0, Validators.required],
       //wizallAccountNumber: [''],
       // bankAccountNumber: [''],
+      roles: [[], Validators.required],
+
     });
   }
+
+
+  
 
   ngOnInit(): void {
     this.formText =
@@ -285,4 +298,28 @@ export class FormAdminComponent {
       }
     });
   };
+
+  toggleRoleDropdown() {
+      this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
+  }
+
+  toggleRole(value: string) {
+    const index = this.selectedRoles.indexOf(value);
+    if (index > -1) {
+      this.selectedRoles.splice(index, 1);
+    } else {
+      this.selectedRoles.push(value);
+    }
+    this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+  }
+
+  isRoleSelected(value: string): boolean {
+    return this.selectedRoles.includes(value);
+  }
+
+  getSelectedRolesLabel(): string {
+    return this.selectedRoles
+      .map(v => this.availableRoles.find(r => r.value === v)?.label)
+      .join(', ');
+  }
 }
