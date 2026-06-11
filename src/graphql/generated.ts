@@ -51,6 +51,20 @@ export enum AmountUnit {
   Percentage = 'Percentage'
 }
 
+export type ApprovalFlowLevel = {
+  __typename?: 'ApprovalFlowLevel';
+  approverFirstName?: Maybe<Scalars['String']['output']>;
+  approverId?: Maybe<Scalars['ID']['output']>;
+  approverLastName?: Maybe<Scalars['String']['output']>;
+  approverPosition?: Maybe<Scalars['String']['output']>;
+  level: Scalars['Int']['output'];
+};
+
+export type ApprovalFlowLevelInput = {
+  approverId?: InputMaybe<Scalars['ID']['input']>;
+  level: Scalars['Int']['input'];
+};
+
 export type BulkPayment = {
   __typename?: 'BulkPayment';
   amount: Scalars['Float']['output'];
@@ -385,6 +399,7 @@ export type Mutation = {
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resendOtp: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
+  saveApprovalFlow: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
@@ -608,6 +623,12 @@ export type MutationResetAdminPasswordArgs = {
 };
 
 
+export type MutationSaveApprovalFlowArgs = {
+  approvalFlow: Array<ApprovalFlowLevelInput>;
+  approvalLevelsCount: Scalars['Float']['input'];
+};
+
+
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
 };
@@ -815,6 +836,8 @@ export type OrganisationServiceUpdateInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  approvalFlow?: Maybe<Array<ApprovalFlowLevel>>;
+  approvalLevelsCount?: Maybe<Scalars['Int']['output']>;
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
   /** Code unique de l'organisation (5 premiers caractères du nom) */
@@ -879,6 +902,8 @@ export type OrganizationLogoInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
+  approvalFlow?: InputMaybe<Array<ApprovalFlowLevelInput>>;
+  approvalLevelsCount?: InputMaybe<Scalars['Int']['input']>;
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
@@ -990,6 +1015,7 @@ export type Query = {
   fetchAllOrganisationServices: Array<OrganisationService>;
   fetchAllRemboursements: Array<Remboursement>;
   fetchAllServices: Array<Service>;
+  fetchApprovalFlow: Organization;
   fetchCategorySociopro: CategorySociopro;
   fetchCategorySocioproService: CategorySocioproService;
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
@@ -1010,6 +1036,7 @@ export type Query = {
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
+  fetchOrganizationApprovers: Array<User>;
   fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
   fetchOrganizationDemandes: Array<Demande>;
@@ -1868,6 +1895,24 @@ export type FetchOrganizationQueryVariables = Exact<{
 
 
 export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
+
+export type FetchOrganizationApproversQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationApproversQuery = { __typename?: 'Query', fetchOrganizationApprovers: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> };
+
+export type SaveApprovalFlowMutationVariables = Exact<{
+  approvalLevelsCount: Scalars['Float']['input'];
+  approvalFlow: Array<ApprovalFlowLevelInput> | ApprovalFlowLevelInput;
+}>;
+
+
+export type SaveApprovalFlowMutation = { __typename?: 'Mutation', saveApprovalFlow: boolean };
+
+export type FetchApprovalFlowQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchApprovalFlowQuery = { __typename?: 'Query', fetchApprovalFlow: { __typename?: 'Organization', approvalLevelsCount?: number | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -3437,6 +3482,71 @@ export const FetchOrganizationDocument = gql`
   })
   export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
     document = FetchOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationApproversDocument = gql`
+    query FetchOrganizationApprovers {
+  fetchOrganizationApprovers {
+    id
+    firstName
+    lastName
+    position
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationApproversGQL extends Apollo.Query<FetchOrganizationApproversQuery, FetchOrganizationApproversQueryVariables> {
+    document = FetchOrganizationApproversDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SaveApprovalFlowDocument = gql`
+    mutation SaveApprovalFlow($approvalLevelsCount: Float!, $approvalFlow: [ApprovalFlowLevelInput!]!) {
+  saveApprovalFlow(
+    approvalLevelsCount: $approvalLevelsCount
+    approvalFlow: $approvalFlow
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SaveApprovalFlowGQL extends Apollo.Mutation<SaveApprovalFlowMutation, SaveApprovalFlowMutationVariables> {
+    document = SaveApprovalFlowDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchApprovalFlowDocument = gql`
+    query FetchApprovalFlow {
+  fetchApprovalFlow {
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverId
+      approverFirstName
+      approverLastName
+      approverPosition
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchApprovalFlowGQL extends Apollo.Query<FetchApprovalFlowQuery, FetchApprovalFlowQueryVariables> {
+    document = FetchApprovalFlowDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
