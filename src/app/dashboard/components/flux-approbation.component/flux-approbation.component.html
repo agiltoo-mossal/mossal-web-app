@@ -1,5 +1,5 @@
 <div class="page-container">
-  <h1 class="page-title">Paramétrage du flux d'approbation</h1>
+  <h1 class="title">Paramétrage du flux d'approbation</h1>
 
   <!-- Nombre de niveaux -->
   <div class="card">
@@ -43,19 +43,13 @@
           <div class="approbateur-field">
             <label class="field-label">Approbateur <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="approbateur-select">
-              <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur">
-                <mat-option *ngFor="let user of users" [value]="user">
-                  <div class="user-option">
-                    <img [src]="user.avatar" [alt]="user.nom" class="user-avatar-small" />
-                    <span>{{ user.nom }} ({{ user.poste }})</span>
-                  </div>
+              <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur" [compareWith]="compareApprovers">
+                <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
+                  <span>{{ approver.firstName }} {{ approver.lastName }}<span *ngIf="approver.position"> ({{ approver.position }})</span></span>
                 </mat-option>
               </mat-select>
               <mat-select-trigger *ngIf="niveau.approbateur">
-                <div class="selected-user">
-                  <img [src]="niveau.approbateur.avatar" [alt]="niveau.approbateur.nom" class="user-avatar-small" />
-                  <span>{{ niveau.approbateur.nom }} ({{ niveau.approbateur.poste }})</span>
-                </div>
+                <span>{{ niveau.approbateur.firstName }} {{ niveau.approbateur.lastName }}<span *ngIf="niveau.approbateur.position"> ({{ niveau.approbateur.position }})</span></span>
               </mat-select-trigger>
             </mat-form-field>
             <p class="field-hint">{{ getNiveauHint(i) }}</p>
@@ -66,11 +60,11 @@
 
     <!-- Actions -->
     <div class="actions">
-      <button mat-stroked-button class="btn-reset" (click)="reinitialiser()">
+      <button mat-stroked-button class="btn-reset" (click)="reinitialiser()" [disabled]="loading">
         Réinitialiser
       </button>
-      <button mat-flat-button class="btn-save" (click)="enregistrer()">
-        Enregistrer le paramétrage
+      <button mat-flat-button class="btn-save" (click)="enregistrer()" [disabled]="loading">
+        {{ loading ? 'Enregistrement...' : 'Enregistrer le paramétrage' }}
       </button>
     </div>
   </div>

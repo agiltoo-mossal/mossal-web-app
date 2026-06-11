@@ -1,14 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  FetchApprovalFlowGQL,
+  FetchOrganizationApproversGQL,
+  SaveApprovalFlowGQL,
+} from 'src/graphql/generated';
+import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
-interface User {
-  id: number;
-  nom: string;
-  poste: string;
-  avatar: string;
+export interface Approver {
+  id: string;
+  firstName: string;
+  lastName: string;
+  position?: string | null;
 }
 
 interface Niveau {
-  approbateur: User | null;
+  approbateur: Approver | null;
 }
 
 @Component({
@@ -17,62 +23,88 @@ interface Niveau {
   styleUrls: ['./flux-approbation.component.scss'],
 })
 export class FluxApprobationComponent implements OnInit {
-  nombreNiveaux: number = 2;
-
+  nombreNiveaux: number = 1;
   niveaux: Niveau[] = [];
+  approvers: Approver[] = [];
+  loading = false;
 
-  users: User[] = [
-    {
-      id: 1,
-      nom: 'Khadija SARR',
-      poste: 'Manager RH',
-      avatar: 'assets/avatars/khadija.png',
-    },
-    {
-      id: 2,
-      nom: 'Maïté SARR',
-      poste: 'Directrice Financier',
-      avatar: 'assets/avatars/maite.png',
-    },
-    {
-      id: 3,
-      nom: 'Amadou DIALLO',
-      poste: 'Responsable Comptable',
-      avatar: 'assets/avatars/amadou.png',
-    },
-    {
-      id: 4,
-      nom: 'Fatou NDIAYE',
-      poste: 'DG',
-      avatar: 'assets/avatars/fatou.png',
-    },
-  ];
+  constructor(
+    private fetchApproversGQL: FetchOrganizationApproversGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
+    private saveApprovalFlowGQL: SaveApprovalFlowGQL,
+    private snackBar: SnackBarService,
+  ) {}
 
   ngOnInit(): void {
-    this.initNiveaux();
+    this.loadData();
+  }
+
+  private loadData(): void {
+    this.fetchApproversGQL.fetch().subscribe({
+      next: ({ data }) => {
+        this.approvers = (data.fetchOrganizationApprovers ?? []).map((u) => ({
+          id: u.id,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          position: u.position,
+        }));
+        this.loadCurrentFlow();
+      },
+      error: () => this.snackBar.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs'),
+    });
+  }
+
+  private loadCurrentFlow(): void {
+    this.fetchApprovalFlowGQL.fetch().subscribe({
+      next: ({ data }) => {
+        const org = data.fetchApprovalFlow;
+        if (org?.approvalLevelsCount) {
+          this.nombreNiveaux = org.approvalLevelsCount;
+        }
+        this.niveaux = Array.from({ length: this.nombreNiveaux }, (_, i) => {
+          const saved = org?.approvalFlow?.find((f) => f.level === i + 1);
+          const approver = saved?.approverId
+            ? this.approvers.find((a) => a.id === saved.approverId) ?? null
+            : null;
+          return { approbateur: approver };
+        });
+      },
+      error: () => {
+        this.initNiveaux();
+      },
+    });
   }
 
   initNiveaux(): void {
-    this.niveaux = Array.from({ length: this.nombreNiveaux }, () => ({
-      approbateur: null,
-    }));
+    this.niveaux = Array.from({ length: this.nombreNiveaux }, () => ({ approbateur: null }));
   }
 
   onNiveauxChange(): void {
     const current = this.niveaux.length;
     if (this.nombreNiveaux > current) {
-      // Ajouter des niveaux
       for (let i = current; i < this.nombreNiveaux; i++) {
         this.niveaux.push({ approbateur: null });
       }
     } else {
-      // Supprimer les niveaux en trop
       this.niveaux = this.niveaux.slice(0, this.nombreNiveaux);
     }
   }
 
+  /** Retourne les approbateurs disponibles pour un niveau donné (exclut ceux déjà choisis aux niveaux précédents) */
+  getAvailableApprovers(levelIndex: number): Approver[] {
+    const selectedIds = this.niveaux
+      .filter((_, i) => i !== levelIndex)
+      .map((n) => n.approbateur?.id)
+      .filter(Boolean);
+    return this.approvers.filter((a) => !selectedIds.includes(a.id));
+  }
+
+  compareApprovers(a: Approver, b: Approver): boolean {
+    return a?.id === b?.id;
+  }
+
   getNiveauSubtitle(index: number): string {
-    const subtitles: { [key: number]: string } = {
+    const subtitles: Record<number, string> = {
       0: 'Premier niveau de validation',
       1: 'Deuxième niveau de validation',
       2: 'Troisième niveau de validation',
@@ -86,20 +118,34 @@ export class FluxApprobationComponent implements OnInit {
   }
 
   reinitialiser(): void {
-    this.nombreNiveaux = 2;
+    this.nombreNiveaux = 1;
     this.initNiveaux();
   }
 
   enregistrer(): void {
-    const parametrage = {
-      nombreNiveaux: this.nombreNiveaux,
-      niveaux: this.niveaux.map((n, i) => ({
-        niveau: i + 1,
-        approbateurId: n.approbateur?.id ?? null,
-      })),
-    };
-    console.log('Paramétrage enregistré :', parametrage);
-    // TODO: appeler le service API ici
-    // this.fluxApprobationService.save(parametrage).subscribe(...)
+    const allSelected = this.niveaux.every((n) => n.approbateur !== null);
+    if (!allSelected) {
+      this.snackBar.showErrorSnackBar(4000, 'Veuillez sélectionner un approbateur pour chaque niveau');
+      return;
+    }
+
+    this.loading = true;
+    const approvalFlow = this.niveaux.map((n, i) => ({
+      level: i + 1,
+      approverId: n.approbateur!.id,
+    }));
+
+    this.saveApprovalFlowGQL
+      .mutate({ approvalLevelsCount: this.nombreNiveaux, approvalFlow })
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.showSuccessSnackBar('Flux d\'approbation enregistré avec succès');
+        },
+        error: () => {
+          this.loading = false;
+          this.snackBar.showErrorSnackBar(4000, 'Erreur lors de l\'enregistrement');
+        },
+      });
   }
 }

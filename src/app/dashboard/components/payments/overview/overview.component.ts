@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
 import { BulkPayment, BulkPaymentStatus, FetchMyBulkPaymentsGQL } from 'src/graphql/generated';
 
 const STATUS_LABELS: Record<BulkPaymentStatus, string> = {
@@ -27,6 +28,8 @@ const STATUS_BADGE: Record<BulkPaymentStatus, string> = {
 })
 export class OverviewComponent implements OnInit {
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -34,9 +37,21 @@ export class OverviewComponent implements OnInit {
   ) {}
 
   isLoading = true;
-  searchText = '';
-  selectedStatut = '';
-  selectedDate = '';
+  pageSize = 10;
+  pageIndex = 0;
+
+  private _searchText = '';
+  private _selectedStatut = '';
+  private _selectedDate = '';
+
+  get searchText() { return this._searchText; }
+  set searchText(v: string) { this._searchText = v; this.resetPage(); }
+
+  get selectedStatut() { return this._selectedStatut; }
+  set selectedStatut(v: string) { this._selectedStatut = v; this.resetPage(); }
+
+  get selectedDate() { return this._selectedDate; }
+  set selectedDate(v: string) { this._selectedDate = v; this.resetPage(); }
 
   bulkPayments: BulkPayment[] = [];
 
@@ -95,6 +110,20 @@ export class OverviewComponent implements OnInit {
     if (n == null) return '—';
     const year = new Date().getFullYear().toString().slice(-2);
     return `${year}-${String(n).padStart(3, '0')}`;
+  }
+
+  resetPage(): void {
+    this.pageIndex = 0;
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
+  get paginatedPayments(): BulkPayment[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredPayments.slice(start, start + this.pageSize);
   }
 
   reinitialiser(): void {

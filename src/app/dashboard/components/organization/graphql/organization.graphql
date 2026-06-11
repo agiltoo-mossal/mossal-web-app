@@ -449,3 +449,35 @@ mutation SuspendOrganization(
   )
 }
 
+query FetchOrganizationApprovers {
+  fetchOrganizationApprovers {
+    id
+    firstName
+    lastName
+    position
+  }
+}
+
+mutation SaveApprovalFlow(
+  $approvalLevelsCount: Float!
+  $approvalFlow: [ApprovalFlowLevelInput!]!
+) {
+  saveApprovalFlow(
+    approvalLevelsCount: $approvalLevelsCount
+    approvalFlow: $approvalFlow
+  )
+}
+
+query FetchApprovalFlow {
+  fetchApprovalFlow {
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverId
+      approverFirstName
+      approverLastName
+      approverPosition
+    }
+  }
+}
+
