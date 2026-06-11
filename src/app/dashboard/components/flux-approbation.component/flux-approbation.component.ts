@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   FetchApprovalFlowGQL,
   FetchOrganizationApproversGQL,
@@ -23,14 +25,14 @@ interface Niveau {
   styleUrls: ['./flux-approbation.component.scss'],
 })
 export class FluxApprobationComponent implements OnInit {
-  nombreNiveaux: number = 1;
+  nombreNiveaux = 1;
   niveaux: Niveau[] = [];
   approvers: Approver[] = [];
   loading = false;
 
   constructor(
-    private fetchApproversGQL: FetchOrganizationApproversGQL,
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
+    private fetchApproversGQL: FetchOrganizationApproversGQL,
     private saveApprovalFlowGQL: SaveApprovalFlowGQL,
     private snackBar: SnackBarService,
   ) {}
@@ -40,36 +42,32 @@ export class FluxApprobationComponent implements OnInit {
   }
 
   private loadData(): void {
-    this.fetchApproversGQL.fetch().subscribe({
-      next: ({ data }) => {
-        this.approvers = (data.fetchOrganizationApprovers ?? []).map((u) => ({
+    forkJoin({
+      approvers: this.fetchApproversGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
+      flow: this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
+    }).subscribe({
+      next: ({ approvers, flow }) => {
+        this.approvers = (approvers.fetchOrganizationApprovers ?? []).map((u) => ({
           id: u.id,
           firstName: u.firstName,
           lastName: u.lastName,
           position: u.position,
         }));
-        this.loadCurrentFlow();
-      },
-      error: () => this.snackBar.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs'),
-    });
-  }
 
-  private loadCurrentFlow(): void {
-    this.fetchApprovalFlowGQL.fetch().subscribe({
-      next: ({ data }) => {
-        const org = data.fetchApprovalFlow;
+        const org = flow.fetchApprovalFlow;
         if (org?.approvalLevelsCount) {
           this.nombreNiveaux = org.approvalLevelsCount;
         }
+
         this.niveaux = Array.from({ length: this.nombreNiveaux }, (_, i) => {
           const saved = org?.approvalFlow?.find((f) => f.level === i + 1);
-          const approver = saved?.approverId
-            ? this.approvers.find((a) => a.id === saved.approverId) ?? null
-            : null;
-          return { approbateur: approver };
+          if (!saved?.approverId) return { approbateur: null };
+          const fromList = this.approvers.find((a) => a.id === saved.approverId);
+          return { approbateur: fromList ?? null };
         });
       },
       error: () => {
+        this.snackBar.showErrorSnackBar(4000, 'Erreur lors du chargement du flux d\'approbation');
         this.initNiveaux();
       },
     });
@@ -90,7 +88,7 @@ export class FluxApprobationComponent implements OnInit {
     }
   }
 
-  /** Retourne les approbateurs disponibles pour un niveau donné (exclut ceux déjà choisis aux niveaux précédents) */
+  /** Retourne les approbateurs disponibles pour un niveau — exclut ceux sélectionnés aux autres niveaux */
   getAvailableApprovers(levelIndex: number): Approver[] {
     const selectedIds = this.niveaux
       .filter((_, i) => i !== levelIndex)
