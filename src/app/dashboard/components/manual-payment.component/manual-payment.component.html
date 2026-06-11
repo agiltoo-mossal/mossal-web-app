@@ -179,7 +179,7 @@
                 <td>{{ b.lastName }}</td>
                 <td>{{ b.firstName }}</td>
                 <td>{{ b.phoneNumber }}</td>
-                <td>{{ b.amount | number }} XOF</td>
+                <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
                 <td>{{ b.wallet }}</td>
                 <td>{{ b.reason || '—' }}</td>
                 <td class="actions">
@@ -195,7 +195,7 @@
           </table>
           <div class="total-row">
             <span>Total</span>
-            <span class="total-amount">{{ totalAmount | number }} XOF</span>
+            <span class="total-amount">{{ totalAmount | number:'1.0-0':'fr' }} XOF</span>
           </div>
         </div>
 
@@ -221,57 +221,49 @@
 
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="currentStep === 2">
-    <div class="recap-card">
-      <h2>Récapitulatif des paiements</h2>
-      <p class="form-subtitle">Vérifiez les informations avant de valider</p>
 
-      <table class="recap-table">
-        <thead>
-          <tr>
-            <th>NOM</th>
-            <th>PRÉNOM</th>
-            <th>TÉLÉPHONE</th>
-            <th>MONTANT</th>
-            <th>OPÉRATEUR</th>
-            <th>MOTIF</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let b of beneficiaries">
-            <td>{{ b.lastName }}</td>
-            <td>{{ b.firstName }}</td>
-            <td>{{ b.phoneNumber }}</td>
-            <td>{{ b.amount | number }} XOF</td>
-            <td>{{ b.wallet }}</td>
-            <td>{{ b.reason || '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="recap-total">
-        <span>Montant total</span>
-        <span class="total-amount">{{ totalAmount | number }} XOF</span>
+    <!-- KPI -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <p class="kpi-label">Bénéficiaires</p>
+        <p class="kpi-value">{{ beneficiaries.length }}</p>
       </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Montant total</p>
+        <p class="kpi-value kpi-green">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Opérateurs</p>
+        <p class="kpi-value">{{ recapRepartition.length }}</p>
+      </div>
+    </div>
 
-      <div class="recap-info">
-        <div class="info-item">
-          <span class="info-label">Nombre de bénéficiaires</span>
-          <span class="info-value">{{ beneficiaries.length }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Date d'exécution</span>
-          <span class="info-value">Immédiate</span>
+    <!-- Répartition par opérateur -->
+    <div class="repartition-card">
+      <h3 class="section-title">Répartition par opérateur</h3>
+      <div class="operateurs-grid">
+        <div
+          class="operateur-card"
+          *ngFor="let op of recapRepartition"
+          [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}"
+        >
+          <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
+          <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaire{{ op.beneficiaires > 1 ? 's' : '' }}</p>
+          <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [ngStyle]="{'width': op.pourcentage + '%', 'background': op.couleur}"></div>
+          </div>
+          <p class="op-pct">{{ op.pourcentage }}%</p>
         </div>
       </div>
-
     </div>
 
     <div class="bottom-actions">
       <button class="btn-secondary" (click)="currentStep = 1" [disabled]="isSubmitting">
-        <mat-icon>arrow_back</mat-icon> Modifier
+        <mat-icon>arrow_back</mat-icon> Retour
       </button>
       <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
-        <span *ngIf="!isSubmitting">Valider l'ordre <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="!isSubmitting">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
         <span *ngIf="isSubmitting">Envoi en cours...</span>
       </button>
     </div>
@@ -286,7 +278,7 @@
       <h2>Ordre soumis avec succès</h2>
       <p>
         Vos <strong>{{ beneficiaries.length }}</strong> paiements ont été soumis pour approbation.<br/>
-        Montant total : <strong>{{ totalAmount | number }} XOF</strong>
+        Montant total : <strong>{{ totalAmount | number:'1.0-0':'fr' }} XOF</strong>
       </p>
       <button class="btn-primary" (click)="backToHome()">
         Retour à l'accueil

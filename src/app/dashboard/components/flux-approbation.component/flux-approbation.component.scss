@@ -3,15 +3,19 @@
   padding: 32px;
   max-width: 960px;
   margin: 0 auto;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Poppins, sans-serif;
   background-color: #f4f6fa;
   min-height: 100vh;
 }
 
-.page-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #1a1a2e;
+.title {
+  color: #061E5C;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: 0.16px;
+  text-align: center;
+  margin-top: 12px;
   margin-bottom: 24px;
 }
 
@@ -195,8 +199,8 @@
 }
 
 .btn-reset {
-  border: 1.5px solid #1a1a2e !important;
-  color: #1a1a2e !important;
+  border: 1.5px solid #061E5C !important;
+  color: #061E5C !important;
   border-radius: 8px !important;
   padding: 0 28px !important;
   height: 42px;
@@ -205,11 +209,11 @@
 }
 
 .btn-reset:hover {
-  background-color: #f0f2f7 !important;
+  background-color: #e8edf5 !important;
 }
 
 .btn-save {
-  background-color: #1a1a2e !important;
+  background-color: #061E5C !important;
   color: #ffffff !important;
   border-radius: 8px !important;
   padding: 0 28px !important;
@@ -218,7 +222,7 @@
 }
 
 .btn-save:hover {
-  background-color: #2d2d4e !important;
+  background-color: #0a2d8a !important;
 }
 
 /* ===== Responsive ===== */

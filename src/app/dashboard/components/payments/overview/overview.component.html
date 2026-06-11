@@ -95,11 +95,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of filteredPayments">
+          <tr *ngFor="let p of paginatedPayments">
             <td>{{ p.number ?? '—' }}</td>
             <td>{{ p.createdAt | date:'dd MMM yyyy' }}</td>
             <td>{{ p.firstName }} {{ p.lastName }}</td>
-            <td>{{ p.amount | number }} XOF</td>
+            <td>{{ p.amount | number:'1.0-0':'fr' }} XOF</td>
             <td>{{ p.wallet }}</td>
             <td>
               <span class="badge" [ngClass]="statusBadge(p.status)">
@@ -124,92 +124,31 @@
           <p>Aucun ordre de paiement trouvé</p>
         </div>
       </ng-template>
+
+      <mat-paginator
+        [length]="filteredPayments.length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        aria-label="Pagination des ordres de paiement">
+      </mat-paginator>
     </ng-container>
   </div>
 
-  <div class="bottom-row">
-
-    <div class="historique-card">
-      <h3>Historique des paiements en masse</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Téléphone</th>
-            <th>Montant</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of bulkPayments | slice:0:5">
-            <td>{{ p.lastName }}</td>
-            <td>{{ p.firstName }}</td>
-            <td>{{ p.phoneNumber }}</td>
-            <td class="montant-col">{{ p.amount | number }} XOF</td>
-          </tr>
-        </tbody>
-      </table>
-      <a class="voir-plus">Voir L'historique Complet <mat-icon>chevron_right</mat-icon></a>
+  <div class="modeles-card">
+    <h3>Modèles Préenregistrés</h3>
+    <div class="modele-item">
+      <mat-icon class="modele-icon">table_view</mat-icon>
+      <span>Modèle d'import fichier excel</span>
+      <a class="telecharger">Télécharger</a>
     </div>
-
-    <div class="modeles-card">
-      <h3>Modèles Préenregistrés</h3>
-      <div class="modele-item">
-        <mat-icon class="modele-icon">table_view</mat-icon>
-        <span>Modèle d'import fichier excel</span>
-        <a class="telecharger">Télécharger</a>
-      </div>
-      <div class="modele-item">
-        <mat-icon class="modele-icon">table_view</mat-icon>
-        <span>Modèle d'import fichier excel</span>
-        <a class="telecharger">Télécharger</a>
-      </div>
-      <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
+    <div class="modele-item">
+      <mat-icon class="modele-icon">table_view</mat-icon>
+      <span>Modèle d'import fichier excel</span>
+      <a class="telecharger">Télécharger</a>
     </div>
+    <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
   </div>
-<!-- POPUP -->
-    <!-- <div class="modal-overlay" *ngIf="showEventModal" (click)="onCloseModal()"> -->
-    <!-- <div class="modal-box" (click)="$event.stopPropagation()">
 
-      <h2 class="modal-title">Avances événements spèciaux</h2>
-      <p class="modal-subtitle">Choisissez comment vous souhaitez saisir les bénéficiaires</p>
-
-      <div class="modal-options">
-
-        <div class="modal-option" [class.selected]="eventSelection === 'excel'" (click)="eventSelection = 'excel'">
-          <div class="radio-btn" [class.checked]="eventSelection === 'excel'">
-            <mat-icon *ngIf="eventSelection === 'excel'">check</mat-icon>
-          </div>
-          <mat-icon class="option-icon">attach_file</mat-icon>
-          <h3>Importer un fichier Excel</h3>
-          <p>Importer plusieurs paiements dans un fichier</p>
-          <button mat-raised-button color="primary" class="option-btn" (click)="$event.stopPropagation(); eventSelection='excel'">
-            <mat-icon>download</mat-icon> Importer
-          </button>
-        </div>
-
-        <div class="modal-option" [class.selected]="eventSelection === 'manual'" (click)="eventSelection = 'manual'">
-          <div class="radio-btn" [class.checked]="eventSelection === 'manual'">
-            <mat-icon *ngIf="eventSelection === 'manual'">check</mat-icon>
-          </div>
-          <mat-icon class="option-icon">edit_document</mat-icon>
-          <h3>Gestion manuelle</h3>
-          <p>Ajouter des paiements ligne par ligne</p>
-          <button mat-raised-button color="primary" class="option-btn" (click)="$event.stopPropagation(); eventSelection='manual'">
-            <mat-icon>edit</mat-icon> Créer
-          </button>
-        </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button mat-stroked-button (click)="onCloseModal()">Annuler</button>
-        <button mat-raised-button color="primary" (click)="onContinuerEvent()">
-          Continuer <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </div>
-
-    </div> -->
-
-  <!-- </div> -->
 </div>
