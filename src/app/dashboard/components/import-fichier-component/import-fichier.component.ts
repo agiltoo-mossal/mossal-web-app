@@ -1,8 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { CreateBulkPaymentOrderGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
+import { CreateBulkPaymentOrderGQL, BulkPaymentInput, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+
+interface RecapApprobateur {
+  nom: string;
+  role: string;
+  statut: string;
+  avatar: string;
+}
 
 interface ValidationRow {
   nom: string;
@@ -19,7 +26,7 @@ interface ValidationRow {
   templateUrl: './import-fichier.component.html',
   styleUrls: ['./import-fichier.component.scss']
 })
-export class ImportFichierComponent {
+export class ImportFichierComponent implements OnInit {
 
   step: 'upload' | 'validation' | 'recapitulatif' = 'upload';
 
@@ -68,6 +75,8 @@ export class ImportFichierComponent {
 
   validationRows: ValidationRow[] = [];
 
+  approvalFlowApprovers: RecapApprobateur[] = [];
+
   recapitulatif = {
     fichier: '',
     beneficiaires: 0,
@@ -80,10 +89,7 @@ export class ImportFichierComponent {
       pourcentage: number;
       couleur: string;
     }[],
-    approbateurs: [
-      { nom: 'Khadija Sarr', role: 'Approbateur 1', statut: 'En attente', avatar: 'KS' },
-      { nom: 'Mahié Sarr',   role: 'Approbateur 2', statut: 'En attente', avatar: 'MS' }
-    ]
+    approbateurs: [] as RecapApprobateur[],
   };
 
   private readonly OPERATEUR_COLORS: Record<string, string> = {
@@ -97,8 +103,28 @@ export class ImportFichierComponent {
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBar: SnackBarService,
   ) {}
+
+  ngOnInit(): void {
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        this.approvalFlowApprovers = (data.fetchApprovalFlow?.approvalFlow ?? [])
+          .sort((a, b) => a.level - b.level)
+          .map((item) => ({
+            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
+            role: `Approbateur ${item.level}`,
+            statut: 'En attente',
+            avatar: this.getInitials(item.approverFirstName, item.approverLastName),
+          }));
+      },
+    });
+  }
+
+  private getInitials(firstName?: string | null, lastName?: string | null): string {
+    return (firstName?.[0] ?? '').toUpperCase() + (lastName?.[0] ?? '').toUpperCase();
+  }
 
   get errorCount(): number {
     return this.validationRows.filter(r => r.errors && r.errors.length > 0).length;
@@ -303,7 +329,7 @@ export class ImportFichierComponent {
       montantTotal:  this.formatAmount(totalAmount),
       operateurs:    opMap.size,
       repartition,
-      approbateurs:  this.recapitulatif.approbateurs,
+      approbateurs:  this.approvalFlowApprovers,
     };
   }
 
