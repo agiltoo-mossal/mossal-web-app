@@ -45,12 +45,9 @@
             <mat-form-field appearance="outline" class="approbateur-select">
               <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur" [compareWith]="compareApprovers">
                 <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
-                  <span>{{ approver.firstName }} {{ approver.lastName }}<span *ngIf="approver.position"> ({{ approver.position }})</span></span>
+                  {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
                 </mat-option>
               </mat-select>
-              <mat-select-trigger *ngIf="niveau.approbateur">
-                <span>{{ niveau.approbateur.firstName }} {{ niveau.approbateur.lastName }}<span *ngIf="niveau.approbateur.position"> ({{ niveau.approbateur.position }})</span></span>
-              </mat-select-trigger>
             </mat-form-field>
             <p class="field-hint">{{ getNiveauHint(i) }}</p>
           </div>

@@ -1894,7 +1894,7 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null } };
 
 export type FetchOrganizationApproversQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3473,6 +3473,14 @@ export const FetchOrganizationDocument = gql`
     blocked
     balance
     maxDemandeAmount
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverId
+      approverFirstName
+      approverLastName
+      approverPosition
+    }
   }
 }
     `;

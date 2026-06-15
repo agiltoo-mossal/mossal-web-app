@@ -422,6 +422,14 @@ query FetchOrganization($organizationId: ID!) {
     blocked
     balance
     maxDemandeAmount
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverId
+      approverFirstName
+      approverLastName
+      approverPosition
+    }
 	}
 }
 
