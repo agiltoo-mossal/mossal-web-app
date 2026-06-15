@@ -28,6 +28,8 @@ export class ImportFichierComponent {
   isDragging = false;
   isSubmitting = false;
   isEditing = false;
+  editingIndex: number | null = null;
+  
 
   readonly OPERATEURS = ['Wave', 'Orange Money'];
 
@@ -175,7 +177,7 @@ export class ImportFichierComponent {
 
         this.validationRows = rawRows.map(raw => this.mapRow(raw));
         this.step = 'validation';
-
+        // this.isEditing = true;
       } catch (err) {
         this.fileError = 'Impossible de lire le fichier. Vérifiez qu\'il s\'agit bien d\'un fichier Excel valide.';
         console.error('Erreur lecture Excel:', err);
@@ -229,17 +231,25 @@ export class ImportFichierComponent {
 
   onValidate(): void {
     if (this.errorCount > 0) {
-      this.isEditing = true;
+      // this.isEditing = true;
       return;
     }
     this.buildRecapitulatif();
     this.step = 'recapitulatif';
   }
 
-  onSaveEdits(): void {
-    this.validationRows = this.validationRows.map(row => this.revalidateRow(row));
-    this.isEditing = false;
+  // onSaveEdits(): void {
+  //   this.validationRows = this.validationRows.map(row => this.revalidateRow(row));
+  //   this.isEditing = false;
+  // }
+
+  onSaveRow(): void {
+  if (this.editingIndex !== null) {
+    this.validationRows[this.editingIndex] = 
+      this.revalidateRow(this.validationRows[this.editingIndex]);
   }
+  this.editingIndex = null;
+}
 
   onRowBlur(index: number): void {
     const row = { ...this.validationRows[index] };
@@ -249,6 +259,16 @@ export class ImportFichierComponent {
     }
     this.validationRows[index] = this.revalidateRow(row);
   }
+
+   onEditRow(index: number): void {
+      // this.isEditing = true;
+        this.editingIndex = index;
+
+    }
+
+    onDeleteRow(index: number): void {
+      this.validationRows.splice(index, 1);
+    }
 
   private revalidateRow(row: ValidationRow): ValidationRow {
     const errors: string[] = [];
