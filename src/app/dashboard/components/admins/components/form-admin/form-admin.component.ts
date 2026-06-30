@@ -111,7 +111,7 @@ export class FormAdminComponent {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admins']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               "Invitation envoyé à l'admin"
             );
           }
@@ -144,7 +144,7 @@ export class FormAdminComponent {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admins']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Admin modifié avec succés'
             );
           }
@@ -276,7 +276,7 @@ export class FormAdminComponent {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.getCollab();
@@ -289,7 +289,7 @@ export class FormAdminComponent {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.getCollab();

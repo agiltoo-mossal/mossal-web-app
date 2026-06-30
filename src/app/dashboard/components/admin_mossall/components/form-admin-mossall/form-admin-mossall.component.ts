@@ -102,7 +102,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admin_mossall']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               "Invitation envoyée à l'admin mossall"
             );
           }
@@ -131,7 +131,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admin_mossall']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Admin mossall modifié avec succès'
             );
           }
@@ -279,7 +279,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
     this.lockUserGQL.mutate({ userId }).subscribe({
       next: (result) => {
         if (result.data?.lockUser) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'Utilisateur bloqué avec succès!'
           );
           this.getAdmin();
@@ -299,7 +299,7 @@ export class FormAdminMossallComponent implements OnInit, OnChanges {
     this.unlockUserGQL.mutate({ userId }).subscribe({
       next: (result) => {
         if (result.data?.unlockUser) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'Utilisateur débloqué avec succès!'
           );
           this.getAdmin();

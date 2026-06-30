@@ -35,6 +35,37 @@
 
       <!-- LEFT: Formulaire -->
       <div class="form-card">
+        <!-- CHAMP LIBELLÉ GLOBAL -->
+        <!-- <div class="form-group label-global-group">
+          <label>Libellé du paiement en masse <span class="color-danger">*</span></label>
+         <input
+            #labelInput
+            type="text"
+            [(ngModel)]="paymentLabel"
+            name="paymentLabel"
+            placeholder="Ex : Paiement des primes de Juin 2026"
+          />
+          <p class="form-hint">Ce libellé regroupe toutes les transactions ajoutées à la liste</p>
+        </div> -->
+
+          <form #labelForm="ngForm">
+            <div class="form-group label-global-group">
+              <label>Libellé du paiement en masse <span class="color-danger">*</span></label>
+              <input
+                #labelInput
+                type="text"
+                [(ngModel)]="paymentLabel"
+                name="paymentLabel"
+                #paymentLabelModel="ngModel"
+                required
+                placeholder="Ex : Paiement des primes de Juin 2026"
+              />
+              <div *ngIf="paymentLabelModel.invalid && paymentLabelModel.touched" class="error-message">
+                <span *ngIf="paymentLabelModel.errors?.['required']">Le libellé est obligatoire.</span>
+              </div>
+              <p class="form-hint">Ce libellé regroupe toutes les transactions ajoutées à la liste</p>
+            </div>
+          </form>
         <h2>Ajouter un bénéficiaire</h2>
         <p class="form-subtitle">Renseignez les informations de la transaction</p>
 
@@ -149,6 +180,7 @@
 
       <!-- RIGHT: Liste des bénéficiaires -->
       <div class="list-card">
+       
         <div class="list-header">
           <h2>
             Liste des bénéficiaires
@@ -158,6 +190,14 @@
           </h2>
           <button class="btn-vider" (click)="clearList()" *ngIf="beneficiaries.length > 0">
             <mat-icon>delete</mat-icon> Vider la liste
+          </button>
+        </div>
+         <div class="label-recap" *ngIf="paymentLabel">
+          <span class="label-recap-text">
+            <strong>Libellé du paiement en masse :</strong> {{ paymentLabel }}
+          </span>
+          <button type="button" class="btn-edit-label" (click)="focusLabelInput()">
+            <mat-icon>edit</mat-icon> Modifier
           </button>
         </div>
 
@@ -270,7 +310,7 @@
   </div>
 
   <!-- STEP 3 : Succès -->
-  <div class="step-content" *ngIf="currentStep === 3">
+  <!-- <div class="step-content" *ngIf="currentStep === 3">
     <div class="validation-card">
       <div class="success-icon">
         <mat-icon>check_circle</mat-icon>
@@ -284,6 +324,72 @@
         Retour à l'accueil
       </button>
     </div>
+  </div> -->
+
+  <!-- STEP 3 : Suivi des validations -->
+<div class="step-content" *ngIf="currentStep === 3">
+  <h2 class="suivi-title">Suivi des validations</h2>
+
+  <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">
+    <mat-icon>notifications</mat-icon>
+    Notification envoyée à {{ firstStep.approbateurNom }} ({{ firstStep.approbateurRole }})
   </div>
+
+  <div class="suivi-grid">
+    <!-- Détails de l'ordre -->
+    <div class="suivi-card">
+      <h3>Détails de l'ordre</h3>
+      <div class="detail-row">
+        <mat-icon>label</mat-icon>
+        <span>Libellé du paiement : <strong>{{ orderSummary?.libelle }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>group</mat-icon>
+        <span>Nombre de bénéficiaires : <strong>{{ orderSummary?.nombreBeneficiaires }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>payments</mat-icon>
+        <span>Montant total : <strong>{{ orderSummary?.montantTotal | number:'1.0-0':'fr' }} XOF</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>account_balance_wallet</mat-icon>
+        <span>Opérateurs : <strong>{{ orderSummary?.operateurs }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>schedule</mat-icon>
+        <span>Date de soumission : <strong>{{ orderSummary?.dateSoumission }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Workflow de validation -->
+    <div class="suivi-card">
+      <h3>Workflow de validation</h3>
+      <div class="approval-step" *ngFor="let step of approvalSteps">
+        <div class="approval-step-header">
+          <span>Approbation - Niveau {{ step.niveau }}</span>
+          <span class="badge" [ngClass]="{
+            'badge-success': step.statut === 'valide',
+            'badge-pending': step.statut === 'en_attente',
+            'badge-danger': step.statut === 'rejete'
+          }">
+            {{ step.statut === 'valide' ? 'Validé' : step.statut === 'rejete' ? 'Rejeté' : 'En attente' }}
+          </span>
+        </div>
+        <div class="approval-step-body">
+          <div class="avatar">{{ step.approbateurNom.charAt(0) }}</div>
+          <div>
+            <p class="approbateur-nom">{{ step.approbateurNom }}</p>
+            <p class="approbateur-role">{{ step.approbateurRole }}</p>
+            <p class="approbateur-date" *ngIf="step.dateNotification">Notifié le {{ step.dateNotification }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" (click)="relancerApprobateurs()">
+    Relancer les approbateurs
+  </button>
+</div>
 
 </div>

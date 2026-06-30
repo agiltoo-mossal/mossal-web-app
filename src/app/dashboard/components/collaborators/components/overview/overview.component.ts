@@ -174,7 +174,7 @@ export class OverviewComponent implements AfterViewInit {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.fetchCollabs();
@@ -187,7 +187,7 @@ export class OverviewComponent implements AfterViewInit {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.fetchCollabs();
