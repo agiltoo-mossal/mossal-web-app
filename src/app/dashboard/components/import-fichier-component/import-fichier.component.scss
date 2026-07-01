@@ -1,11 +1,11 @@
-$primary:   #0d2354;
-$blue-mid:  #1a3a6e;
-$border:    #e2e8f0;
-$text:      #1e293b;
-$muted:     #64748b;
-$error:     #dc2626;
-$success:   #16a34a;
-$white:     #ffffff;
+$primary: #0d2354;
+$blue-mid: #1a3a6e;
+$border: #e2e8f0;
+$text: #1e293b;
+$muted: #64748b;
+$error: #dc2626;
+$success: #16a34a;
+$white: #ffffff;
 
 .import-container {
   font-family: 'Segoe UI', sans-serif;
@@ -23,7 +23,7 @@ $white:     #ffffff;
   padding: 40px;
   width: 100%;
   max-width: 560px;
-  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .07);
   align-self: flex-start;
   margin-top: 20px;
 }
@@ -57,7 +57,10 @@ $white:     #ffffff;
   gap: 6px;
   background: #fafbfd;
 
-  &:hover { border-color: $primary; background: #f0f4fb; }
+  &:hover {
+    border-color: $primary;
+    background: #f0f4fb;
+  }
 
   &.drag-over {
     border-color: $primary;
@@ -84,14 +87,44 @@ $white:     #ffffff;
   height: 48px;
   color: $primary;
 }
-.icon-error   { color: $error; }
-.icon-success { color: $success; }
 
-.zone-message  { font-size: 15px; font-weight: 600; color: $text; margin: 0; }
-.zone-filename { font-size: 15px; font-weight: 700; color: $primary; margin: 0; }
-.zone-filesize { font-size: 12px; color: $muted; margin: 0; }
-.zone-hint     { font-size: 12px; color: $muted; margin: 0; }
-.error-msg     { color: $error; }
+.icon-error {
+  color: $error;
+}
+
+.icon-success {
+  color: $success;
+}
+
+.zone-message {
+  font-size: 15px;
+  font-weight: 600;
+  color: $text;
+  margin: 0;
+}
+
+.zone-filename {
+  font-size: 15px;
+  font-weight: 700;
+  color: $primary;
+  margin: 0;
+}
+
+.zone-filesize {
+  font-size: 12px;
+  color: $muted;
+  margin: 0;
+}
+
+.zone-hint {
+  font-size: 12px;
+  color: $muted;
+  margin: 0;
+}
+
+.error-msg {
+  color: $error;
+}
 
 // Boutons
 .upload-actions {
@@ -101,7 +134,8 @@ $white:     #ffffff;
   justify-content: flex-end;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -113,21 +147,60 @@ $white:     #ffffff;
   border: none;
   transition: background .2s;
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .btn-primary {
   background: $primary;
   color: $white;
-  &:hover:not(:disabled) { background: darken($primary, 8%); }
-  &:disabled { opacity: .45; cursor: not-allowed; }
+
+  &:hover:not(:disabled) {
+    background: darken($primary, 8%);
+  }
+
+  &:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
 }
 
 .btn-secondary {
   background: $white;
   color: $primary;
   border: 1.5px solid $border;
-  &:hover { border-color: $primary; background: #f0f4fb; }
+
+  &:hover {
+    border-color: $primary;
+    background: #f0f4fb;
+  }
+}
+
+.btn-brouillon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f8fafc;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  transition: background .2s, border-color .2s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
 // ── ÉTAPE 2 : Validation ─────────────────────────────────────
@@ -146,7 +219,7 @@ $white:     #ffffff;
   padding: 16px;
   border-radius: 10px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
 
   .step-item {
     font-size: 14px;
@@ -165,8 +238,18 @@ $white:     #ffffff;
 // Bannière erreurs
 .error-banner {
   margin-bottom: 12px;
-  .error-count { color: $error; font-size: 15px; margin: 0; }
-  .error-hint  { color: $error; font-size: 12px; margin: 2px 0 0; }
+
+  .error-count {
+    color: $error;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .error-hint {
+    color: $error;
+    font-size: 12px;
+    margin: 2px 0 0;
+  }
 }
 
 .file-title {
@@ -180,7 +263,7 @@ $white:     #ffffff;
 .table-wrapper {
   background: $white;
   border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   overflow: hidden;
   margin-bottom: 24px;
 
@@ -200,7 +283,10 @@ $white:     #ffffff;
 
     tbody tr {
       border-top: 1px solid $border;
-      &:hover { background: #f8fafc; }
+
+      &:hover {
+        background: #f8fafc;
+      }
 
       td {
         padding: 12px 16px;
@@ -228,7 +314,9 @@ $white:     #ffffff;
   outline: none;
   transition: border-color .15s;
 
-  &:focus { border-color: $primary; }
+  &:focus {
+    border-color: $primary;
+  }
 
   &-error {
     border-color: $error;
@@ -247,10 +335,14 @@ $white:     #ffffff;
   cursor: pointer;
   width: 100%;
 
-  &:focus { border-color: $primary; }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
-.row-error td { background: #fff8f8; }
+.row-error td {
+  background: #fff8f8;
+}
 
 // Badges
 .badge {
@@ -264,13 +356,29 @@ $white:     #ffffff;
   white-space: nowrap;
 
   .dot {
-    width: 7px; height: 7px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
   }
 
-  &-ok    { background: #f0fdf4; color: $success; .dot-green { background: $success; } }
-  &-error { background: #fef2f2; color: $error;   .dot-red   { background: $error;   } }
+  &-ok {
+    background: #f0fdf4;
+    color: $success;
+
+    .dot-green {
+      background: $success;
+    }
+  }
+
+  &-error {
+    background: #fef2f2;
+    color: $error;
+
+    .dot-red {
+      background: $error;
+    }
+  }
 }
 
 .validation-actions {
@@ -289,6 +397,7 @@ $white:     #ffffff;
 
 .recap-header {
   margin-bottom: 20px;
+
   .recap-label {
     font-size: 13px;
     color: $muted;
@@ -308,7 +417,7 @@ $white:     #ffffff;
   background: $white;
   border-radius: 10px;
   padding: 18px 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
 
   .kpi-label {
     font-size: 12px;
@@ -322,7 +431,9 @@ $white:     #ffffff;
     color: $text;
     margin: 0;
 
-    &.kpi-green { color: #16a34a; }
+    &.kpi-green {
+      color: #16a34a;
+    }
   }
 }
 
@@ -331,7 +442,7 @@ $white:     #ffffff;
   background: $white;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   margin-bottom: 24px;
 
   .section-title {
@@ -353,10 +464,30 @@ $white:     #ffffff;
   border-radius: 10px;
   padding: 16px;
 
-  .op-nom          { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
-  .op-beneficiaires{ font-size: 12px; color: $muted; margin: 0 0 4px; }
-  .op-montant      { font-size: 15px; font-weight: 600; color: $text; margin: 0 0 10px; }
-  .op-pct          { font-size: 12px; color: $muted; margin: 4px 0 0; }
+  .op-nom {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .op-beneficiaires {
+    font-size: 12px;
+    color: $muted;
+    margin: 0 0 4px;
+  }
+
+  .op-montant {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text;
+    margin: 0 0 10px;
+  }
+
+  .op-pct {
+    font-size: 12px;
+    color: $muted;
+    margin: 4px 0 0;
+  }
 }
 
 .progress-bar-bg {
@@ -377,7 +508,7 @@ $white:     #ffffff;
   background: $white;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   margin-top: 24px;
 }
 
@@ -387,7 +518,12 @@ $white:     #ffffff;
   justify-content: space-between;
   margin-bottom: 16px;
 
-  h3 { font-size: 14px; font-weight: 700; color: $text; margin: 0; }
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text;
+    margin: 0;
+  }
 }
 
 .badge-selected {
@@ -423,13 +559,24 @@ $white:     #ffffff;
 
 .app-info {
   flex: 1;
-  .app-nom  { font-size: 13.5px; font-weight: 600; color: $text; margin: 0; }
-  .app-role { font-size: 11px; color: $muted; margin: 0; }
+
+  .app-nom {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+  }
+
+  .app-role {
+    font-size: 11px;
+    color: $muted;
+    margin: 0;
+  }
 }
 
 .badge-attente {
-  // background: $attente-bg;
-  // color: $attente-text;
+  background: #FFF4E5;
+  color: #FF9500;
   font-size: 12px;
   font-weight: 600;
   padding: 3px 10px;

@@ -1,8 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { CreateBulkPaymentOrderGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
+import { CreateBulkPaymentOrderGQL, BulkPaymentInput, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+
+interface RecapApprobateur {
+  nom: string;
+  role: string;
+  statut: string;
+  avatar: string;
+}
 
 interface ValidationRow {
   nom: string;
@@ -19,7 +26,7 @@ interface ValidationRow {
   templateUrl: './import-fichier.component.html',
   styleUrls: ['./import-fichier.component.scss']
 })
-export class ImportFichierComponent {
+export class ImportFichierComponent implements OnInit {
 
   step: 'upload' | 'validation' | 'recapitulatif' = 'upload';
 
@@ -27,6 +34,7 @@ export class ImportFichierComponent {
   fileError: string = '';
   isDragging = false;
   isSubmitting = false;
+  isSavingDraft = false;
   isEditing = false;
   editingIndex: number | null = null;
   
@@ -70,6 +78,8 @@ export class ImportFichierComponent {
 
   validationRows: ValidationRow[] = [];
 
+  approvalFlowApprovers: RecapApprobateur[] = [];
+
   recapitulatif = {
     fichier: '',
     beneficiaires: 0,
@@ -82,10 +92,7 @@ export class ImportFichierComponent {
       pourcentage: number;
       couleur: string;
     }[],
-    approbateurs: [
-      { nom: 'Khadija Sarr', role: 'Approbateur 1', statut: 'En attente', avatar: 'KS' },
-      { nom: 'Mahié Sarr',   role: 'Approbateur 2', statut: 'En attente', avatar: 'MS' }
-    ]
+    approbateurs: [] as RecapApprobateur[],
   };
 
   private readonly OPERATEUR_COLORS: Record<string, string> = {
@@ -99,8 +106,28 @@ export class ImportFichierComponent {
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBar: SnackBarService,
   ) {}
+
+  ngOnInit(): void {
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
+          .sort((a, b) => a.level - b.level)
+          .map((item) => ({
+            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
+            role: `Approbateur ${item.level}`,
+            statut: 'En attente',
+            avatar: this.getInitials(item.approverFirstName, item.approverLastName),
+          }));
+      },
+    });
+  }
+
+  private getInitials(firstName?: string | null, lastName?: string | null): string {
+    return (firstName?.[0] ?? '').toUpperCase() + (lastName?.[0] ?? '').toUpperCase();
+  }
 
   get errorCount(): number {
     return this.validationRows.filter(r => r.errors && r.errors.length > 0).length;
@@ -323,7 +350,7 @@ export class ImportFichierComponent {
       montantTotal:  this.formatAmount(totalAmount),
       operateurs:    opMap.size,
       repartition,
-      approbateurs:  this.recapitulatif.approbateurs,
+      approbateurs:  this.approvalFlowApprovers,
     };
   }
 
@@ -353,21 +380,29 @@ export class ImportFichierComponent {
     return this.WALLET_MAP[operateur.toLowerCase().trim()] ?? Wallet.Wave;
   }
 
-  onSoumettre(): void {
-    const validRows = this.validationRows.filter(r => !r.errors?.length);
-    if (!validRows.length || this.isSubmitting) return;
+  private buildPaymentInputs(): BulkPaymentInput[] {
+    return this.validationRows
+      .filter(r => !r.errors?.length)
+      .map(row => ({
+        firstName:   row.prenom,
+        lastName:    row.nom,
+        phoneNumber: this.normalizePhone(row.telephone),
+        amount:      this.parseMontant(row.montant),
+        ...(row.motif && { reason: row.motif }),
+        wallet:      this.toWallet(row.operateur),
+      }));
+  }
 
-    const inputs: BulkPaymentInput[] = validRows.map(row => ({
-      firstName:   row.prenom,
-      lastName:    row.nom,
-      phoneNumber: this.normalizePhone(row.telephone),
-      amount:      this.parseMontant(row.montant),
-      ...(row.motif && { reason: row.motif }),
-      wallet:      this.toWallet(row.operateur),
-    }));
+  private get fileLabel(): string {
+    return this.selectedFile?.name ?? 'Import fichier';
+  }
+
+  onSoumettre(): void {
+    const inputs = this.buildPaymentInputs();
+    if (!inputs.length || this.isSubmitting) return;
 
     this.isSubmitting = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs }).subscribe({
+    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: false }).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.router.navigate(['../'], { relativeTo: this.route });
@@ -375,6 +410,23 @@ export class ImportFichierComponent {
       error: () => {
         this.isSubmitting = false;
         this.snackBar.showErrorSnackBar(4000, 'Erreur lors de la soumission de l\'ordre de paiement.');
+      },
+    });
+  }
+
+  onSaveDraft(): void {
+    const inputs = this.buildPaymentInputs();
+    if (!inputs.length || this.isSavingDraft) return;
+
+    this.isSavingDraft = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: true }).subscribe({
+      next: () => {
+        this.isSavingDraft = false;
+        this.router.navigate(['../'], { relativeTo: this.route });
+      },
+      error: () => {
+        this.isSavingDraft = false;
+        this.snackBar.showErrorSnackBar(4000, 'Erreur lors de l\'enregistrement du brouillon.');
       },
     });
   }
