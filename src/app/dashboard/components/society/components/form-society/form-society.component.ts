@@ -386,7 +386,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
 
         if (result.data?.createOrganization) {
           this.router.navigate(['/dashboard/society']);
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'Société créée avec succès'
           );
         }
@@ -450,7 +450,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         this.isLoading = false;
         if (result.data) {
           this.router.navigate(['/dashboard/society']);
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'Societé modifié avec succés'
           );
         }

@@ -4,15 +4,15 @@ import { MatPaginator } from '@angular/material/paginator';
 import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
 
 const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
-  [BulkPaymentOrderStatus.Draft]:    'Brouillon',
-  [BulkPaymentOrderStatus.Pending]:  'En attente',
+  [BulkPaymentOrderStatus.Draft]: 'Brouillon',
+  [BulkPaymentOrderStatus.Pending]: 'En attente',
   [BulkPaymentOrderStatus.Approved]: 'Validé',
   [BulkPaymentOrderStatus.Rejected]: 'Rejeté',
 };
 
 const STATUS_BADGE: Record<BulkPaymentOrderStatus, string> = {
-  [BulkPaymentOrderStatus.Draft]:    'badge-brouillon',
-  [BulkPaymentOrderStatus.Pending]:  'badge-attente',
+  [BulkPaymentOrderStatus.Draft]: 'badge-brouillon',
+  [BulkPaymentOrderStatus.Pending]: 'badge-attente',
   [BulkPaymentOrderStatus.Approved]: 'badge-valide',
   [BulkPaymentOrderStatus.Rejected]: 'badge-rejete',
 };
@@ -30,7 +30,7 @@ export class OverviewComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
-  ) {}
+  ) { }
 
   isLoading = true;
   pageSize = 10;
@@ -55,7 +55,7 @@ export class OverviewComponent implements OnInit {
 
   readonly dateOptions: { value: string; label: string }[] = (() => {
     const now = new Date();
-    const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     const options: { value: string; label: string }[] = [];
     for (let m = 0; m <= now.getMonth(); m++) {
       options.push({ value: `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`, label: `${months[m]} ${now.getFullYear()}` });
@@ -126,6 +126,10 @@ export class OverviewComponent implements OnInit {
 
   onGestionManuelle(): void {
     this.router.navigate(['../payments/manual'], { relativeTo: this.route });
+  }
+
+  onVoirDetails(order: BulkPaymentOrder): void {
+    this.router.navigate([order.id], { relativeTo: this.route });
   }
 
   onVoirHistorique(): void {

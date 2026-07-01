@@ -582,3 +582,38 @@ $white: #ffffff;
   padding: 3px 10px;
   border-radius: 20px;
 }
+
+
+.action-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &.btn-edit {
+    color: #6366f1;
+    &:hover { background: #6366f115; }
+  }
+
+  &.btn-delete {
+    color: #ef4444;
+    &:hover { background: #ef444415; }
+  }
+}

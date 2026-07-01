@@ -17,6 +17,23 @@ interface BeneficiaryForm {
   phoneNumber: string;
   amount: number;
   wallet: Wallet | '';
+
+}
+
+interface ApprovalStep {
+  niveau: number;
+  approbateurNom: string;
+  approbateurRole: string;
+  statut: 'en_attente' | 'valide' | 'rejete';
+  dateNotification?: string;
+}
+
+interface OrderSummary {
+  libelle: string;
+  nombreBeneficiaires: number;
+  montantTotal: number;
+  operateurs: number;
+  dateSoumission: string;
 }
 
 @Component({
@@ -25,7 +42,6 @@ interface BeneficiaryForm {
   styleUrls: ['./manual-payment.component.scss']
 })
 export class ManualPaymentComponent implements OnInit {
-
   @ViewChild('labelInput') labelInputRef: ElementRef<HTMLInputElement>;
 
   currentStep = 1;
@@ -44,6 +60,8 @@ export class ManualPaymentComponent implements OnInit {
   isEditingLabel = false;
   beneficiaries: BeneficiaryForm[] = [];
   approvalFlowApprovers: WorkflowApprobateur[] = [];
+  orderSummary: OrderSummary | null = null;
+  approvalSteps: ApprovalStep[] = [];
 
   constructor(
     private router: Router,
@@ -51,7 +69,7 @@ export class ManualPaymentComponent implements OnInit {
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBarService: SnackBarService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
@@ -69,7 +87,7 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   private readonly WALLET_COLORS: Record<string, string> = {
-    [Wallet.Wave]:        '#06b6d4',
+    [Wallet.Wave]: '#06b6d4',
     [Wallet.OrangeMoney]: '#f97316',
   };
 
@@ -86,11 +104,11 @@ export class ManualPaymentComponent implements OnInit {
     }
     const total = this.beneficiaries.length;
     return Array.from(map.entries()).map(([wallet, data]) => ({
-      nom:           this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
+      nom: this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
       beneficiaires: data.count,
-      montant:       data.total,
-      pourcentage:   total > 0 ? Math.round((data.count / total) * 100) : 0,
-      couleur:       this.WALLET_COLORS[wallet] ?? '#6366f1',
+      montant: data.total,
+      pourcentage: total > 0 ? Math.round((data.count / total) * 100) : 0,
+      couleur: this.WALLET_COLORS[wallet] ?? '#6366f1',
     }));
   }
 
@@ -111,6 +129,7 @@ export class ManualPaymentComponent implements OnInit {
 
     form.resetForm();
     this.form = this.emptyForm();
+
   }
 
   editBeneficiary(index: number): void {
@@ -122,6 +141,7 @@ export class ManualPaymentComponent implements OnInit {
   deleteBeneficiary(index: number): void {
     this.beneficiaries.splice(index, 1);
   }
+
 
   clearList(): void {
     if (confirm('Voulez-vous vraiment vider la liste des bénéficiaires ?')) {
@@ -166,6 +186,23 @@ export class ManualPaymentComponent implements OnInit {
     this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
       next: () => {
         this.isSubmitting = false;
+
+
+        this.orderSummary = {
+          libelle: this.label,
+          nombreBeneficiaires: this.beneficiaries.length,
+          montantTotal: this.totalAmount,
+          operateurs: this.recapRepartition.length,
+          dateSoumission: new Date().toLocaleString('fr-FR'),
+        };
+        this.approvalSteps = this.approvalFlowApprovers.map((a, i) => ({
+          niveau: i + 1,
+          approbateurNom: a.nom,
+          approbateurRole: a.role,
+          statut: 'en_attente' as const,
+          dateNotification: new Date().toLocaleDateString('fr-FR'),
+        }));
+
         this.currentStep = 3;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
@@ -174,6 +211,11 @@ export class ManualPaymentComponent implements OnInit {
         this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
       },
     });
+  }
+
+  relancerApprobateurs(): void {
+    // TODO: appeler la mutation de relance une fois définie côté backend
+    this.snackBarService.showSuccessSnackBar(3000, 'Notification envoyée aux approbateurs.');
   }
 
   back(): void {

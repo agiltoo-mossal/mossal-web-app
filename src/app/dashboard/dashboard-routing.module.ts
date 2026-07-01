@@ -20,6 +20,7 @@ import { AvancesComponent } from './components/avancesComponent/avances.componen
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
+import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
 
 const routes: Routes = [
   {
@@ -137,7 +138,8 @@ const routes: Routes = [
       { path: 'organization/payments/import',
         component: ImportFichierComponent 
       },
-      { path: 'organization/payments/manual', component: ManualPaymentComponent }
+      { path: 'organization/payments/manual', component: ManualPaymentComponent },
+      { path: 'payments/details/:id', component: PaymentDetailsComponent }
     ],
   },
 ];

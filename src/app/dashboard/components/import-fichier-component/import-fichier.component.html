@@ -89,13 +89,14 @@
             <th>MONTANT</th>
             <th>MOTIF</th>
             <th>OPÉRATEUR</th>
+            <th>STATUT</th>
             <th>ACTION</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
+          <!-- <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length"> -->
             <!-- Lecture -->
-            <ng-container *ngIf="!isEditing">
+            <!-- <ng-container *ngIf="!isEditing">
               <td>{{ row.nom }}</td>
               <td>{{ row.prenom }}</td>
               <td>
@@ -118,10 +119,10 @@
                   <span class="dot dot-red"></span> {{ label }}
                 </span>
               </td>
-            </ng-container>
+            </ng-container> -->
 
             <!-- Édition -->
-            <ng-container *ngIf="isEditing">
+            <!-- <ng-container *ngIf="isEditing">
               <td>
                 <input class="cell-input" [(ngModel)]="row.nom"
                   [class.cell-input-error]="row.errors?.includes('nom_vide')"
@@ -162,21 +163,181 @@
                   <span class="dot dot-red"></span> {{ label }}
                 </span>
               </td>
-            </ng-container>
+            </ng-container> -->
+          <!-- </tr> -->
+
+
+
+          <!-- <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
+            <td>
+              <input class="cell-input" [(ngModel)]="row.nom"
+                [class.cell-input-error]="row.errors?.includes('nom_vide')"
+                (blur)="onRowBlur(i)" />
+            </td>
+            <td>
+              <input class="cell-input" [(ngModel)]="row.prenom"
+                [class.cell-input-error]="row.errors?.includes('prenom_vide')"
+                (blur)="onRowBlur(i)" />
+            </td>
+            <td>
+              <input class="cell-input" [(ngModel)]="row.telephone"
+                [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
+                (blur)="onRowBlur(i)" />
+            </td>
+            <td>
+              <input class="cell-input" [(ngModel)]="row.montant"
+                [class.cell-input-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')"
+                (blur)="onRowBlur(i)" />
+            </td>
+            <td>
+              <input class="cell-input" [(ngModel)]="row.motif"
+                [class.cell-input-error]="row.errors?.includes('motif_vide')"
+                (blur)="onRowBlur(i)" />
+            </td>
+            <td>
+              <select class="cell-select" [(ngModel)]="row.operateur"
+                [class.cell-input-error]="row.errors?.includes('operateur_vide')"
+                (blur)="onRowBlur(i)">
+                <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
+              </select>
+            </td>
+            <td>
+              <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
+                <span class="dot dot-green"></span> OK
+              </span>
+              <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
+                <span class="dot dot-red"></span> {{ label }}
+              </span>
+            </td>
+            <td class="action-cell">
+              <button class="btn-icon btn-edit" (click)="onEditRow(i)" title="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button class="btn-icon btn-delete" (click)="onDeleteRow(i)" title="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr> -->
+
+          <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
+            <!-- NOM -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readNom">
+                <input class="cell-input" [(ngModel)]="row.nom"
+                  [class.cell-input-error]="row.errors?.includes('nom_vide')"
+                  (blur)="onRowBlur(i)" />
+              </ng-container>
+              <ng-template #readNom>{{ row.nom }}</ng-template>
+            </td>
+
+            <!-- PRÉNOM -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readPrenom">
+                <input class="cell-input" [(ngModel)]="row.prenom"
+                  [class.cell-input-error]="row.errors?.includes('prenom_vide')"
+                  (blur)="onRowBlur(i)" />
+              </ng-container>
+              <ng-template #readPrenom>{{ row.prenom }}</ng-template>
+            </td>
+
+            <!-- TÉLÉPHONE -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readTel">
+                <input class="cell-input" [(ngModel)]="row.telephone"
+                  [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
+                  (blur)="onRowBlur(i)" />
+              </ng-container>
+              <ng-template #readTel>
+                <span [class.cell-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')">
+                  {{ row.telephone || '————' }}
+                </span>
+              </ng-template>
+            </td>
+
+            <!-- MONTANT -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readMontant">
+                <input class="cell-input" [(ngModel)]="row.montant"
+                  [class.cell-input-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')"
+                  (blur)="onRowBlur(i)" />
+              </ng-container>
+              <ng-template #readMontant>
+                <span [class.cell-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')">
+                  {{ row.montant || '————' }}
+                </span>
+              </ng-template>
+            </td>
+
+            <!-- MOTIF -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readMotif">
+                <input class="cell-input" [(ngModel)]="row.motif"
+                  [class.cell-input-error]="row.errors?.includes('motif_vide')"
+                  (blur)="onRowBlur(i)" />
+              </ng-container>
+              <ng-template #readMotif>{{ row.motif || '—' }}</ng-template>
+            </td>
+
+            <!-- OPÉRATEUR -->
+            <td>
+              <ng-container *ngIf="editingIndex === i; else readOp">
+                <select class="cell-select" [(ngModel)]="row.operateur"
+                  [class.cell-input-error]="row.errors?.includes('operateur_vide')"
+                  (blur)="onRowBlur(i)">
+                  <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
+                </select>
+              </ng-container>
+              <ng-template #readOp>{{ row.operateur }}</ng-template>
+            </td>
+
+            <!-- STATUT -->
+            <td>
+              <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
+                <span class="dot dot-green"></span> OK
+              </span>
+              <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
+                <span class="dot dot-red"></span> {{ label }}
+              </span>
+            </td>
+
+            <!-- ACTION -->
+            <td class="action-cell">
+              <ng-container *ngIf="editingIndex !== i">
+                <button class="btn-icon btn-edit" (click)="onEditRow(i)" title="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="btn-icon btn-delete" (click)="onDeleteRow(i)" title="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="editingIndex === i">
+                <button class="btn-icon btn-save" (click)="onSaveRow()" title="Enregistrer">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button class="btn-icon btn-cancel" (click)="editingIndex = null" title="Annuler">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-container>
+            </td>
+
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="validation-actions">
-      <button class="btn-secondary" (click)="step = 'upload'; isEditing = false">
+      <!-- <button class="btn-secondary" (click)="step = 'upload'; isEditing = false"> -->
+      <button class="btn-secondary" (click)="step = 'upload'; editingIndex = null">
         <mat-icon>arrow_back</mat-icon> Réimporter un fichier
       </button>
-      <button class="btn-primary" *ngIf="!isEditing" (click)="onValidate()">
+      <!-- <button class="btn-primary" *ngIf="!isEditing" (click)="onValidate()">
         {{ errorCount > 0 ? 'Corriger et valider' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
       </button>
       <button class="btn-primary" *ngIf="isEditing" (click)="onSaveEdits()" [disabled]="errorCount > 0">
         Enregistrer les corrections <mat-icon>check</mat-icon>
+      </button> -->
+      <button class="btn-primary" (click)="onValidate()" [disabled]="errorCount > 0">
+        {{ errorCount > 0 ? 'Corrigez les erreurs' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
       </button>
     </div>
 

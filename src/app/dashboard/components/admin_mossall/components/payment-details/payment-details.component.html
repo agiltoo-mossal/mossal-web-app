@@ -1,0 +1,107 @@
+<div class="suivi-container" *ngIf="!isLoading && payment">
+  <button class="back-btn" (click)="goToHome()">
+      <mat-icon>arrow_back</mat-icon> Retour à l'accueil
+    </button>
+
+  <h2 class="suivi-title">Suivi des validations</h2>
+
+  <!-- Bannière dynamique -->
+  <div class="notif-banner" [ngClass]="{
+    'banner-pending': isPending,
+    'banner-success': isValidated,
+    'banner-error': isRejected
+  }">
+    <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+
+    <span *ngIf="isPending && currentApproverWaiting">
+      Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
+      (Approbateur N°{{ currentApproverWaiting.level }})
+    </span>
+
+    <span *ngIf="isValidated">
+      Paiement de {{ payment.amount | number:'1.0-0':'fr' }} XOF déclenché avec succès.
+    </span>
+
+    <span *ngIf="isRejected && rejectedApprover">
+      Paiement rejeté par {{ rejectedApprover.firstName }} {{ rejectedApprover.lastName }}. Aucun paiement effectué
+    </span>
+  </div>
+
+  <div class="suivi-grid">
+    <!-- Détails de l'ordre -->
+    <div class="suivi-card">
+      <h3>Détails de l'ordre</h3>
+      <div class="detail-row">
+        <mat-icon>label</mat-icon>
+        <span>Libellé du paiement : <strong>{{ payment.label }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>group</mat-icon>
+        <span>Nombre de bénéficiaires : <strong>{{ payment.beneficiariesCount }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>payments</mat-icon>
+        <span>Montant total : <strong>{{ payment.amount | number:'1.0-0':'fr' }} XOF</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>account_balance_wallet</mat-icon>
+        <span>Opérateurs : <strong>{{ payment.operatorsCount }}</strong></span>
+      </div>
+      <div class="detail-row">
+        <mat-icon>schedule</mat-icon>
+        <span>Date de soumission : <strong>{{ payment.createdAt | date:'dd MMM yyyy à HH:mm' }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Workflow de validation -->
+    <div class="suivi-card">
+      <h3>Workflow de validation</h3>
+      <div class="approval-step" *ngFor="let step of payment.approvals">
+        <div class="approval-step-header">
+          <span>Approbation - Niveau {{ step.level }}</span>
+          <span class="badge" [ngClass]="{
+            'badge-success': step.status === 'APPROVED',
+            'badge-pending': step.status === 'PENDING',
+            'badge-danger': step.status === 'REJECTED'
+          }">
+            {{ step.status === 'APPROVED' ? 'Approuvé' : step.status === 'REJECTED' ? 'Rejeté' : 'En attente' }}
+          </span>
+        </div>
+        <div class="approval-step-body">
+          <div class="avatar">{{ step.firstName.charAt(0) }}</div>
+          <div>
+            <p class="approbateur-nom">{{ step.firstName }} {{ step.lastName }}</p>
+            <p class="approbateur-role">{{ step.position }}</p>
+            <p class="approbateur-date" *ngIf="step.notifiedAt">Notifié le {{ step.notifiedAt | date:'dd MMM yyyy' }}</p>
+          </div>
+        </div>
+
+        <div class="rejet-motif" *ngIf="step.status === 'REJECTED' && step.rejectReason">
+          <p class="rejet-label">Motif du rejet</p>
+          <p>{{ step.rejectReason }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer dynamique -->
+  <button class="btn-primary" *ngIf="isPending" (click)="relancerApprobateurs()">
+    Relancer les approbateurs
+  </button>
+
+  <div class="renouveler-card" *ngIf="isValidated">
+    <mat-icon class="renouveler-icon">autorenew</mat-icon>
+    <div class="renouveler-text">
+      <h4>Renouveler ce paiement</h4>
+      <p>Cette fonctionnalité vous permet de dupliquer ce paiement pour effectuer un nouveau virement avec les mêmes bénéficiaires et montants.</p>
+    </div>
+    <button class="btn-primary" (click)="renouvelerPaiement()">
+      Renouveler ce paiement
+    </button>
+  </div>
+</div>
+
+<div class="loading-state" *ngIf="isLoading">
+  <mat-icon>hourglass_empty</mat-icon>
+  <p>Chargement en cours...</p>
+</div>

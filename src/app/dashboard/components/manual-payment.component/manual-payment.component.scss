@@ -189,7 +189,9 @@ $radius-sm: 8px;
     border-color: $primary;
   }
 
-  &::placeholder { color: #b0b7c3; }
+  &::placeholder {
+    color: #b0b7c3;
+  }
 }
 
 .label-hint {
@@ -238,7 +240,10 @@ $radius-sm: 8px;
   font-size: 13px;
   color: $text;
 
-  strong { color: $primary; margin-right: 4px; }
+  strong {
+    color: $primary;
+    margin-right: 4px;
+  }
 }
 
 .label-value {
@@ -256,9 +261,15 @@ $radius-sm: 8px;
   white-space: nowrap;
   text-decoration: none;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
 
-  &:hover { opacity: 0.75; }
+  &:hover {
+    opacity: 0.75;
+  }
 }
 
 .recap-card,
@@ -650,9 +661,16 @@ table {
     border-color: #94a3b8;
   }
 
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .kpi-row {

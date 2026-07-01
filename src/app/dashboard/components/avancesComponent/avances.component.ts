@@ -102,7 +102,7 @@ export class AvancesComponent {
         .subscribe({
           next: (result) => {
             if (result.data.activateOrganisationService) {
-              this.snackBarService.showSuccessSnackBar(
+              this.snackBarService.showSuccessSnackBar(3000,
                 'Service activé avec succès'
               );
             } else {
@@ -119,7 +119,7 @@ export class AvancesComponent {
         .subscribe({
           next: (result) => {
             if (result.data.deactivateOrganisationService) {
-              this.snackBarService.showSuccessSnackBar(
+              this.snackBarService.showSuccessSnackBar(3000,
                 'Service désactivé avec succès'
               );
             } else {
@@ -148,7 +148,7 @@ export class AvancesComponent {
       .subscribe(
         (result) => {
           if (result.data.updateOrganization) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Organization modifié avec succès'
             );
           } else {
@@ -180,7 +180,7 @@ export class AvancesComponent {
       .subscribe({
         next: (result) => {
           if (result.data.updateOrganization) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'DATE LIMITE DES DEMANDES EST MODIFIEE'
             );
             this.itemsCardDate.forEach((item) => {

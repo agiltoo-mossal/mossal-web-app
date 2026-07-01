@@ -83,7 +83,7 @@ export class AddCreditComponent {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/society']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               "Opération ajoutée avec succès."
             );
           }

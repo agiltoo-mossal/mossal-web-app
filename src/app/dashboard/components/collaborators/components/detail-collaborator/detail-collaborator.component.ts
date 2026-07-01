@@ -80,7 +80,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.getCollab();
@@ -93,7 +93,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.getCollab();
@@ -140,7 +140,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.cancelDemandeByAdmin) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande annulée avec succés!'
           );
           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
@@ -163,7 +163,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
       .subscribe(
         (result) => {
           if (result.data.rejectDemandeByAdmin) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'demande rejetée avec succés!'
             );
             this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
@@ -184,7 +184,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.validateDemande) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande validée avec succés!'
           );
           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);
@@ -205,7 +205,7 @@ export class DetailCollaboratorComponent implements AfterViewInit {
     this.payeDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.payeDemande) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande payée avec succés!'
           );
           this.fetchDemandesByCollaboratorId(DemandeStatus.Pending);

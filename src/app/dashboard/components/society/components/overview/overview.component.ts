@@ -233,7 +233,7 @@ export class OverviewComponent implements AfterViewInit {
             ? 'Organisation bloquée avec succès!'
             : 'Organisation débloquée avec succès!';
 
-          this.snackBarService.showSuccessSnackBar(message);
+          this.snackBarService.showSuccessSnackBar(3000,message);
         });
         this.fetchOrganizations();
       } else {

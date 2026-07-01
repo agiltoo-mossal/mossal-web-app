@@ -68,7 +68,6 @@ export type ApprovalFlowLevelInput = {
 export type BulkPayment = {
   __typename?: 'BulkPayment';
   amount: Scalars['Float']['output'];
-  approvers?: Maybe<Array<User>>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
@@ -77,7 +76,6 @@ export type BulkPayment = {
   number?: Maybe<Scalars['Int']['output']>;
   organization: Scalars['String']['output'];
   phoneNumber: Scalars['String']['output'];
-  reason?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentStatus;
   updatedAt: Scalars['DateTime']['output'];
   wallet: Wallet;
@@ -85,11 +83,9 @@ export type BulkPayment = {
 
 export type BulkPaymentInput = {
   amount: Scalars['Float']['input'];
-  approvers?: InputMaybe<Array<Scalars['ID']['input']>>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
-  reason?: InputMaybe<Scalars['String']['input']>;
   wallet: Wallet;
 };
 
@@ -124,7 +120,6 @@ export enum BulkPaymentStatus {
 
 export type BulkPaymentUpdateInput = {
   id: Scalars['ID']['input'];
-  reason?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<BulkPaymentStatus>;
 };
 
@@ -1959,7 +1954,7 @@ export type FetchOperationsMetricsQuery = { __typename?: 'Query', fetchOperation
 export type FetchMyBulkPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, reason?: string | null, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
+export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any }> };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3649,15 +3644,9 @@ export const FetchMyBulkPaymentsDocument = gql`
     phoneNumber
     amount
     status
-    reason
     wallet
     organization
     createdBy
-    approvers {
-      id
-      firstName
-      lastName
-    }
     createdAt
     updatedAt
   }
