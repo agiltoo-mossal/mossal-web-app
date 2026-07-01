@@ -354,7 +354,7 @@ export class SidebarComponent implements OnInit {
         icon: 'admin_panel_settings',
       },
       {
-        label: 'Administration',
+        label: 'Suivi des validations',
         link: '/dashboard/organization/fluxAppro',
         icon: 'approval',
       },
