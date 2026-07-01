@@ -38,8 +38,15 @@ $radius-sm: 8px;
   cursor: pointer;
   white-space: nowrap;
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-  &:hover { opacity: 0.75; }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.75;
+  }
 }
 
 .steps {
@@ -57,7 +64,10 @@ $radius-sm: 8px;
   opacity: 0.4;
   transition: opacity 0.2s;
 
-  &.active, &.done { opacity: 1; }
+  &.active,
+  &.done {
+    opacity: 1;
+  }
 
   .step-circle {
     width: 32px;
@@ -72,7 +82,11 @@ $radius-sm: 8px;
     font-weight: 700;
     transition: background 0.2s, color 0.2s;
 
-    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
   }
 
   &.active .step-circle {
@@ -100,7 +114,9 @@ $radius-sm: 8px;
   margin: 0 8px;
   transition: background 0.2s;
 
-  &.done { background: #4caf50; }
+  &.done {
+    background: #4caf50;
+  }
 }
 
 .step-content {
@@ -108,14 +124,21 @@ $radius-sm: 8px;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .two-col-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(300px, 420px) 1fr;
+  gap: 32px;
   align-items: start;
 
   @media (max-width: 900px) {
@@ -123,14 +146,127 @@ $radius-sm: 8px;
   }
 }
 
-.form-card,
-.list-card,
+// Colonne gauche
+.form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: $white;
+  border-radius: $radius;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+// Section libellé (carte grise)
+.label-section {
+  background: #f0f2f8;
+  border-radius: $radius;
+  padding: 20px 20px 16px;
+  margin-bottom: 28px;
+}
+
+.label-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: $primary;
+  margin-bottom: 10px;
+}
+
+.label-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #d1d9f0;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  color: $text;
+  background: $white;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+
+  &::placeholder { color: #b0b7c3; }
+}
+
+.label-hint {
+  font-size: 12px;
+  color: $muted;
+  margin: 8px 0 0;
+}
+
+// Formulaire bénéficiaire (pas de carte)
+.form-panel {
+  padding: 0;
+}
+
+.form-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: $primary;
+  margin: 0 0 6px;
+  line-height: 1.15;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: $muted;
+  margin: 0 0 24px;
+}
+
+// Colonne droite (liste)
+.list-col {
+  background: $white;
+  border-radius: $radius;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+// Label display strip
+.label-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0f2f8;
+  border-radius: $radius-sm;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  gap: 12px;
+  font-size: 13px;
+  color: $text;
+
+  strong { color: $primary; margin-right: 4px; }
+}
+
+.label-value {
+  color: $muted;
+}
+
+.btn-modifier {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: $primary;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &:hover { opacity: 0.75; }
+}
+
 .recap-card,
 .validation-card {
   background: $white;
   border-radius: $radius;
   padding: 28px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
 
   h2 {
     font-size: 17px;
@@ -138,12 +274,6 @@ $radius-sm: 8px;
     color: $text;
     margin: 0 0 4px;
   }
-}
-
-.form-subtitle {
-  font-size: 13px;
-  color: $muted;
-  margin: 0 0 20px;
 }
 
 .form-group {
@@ -157,9 +287,13 @@ $radius-sm: 8px;
     margin-bottom: 6px;
   }
 
-  .required { color: $danger; margin-left: 2px; }
+  .required {
+    color: $danger;
+    margin-left: 2px;
+  }
 
-  input, textarea {
+  input,
+  textarea {
     width: 100%;
     border: 1.5px solid $border;
     border-radius: $radius-sm;
@@ -171,8 +305,13 @@ $radius-sm: 8px;
     transition: border-color 0.15s;
     box-sizing: border-box;
 
-    &:focus { border-color: $primary; }
-    &::placeholder { color: #b0b7c3; }
+    &:focus {
+      border-color: $primary;
+    }
+
+    &::placeholder {
+      color: #b0b7c3;
+    }
   }
 
   textarea {
@@ -189,7 +328,9 @@ $radius-sm: 8px;
   overflow: hidden;
   transition: border-color 0.15s;
 
-  &:focus-within { border-color: $primary; }
+  &:focus-within {
+    border-color: $primary;
+  }
 
   input {
     flex: 1;
@@ -227,7 +368,9 @@ $radius-sm: 8px;
     cursor: pointer;
     transition: border-color 0.15s;
 
-    &:focus { border-color: $primary; }
+    &:focus {
+      border-color: $primary;
+    }
   }
 
   mat-icon {
@@ -256,8 +399,15 @@ $radius-sm: 8px;
   margin-top: 8px;
   transition: background 0.2s;
 
-  &:hover { background: darken($primary, 8%); }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover {
+    background: darken($primary, 8%);
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .list-header {
@@ -287,9 +437,9 @@ $radius-sm: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #fdecea;
-  color: $danger;
-  border: none;
+  background: $white;
+  color: $primary;
+  border: 1.5px solid $primary;
   border-radius: $radius-sm;
   padding: 8px 14px;
   font-size: 13px;
@@ -297,8 +447,15 @@ $radius-sm: 8px;
   cursor: pointer;
   transition: background 0.2s;
 
-  &:hover { background: #fbc4c4; }
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  &:hover {
+    background: $primary-light;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .table-wrapper {
@@ -333,8 +490,13 @@ table {
     vertical-align: middle;
   }
 
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: $bg; }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: $bg;
+  }
 }
 
 .btn-delete {
@@ -348,8 +510,15 @@ table {
   border-radius: 6px;
   transition: background 0.15s;
 
-  &:hover { background: #fdecea; }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover {
+    background: #fdecea;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .total-row {
@@ -386,15 +555,24 @@ table {
     opacity: 0.3;
   }
 
-  p { font-size: 14px; margin: 0; }
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
 }
 
 .bottom-actions {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-top: 28px;
+  gap: 24px;
+  margin-top: 36px;
   flex-wrap: wrap;
+
+  .btn-secondary,
+  .btn-primary {
+    min-width: 240px;
+    justify-content: center;
+  }
 }
 
 .btn-primary {
@@ -411,9 +589,20 @@ table {
   cursor: pointer;
   transition: background 0.2s, opacity 0.2s;
 
-  &:hover:not(:disabled) { background: darken($primary, 8%); }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover:not(:disabled) {
+    background: darken($primary, 8%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .btn-secondary {
@@ -430,7 +619,39 @@ table {
   cursor: pointer;
   transition: background 0.2s;
 
-  &:hover { background: $primary-light; }
+  &:hover {
+    background: $primary-light;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+
+.btn-brouillon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  border-radius: $radius-sm;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
@@ -440,14 +661,16 @@ table {
   gap: 16px;
   margin-bottom: 20px;
 
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .kpi-card {
   background: $white;
   border-radius: $radius;
   padding: 20px 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
 }
 
 .kpi-label {
@@ -462,14 +685,16 @@ table {
   color: $text;
   margin: 0;
 
-  &.kpi-green { color: #16a34a; }
+  &.kpi-green {
+    color: #16a34a;
+  }
 }
 
 .repartition-card {
   background: $white;
   border-radius: $radius;
   padding: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
   margin-bottom: 20px;
 }
 
@@ -594,7 +819,10 @@ table {
     }
   }
 
-  h2 { font-size: 20px; margin-bottom: 12px; }
+  h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
 
   p {
     color: $muted;
@@ -603,7 +831,9 @@ table {
     margin-bottom: 28px;
   }
 
-  .btn-primary { margin: 0 auto; }
+  .btn-primary {
+    margin: 0 auto;
+  }
 }
 
 .actions {
@@ -633,4 +863,84 @@ table {
 .btn-edit:hover,
 .btn-delete:hover {
   opacity: 0.7;
+}
+
+// Workflow de validation
+.workflow-card {
+  background: $white;
+  border-radius: $radius;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+  margin-bottom: 24px;
+}
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text;
+    margin: 0;
+  }
+}
+
+.badge-selected {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.approbateur-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid $border;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.app-info {
+  flex: 1;
+
+  .app-nom {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+  }
+
+  .app-role {
+    font-size: 11px;
+    color: $muted;
+    margin: 0;
+  }
+}
+
+.badge-attente {
+  background: #FFF4E5;
+  color: #FF9500;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
 }

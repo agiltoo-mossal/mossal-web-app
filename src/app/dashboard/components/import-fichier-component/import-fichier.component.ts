@@ -34,6 +34,7 @@ export class ImportFichierComponent implements OnInit {
   fileError: string = '';
   isDragging = false;
   isSubmitting = false;
+  isSavingDraft = false;
   isEditing = false;
 
   readonly OPERATEURS = ['Wave', 'Orange Money'];
@@ -110,7 +111,7 @@ export class ImportFichierComponent implements OnInit {
   ngOnInit(): void {
     this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
       next: ({ data }) => {
-        this.approvalFlowApprovers = (data.fetchApprovalFlow?.approvalFlow ?? [])
+        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
           .sort((a, b) => a.level - b.level)
           .map((item) => ({
             nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
@@ -359,21 +360,29 @@ export class ImportFichierComponent implements OnInit {
     return this.WALLET_MAP[operateur.toLowerCase().trim()] ?? Wallet.Wave;
   }
 
-  onSoumettre(): void {
-    const validRows = this.validationRows.filter(r => !r.errors?.length);
-    if (!validRows.length || this.isSubmitting) return;
+  private buildPaymentInputs(): BulkPaymentInput[] {
+    return this.validationRows
+      .filter(r => !r.errors?.length)
+      .map(row => ({
+        firstName:   row.prenom,
+        lastName:    row.nom,
+        phoneNumber: this.normalizePhone(row.telephone),
+        amount:      this.parseMontant(row.montant),
+        ...(row.motif && { reason: row.motif }),
+        wallet:      this.toWallet(row.operateur),
+      }));
+  }
 
-    const inputs: BulkPaymentInput[] = validRows.map(row => ({
-      firstName:   row.prenom,
-      lastName:    row.nom,
-      phoneNumber: this.normalizePhone(row.telephone),
-      amount:      this.parseMontant(row.montant),
-      ...(row.motif && { reason: row.motif }),
-      wallet:      this.toWallet(row.operateur),
-    }));
+  private get fileLabel(): string {
+    return this.selectedFile?.name ?? 'Import fichier';
+  }
+
+  onSoumettre(): void {
+    const inputs = this.buildPaymentInputs();
+    if (!inputs.length || this.isSubmitting) return;
 
     this.isSubmitting = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs }).subscribe({
+    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: false }).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.router.navigate(['../'], { relativeTo: this.route });
@@ -381,6 +390,23 @@ export class ImportFichierComponent implements OnInit {
       error: () => {
         this.isSubmitting = false;
         this.snackBar.showErrorSnackBar(4000, 'Erreur lors de la soumission de l\'ordre de paiement.');
+      },
+    });
+  }
+
+  onSaveDraft(): void {
+    const inputs = this.buildPaymentInputs();
+    if (!inputs.length || this.isSavingDraft) return;
+
+    this.isSavingDraft = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: true }).subscribe({
+      next: () => {
+        this.isSavingDraft = false;
+        this.router.navigate(['../'], { relativeTo: this.route });
+      },
+      error: () => {
+        this.isSavingDraft = false;
+        this.snackBar.showErrorSnackBar(4000, 'Erreur lors de l\'enregistrement du brouillon.');
       },
     });
   }

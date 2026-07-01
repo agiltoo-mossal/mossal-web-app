@@ -1,24 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
-import { BulkPayment, BulkPaymentStatus, FetchMyBulkPaymentsGQL } from 'src/graphql/generated';
+import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
 
-const STATUS_LABELS: Record<BulkPaymentStatus, string> = {
-  [BulkPaymentStatus.Pending]:   'En attente',
-  [BulkPaymentStatus.InProcess]: 'En cours',
-  [BulkPaymentStatus.Validated]: 'Validé',
-  [BulkPaymentStatus.Payed]:     'Payé',
-  [BulkPaymentStatus.Rejected]:  'Rejeté',
-  [BulkPaymentStatus.Cancelled]: 'Annulé',
+const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
+  [BulkPaymentOrderStatus.Draft]:    'Brouillon',
+  [BulkPaymentOrderStatus.Pending]:  'En attente',
+  [BulkPaymentOrderStatus.Approved]: 'Validé',
+  [BulkPaymentOrderStatus.Rejected]: 'Rejeté',
 };
 
-const STATUS_BADGE: Record<BulkPaymentStatus, string> = {
-  [BulkPaymentStatus.Pending]:   'badge-attente',
-  [BulkPaymentStatus.InProcess]: 'badge-en-cours',
-  [BulkPaymentStatus.Validated]: 'badge-valide',
-  [BulkPaymentStatus.Payed]:     'badge-valide',
-  [BulkPaymentStatus.Rejected]:  'badge-rejete',
-  [BulkPaymentStatus.Cancelled]: 'badge-rejete',
+const STATUS_BADGE: Record<BulkPaymentOrderStatus, string> = {
+  [BulkPaymentOrderStatus.Draft]:    'badge-brouillon',
+  [BulkPaymentOrderStatus.Pending]:  'badge-attente',
+  [BulkPaymentOrderStatus.Approved]: 'badge-valide',
+  [BulkPaymentOrderStatus.Rejected]: 'badge-rejete',
 };
 
 @Component({
@@ -33,7 +29,7 @@ export class OverviewComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private fetchMyBulkPaymentsGQL: FetchMyBulkPaymentsGQL,
+    private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
   ) {}
 
   isLoading = true;
@@ -53,7 +49,7 @@ export class OverviewComponent implements OnInit {
   get selectedDate() { return this._selectedDate; }
   set selectedDate(v: string) { this._selectedDate = v; this.resetPage(); }
 
-  bulkPayments: BulkPayment[] = [];
+  orders: BulkPaymentOrder[] = [];
 
   readonly statusOptions = Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label }));
 
@@ -68,29 +64,23 @@ export class OverviewComponent implements OnInit {
   })();
 
   ngOnInit(): void {
-    this.fetchMyBulkPaymentsGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+    this.fetchMyBulkPaymentOrdersGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
       next: (res) => {
-        this.bulkPayments = (res.data?.fetchMyBulkPayments ?? []) as BulkPayment[];
+        this.orders = (res.data?.fetchMyBulkPaymentOrders ?? []) as BulkPaymentOrder[];
         this.isLoading = false;
       },
-      error: () => {
-        this.isLoading = false;
-      },
+      error: () => { this.isLoading = false; },
     });
   }
 
-  get filteredPayments(): BulkPayment[] {
+  get filteredOrders(): BulkPaymentOrder[] {
     const search = this.searchText.toLowerCase();
-    return this.bulkPayments.filter((p) => {
-      const matchSearch = !search ||
-        p.firstName?.toLowerCase().includes(search) ||
-        p.lastName?.toLowerCase().includes(search) ||
-        p.phoneNumber?.includes(search) ||
-        String(p.number)?.includes(search);
-      const matchStatut = !this.selectedStatut || p.status === this.selectedStatut;
+    return this.orders.filter((o) => {
+      const matchSearch = !search || o.label?.toLowerCase().includes(search);
+      const matchStatut = !this.selectedStatut || o.status === this.selectedStatut;
       const matchDate = !this.selectedDate || (() => {
-        if (!p.createdAt) return false;
-        const d = new Date(p.createdAt);
+        if (!o.createdAt) return false;
+        const d = new Date(o.createdAt);
         const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         return ym === this.selectedDate;
       })();
@@ -98,18 +88,16 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  statusLabel(status: BulkPaymentStatus): string {
+  statusLabel(status: BulkPaymentOrderStatus): string {
     return STATUS_LABELS[status] ?? status;
   }
 
-  statusBadge(status: BulkPaymentStatus): string {
+  statusBadge(status: BulkPaymentOrderStatus): string {
     return STATUS_BADGE[status] ?? 'badge-attente';
   }
 
-  formatNumber(n?: number | null): string {
-    if (n == null) return '—';
-    const year = new Date().getFullYear().toString().slice(-2);
-    return `${year}-${String(n).padStart(3, '0')}`;
+  approversLabel(order: BulkPaymentOrder): string {
+    return (order.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
   }
 
   resetPage(): void {
@@ -121,9 +109,9 @@ export class OverviewComponent implements OnInit {
     this.pageSize = event.pageSize;
   }
 
-  get paginatedPayments(): BulkPayment[] {
+  get paginatedOrders(): BulkPaymentOrder[] {
     const start = this.pageIndex * this.pageSize;
-    return this.filteredPayments.slice(start, start + this.pageSize);
+    return this.filteredOrders.slice(start, start + this.pageSize);
   }
 
   reinitialiser(): void {
@@ -138,5 +126,9 @@ export class OverviewComponent implements OnInit {
 
   onGestionManuelle(): void {
     this.router.navigate(['../payments/manual'], { relativeTo: this.route });
+  }
+
+  onVoirHistorique(): void {
+    this.reinitialiser();
   }
 }

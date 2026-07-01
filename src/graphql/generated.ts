@@ -93,6 +93,26 @@ export type BulkPaymentInput = {
   wallet: Wallet;
 };
 
+export type BulkPaymentOrder = {
+  __typename?: 'BulkPaymentOrder';
+  approvers?: Maybe<Array<User>>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  organization: Scalars['String']['output'];
+  status: BulkPaymentOrderStatus;
+  totalAmount: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum BulkPaymentOrderStatus {
+  Approved = 'APPROVED',
+  Draft = 'DRAFT',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
 export enum BulkPaymentStatus {
   Cancelled = 'CANCELLED',
   InProcess = 'IN_PROCESS',
@@ -349,6 +369,7 @@ export type InviteCollaboratorInput = {
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
   position: Scalars['String']['input'];
+  roles?: InputMaybe<Array<UserRole>>;
   salary?: InputMaybe<Scalars['Float']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -370,7 +391,7 @@ export type Mutation = {
   cancelBulkPayment: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createBulkPayment: BulkPayment;
-  createBulkPaymentOrder: Array<BulkPayment>;
+  createBulkPaymentOrder: BulkPaymentOrder;
   createCategorySociopro: CategorySociopro;
   createCategorySocioproService: CategorySocioproService;
   createEvent: Event;
@@ -471,6 +492,8 @@ export type MutationCreateBulkPaymentArgs = {
 
 export type MutationCreateBulkPaymentOrderArgs = {
   inputs: Array<BulkPaymentInput>;
+  isDraft?: InputMaybe<Scalars['Boolean']['input']>;
+  label: Scalars['String']['input'];
 };
 
 
@@ -1028,6 +1051,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchMyBulkPaymentOrders: Array<BulkPaymentOrder>;
   fetchMyBulkPayments: Array<BulkPayment>;
   fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
@@ -1450,6 +1474,7 @@ export type UpdateCollaboratorInput = {
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
   position: Scalars['String']['input'];
+  roles?: InputMaybe<Array<UserRole>>;
   salary?: InputMaybe<Scalars['Float']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1853,7 +1878,7 @@ export type FetchOrganizationCollaboratorQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, organization?: { __typename?: 'Organization', name: string } | null, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null } | null } };
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, roles?: Array<string> | null, organization?: { __typename?: 'Organization', name: string } | null, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null } | null } };
 
 export type UpdateCollaboratorMutationVariables = Exact<{
   collaboratorInput: UpdateCollaboratorInput;
@@ -1866,10 +1891,12 @@ export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollab
 
 export type CreateBulkPaymentOrderMutationVariables = Exact<{
   inputs: Array<BulkPaymentInput> | BulkPaymentInput;
+  label: Scalars['String']['input'];
+  isDraft?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, reason?: string | null, wallet: Wallet, organization: string, createdBy: string, createdAt: any }> };
+export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any } };
 
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1933,6 +1960,11 @@ export type FetchMyBulkPaymentsQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, reason?: string | null, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
+
+export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -3297,6 +3329,7 @@ export const FetchOrganizationCollaboratorDocument = gql`
     blocked
     balance
     totalDemandeAmount
+    roles
     organization {
       name
     }
@@ -3339,19 +3372,12 @@ export const UpdateCollaboratorDocument = gql`
     }
   }
 export const CreateBulkPaymentOrderDocument = gql`
-    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!) {
-  createBulkPaymentOrder(inputs: $inputs) {
+    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean) {
+  createBulkPaymentOrder(inputs: $inputs, label: $label, isDraft: $isDraft) {
     id
-    number
-    firstName
-    lastName
-    phoneNumber
-    amount
+    label
+    totalAmount
     status
-    reason
-    wallet
-    organization
-    createdBy
     createdAt
   }
 }
@@ -3643,6 +3669,33 @@ export const FetchMyBulkPaymentsDocument = gql`
   })
   export class FetchMyBulkPaymentsGQL extends Apollo.Query<FetchMyBulkPaymentsQuery, FetchMyBulkPaymentsQueryVariables> {
     document = FetchMyBulkPaymentsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchMyBulkPaymentOrdersDocument = gql`
+    query FetchMyBulkPaymentOrders {
+  fetchMyBulkPaymentOrders {
+    id
+    label
+    totalAmount
+    status
+    approvers {
+      id
+      firstName
+      lastName
+    }
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMyBulkPaymentOrdersGQL extends Apollo.Query<FetchMyBulkPaymentOrdersQuery, FetchMyBulkPaymentOrdersQueryVariables> {
+    document = FetchMyBulkPaymentOrdersDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

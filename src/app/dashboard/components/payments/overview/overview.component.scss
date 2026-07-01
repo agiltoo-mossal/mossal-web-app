@@ -12,22 +12,22 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
 
 .payments-container {
   padding: 24px;
-  background: #f4f7fc;
+  background: transparent;
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
   color: $text;
 }
 
 .cards-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  justify-content: space-between;
   gap: 20px;
   margin-bottom: 24px;
 }
 
 .card {
   background: $white;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 28px 24px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
@@ -35,6 +35,7 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  width: 480px;
 
   &-highlight {
     background: linear-gradient(135deg, #e8eef8 0%, #dce6f5 100%);
@@ -55,10 +56,8 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
 }
 
 .card-icon-wrapper {
-  width: 64px;
-  height: 64px;
-  border: 2.5px solid $primary;
-  border-radius: 14px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +69,12 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
     height: 32px;
     color: $primary;
   }
+}
+
+.card-img-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
 }
 
 .card-btn {
@@ -91,23 +96,28 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
 .filters-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: $white;
-  border-radius: 10px;
-  padding: 10px 16px;
+  gap: 16px;
   margin-bottom: 6px;
+}
+
+.filters-bar {
+  display: flex;
+  align-items: stretch;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 48px;
   box-shadow: 0 1px 4px rgba(0,0,0,.05);
 }
 
-.search-wrapper {
+.filter-search {
   display: flex;
   align-items: center;
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 4px 10px;
-  gap: 6px;
-  flex: 1;
-  max-width: 190px;
+  gap: 8px;
+  padding: 0 14px;
+  width: 180px;
+  height: 48px;
 
   input {
     border: none;
@@ -120,19 +130,28 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   }
 
   .search-icon, .clear-icon {
-    font-size: 18px;
+    font-size: 20px;
     color: $muted;
     cursor: pointer;
+    flex-shrink: 0;
   }
+}
+
+.filter-divider {
+  width: 1px;
+  background: $border;
+  align-self: stretch;
 }
 
 .filter-select {
   display: flex;
   align-items: center;
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 4px 10px;
-  gap: 4px;
+  padding: 0 16px;
+  gap: 6px;
+  height: 48px;
+
+  &.statut { width: 180px; }
+  &.date   { width: 220px; }
 
   select {
     border: none;
@@ -142,28 +161,43 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
     background: transparent;
     cursor: pointer;
     appearance: none;
+    width: 100%;
   }
 
-  mat-icon { font-size: 18px; color: $muted; }
+  mat-icon { font-size: 18px; color: $muted; flex-shrink: 0; }
 }
 
 .btn-reinitialiser {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   background: $primary;
   color: $white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 20px;
+  border-radius: 0;
+  width: 220px;
+  height: 48px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  margin-left: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
 
-  mat-icon { font-size: 18px; }
+  .btn-icon { width: 18px; height: 18px; object-fit: contain; }
 
   &:hover { background: darken($primary, 8%); }
+}
+
+.voir-historique {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+  margin-left: auto;
+  &:hover { opacity: .8; }
 }
 
 .table-wrapper {
@@ -186,8 +220,7 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
         font-weight: 700;
         color: $muted;
         text-align: left;
-        text-transform: uppercase;
-        letter-spacing: .4px;
+        letter-spacing: .2px;
       }
     }
 
@@ -221,9 +254,10 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
     border-radius: 50%;
   }
 
-  &-attente { background: $attente-bg; color: $attente-text; .dot { background: $attente-dot; } }
-  &-valide  { background: $valide-bg;  color: $valide-text;  .dot { background: $valide-dot;  } }
-  &-rejete  { background: $rejete-bg;  color: $rejete-text;  .dot { background: $rejete-dot;  } }
+  &-attente    { background: $attente-bg; color: $attente-text; .dot { background: $attente-dot; } }
+  &-valide     { background: $valide-bg;  color: $valide-text;  .dot { background: $valide-dot;  } }
+  &-rejete     { background: $rejete-bg;  color: $rejete-text;  .dot { background: $rejete-dot;  } }
+  &-brouillon  { background: #f1f5f9;     color: #475569;       .dot { background: #94a3b8;       } }
 }
 
 .voir-details {
@@ -318,9 +352,61 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   &:hover { text-decoration: underline; }
 }
 
-@media (max-width: 900px) {
-  .cards-row, .bottom-row { grid-template-columns: 1fr; }
-  .filters-row { flex-wrap: wrap; }
+// Tablet
+@media (max-width: 1100px) {
+  .card { width: auto; flex: 1; }
+}
+
+// Mobile
+@media (max-width: 768px) {
+  .payments-container { padding: 16px; }
+
+  // Cartes
+  .cards-row { flex-direction: column; gap: 16px; }
+  .card { width: 100%; }
+
+  // Barre de filtres
+  .filters-row { flex-direction: column; align-items: stretch; gap: 10px; }
+
+  .filters-bar {
+    flex-direction: column;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  .filter-search {
+    width: 100%;
+    height: 44px;
+  }
+
+  .filter-divider {
+    width: 100%;
+    height: 1px;
+    align-self: auto;
+  }
+
+  .filter-select {
+    width: 100% !important;
+    height: 44px;
+  }
+
+  .btn-reinitialiser {
+    width: 100%;
+    height: 44px;
+    border-radius: 0 0 9px 9px;
+  }
+
+  .voir-historique {
+    margin-left: 0;
+    text-align: right;
+  }
+
+  // Table
+  .table-wrapper { overflow-x: auto; }
+
+  table {
+    min-width: 600px;
+  }
 }
 
 .modal-overlay {

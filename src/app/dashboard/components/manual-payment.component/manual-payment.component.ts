@@ -1,15 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BulkPaymentInput, CreateBulkPaymentOrderGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+
+interface WorkflowApprobateur {
+  nom: string;
+  role: string;
+  statut: string;
+  avatar: string;
+}
 
 interface BeneficiaryForm {
   firstName: string;
   lastName: string;
   phoneNumber: string;
   amount: number;
-  reason: string;
   wallet: Wallet | '';
 }
 
@@ -20,9 +26,12 @@ interface BeneficiaryForm {
 })
 export class ManualPaymentComponent implements OnInit {
 
+  @ViewChild('labelInput') labelInputRef: ElementRef<HTMLInputElement>;
+
   currentStep = 1;
   editingIndex: number | null = null;
   isSubmitting = false;
+  isSavingDraft = false;
 
   readonly walletOptions: { label: string; value: Wallet }[] = [
     { label: 'Wave', value: Wallet.Wave },
@@ -31,16 +40,33 @@ export class ManualPaymentComponent implements OnInit {
 
   form: BeneficiaryForm = this.emptyForm();
 
+  label = '';
+  isEditingLabel = false;
   beneficiaries: BeneficiaryForm[] = [];
+  approvalFlowApprovers: WorkflowApprobateur[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBarService: SnackBarService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
+          .sort((a, b) => a.level - b.level)
+          .map((item) => ({
+            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
+            role: `Approbateur ${item.level}`,
+            statut: 'En attente',
+            avatar: (item.approverFirstName?.[0] ?? '').toUpperCase() + (item.approverLastName?.[0] ?? '').toUpperCase(),
+          }));
+      },
+    });
+  }
 
   private readonly WALLET_COLORS: Record<string, string> = {
     [Wallet.Wave]:        '#06b6d4',
@@ -103,25 +129,41 @@ export class ManualPaymentComponent implements OnInit {
     }
   }
 
-  goToRecap(): void {
-    if (this.beneficiaries.length === 0) return;
-    this.currentStep = 2;
+  focusLabel(): void {
+    this.labelInputRef?.nativeElement?.focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  submitOrder(): void {
-    this.isSubmitting = true;
+  goToRecap(): void {
+    if (this.beneficiaries.length === 0) return;
+    this.isSavingDraft = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true }).subscribe({
+      next: () => {
+        this.isSavingDraft = false;
+        this.currentStep = 2;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: () => {
+        this.isSavingDraft = false;
+        this.currentStep = 2;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+    });
+  }
 
-    const inputs: BulkPaymentInput[] = this.beneficiaries.map((b) => ({
+  private buildInputs(): BulkPaymentInput[] {
+    return this.beneficiaries.map((b) => ({
       firstName: b.firstName,
       lastName: b.lastName,
       phoneNumber: b.phoneNumber,
       amount: b.amount,
-      reason: b.reason || undefined,
       wallet: b.wallet as Wallet,
     }));
+  }
 
-    this.createBulkPaymentOrderGQL.mutate({ inputs }).subscribe({
+  submitOrder(): void {
+    this.isSubmitting = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.currentStep = 3;
@@ -147,6 +189,6 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   private emptyForm(): BeneficiaryForm {
-    return { firstName: '', lastName: '', phoneNumber: '', amount: null, reason: '', wallet: '' };
+    return { firstName: '', lastName: '', phoneNumber: '', amount: null, wallet: '' };
   }
 }

@@ -34,9 +34,9 @@ export class FormAdminComponent {
   isRoleDropdownOpen: boolean = false;
   selectedRoles: string[] = [];
   availableRoles = [
-    { value: 'ADMINISTRATEUR', label: 'Administrateur' },
-    { value: 'GESTIONNAIRE', label: 'Gestionnaire' },
-    { value: 'APPROBATEUR', label: 'Approbateur' },
+    { value: 'ADMIN', label: 'Administrateur' },
+    { value: 'PAYMENT_MANAGER', label: 'Gestionnaire des paiements' },
+    { value: 'APPROVER', label: 'Approbateur' },
   ];
 
   constructor(
@@ -165,6 +165,8 @@ export class FormAdminComponent {
         .subscribe((result) => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);
+          this.selectedRoles = [...(this.collaborator.roles ?? [])];
+          this.collaboratorForm.get('roles').setValue(this.selectedRoles);
         });
     }
   }
