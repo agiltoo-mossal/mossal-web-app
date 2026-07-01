@@ -151,7 +151,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/collaborators']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Invitation envoyé au collaborateur'
             );
           }
@@ -194,7 +194,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/collaborators']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Collaborator modifié avec succés'
             );
           }
@@ -381,7 +381,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.getCollab();
@@ -394,7 +394,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.getCollab();

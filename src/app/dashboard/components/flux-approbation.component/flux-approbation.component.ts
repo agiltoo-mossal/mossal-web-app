@@ -138,7 +138,7 @@ export class FluxApprobationComponent implements OnInit {
       .subscribe({
         next: () => {
           this.loading = false;
-          this.snackBar.showSuccessSnackBar('Flux d\'approbation enregistré avec succès');
+          this.snackBar.showSuccessSnackBar(3000,'Flux d\'approbation enregistré avec succès');
         },
         error: () => {
           this.loading = false;

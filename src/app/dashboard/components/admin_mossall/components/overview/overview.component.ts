@@ -191,7 +191,7 @@ export class OverviewComponent implements AfterViewInit {
             ? 'Utilisateur bloquée avec succès!'
             : 'Utilisateur débloquée avec succès!';
 
-          this.snackBarService.showSuccessSnackBar(message);
+          this.snackBarService.showSuccessSnackBar(3000,message);
         });
         this.fetchAdmins();
       } else {

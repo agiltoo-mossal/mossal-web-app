@@ -44,7 +44,7 @@ export class SnackBarService {
     });
   }
 
-  public showSuccessSnackBar(message: string) {
+  public showSuccessSnackBar(p0: number, message: string) {
     this.showSnackBar(message, "X", { panelClass: SnackBarClassByResult.Success, duration: 4000 })
   }
 

@@ -65,6 +65,7 @@ import { AvancesComponent } from './components/avancesComponent/avances.componen
 import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
 import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
+import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
 
 
 @NgModule({
@@ -95,7 +96,9 @@ import { FluxApprobationComponent } from './components/flux-approbation.componen
     AvancesComponent,
     ImportFichierComponent,
     ManualPaymentComponent,
-    FluxApprobationComponent
+    FluxApprobationComponent,
+    PaymentDetailsComponent,
+
   ],
   imports: [
     CreateEventModule,

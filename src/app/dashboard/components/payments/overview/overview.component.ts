@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { BulkPayment, BulkPaymentStatus, FetchMyBulkPaymentsGQL } from 'src/graphql/generated';
+import { SelectedPaymentService } from 'src/app/shared/services/selected-payment.service';
 
 const STATUS_LABELS: Record<BulkPaymentStatus, string> = {
   [BulkPaymentStatus.Pending]:   'En attente',
@@ -34,6 +35,8 @@ export class OverviewComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fetchMyBulkPaymentsGQL: FetchMyBulkPaymentsGQL,
+      private selectedPaymentService: SelectedPaymentService,
+
   ) {}
 
   isLoading = true;
@@ -139,4 +142,24 @@ export class OverviewComponent implements OnInit {
   onGestionManuelle(): void {
     this.router.navigate(['../payments/manual'], { relativeTo: this.route });
   }
+
+
+
+    onVoirDetails(payment: BulkPayment): void {
+      const mockStatus =
+        payment.status === 'PENDING'
+          ? 'PENDING'
+          : payment.status === 'VALIDATED' || payment.status === 'PAYED'
+          ? 'VALIDATED'
+          : 'REJECTED';
+
+      this.router.navigate(
+        ['/dashboard/payments/details', payment.id],
+        {
+          queryParams: {
+            status: mockStatus
+          }
+        }
+      );
+    }
 }
