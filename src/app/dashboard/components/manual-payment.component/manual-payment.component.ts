@@ -1,17 +1,23 @@
-import { Component, OnInit , ViewChild, ElementRef} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BulkPaymentInput, CreateBulkPaymentOrderGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+
+interface WorkflowApprobateur {
+  nom: string;
+  role: string;
+  statut: string;
+  avatar: string;
+}
 
 interface BeneficiaryForm {
   firstName: string;
   lastName: string;
   phoneNumber: string;
   amount: number;
-  reason: string;
   wallet: Wallet | '';
-  
+
 }
 
 interface ApprovalStep {
@@ -36,14 +42,12 @@ interface OrderSummary {
   styleUrls: ['./manual-payment.component.scss']
 })
 export class ManualPaymentComponent implements OnInit {
-  @ViewChild('labelInput') labelInputRef!: ElementRef<HTMLInputElement>;
-
+  @ViewChild('labelInput') labelInputRef: ElementRef<HTMLInputElement>;
 
   currentStep = 1;
   editingIndex: number | null = null;
   isSubmitting = false;
-  paymentLabel: string = '';
-  isEditingLabel: boolean = false;
+  isSavingDraft = false;
 
   readonly walletOptions: { label: string; value: Wallet }[] = [
     { label: 'Wave', value: Wallet.Wave },
@@ -52,21 +56,38 @@ export class ManualPaymentComponent implements OnInit {
 
   form: BeneficiaryForm = this.emptyForm();
 
+  label = '';
+  isEditingLabel = false;
   beneficiaries: BeneficiaryForm[] = [];
+  approvalFlowApprovers: WorkflowApprobateur[] = [];
   orderSummary: OrderSummary | null = null;
-approvalSteps: ApprovalStep[] = [];
+  approvalSteps: ApprovalStep[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBarService: SnackBarService,
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
+          .sort((a, b) => a.level - b.level)
+          .map((item) => ({
+            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
+            role: `Approbateur ${item.level}`,
+            statut: 'En attente',
+            avatar: (item.approverFirstName?.[0] ?? '').toUpperCase() + (item.approverLastName?.[0] ?? '').toUpperCase(),
+          }));
+      },
+    });
+  }
 
   private readonly WALLET_COLORS: Record<string, string> = {
-    [Wallet.Wave]:        '#06b6d4',
+    [Wallet.Wave]: '#06b6d4',
     [Wallet.OrangeMoney]: '#f97316',
   };
 
@@ -83,18 +104,13 @@ approvalSteps: ApprovalStep[] = [];
     }
     const total = this.beneficiaries.length;
     return Array.from(map.entries()).map(([wallet, data]) => ({
-      nom:           this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
+      nom: this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
       beneficiaires: data.count,
-      montant:       data.total,
-      pourcentage:   total > 0 ? Math.round((data.count / total) * 100) : 0,
-      couleur:       this.WALLET_COLORS[wallet] ?? '#6366f1',
+      montant: data.total,
+      pourcentage: total > 0 ? Math.round((data.count / total) * 100) : 0,
+      couleur: this.WALLET_COLORS[wallet] ?? '#6366f1',
     }));
   }
-
-    focusLabelInput(): void {
-        this.labelInputRef.nativeElement.focus();
-        this.labelInputRef.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-   }
 
   addBeneficiary(form: NgForm): void {
     if (form.invalid) {
@@ -121,66 +137,72 @@ approvalSteps: ApprovalStep[] = [];
     this.editingIndex = index;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-s
+
   deleteBeneficiary(index: number): void {
     this.beneficiaries.splice(index, 1);
   }
 
- 
+
   clearList(): void {
     if (confirm('Voulez-vous vraiment vider la liste des bénéficiaires ?')) {
       this.beneficiaries = [];
     }
   }
 
-  goToRecap(): void {
-    if (this.beneficiaries.length === 0|| !this.paymentLabel.trim()) return;
-    this.currentStep = 2;
+  focusLabel(): void {
+    this.labelInputRef?.nativeElement?.focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  submitOrder(): void {
-    this.isSubmitting = true;
+  goToRecap(): void {
+    if (this.beneficiaries.length === 0) return;
+    this.isSavingDraft = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true }).subscribe({
+      next: () => {
+        this.isSavingDraft = false;
+        this.currentStep = 2;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: () => {
+        this.isSavingDraft = false;
+        this.currentStep = 2;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+    });
+  }
 
-    const inputs: BulkPaymentInput[] = this.beneficiaries.map((b) => ({
+  private buildInputs(): BulkPaymentInput[] {
+    return this.beneficiaries.map((b) => ({
       firstName: b.firstName,
       lastName: b.lastName,
       phoneNumber: b.phoneNumber,
       amount: b.amount,
-      reason: b.reason || undefined,
       wallet: b.wallet as Wallet,
     }));
+  }
 
-    this.createBulkPaymentOrderGQL.mutate({ inputs }).subscribe({
+  submitOrder(): void {
+    this.isSubmitting = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
       next: () => {
         this.isSubmitting = false;
 
 
-// TODO: remplacer par les vraies données issues de `result.data` une fois le backend prêt
-      this.orderSummary = {
-        libelle: this.paymentLabel,
-        nombreBeneficiaires: this.beneficiaries.length,
-        montantTotal: this.totalAmount,
-        operateurs: this.recapRepartition.length,
-        dateSoumission: new Date().toLocaleString('fr-FR'),
-      };
-
-      this.approvalSteps = [
-        {
-          niveau: 1,
-          approbateurNom: 'Khadija Sarr',
-          approbateurRole: 'Approbateur N°1',
-          statut: 'en_attente',
+        this.orderSummary = {
+          libelle: this.label,
+          nombreBeneficiaires: this.beneficiaries.length,
+          montantTotal: this.totalAmount,
+          operateurs: this.recapRepartition.length,
+          dateSoumission: new Date().toLocaleString('fr-FR'),
+        };
+        this.approvalSteps = this.approvalFlowApprovers.map((a, i) => ({
+          niveau: i + 1,
+          approbateurNom: a.nom,
+          approbateurRole: a.role,
+          statut: 'en_attente' as const,
           dateNotification: new Date().toLocaleDateString('fr-FR'),
-        },
-        {
-          niveau: 2,
-          approbateurNom: 'Mata Sarr',
-          approbateurRole: 'Approbateur N°2',
-          statut: 'en_attente',
-        },
-      ];
-        
+        }));
+
         this.currentStep = 3;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       },
@@ -191,10 +213,10 @@ s
     });
   }
 
-relancerApprobateurs(): void {
-  // TODO: appeler la mutation de relance une fois définie côté backend
-  this.snackBarService.showSuccessSnackBar(3000, 'Notification envoyée aux approbateurs.');
-}
+  relancerApprobateurs(): void {
+    // TODO: appeler la mutation de relance une fois définie côté backend
+    this.snackBarService.showSuccessSnackBar(3000, 'Notification envoyée aux approbateurs.');
+  }
 
   back(): void {
     if (this.currentStep > 1) {
@@ -209,6 +231,6 @@ relancerApprobateurs(): void {
   }
 
   private emptyForm(): BeneficiaryForm {
-    return { firstName: '', lastName: '', phoneNumber: '', amount: null, reason: '', wallet: '' };
+    return { firstName: '', lastName: '', phoneNumber: '', amount: null, wallet: '' };
   }
 }

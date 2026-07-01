@@ -7,16 +7,25 @@ query FetchMyBulkPayments {
     phoneNumber
     amount
     status
-    reason
     wallet
     organization
     createdBy
+    createdAt
+    updatedAt
+  }
+}
+
+query FetchMyBulkPaymentOrders {
+  fetchMyBulkPaymentOrders {
+    id
+    label
+    totalAmount
+    status
     approvers {
       id
       firstName
       lastName
     }
     createdAt
-    updatedAt
   }
 }

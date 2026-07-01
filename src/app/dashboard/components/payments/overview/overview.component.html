@@ -4,72 +4,63 @@
 
     <div class="card">
       <div class="card-icon-wrapper">
-        <mat-icon class="card-icon">attach_file</mat-icon>
+        <img src="assets/img/Group 8908.png" alt="Importer un fichier" class="card-img-icon" />
       </div>
       <h3>Importer un fichier Excel</h3>
       <p>Importer plusieurs paiements dans un fichier</p>
       <button mat-raised-button color="primary" class="card-btn" (click)="onImporterFichier()">
-        <mat-icon>cloud_upload</mat-icon> Importer
+        <mat-icon>file_download</mat-icon> Importer
       </button>
     </div>
 
     <div class="card">
       <div class="card-icon-wrapper">
-        <mat-icon class="card-icon">edit_document</mat-icon>
+        <img src="assets/img/Group 8910.png" alt="Gestion manuelle" class="card-img-icon" />
       </div>
       <h3>Gestion manuelle</h3>
       <p>Ajouter des paiements ligne par ligne</p>
       <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()">
-        <mat-icon>edit_document</mat-icon> Créer
-      </button>
-    </div>
-
-    <!-- <div class="card">
-      <div class="card-icon-wrapper">
-        <mat-icon class="card-icon">calendar_month</mat-icon>
-      </div>
-      <h3>Avances évènements spéciaux</h3>
-      <p>Ajouter des paiements ligne par ligne</p>
-      <button mat-raised-button class="card-btn card-btn-dark">
         <mat-icon>cloud_upload</mat-icon> Créer
       </button>
-
-      <button mat-raised-button class="card-btn card-btn-dark" (click)="onEvenementsSpeciaux()">
-        <mat-icon>calendar_month</mat-icon> Créer
-      </button>
-    </div> -->
+    </div>
 
   </div>
 
   <!-- Filtres -->
   <div class="filters-row">
-    <div class="search-wrapper">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input type="text" placeholder="Rechercher" [(ngModel)]="searchText" />
-      <mat-icon *ngIf="searchText" class="clear-icon" (click)="searchText = ''">close</mat-icon>
-    </div>
+    <div class="filters-bar">
+      <div class="filter-search">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" placeholder="Rechercher" [(ngModel)]="searchText" />
+        <mat-icon *ngIf="searchText" class="clear-icon" (click)="searchText = ''">close</mat-icon>
+      </div>
 
-    <div class="filter-select">
-      <select [(ngModel)]="selectedStatut">
-        <option value="">Statut</option>
-        <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
-      </select>
-      <mat-icon>keyboard_arrow_down</mat-icon>
-    </div>
+      <div class="filter-divider"></div>
 
-    <div class="filter-select">
-      <select [(ngModel)]="selectedDate">
-        <option value="">Date</option>
-        <option *ngFor="let d of dateOptions" [value]="d.value">{{ d.label }}</option>
-      </select>
-      <mat-icon>keyboard_arrow_down</mat-icon>
-    </div>
+      <div class="filter-select statut">
+        <select [(ngModel)]="selectedStatut">
+          <option value="">Statut</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+        </select>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
 
-    <div>
+      <div class="filter-divider"></div>
+
+      <div class="filter-select date">
+        <select [(ngModel)]="selectedDate">
+          <option value="">Date</option>
+          <option *ngFor="let d of dateOptions" [value]="d.value">{{ d.label }}</option>
+        </select>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
+
       <button class="btn-reinitialiser" (click)="reinitialiser()">
-        <mat-icon>tune</mat-icon> Réinitialiser
+        <img src="assets/img/Frame.png" alt="" class="btn-icon" /> Réinitialiser
       </button>
     </div>
+
+    <a class="voir-historique" (click)="onVoirHistorique()">Voir toute l'historique</a>
   </div>
 
   <!-- Tableau -->
@@ -81,39 +72,32 @@
     </div>
 
     <ng-container *ngIf="!isLoading">
-      <table *ngIf="filteredPayments.length > 0; else emptyState">
+      <table *ngIf="filteredOrders.length > 0; else emptyState">
         <thead>
           <tr>
-            <th>NUMÉRO</th>
-            <th>DATE</th>
-            <th>BÉNÉFICIAIRE</th>
-            <th>MONTANT</th>
-            <th>OPÉRATEUR</th>
-            <th>STATUT</th>
-            <th>APPROBATEUR</th>
+            <th>Libellé</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Approbateur(s)</th>
             <th>ACTION</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of paginatedPayments">
-            <td>{{ p.number ?? '—' }}</td>
-            <td>{{ p.createdAt | date:'dd MMM yyyy' }}</td>
-            <td>{{ p.firstName }} {{ p.lastName }}</td>
-            <td>{{ p.amount | number:'1.0-0':'fr' }} XOF</td>
-            <td>{{ p.wallet }}</td>
+          <tr *ngFor="let o of paginatedOrders">
+            <td>{{ o.label }}</td>
+            <td>{{ o.createdAt | date:'dd MMM yyyy' }}</td>
+            <td>{{ o.totalAmount | number:'1.0-0':'fr' }} XOF</td>
             <td>
-              <span class="badge" [ngClass]="statusBadge(p.status)">
-                <span class="dot"></span> {{ statusLabel(p.status) }}
+              <span class="badge" [ngClass]="statusBadge(o.status)">
+                <span class="dot"></span> {{ statusLabel(o.status) }}
               </span>
             </td>
             <td>
-              <span *ngIf="p.approvers?.length; else noApprover">
-                {{ p.approvers[0].firstName }} {{ p.approvers[0].lastName }}
-                <span *ngIf="p.approvers.length > 1" class="approver-count">+{{ p.approvers.length - 1 }}</span>
-              </span>
+              <span *ngIf="approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
               <ng-template #noApprover><span class="text-muted">—</span></ng-template>
             </td>
-            <td><a class="voir-details" (click)="onVoirDetails(p)">Voir les détails</a></td>
+            <td><a class="voir-details" (click)="onVoirDetails(o)">Voir les détails</a></td>
           </tr>
         </tbody>
       </table>
@@ -126,7 +110,7 @@
       </ng-template>
 
       <mat-paginator
-        [length]="filteredPayments.length"
+        [length]="filteredOrders.length"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex"
         [pageSizeOptions]="[10, 25, 50, 100]"
@@ -139,16 +123,10 @@
   <div class="modeles-card">
     <h3>Modèles Préenregistrés</h3>
     <div class="modele-item">
-      <mat-icon class="modele-icon">table_view</mat-icon>
+      <mat-icon class="modele-icon">attach_file</mat-icon>
       <span>Modèle d'import fichier excel</span>
       <a class="telecharger">Télécharger</a>
     </div>
-    <div class="modele-item">
-      <mat-icon class="modele-icon">table_view</mat-icon>
-      <span>Modèle d'import fichier excel</span>
-      <a class="telecharger">Télécharger</a>
-    </div>
-    <a class="gerer">Gérer Les Modèles <mat-icon>chevron_right</mat-icon></a>
   </div>
 
 </div>

@@ -257,7 +257,7 @@ export class SidebarComponent implements OnInit {
 
         // Attribution du menu selon le rôle de l'utilisateur
         const roles = this.currentUser.roles ?? [];
-        const isPaymentManagerOnly = roles.length === 1 && roles[0] === 'PAYMENT_MANAGER';
+        const isPaymentManagerOnly = roles.length === 1 && roles.includes('PAYMENT_MANAGER');
         if (roles.includes('SUPER_ADMIN')) {
           this.dashboardNav = this.menuAdminMossall;
         } else if (isPaymentManagerOnly) {
@@ -334,14 +334,19 @@ export class SidebarComponent implements OnInit {
   get menuPaymentManager() {
     return [
       {
-        label: 'Paiements',
+        label: 'Paiement en masse',
         link: '/dashboard/organization/payments',
-        icon: 'payments',
+        icon: 'account_balance_wallet',
       },
       {
         label: 'Mon Compte',
         link: '/dashboard/user',
         icon: 'person_outline',
+      },
+      {
+        label: 'Notifications',
+        link: '/dashboard/Notifications',
+        icon: 'notifications_none',
       },
     ];
   }

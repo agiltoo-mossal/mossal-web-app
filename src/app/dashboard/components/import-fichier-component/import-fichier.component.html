@@ -402,10 +402,16 @@
 
   <!-- Actions -->
   <div class="validation-actions">
-    <button class="btn-secondary" (click)="step = 'validation'">
+    <button class="btn-secondary" (click)="step = 'validation'" [disabled]="isSubmitting || isSavingDraft">
       <mat-icon>arrow_back</mat-icon> Précédent
     </button>
-    <button class="btn-primary" (click)="onSoumettre()" [disabled]="isSubmitting">
+    <button class="btn-brouillon" (click)="onSaveDraft()" [disabled]="isSubmitting || isSavingDraft">
+      <span *ngIf="!isSavingDraft">
+        <mat-icon>save_outlined</mat-icon> Enregistrer en brouillon
+      </span>
+      <span *ngIf="isSavingDraft">Enregistrement...</span>
+    </button>
+    <button class="btn-primary" (click)="onSoumettre()" [disabled]="isSubmitting || isSavingDraft">
       <span *ngIf="!isSubmitting">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
       <span *ngIf="isSubmitting">Envoi en cours...</span>
     </button>
