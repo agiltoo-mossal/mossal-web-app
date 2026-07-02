@@ -97,6 +97,7 @@ export type BulkPaymentOrder = {
   id: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   organization: Scalars['String']['output'];
+  payments?: Maybe<Array<BulkPayment>>;
   status: BulkPaymentOrderStatus;
   totalAmount: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -417,6 +418,7 @@ export type Mutation = {
   resetAdminPassword: Scalars['Boolean']['output'];
   saveApprovalFlow: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  submitBulkPaymentOrder: BulkPaymentOrder;
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
   updateBulkPaymentStatus: Scalars['Boolean']['output'];
@@ -649,6 +651,11 @@ export type MutationSaveApprovalFlowArgs = {
 
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationSubmitBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1034,6 +1041,7 @@ export type Query = {
   fetchAllRemboursements: Array<Remboursement>;
   fetchAllServices: Array<Service>;
   fetchApprovalFlow: Organization;
+  fetchBulkPaymentOrderById: BulkPaymentOrder;
   fetchCategorySociopro: CategorySociopro;
   fetchCategorySocioproService: CategorySocioproService;
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
@@ -1137,6 +1145,11 @@ export type QueryFetchAllOrganisationServicesArgs = {
 
 export type QueryFetchAllServicesArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchBulkPaymentOrderByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 

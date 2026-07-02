@@ -129,7 +129,14 @@ export class OverviewComponent implements OnInit {
   }
 
   onVoirDetails(order: BulkPaymentOrder): void {
-    this.router.navigate([order.id], { relativeTo: this.route });
+    if (order.status === BulkPaymentOrderStatus.Draft) {
+      this.router.navigate(['../payments/manual'], {
+        relativeTo: this.route,
+        queryParams: { orderId: order.id },
+      });
+    } else {
+      this.router.navigate(['/dashboard/payments/details', order.id]);
+    }
   }
 
   onVoirHistorique(): void {
