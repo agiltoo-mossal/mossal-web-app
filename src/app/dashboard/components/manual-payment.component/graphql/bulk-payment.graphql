@@ -7,3 +7,7 @@ mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, 
     createdAt
   }
 }
+
+# SubmitBulkPaymentOrder et FetchBulkPaymentOrderById sont définis manuellement dans generated.ts
+# car ces mutations n'existent pas encore sur le backend preprod.
+# À décommenter ici et supprimer de generated.ts une fois déployé sur preprod.

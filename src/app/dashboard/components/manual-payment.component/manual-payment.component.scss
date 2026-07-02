@@ -8,8 +8,8 @@ $text: #1a1f36;
 $muted: #6b7280;
 $white: #ffffff;
 $bg: #f4f6fb;
-$radius: 12px;
-$radius-sm: 8px;
+$radius: 6px;
+$radius-sm: 4px;
 
 .manual-payment-container {
   background: $bg;
@@ -21,14 +21,15 @@ $radius-sm: 8px;
 
 .stepper-header {
   display: flex;
-  align-items: center;
-  gap: 32px;
+  flex-direction: column;
   margin-bottom: 32px;
+  border-bottom: 1.5px solid $border;
 }
 
 .back-btn {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   gap: 6px;
   background: none;
   border: none;
@@ -37,6 +38,7 @@ $radius-sm: 8px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  padding: 8px 0 0;
 
   mat-icon {
     font-size: 18px;
@@ -51,71 +53,39 @@ $radius-sm: 8px;
 
 .steps {
   display: flex;
-  align-items: center;
-  flex: 1;
+  align-items: stretch;
   justify-content: center;
   gap: 0;
+  margin-top: 12px;
 }
 
 .step {
   display: flex;
   align-items: center;
-  gap: 10px;
-  opacity: 0.4;
-  transition: opacity 0.2s;
-
-  &.active,
-  &.done {
-    opacity: 1;
-  }
-
-  .step-circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: $border;
-    color: $muted;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    transition: background 0.2s, color 0.2s;
-
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  &.active .step-circle {
-    background: $primary;
-    color: $white;
-  }
-
-  &.done .step-circle {
-    background: #4caf50;
-    color: $white;
-  }
+  padding: 0 28px 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+  transition: border-color 0.2s, color 0.2s;
+  cursor: default;
 
   .step-label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    color: $text;
+    color: $muted;
+    padding-bottom: 14px;
+    transition: color 0.2s;
   }
-}
 
-.step-line {
-  flex: 1;
-  max-width: 80px;
-  height: 2px;
-  background: $border;
-  margin: 0 8px;
-  transition: background 0.2s;
+  &.active .step-label {
+    color: $primary;
+  }
 
-  &.done {
-    background: #4caf50;
+  &.active {
+    border-bottom-color: $primary;
+  }
+
+  &.done .step-label {
+    color: $muted;
   }
 }
 
@@ -287,6 +257,14 @@ $radius-sm: 8px;
   }
 }
 
+.error-message {
+  color: $danger;
+  font-size: 11px;
+  margin-top: 4px;
+
+  span { display: block; }
+}
+
 .form-group {
   margin-bottom: 16px;
 
@@ -450,7 +428,7 @@ $radius-sm: 8px;
   gap: 6px;
   background: $white;
   color: $primary;
-  border: 1.5px solid $primary;
+  border: 1.5px solid #D8D8D8;
   border-radius: $radius-sm;
   padding: 8px 14px;
   font-size: 13px;
@@ -495,7 +473,7 @@ table {
   }
 
   td {
-    padding: 12px 14px;
+    padding: 7px 14px;
     border-bottom: 1px solid $border;
     color: $text;
     vertical-align: middle;
@@ -518,7 +496,7 @@ table {
   display: flex;
   align-items: center;
   padding: 4px;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   transition: background 0.15s;
 
   &:hover {
@@ -537,11 +515,17 @@ table {
   justify-content: space-between;
   align-items: center;
   padding: 14px 14px;
-  border-top: 2px solid $border;
+  margin-top: 12px;
   font-weight: 700;
   font-size: 14px;
-  background: #f9faff;
-  border-radius: 0 0 $radius-sm $radius-sm;
+  background: #F1F7FF;
+  border-radius: $radius-sm;
+}
+
+.btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .total-amount {
@@ -671,6 +655,24 @@ table {
     width: 18px;
     height: 18px;
   }
+}
+
+.recap-header {
+  margin-bottom: 24px;
+}
+
+.recap-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary;
+  margin: 0 0 4px;
+}
+
+.recap-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: $primary;
+  margin: 0;
 }
 
 .kpi-row {
@@ -858,6 +860,7 @@ table {
   display: flex;
   gap: 8px;
   align-items: center;
+  white-space: nowrap;
 }
 
 .btn-edit,
@@ -866,6 +869,8 @@ table {
   background: transparent;
   cursor: pointer;
   padding: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .btn-edit mat-icon {
@@ -889,7 +894,7 @@ table {
   border-radius: $radius;
   padding: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
-  margin-bottom: 24px;
+  margin-top: 24px;
 }
 
 .workflow-header {
@@ -919,8 +924,10 @@ table {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 0;
-  border-top: 1px solid $border;
+  padding: 14px 16px;
+  background: $bg;
+  border-radius: $radius;
+  margin-top: 10px;
 }
 
 .avatar {
