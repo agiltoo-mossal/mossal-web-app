@@ -130,15 +130,7 @@
             <mat-icon>delete</mat-icon> Vider la liste
           </button>
         </div>
-        <div class="label-recap" *ngIf="label">
-          <span class="label-recap-text">
-            <strong>Libellé du paiement en masse :</strong> {{ label }}
-          </span>
-          <button type="button" class="btn-edit-label" (click)="focusLabel()">
-            <mat-icon>edit</mat-icon> Modifier
-          </button>
-        </div>
-
+      
         <!-- Label display -->
         <div class="label-display" *ngIf="label">
           <span>
