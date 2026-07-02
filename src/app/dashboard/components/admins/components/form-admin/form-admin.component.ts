@@ -124,37 +124,74 @@ export class FormAdminComponent {
       );
   }
 
-  edit() {
-    console.log(this.collaboratorForm.invalid, this.isLoading);
-    console.log(this.collaboratorForm.getRawValue());
+  // edit() {
+  //   console.log(this.collaboratorForm.invalid, this.isLoading);
+  //   console.log(this.collaboratorForm.getRawValue());
 
-    /* if (this.collaboratorForm.invalid || this.isLoading) {
-      this.collaboratorForm.markAllAsTouched();
-      return;
-    } */
-    this.isLoading = true;
-    const value = {
-      ...this.collaboratorForm.value,
-      salary: Number(this.collaboratorForm.value.salary || 0),
-    };
-    delete value.email;
-    this.updateCollaboratorGQL
-      .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
-      .subscribe(
-        (result) => {
-          this.isLoading = false;
-          if (result.data) {
-            this.router.navigate(['/dashboard/admins']);
-            this.snackBarService.showSuccessSnackBar(3000,
-              'Admin modifié avec succés'
-            );
-          }
-        },
-        (error) => {
-          this.isLoading = false;
+  //   /* if (this.collaboratorForm.invalid || this.isLoading) {
+  //     this.collaboratorForm.markAllAsTouched();
+  //     return;
+  //   } */
+  //   this.isLoading = true;
+  //   const value = {
+  //     ...this.collaboratorForm.value,
+  //     salary: Number(this.collaboratorForm.value.salary || 0),
+  //   };
+  //   delete value.email;
+  //   this.updateCollaboratorGQL
+  //     .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+  //     .subscribe(
+  //       (result) => {
+  //         this.isLoading = false;
+  //         if (result.data) {
+  //           this.router.navigate(['/dashboard/admins']);
+  //           this.snackBarService.showSuccessSnackBar(3000,
+  //             'Admin modifié avec succés'
+  //           );
+  //         }
+  //       },
+  //       (error) => {
+  //         this.isLoading = false;
+  //       }
+  //     );
+  // }
+
+  edit() {
+  this.isLoading = true;
+
+  const rolesChanged = this.haveRolesChanged();
+
+  const value = {
+    ...this.collaboratorForm.value,
+    salary: Number(this.collaboratorForm.value.salary || 0),
+  };
+  delete value.email;
+
+  this.updateCollaboratorGQL
+    .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+    .subscribe(
+      (result) => {
+        this.isLoading = false;
+        if (result.data) {
+          this.router.navigate(['/dashboard/admins']);
+          const message = rolesChanged
+            ? "Les rôles de l'utilisateur ont été mis à jour avec succès"
+            : 'Admin modifié avec succès';
+          this.snackBarService.showSuccessSnackBar(3000, message);
         }
-      );
-  }
+      },
+      (error) => {
+        this.isLoading = false;
+      }
+    );
+}
+
+private haveRolesChanged(): boolean {
+  if (this.initialRoles.length !== this.selectedRoles.length) return true;
+  const sortedInitial = [...this.initialRoles].sort();
+  const sortedSelected = [...this.selectedRoles].sort();
+  return !sortedInitial.every((role, i) => role === sortedSelected[i]);
+}
 
   getCollab() {
     if (this.collaboratorId) {
@@ -308,15 +345,53 @@ export class FormAdminComponent {
       this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
   }
 
+  // toggleRole(value: string) {
+  //   const index = this.selectedRoles.indexOf(value);
+  //   if (index > -1) {
+  //     this.selectedRoles.splice(index, 1);
+  //   } else {
+  //     this.selectedRoles.push(value);
+  //   }
+  //   this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+  // }
+
   toggleRole(value: string) {
-    const index = this.selectedRoles.indexOf(value);
-    if (index > -1) {
-      this.selectedRoles.splice(index, 1);
-    } else {
-      this.selectedRoles.push(value);
-    }
-    this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+  const isRemoving = this.selectedRoles.includes(value);
+
+  // Empêcher de retirer le dernier rôle restant
+  if (isRemoving && this.selectedRoles.length === 1) {
+    this.snackBarService.showErrorSnackBar(3000, 'Veuillez sélectionner au moins un rôle');
+    return;
   }
+
+  // Avertissement si on retire "Approbateur" alors qu'il est actif dans un flux
+ if (isRemoving && value === 'APPROVER' && this.isApproverInActiveFlow()) {
+  const flowInfo = (this.collaborator as any)?.approvalFlowLevel;
+  const levelText = flowInfo ? ` (Niveau ${flowInfo})` : '';
+  const confirmed = window.confirm(
+    `Cet utilisateur est affecté au flux d'approbation${levelText}.\n` +
+    `Retirer ce rôle le retirera également du flux. Confirmer ?`
+  );
+
+    if (!confirmed) {
+      return; // on annule, la case reste cochée
+    }
+  }
+
+  const index = this.selectedRoles.indexOf(value);
+  if (index > -1) {
+    this.selectedRoles.splice(index, 1);
+  } else {
+    this.selectedRoles.push(value);
+  }
+  this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+}
+
+private isApproverInActiveFlow(): boolean {
+  // ⚠️ À adapter selon le champ réellement exposé par le backend/GraphQL
+  // (ex: this.collaborator?.isAssignedToApprovalFlow)
+  return !!(this.collaborator as any)?.isAssignedToApprovalFlow;
+}
 
   isRoleSelected(value: string): boolean {
     return this.selectedRoles.includes(value);
