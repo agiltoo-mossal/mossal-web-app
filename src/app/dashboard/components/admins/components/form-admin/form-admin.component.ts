@@ -23,6 +23,7 @@ export class FormAdminComponent {
   formText: string = '';
   collaboratorForm: FormGroup;
   collaborator: User;
+  initialRoles: string[] = [];
   @Input() collaboratorId: string;
   isLoading: boolean = false;
 
@@ -167,6 +168,8 @@ export class FormAdminComponent {
           this.collaboratorForm.patchValue(this.collaborator);
           this.selectedRoles = [...(this.collaborator.roles ?? [])];
           this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+          this.initialRoles = [...this.selectedRoles]; // ← ajout
+
         });
     }
   }
