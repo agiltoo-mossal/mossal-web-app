@@ -2,7 +2,7 @@
 
   <!-- STEPPER HEADER -->
   <div class="stepper-header">
-    <button class="back-btn" (click)="back()">
+    <button class="back-btn" (click)="backToHome()">
       <mat-icon>arrow_back</mat-icon> Retour à l'accueil
     </button>
     <div class="steps">
@@ -59,13 +59,12 @@
             <div class="form-group">
               <label>Téléphone <span class="color-danger">*</span></label>
               <input type="text" [(ngModel)]="form.phoneNumber" name="phoneNumber" #phoneNumber="ngModel" required
-                pattern="^(70|75|76|77|78) \d{3} \d{2} \d{2}$"
-                maxlength="12"
-                (input)="formatPhone($event)"
+                pattern="^(70|75|76|77|78) \d{3} \d{2} \d{2}$" maxlength="12" (input)="formatPhone($event)"
                 placeholder="7X XXX XX XX" />
               <div *ngIf="phoneNumber.invalid && phoneNumber.touched" class="error-message">
                 <span *ngIf="phoneNumber.errors?.['required']">Le numéro de téléphone est obligatoire.</span>
-                <span *ngIf="phoneNumber.errors?.['pattern']">Le numéro doit commencer par 70, 75, 76, 77 ou 78 et contenir 9 chiffres.</span>
+                <span *ngIf="phoneNumber.errors?.['pattern']">Le numéro doit commencer par 70, 75, 76, 77 ou 78 et
+                  contenir 9 chiffres.</span>
               </div>
             </div>
 
@@ -73,8 +72,7 @@
               <label>Montant de la transaction <span class="color-danger">*</span></label>
               <div class="input-suffix">
                 <input type="text" [(ngModel)]="form.amount" name="amount" #amount="ngModel" required
-                  (input)="formatAmount($event)"
-                  placeholder="0" />
+                  (input)="formatAmount($event)" placeholder="0" />
                 <span class="suffix">XOF</span>
               </div>
               <div *ngIf="amount.invalid && amount.touched" class="error-message">

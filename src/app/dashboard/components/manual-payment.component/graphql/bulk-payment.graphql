@@ -8,31 +8,6 @@ mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, 
   }
 }
 
-mutation SubmitBulkPaymentOrder($id: String!) {
-  submitBulkPaymentOrder(id: $id) {
-    id
-    status
-  }
-}
-
-query FetchBulkPaymentOrderById($id: String!) {
-  fetchBulkPaymentOrderById(id: $id) {
-    id
-    label
-    totalAmount
-    status
-    payments {
-      id
-      firstName
-      lastName
-      phoneNumber
-      amount
-      wallet
-    }
-    approvers {
-      id
-      firstName
-      lastName
-    }
-  }
-}
+# SubmitBulkPaymentOrder et FetchBulkPaymentOrderById sont définis manuellement dans generated.ts
+# car ces mutations n'existent pas encore sur le backend preprod.
+# À décommenter ici et supprimer de generated.ts une fois déployé sur preprod.

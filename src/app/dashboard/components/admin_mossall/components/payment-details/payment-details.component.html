@@ -86,7 +86,8 @@
           <div>
             <p class="approbateur-nom">{{ step.firstName }} {{ step.lastName }}</p>
             <p class="approbateur-role">{{ step.position }}</p>
-            <p class="approbateur-date" *ngIf="step.notifiedAt">Notifié le {{ step.notifiedAt | date:'dd MMM yyyy' }}</p>
+            <p class="approbateur-date" *ngIf="step.notifiedAt">Notifié le {{ step.notifiedAt | date:'dd MMM yyyy' }}
+            </p>
           </div>
         </div>
 
@@ -107,7 +108,8 @@
     <mat-icon class="renouveler-icon">autorenew</mat-icon>
     <div class="renouveler-text">
       <h4>Renouveler ce paiement</h4>
-      <p>Cette fonctionnalité vous permet de dupliquer ce paiement pour effectuer un nouveau virement avec les mêmes bénéficiaires et montants.</p>
+      <p>Cette fonctionnalité vous permet de dupliquer ce paiement pour effectuer un nouveau virement avec les mêmes
+        bénéficiaires et montants.</p>
     </div>
     <button class="btn-primary" (click)="renouvelerPaiement()">
       Renouveler ce paiement

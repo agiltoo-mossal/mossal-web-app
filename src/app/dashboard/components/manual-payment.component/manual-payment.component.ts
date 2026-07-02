@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
+import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 interface WorkflowApprobateur {
@@ -301,7 +302,7 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   backToHome(): void {
-    this.router.navigate(['..'], { relativeTo: this.route });
+    this.router.navigate(['/dashboard/organization/payments']);
   }
 
   private emptyForm(): BeneficiaryForm {

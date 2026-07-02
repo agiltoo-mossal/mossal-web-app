@@ -1906,20 +1906,6 @@ export type CreateBulkPaymentOrderMutationVariables = Exact<{
 
 export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any } };
 
-export type SubmitBulkPaymentOrderMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type SubmitBulkPaymentOrderMutation = { __typename?: 'Mutation', submitBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, status: BulkPaymentOrderStatus } };
-
-export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null } };
-
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3410,59 +3396,6 @@ export const CreateBulkPaymentOrderDocument = gql`
   })
   export class CreateBulkPaymentOrderGQL extends Apollo.Mutation<CreateBulkPaymentOrderMutation, CreateBulkPaymentOrderMutationVariables> {
     document = CreateBulkPaymentOrderDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const SubmitBulkPaymentOrderDocument = gql`
-    mutation SubmitBulkPaymentOrder($id: String!) {
-  submitBulkPaymentOrder(id: $id) {
-    id
-    status
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class SubmitBulkPaymentOrderGQL extends Apollo.Mutation<SubmitBulkPaymentOrderMutation, SubmitBulkPaymentOrderMutationVariables> {
-    document = SubmitBulkPaymentOrderDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchBulkPaymentOrderByIdDocument = gql`
-    query FetchBulkPaymentOrderById($id: String!) {
-  fetchBulkPaymentOrderById(id: $id) {
-    id
-    label
-    totalAmount
-    status
-    payments {
-      id
-      firstName
-      lastName
-      phoneNumber
-      amount
-      wallet
-    }
-    approvers {
-      id
-      firstName
-      lastName
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchBulkPaymentOrderByIdGQL extends Apollo.Query<FetchBulkPaymentOrderByIdQuery, FetchBulkPaymentOrderByIdQueryVariables> {
-    document = FetchBulkPaymentOrderByIdDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
