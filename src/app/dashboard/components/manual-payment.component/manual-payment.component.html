@@ -7,23 +7,12 @@
     </button>
     <div class="steps">
       <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
-        <span class="step-circle">
-          <mat-icon *ngIf="currentStep > 1">check</mat-icon>
-          <span *ngIf="currentStep <= 1">1</span>
-        </span>
         <span class="step-label">Saisie des bénéficiaires</span>
       </div>
-      <div class="step-line" [class.done]="currentStep > 1"></div>
       <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">
-        <span class="step-circle">
-          <mat-icon *ngIf="currentStep > 2">check</mat-icon>
-          <span *ngIf="currentStep <= 2">2</span>
-        </span>
         <span class="step-label">Récapitulatif</span>
       </div>
-      <div class="step-line" [class.done]="currentStep > 2"></div>
       <div class="step" [class.active]="currentStep === 3">
-        <span class="step-circle">3</span>
         <span class="step-label">Validation</span>
       </div>
     </div>
@@ -70,25 +59,26 @@
             <div class="form-group">
               <label>Téléphone <span class="color-danger">*</span></label>
               <input type="text" [(ngModel)]="form.phoneNumber" name="phoneNumber" #phoneNumber="ngModel" required
-                pattern="^(70|75|76|77|78)[0-9]{7}$" />
+                pattern="^(70|75|76|77|78) \d{3} \d{2} \d{2}$"
+                maxlength="12"
+                (input)="formatPhone($event)"
+                placeholder="7X XXX XX XX" />
               <div *ngIf="phoneNumber.invalid && phoneNumber.touched" class="error-message">
                 <span *ngIf="phoneNumber.errors?.['required']">Le numéro de téléphone est obligatoire.</span>
-                <span *ngIf="phoneNumber.errors?.['pattern']">
-                  Le numéro doit être de 9 chiffres sans espace et commencer par 78, 77, 76, 70 ou 75.
-                </span>
+                <span *ngIf="phoneNumber.errors?.['pattern']">Le numéro doit commencer par 70, 75, 76, 77 ou 78 et contenir 9 chiffres.</span>
               </div>
             </div>
 
             <div class="form-group">
               <label>Montant de la transaction <span class="color-danger">*</span></label>
               <div class="input-suffix">
-                <input type="number" [(ngModel)]="form.amount" name="amount" #amount="ngModel" required min="1"
+                <input type="text" [(ngModel)]="form.amount" name="amount" #amount="ngModel" required
+                  (input)="formatAmount($event)"
                   placeholder="0" />
                 <span class="suffix">XOF</span>
               </div>
               <div *ngIf="amount.invalid && amount.touched" class="error-message">
                 <span *ngIf="amount.errors?.['required']">Le montant est obligatoire.</span>
-                <span *ngIf="amount.errors?.['min']">Le montant doit être supérieur à 0.</span>
               </div>
             </div>
 
@@ -130,15 +120,6 @@
             <mat-icon>delete</mat-icon> Vider la liste
           </button>
         </div>
-        <div class="label-recap" *ngIf="label">
-          <span class="label-recap-text">
-            <strong>Libellé du paiement en masse :</strong> {{ label }}
-          </span>
-          <button type="button" class="btn-edit-label" (click)="focusLabel()">
-            <mat-icon>edit</mat-icon> Modifier
-          </button>
-        </div>
-
         <!-- Label display -->
         <div class="label-display" *ngIf="label">
           <span>
@@ -180,10 +161,10 @@
               </tr>
             </tbody>
           </table>
-          <div class="total-row">
-            <span>Total</span>
-            <span class="total-amount">{{ totalAmount | number:'1.0-0':'fr' }} XOF</span>
-          </div>
+        </div>
+        <div class="total-row" *ngIf="beneficiaries.length > 0">
+          <span>Total</span>
+          <span class="total-amount">{{ totalAmount | number:'1.0-0':'fr' }} XOF</span>
         </div>
 
         <ng-template #emptyState>
@@ -208,6 +189,11 @@
 
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="currentStep === 2">
+
+    <div class="recap-header">
+      <p class="recap-label">Récapitulatif</p>
+      <h2 class="recap-title">{{ label }}</h2>
+    </div>
 
     <div class="kpi-row">
       <div class="kpi-card">
@@ -240,6 +226,16 @@
       </div>
     </div>
 
+    <div class="bottom-actions">
+      <button class="btn-secondary" (click)="goBackFromRecap()" [disabled]="isSubmitting">
+        <mat-icon>arrow_back</mat-icon> Retour
+      </button>
+      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting" class="btn-inner">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="isSubmitting">Envoi en cours...</span>
+      </button>
+    </div>
+
     <div class="workflow-card" *ngIf="approvalFlowApprovers.length > 0">
       <div class="workflow-header">
         <h3>Workflow de validation</h3>
@@ -254,16 +250,6 @@
         </div>
         <span class="badge-attente">{{ app.statut }}</span>
       </div>
-    </div>
-
-    <div class="bottom-actions">
-      <button class="btn-secondary" (click)="currentStep = 1" [disabled]="isSubmitting">
-        <mat-icon>arrow_back</mat-icon> Retour
-      </button>
-      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
-        <span *ngIf="!isSubmitting">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
-        <span *ngIf="isSubmitting">Envoi en cours...</span>
-      </button>
     </div>
   </div>
 

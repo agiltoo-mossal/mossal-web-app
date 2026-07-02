@@ -10,6 +10,64 @@ $white: #ffffff;
 $bg: #f4f6fb;
 $radius: 12px;
 $radius-sm: 8px;
+.stepper-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  border-bottom: 1.5px solid $border;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 8px 0 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover { opacity: 0.75; }
+}
+
+.steps {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+
+  .step-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: $muted;
+    padding-bottom: 14px;
+  }
+
+  &.active {
+    border-bottom-color: $primary;
+
+    .step-label { color: $primary; }
+  }
+}
+
 .suivi-title {
   font-size: 22px;
   font-weight: 700;

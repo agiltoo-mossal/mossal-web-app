@@ -7,3 +7,32 @@ mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, 
     createdAt
   }
 }
+
+mutation SubmitBulkPaymentOrder($id: String!) {
+  submitBulkPaymentOrder(id: $id) {
+    id
+    status
+  }
+}
+
+query FetchBulkPaymentOrderById($id: String!) {
+  fetchBulkPaymentOrderById(id: $id) {
+    id
+    label
+    totalAmount
+    status
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      wallet
+    }
+    approvers {
+      id
+      firstName
+      lastName
+    }
+  }
+}

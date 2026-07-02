@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 interface WorkflowApprobateur {
@@ -15,9 +15,8 @@ interface BeneficiaryForm {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  amount: number;
+  amount: string;
   wallet: Wallet | '';
-
 }
 
 interface ApprovalStep {
@@ -48,6 +47,7 @@ export class ManualPaymentComponent implements OnInit {
   editingIndex: number | null = null;
   isSubmitting = false;
   isSavingDraft = false;
+  draftOrderId: string | null = null;
 
   readonly walletOptions: { label: string; value: Wallet }[] = [
     { label: 'Wave', value: Wallet.Wave },
@@ -68,6 +68,8 @@ export class ManualPaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
+    private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
+    private submitBulkPaymentOrderGQL: SubmitBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
   ) { }
 
@@ -84,6 +86,38 @@ export class ManualPaymentComponent implements OnInit {
           }));
       },
     });
+
+    const orderId = this.route.snapshot.queryParamMap.get('orderId');
+    if (orderId) {
+      this.draftOrderId = orderId;
+      this.fetchBulkPaymentOrderByIdGQL.fetch({ id: orderId }, { fetchPolicy: 'network-only' }).subscribe({
+        next: ({ data }) => {
+          const order = data?.fetchBulkPaymentOrderById;
+          if (!order) return;
+          this.label = order.label;
+          this.beneficiaries = (order.payments ?? []).map((p) => ({
+            firstName: p.firstName,
+            lastName: p.lastName,
+            phoneNumber: this.formatPhoneValue(p.phoneNumber),
+            amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
+            wallet: p.wallet as Wallet,
+          }));
+          this.currentStep = 2;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        error: () => {
+          this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger le brouillon.');
+        },
+      });
+    }
+  }
+
+  private formatPhoneValue(phone: string): string {
+    const d = phone.replace(/\D/g, '').slice(0, 9);
+    if (d.length <= 2) return d;
+    if (d.length <= 5) return `${d.slice(0, 2)} ${d.slice(2)}`;
+    if (d.length <= 7) return `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5)}`;
+    return `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 7)} ${d.slice(7)}`;
   }
 
   private readonly WALLET_COLORS: Record<string, string> = {
@@ -91,8 +125,12 @@ export class ManualPaymentComponent implements OnInit {
     [Wallet.OrangeMoney]: '#f97316',
   };
 
+  private parseAmount(val: string): number {
+    return parseInt(val?.replace(/\s/g, '') || '0', 10) || 0;
+  }
+
   get totalAmount(): number {
-    return this.beneficiaries.reduce((sum, b) => sum + (b.amount || 0), 0);
+    return this.beneficiaries.reduce((sum, b) => sum + this.parseAmount(b.amount), 0);
   }
 
   get recapRepartition(): { nom: string; beneficiaires: number; montant: number; pourcentage: number; couleur: string }[] {
@@ -100,7 +138,7 @@ export class ManualPaymentComponent implements OnInit {
     for (const b of this.beneficiaries) {
       const key = b.wallet as string;
       const prev = map.get(key) ?? { count: 0, total: 0 };
-      map.set(key, { count: prev.count + 1, total: prev.total + (b.amount || 0) });
+      map.set(key, { count: prev.count + 1, total: prev.total + this.parseAmount(b.amount) });
     }
     const total = this.beneficiaries.length;
     return Array.from(map.entries()).map(([wallet, data]) => ({
@@ -171,51 +209,87 @@ export class ManualPaymentComponent implements OnInit {
     });
   }
 
+  formatPhone(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 9);
+    let fmt = digits;
+    if (digits.length > 2) fmt = digits.slice(0, 2) + ' ' + digits.slice(2);
+    if (digits.length > 5) fmt = digits.slice(0, 2) + ' ' + digits.slice(2, 5) + ' ' + digits.slice(5);
+    if (digits.length > 7) fmt = digits.slice(0, 2) + ' ' + digits.slice(2, 5) + ' ' + digits.slice(5, 7) + ' ' + digits.slice(7);
+    input.value = fmt;
+    this.form.phoneNumber = fmt;
+  }
+
+  formatAmount(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '');
+    if (!digits) {
+      input.value = '';
+      this.form.amount = '';
+      return;
+    }
+    const num = parseInt(digits, 10);
+    const fmt = num.toLocaleString('fr-FR').replace(/ /g, ' ').replace(/ /g, ' ');
+    input.value = fmt;
+    this.form.amount = fmt;
+  }
+
   private buildInputs(): BulkPaymentInput[] {
     return this.beneficiaries.map((b) => ({
       firstName: b.firstName,
       lastName: b.lastName,
-      phoneNumber: b.phoneNumber,
-      amount: b.amount,
+      phoneNumber: b.phoneNumber.replace(/\s/g, ''),
+      amount: this.parseAmount(b.amount),
       wallet: b.wallet as Wallet,
     }));
   }
 
   submitOrder(): void {
     this.isSubmitting = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
-      next: () => {
-        this.isSubmitting = false;
 
+    const onSuccess = () => {
+      this.isSubmitting = false;
+      this.orderSummary = {
+        libelle: this.label,
+        nombreBeneficiaires: this.beneficiaries.length,
+        montantTotal: this.totalAmount,
+        operateurs: this.recapRepartition.length,
+        dateSoumission: new Date().toLocaleString('fr-FR'),
+      };
+      this.approvalSteps = this.approvalFlowApprovers.map((a, i) => ({
+        niveau: i + 1,
+        approbateurNom: a.nom,
+        approbateurRole: a.role,
+        statut: 'en_attente' as const,
+        dateNotification: new Date().toLocaleDateString('fr-FR'),
+      }));
+      this.currentStep = 3;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-        this.orderSummary = {
-          libelle: this.label,
-          nombreBeneficiaires: this.beneficiaries.length,
-          montantTotal: this.totalAmount,
-          operateurs: this.recapRepartition.length,
-          dateSoumission: new Date().toLocaleString('fr-FR'),
-        };
-        this.approvalSteps = this.approvalFlowApprovers.map((a, i) => ({
-          niveau: i + 1,
-          approbateurNom: a.nom,
-          approbateurRole: a.role,
-          statut: 'en_attente' as const,
-          dateNotification: new Date().toLocaleDateString('fr-FR'),
-        }));
+    const onError = () => {
+      this.isSubmitting = false;
+      this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
+    };
 
-        this.currentStep = 3;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-      error: () => {
-        this.isSubmitting = false;
-        this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
-      },
-    });
+    if (this.draftOrderId) {
+      this.submitBulkPaymentOrderGQL.mutate({ id: this.draftOrderId }).subscribe({ next: onSuccess, error: onError });
+    } else {
+      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({ next: onSuccess, error: onError });
+    }
   }
 
   relancerApprobateurs(): void {
     // TODO: appeler la mutation de relance une fois définie côté backend
     this.snackBarService.showSuccessSnackBar(3000, 'Notification envoyée aux approbateurs.');
+  }
+
+  goBackFromRecap(): void {
+    if (this.draftOrderId) {
+      this.router.navigate(['..'], { relativeTo: this.route });
+    } else {
+      this.currentStep = 1;
+    }
   }
 
   back(): void {
@@ -231,6 +305,6 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   private emptyForm(): BeneficiaryForm {
-    return { firstName: '', lastName: '', phoneNumber: '', amount: null, wallet: '' };
+    return { firstName: '', lastName: '', phoneNumber: '', amount: '', wallet: '' };
   }
 }

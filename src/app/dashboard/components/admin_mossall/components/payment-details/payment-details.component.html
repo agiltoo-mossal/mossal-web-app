@@ -1,7 +1,21 @@
 <div class="suivi-container" *ngIf="!isLoading && payment">
-  <button class="back-btn" (click)="goToHome()">
+
+  <div class="stepper-header">
+    <button class="back-btn" (click)="goToHome()">
       <mat-icon>arrow_back</mat-icon> Retour à l'accueil
     </button>
+    <div class="steps">
+      <div class="step done">
+        <span class="step-label">Saisie des bénéficiaires</span>
+      </div>
+      <div class="step done">
+        <span class="step-label">Récapitulatif</span>
+      </div>
+      <div class="step active">
+        <span class="step-label">Validation</span>
+      </div>
+    </div>
+  </div>
 
   <h2 class="suivi-title">Suivi des validations</h2>
 
