@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as Apollo from 'apollo-angular';
 import { gql } from 'apollo-angular';
+import type { BulkPaymentInput } from './generated';
 import { BulkPaymentOrderStatus, Wallet } from './generated';
 
 export interface FetchBulkPaymentOrderByIdQueryVariables {
@@ -90,6 +91,41 @@ export class SubmitBulkPaymentOrderGQL extends Apollo.Mutation<
   SubmitBulkPaymentOrderMutationVariables
 > {
   document = SubmitBulkPaymentOrderDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
+export interface UpdateBulkPaymentOrderMutationVariables {
+  id: string;
+  inputs: BulkPaymentInput[];
+  label: string;
+}
+
+export interface UpdateBulkPaymentOrderMutation {
+  updateBulkPaymentOrder: {
+    id: string;
+    label: string;
+    status: BulkPaymentOrderStatus;
+  };
+}
+
+const UpdateBulkPaymentOrderDocument = gql`
+  mutation UpdateBulkPaymentOrder($id: String!, $inputs: [BulkPaymentInput!]!, $label: String!) {
+    updateBulkPaymentOrder(id: $id, inputs: $inputs, label: $label) {
+      id
+      label
+      status
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class UpdateBulkPaymentOrderGQL extends Apollo.Mutation<
+  UpdateBulkPaymentOrderMutation,
+  UpdateBulkPaymentOrderMutationVariables
+> {
+  document = UpdateBulkPaymentOrderDocument;
   constructor(apollo: Apollo.Apollo) {
     super(apollo);
   }

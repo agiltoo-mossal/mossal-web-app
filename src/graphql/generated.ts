@@ -81,6 +81,13 @@ export type BulkPayment = {
   wallet: Wallet;
 };
 
+export type BulkPaymentApproval = {
+  __typename?: 'BulkPaymentApproval';
+  approvedAt?: Maybe<Scalars['DateTime']['output']>;
+  approverId?: Maybe<Scalars['String']['output']>;
+  level: Scalars['Int']['output'];
+};
+
 export type BulkPaymentInput = {
   amount: Scalars['Float']['input'];
   firstName: Scalars['String']['input'];
@@ -91,13 +98,16 @@ export type BulkPaymentInput = {
 
 export type BulkPaymentOrder = {
   __typename?: 'BulkPaymentOrder';
+  approvals?: Maybe<Array<BulkPaymentApproval>>;
   approvers?: Maybe<Array<User>>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
+  currentApprovalLevel?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   organization: Scalars['String']['output'];
   payments?: Maybe<Array<BulkPayment>>;
+  rejectedReason?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentOrderStatus;
   totalAmount: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -384,6 +394,7 @@ export type Mutation = {
   activateOrganisationService: Scalars['Boolean']['output'];
   activateService: Scalars['Boolean']['output'];
   addCredit: Credit;
+  approveBulkPaymentOrder: BulkPaymentOrder;
   cancelBulkPayment: Scalars['Boolean']['output'];
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createBulkPayment: BulkPayment;
@@ -413,6 +424,7 @@ export type Mutation = {
   lockAdmin: Scalars['Boolean']['output'];
   lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
+  rejectBulkPaymentOrder: BulkPaymentOrder;
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   resendOtp: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
@@ -421,6 +433,7 @@ export type Mutation = {
   submitBulkPaymentOrder: BulkPaymentOrder;
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateBulkPaymentOrder: BulkPaymentOrder;
   updateBulkPaymentStatus: Scalars['Boolean']['output'];
   updateCategorySociopro: Scalars['Boolean']['output'];
   updateCategorySocioproService: Scalars['Boolean']['output'];
@@ -469,6 +482,11 @@ export type MutationActivateServiceArgs = {
 export type MutationAddCreditArgs = {
   creditInput: CreditInput;
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type MutationApproveBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -627,6 +645,12 @@ export type MutationPayeDemandeArgs = {
 };
 
 
+export type MutationRejectBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationRejectDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
   rejectedReason: Scalars['String']['input'];
@@ -666,6 +690,13 @@ export type MutationSuspendOrganizationArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput>;
+  label: Scalars['String']['input'];
 };
 
 

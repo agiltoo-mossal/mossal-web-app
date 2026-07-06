@@ -94,7 +94,7 @@
               </span>
             </td>
             <td>
-              <span *ngIf="approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
+              <span *ngIf="o.status !== 'DRAFT' && approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
               <ng-template #noApprover><span class="text-muted">—</span></ng-template>
             </td>
             <td><a class="voir-details" (click)="onVoirDetails(o)">Voir les détails</a></td>

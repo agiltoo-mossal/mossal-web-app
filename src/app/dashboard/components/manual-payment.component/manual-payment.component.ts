@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BulkPaymentInput, CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
-import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 interface WorkflowApprobateur {
@@ -71,6 +71,7 @@ export class ManualPaymentComponent implements OnInit {
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private submitBulkPaymentOrderGQL: SubmitBulkPaymentOrderGQL,
+    private updateBulkPaymentOrderGQL: UpdateBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
   ) { }
 
@@ -78,6 +79,7 @@ export class ManualPaymentComponent implements OnInit {
     this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
       next: ({ data }) => {
         this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
+          .filter((item) => !!item.approverId)
           .sort((a, b) => a.level - b.level)
           .map((item) => ({
             nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
@@ -103,7 +105,7 @@ export class ManualPaymentComponent implements OnInit {
             amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
             wallet: p.wallet as Wallet,
           }));
-          this.currentStep = 2;
+          this.currentStep = 1;
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: () => {
@@ -196,18 +198,33 @@ export class ManualPaymentComponent implements OnInit {
   goToRecap(): void {
     if (this.beneficiaries.length === 0) return;
     this.isSavingDraft = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true }).subscribe({
-      next: () => {
-        this.isSavingDraft = false;
-        this.currentStep = 2;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-      error: () => {
-        this.isSavingDraft = false;
-        this.currentStep = 2;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      },
-    });
+
+    const onSuccess = () => {
+      this.isSavingDraft = false;
+      this.currentStep = 2;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const onError = () => {
+      this.isSavingDraft = false;
+      this.currentStep = 2;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    if (this.draftOrderId) {
+      this.updateBulkPaymentOrderGQL
+        .mutate({ id: this.draftOrderId, inputs: this.buildInputs(), label: this.label })
+        .subscribe({ next: onSuccess, error: onError });
+    } else {
+      this.createBulkPaymentOrderGQL
+        .mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true })
+        .subscribe({
+          next: ({ data }) => {
+            this.draftOrderId = data?.createBulkPaymentOrder?.id ?? null;
+            onSuccess();
+          },
+          error: onError,
+        });
+    }
   }
 
   formatPhone(event: Event): void {
