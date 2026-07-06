@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+export interface Beneficiary {
+  lastName: string;
+  firstName: string;
+  phone: string;
+  amount: number;
+  operator: string;
+}
+
 export interface ApprovalStep {
   level: number;
   firstName: string;
@@ -19,6 +27,7 @@ export interface PaymentOrderDetails {
   createdAt: Date;
   status: 'PENDING' | 'VALIDATED' | 'REJECTED';
   approvals: ApprovalStep[];
+  beneficiaries: Beneficiary[];
 }
 
 @Component({
@@ -32,6 +41,8 @@ export class PaymentDetailsComponent implements OnInit {
   payment: PaymentOrderDetails | null = null;
   isLoading = true;
 
+  isBeneficiairesOpen = true;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -44,18 +55,27 @@ export class PaymentDetailsComponent implements OnInit {
       this.isLoading = false;
     }, 300);
   }
-  
+
   goToHome(): void {
-  this.router.navigate(['/dashboard/organization/payments']);
-}
+    this.router.navigate(['/dashboard/organization/payments']);
+  }
 
   private buildMock(status: PaymentOrderDetails['status']): PaymentOrderDetails {
+    const mockBeneficiaries: Beneficiary[] = Array.from({ length: 8 }, (_, i) => ({
+      lastName: 'Diop',
+      firstName: 'Laurent',
+      phone: '77 700 77 77',
+      amount: 120000,
+      operator: i % 2 === 0 ? 'Wave' : 'Orange Money',
+    }));
+
     const base: Omit<PaymentOrderDetails, 'status' | 'approvals'> = {
       label: 'Paiement des primes de Juin 2026',
       beneficiariesCount: 42,
       amount: 2320000,
       operatorsCount: 2,
       createdAt: new Date('2026-06-12T10:45:00'),
+      beneficiaries: mockBeneficiaries,
     };
 
     const niveau1Approuve: ApprovalStep = {
@@ -150,8 +170,15 @@ export class PaymentDetailsComponent implements OnInit {
     console.log('Renouvellement (mock)');
   }
 
+  toggleBeneficiairesList(): void {
+    this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
+  }
 
-back(): void {
+  telechargerListe(): void {
+    console.log('Téléchargement (mock)');
+  }
+
+  back(): void {
     if (this.currentStep > 1) {
       this.currentStep--;
     } else {

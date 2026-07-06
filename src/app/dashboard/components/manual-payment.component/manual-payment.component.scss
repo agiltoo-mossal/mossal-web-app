@@ -1136,3 +1136,67 @@ table {
   justify-content: left;
   min-width: unset;
 }
+
+
+.beneficiaries-section{
+  margin-top:40px;
+}
+
+.beneficiaries-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.beneficiaries-header h2{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:28px;
+  font-weight:700;
+  color:#0f2c69;
+}
+
+.btn-download{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 20px;
+  border:1px solid #BFC7D5;
+  border-radius:25px;
+  background:white;
+  cursor:pointer;
+}
+
+.table-wrapper{
+  background:#fff;
+  border:1px solid #e7e7e7;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#f6f7fb;
+}
+
+th,td{
+  padding:15px 18px;
+  text-align:left;
+  border-bottom:1px solid #ececec;
+}
+
+th{
+  font-size:12px;
+  font-weight:600;
+  color:#6b7280;
+}
+
+td{
+  font-size:14px;
+}

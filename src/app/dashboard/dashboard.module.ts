@@ -66,6 +66,7 @@ import { ImportFichierComponent } from './components/import-fichier-component/im
 import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
 import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
+import { HistoryComponent } from './components/historyComponent/history.component';
 
 
 @NgModule({
@@ -98,6 +99,7 @@ import { PaymentDetailsComponent } from './components/admin_mossall/components/p
     ManualPaymentComponent,
     FluxApprobationComponent,
     PaymentDetailsComponent,
+    HistoryComponent,
 
   ],
   imports: [

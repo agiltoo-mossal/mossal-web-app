@@ -115,6 +115,41 @@
       Renouveler ce paiement
     </button>
   </div>
+
+
+
+<div class="beneficiaires-card" *ngIf="payment.beneficiaries?.length">
+  <div class="beneficiaires-header">
+    <button class="toggle-btn" (click)="toggleBeneficiairesList()">
+      <span>Liste des bénéficiaires</span>
+      <mat-icon class="chevron" [class.rotated]="isBeneficiairesOpen">expand_more</mat-icon>
+    </button>
+    <button class="btn-download" (click)="telechargerListe()">
+      <mat-icon>file_download</mat-icon> Télécharger
+    </button>
+  </div>
+
+  <table class="beneficiaires-table" *ngIf="isBeneficiairesOpen">
+    <thead>
+      <tr>
+        <th>NOM</th>
+        <th>PRÉNOM</th>
+        <th>TÉLÉPHONE</th>
+        <th>MONTANT</th>
+        <th>OPÉRATEUR</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of payment.beneficiaries">
+        <td>{{ b.lastName }}</td>
+        <td>{{ b.firstName }}</td>
+        <td>{{ b.phone }}</td>
+        <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+        <td>{{ b.operator }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 </div>
 
 <div class="loading-state" *ngIf="isLoading">

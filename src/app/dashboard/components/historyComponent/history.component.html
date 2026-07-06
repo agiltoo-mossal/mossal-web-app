@@ -1,0 +1,132 @@
+<div class="history-container">
+
+  <h2 class="history-title">Historique des paiements</h2>
+
+  <!-- Bloc filtres -->
+    <div class="filters-card">
+        <div class="filters-grid-top">
+
+            <div class="filter-field">
+                <label>Recherche</label>
+                <select [(ngModel)]="pendingSearch">
+                    <option value="">Rechercher (libellé...)</option>
+                    <option *ngFor="let l of labelOptions" [value]="l">{{ l }}</option>
+                </select>
+            </div>
+            <div class="filter-field periode">
+                <label>Période</label>
+                <div class="periode-inputs">
+                    <input type="date" [(ngModel)]="pendingStartDate" />
+                    <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                    <input type="date" [(ngModel)]="pendingEndDate" />
+                    <mat-icon class="calendar-icon">calendar_today</mat-icon>
+                </div>
+            </div>
+
+            <div class="filter-field">
+                <label>Statut</label>
+                <select [(ngModel)]="pendingStatut">
+                    <option value="">Tous les statuts</option>
+                    <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="filters-row-bottom">
+            <div class="filter-field approbateur">
+                <label>Approbateur</label>
+                <select [(ngModel)]="pendingApprobateur">
+                    <option value="">Tous les approbateurs</option>
+                    <option *ngFor="let a of approbateurOptions" [value]="a">{{ a }}</option>
+                </select>
+            </div>
+
+            <div class="filters-actions">
+                <button class="btn-reinitialiser" (click)="onReinitialiser()">
+                    <mat-icon>tune</mat-icon> Réinitialiser
+                </button>
+                <button class="btn-appliquer" (click)="onAppliquer()">
+                    Appliquer
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+  <!-- Tableau -->
+  <div class="table-wrapper">
+
+    <div class="loading-state" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement en cours...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <table *ngIf="filteredOrders.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Libellé</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Approbateur(s)</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of paginatedOrders">
+            <td>{{ o.label }}</td>
+            <td>{{ o.createdAt | date:'dd MMM yyyy':'':'fr' }}</td>
+            <td>{{ o.totalAmount | number:'1.0-0':'fr' }} XOF</td>
+            <td>
+              <span class="badge" [ngClass]="statusBadge(o.status)">
+                <span class="dot"></span> {{ statusLabel(o.status) }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
+              <ng-template #noApprover><span class="text-muted">—</span></ng-template>
+            </td>
+            <td><a class="voir-details" (click)="onVoirDetails(o)">Voir les détails</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucun paiement trouvé</p>
+        </div>
+      </ng-template>
+
+      <!-- Pagination personnalisée -->
+      <div class="custom-pagination" *ngIf="filteredOrders.length > 0">
+        <span class="pagination-summary">
+          Affichage de {{ displayRangeStart }} à {{ displayRangeEnd }} sur {{ filteredOrders.length }} opérations
+        </span>
+
+        <div class="pagination-controls">
+          <button class="page-arrow" (click)="prevPage()" [disabled]="pageIndex === 0">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <ng-container *ngFor="let p of pageNumbers">
+            <span *ngIf="p === '...'" class="page-ellipsis">...</span>
+            <button *ngIf="p !== '...'"
+                    class="page-number"
+                    [class.active]="p === pageIndex + 1"
+                    (click)="goToPage(p)">
+              {{ p }}
+            </button>
+          </ng-container>
+
+          <button class="page-arrow" (click)="nextPage()" [disabled]="pageIndex === totalPages - 1">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+</div>

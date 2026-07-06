@@ -332,6 +332,46 @@
     <button class="btn-primary" (click)="relancerApprobateurs()">
       Relancer les approbateurs
     </button>
+    <!-- Liste des bénéficiaires -->
+      <div class="beneficiaries-section" *ngIf="beneficiaries.length > 0">
+
+        <div class="beneficiaries-header">
+          <h2>
+            Liste des bénéficiaires
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </h2>
+
+          <button class="btn-download">
+            <mat-icon>download</mat-icon>
+            Télécharger
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>NOM</th>
+                <th>PRÉNOM</th>
+                <th>TÉLÉPHONE</th>
+                <th>MONTANT</th>
+                <th>OPÉRATEUR</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let b of beneficiaries">
+                <td>{{ b.lastName }}</td>
+                <td>{{ b.firstName }}</td>
+                <td>{{ b.phoneNumber }}</td>
+                <td>{{ b.amount }} XOF</td>
+                <td>{{ b.wallet }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
   </div>
 
 </div>
