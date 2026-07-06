@@ -146,7 +146,7 @@
                 <td>{{ b.lastName }}</td>
                 <td>{{ b.firstName }}</td>
                 <td>{{ b.phoneNumber }}</td>
-                <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+                <td>{{ b.amount }} XOF</td>
                 <td>{{ b.wallet }}</td>
                 <td class="actions">
                   <button class="btn-edit" type="button" (click)="editBeneficiary(i)">
@@ -179,7 +179,7 @@
       <button class="btn-secondary" (click)="back()">Annuler la saisie</button>
       <button class="btn-primary" (click)="goToRecap()"
         [disabled]="beneficiaries.length === 0 || !label.trim() || isSavingDraft">
-        <span *ngIf="!isSavingDraft">Suivant <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="!isSavingDraft" style="display:inline-flex;align-items:center;gap:4px;">Suivant <mat-icon>arrow_forward</mat-icon></span>
         <span *ngIf="isSavingDraft">Enregistrement...</span>
       </button>
     </div>

@@ -421,6 +421,7 @@ export type Mutation = {
   submitBulkPaymentOrder: BulkPaymentOrder;
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateBulkPaymentOrder: BulkPaymentOrder;
   updateBulkPaymentStatus: Scalars['Boolean']['output'];
   updateCategorySociopro: Scalars['Boolean']['output'];
   updateCategorySocioproService: Scalars['Boolean']['output'];
@@ -666,6 +667,13 @@ export type MutationSuspendOrganizationArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput>;
+  label: Scalars['String']['input'];
 };
 
 
