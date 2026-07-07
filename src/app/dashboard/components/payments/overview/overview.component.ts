@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
+import * as XLSX from 'xlsx';
 
 const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Draft]: 'Brouillon',
@@ -23,6 +24,9 @@ const STATUS_BADGE: Record<BulkPaymentOrderStatus, string> = {
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit {
+  EXCEL_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  EXCEL_EXTENSION = '.xlsx';
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -140,6 +144,67 @@ export class OverviewComponent implements OnInit {
   }
 
   onVoirHistorique(): void {
-    this.reinitialiser();
+    // this.reinitialiser();
+    this.router.navigate(['../payments/history'], { relativeTo: this.route });
+
+  }
+
+    onTelechargerModele(): void {
+    // Feuille "Modèle" avec en-têtes + ligne d'exemple
+    const modeleRows = [
+      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Motif', 'Opérateur'],
+      ['Diallo', 'Moussa', '774757895', 5000, 'Salaire Mars', 'Wave'],
+    ];
+
+    // Feuille "Instructions"
+    const instructionsRows = [
+      ['Champ', 'Règle', 'Exemple valide', 'Exemple invalide'],
+      ['Nom', 'Obligatoire, non vide', 'Diallo', ''],
+      ['Prénom', 'Obligatoire, non vide', 'Moussa', ''],
+      ['Téléphone', '9 chiffres, préfixe 77/70/76/78/75', '774757895', '654789632'],
+      ['Montant', 'Nombre supérieur à 0', '5000', '-100, abc'],
+      ['Motif', 'Obligatoire, non vide', 'Salaire Mars', ''],
+      ['Opérateur', 'Orange Money, Wave ou Free Money', 'Wave', 'MTN'],
+    ];
+
+    this.convertToXLSXMultiSheet(
+      [
+        { name: 'Modèle', rows: modeleRows },
+        { name: 'Instructions', rows: instructionsRows },
+      ],
+      'modele_import_paiements'
+    );
+  }
+
+  convertToXLSXMultiSheet(
+    sheets: { name: string; rows: any[][] }[],
+    filename: string
+  ): void {
+    const workbook: XLSX.WorkBook = {
+      Sheets: {},
+      SheetNames: [],
+    };
+
+    sheets.forEach(({ name, rows }) => {
+      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+      workbook.Sheets[name] = worksheet;
+      workbook.SheetNames.push(name);
+    });
+
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    this.saveAsExcelFile(excelBuffer, filename);
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: this.EXCEL_TYPE });
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `${fileName}${this.EXCEL_EXTENSION}`);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }
