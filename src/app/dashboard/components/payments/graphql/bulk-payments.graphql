@@ -15,6 +15,37 @@ query FetchMyBulkPayments {
   }
 }
 
+query FetchBulkPaymentOrderById($id: String!) {
+  fetchBulkPaymentOrderById(id: $id) {
+    id
+    label
+    totalAmount
+    status
+    rejectedReason
+    currentApprovalLevel
+    createdAt
+    approvers {
+      id
+      firstName
+      lastName
+      position
+    }
+    approvals {
+      level
+      approvedAt
+      approverId
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      wallet
+    }
+  }
+}
+
 query FetchMyBulkPaymentOrders {
   fetchMyBulkPaymentOrders {
     id
