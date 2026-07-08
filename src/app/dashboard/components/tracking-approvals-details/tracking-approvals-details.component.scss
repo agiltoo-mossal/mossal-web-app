@@ -1,0 +1,497 @@
+// Palette (cohérente avec suivi-validations.component.scss)
+$color-navy: #0b1d3a;
+$color-navy-dark: #081226;
+$color-orange: #f5a623;
+$color-orange-bg: #fdf1dc;
+$color-green: #2e9e5b;
+$color-green-bg: #e5f6ea;
+$color-red: #d9483d;
+$color-red-bg: #fbe7e5;
+$color-blue: #29a3e0;
+$color-blue-bg: #e6f6fd;
+$color-text-primary: #1a1a1a;
+$color-text-secondary: #6b7280;
+$color-border: #e5e7eb;
+$color-bg-page: #f4f6fb;
+$color-white: #ffffff;
+
+.payment-details-container {
+  background: $color-bg-page;
+  padding: 24px 32px 48px;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: $color-text-primary;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: $color-text-secondary;
+  cursor: pointer;
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: $color-navy;
+  }
+}
+
+.details-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  .eyebrow {
+    font-size: 13px;
+    color: $color-text-secondary;
+    margin: 0 0 4px 0;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  height: fit-content;
+
+  &.badge-pending {
+    background: $color-orange-bg;
+    color: $color-orange;
+  }
+  &.badge-approved {
+    background: $color-green-bg;
+    color: $color-green;
+  }
+  &.badge-rejected {
+    background: $color-red-bg;
+    color: $color-red;
+  }
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 28px 0 14px 0;
+}
+
+// --- Stats (vue "en attente") ---
+.stats-row {
+  display: flex;
+  gap: 20px;
+
+  .stat-card {
+    flex: 1;
+    background: $color-white;
+    border-radius: 10px;
+    padding: 18px 22px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .stat-label {
+      font-size: 13px;
+      color: $color-text-secondary;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+
+      &.stat-green { color: $color-green; }
+    }
+  }
+}
+
+// --- Répartition par opérateur ---
+.operateurs-row {
+  display: flex;
+  gap: 20px;
+}
+
+.operateur-card {
+  flex: 1;
+  border-radius: 10px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid transparent;
+
+  .operateur-nom {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .operateur-beneficiaires {
+    font-size: 13px;
+    color: $color-text-secondary;
+  }
+
+  .operateur-montant {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .progress-pct {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  &.operateur-wave {
+    background: $color-blue-bg;
+    .operateur-nom { color: $color-blue; }
+    .progress-fill { background: $color-blue; }
+    .progress-pct { color: $color-blue; }
+  }
+
+  &.operateur-orange {
+    background: #fbeee2;
+    .operateur-nom { color: #d97a37; }
+    .progress-fill { background: #d97a37; }
+    .progress-pct { color: #d97a37; }
+  }
+}
+
+// --- Liste bénéficiaires : header + bouton télécharger ---
+.liste-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  margin-bottom: 14px;
+
+  .section-title {
+    margin: 0;
+  }
+}
+
+.btn-outline-small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+// --- Tableau des bénéficiaires ---
+.beneficiaires-table {
+  background: $color-white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    background: #f9fafb;
+    padding: 12px 20px;
+    font-weight: 600;
+  }
+
+  td {
+    font-size: 13px;
+    padding: 12px 20px;
+    border-top: 1px solid $color-border;
+    color: $color-text-primary;
+  }
+}
+
+// --- Actions (vue "en attente") ---
+.actions-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.btn-reject {
+  background: $color-white;
+  color: $color-red;
+  border: 1px solid $color-red;
+  border-radius: 8px;
+  padding: 12px 40px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-red-bg;
+  }
+}
+
+.btn-approve {
+  background: $color-navy;
+  color: $color-white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 40px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-navy-dark;
+  }
+}
+
+// --- Bannière notice (approuvé / rejeté) ---
+.notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &.notice-success {
+    background: $color-green-bg;
+    color: $color-green;
+  }
+
+  &.notice-error {
+    background: $color-red-bg;
+    color: $color-red;
+  }
+}
+
+// --- Cartes "Détails de l'ordre" / "Demande créée par" ---
+.ordre-row {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.ordre-card {
+  background: $color-white;
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+  }
+}
+
+.ordre-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $color-text-secondary;
+    margin-top: 2px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ordre-label {
+    font-size: 12px;
+    color: $color-text-secondary;
+  }
+
+  .ordre-value {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// --- Étapes d'approbation ---
+.approbation-step {
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.approbation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .approbation-titre {
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.badge-small {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+
+  &.badge-approved {
+    background: $color-green-bg;
+    color: $color-green;
+  }
+  &.badge-rejected {
+    background: $color-red-bg;
+    color: $color-red;
+  }
+  &.badge-pending {
+    background: $color-orange-bg;
+    color: $color-orange;
+  }
+}
+
+.approbation-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $color-navy;
+  color: $color-white;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.approbation-infos {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .validateur-nom {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .validateur-role {
+    font-size: 12px;
+    color: $color-text-secondary;
+  }
+
+  .validateur-date {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+}
+
+.motif-rejet {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid $color-border;
+
+  .motif-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: $color-red;
+  }
+
+  p {
+    font-size: 13px;
+    color: $color-text-primary;
+    margin: 4px 0 0 0;
+    line-height: 1.4;
+  }
+}
+
+// --- Responsive ---
+@media (max-width: 1024px) {
+  .stats-row,
+  .operateurs-row {
+    flex-direction: column;
+  }
+
+  .ordre-row {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-row {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

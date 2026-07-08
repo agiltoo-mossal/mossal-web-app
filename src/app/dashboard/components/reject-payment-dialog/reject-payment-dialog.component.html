@@ -1,0 +1,28 @@
+<div class="reject-dialog">
+
+  <div class="reject-dialog-header">
+    <mat-icon class="warning-icon">error_outline</mat-icon>
+    <h2>Rejeter cette demande</h2>
+  </div>
+
+  <p class="reject-dialog-subtitle">Aucun paiement ne sera effectué.</p>
+
+  <textarea
+    class="motif-textarea"
+    rows="4"
+    placeholder="Motif du rejet*"
+    [(ngModel)]="motifRejet"
+  ></textarea>
+
+  <div class="reject-dialog-actions">
+    <button class="btn-cancel" (click)="annuler()">Annuler</button>
+    <button
+      class="btn-confirm"
+      [disabled]="!motifValide"
+      (click)="confirmer()"
+    >
+      Confirmer le rejet
+    </button>
+  </div>
+
+</div>

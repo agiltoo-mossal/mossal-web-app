@@ -1,0 +1,193 @@
+<div class="payment-details-container" *ngIf="paiement">
+
+  <a class="back-link" (click)="retour()">
+    <mat-icon>arrow_back</mat-icon>
+    Retour
+  </a>
+
+  <div class="details-header">
+    <div>
+      <p class="eyebrow">Détails</p>
+      <h1>{{ paiement.titre }}</h1>
+    </div>
+    <span class="badge" [ngClass]="'badge-' + paiement.statut">
+      • {{ badgeLabel }}
+    </span>
+  </div>
+
+  <!-- ===================== VUE : EN ATTENTE ===================== -->
+  <ng-container *ngIf="paiement.statut === 'pending'">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Bénéficiaires</span>
+        <span class="stat-value">{{ paiement.nombreBeneficiaires }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Montant total</span>
+        <span class="stat-value stat-green">{{ formatMontant(paiement.montantTotal) }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Opérateurs</span>
+        <span class="stat-value">{{ paiement.nombreOperateurs }}</span>
+      </div>
+    </div>
+
+    <h2 class="section-title">Répartition par opérateur</h2>
+    <div class="operateurs-row">
+      <div class="operateur-card operateur-wave">
+        <span class="operateur-nom">Wave</span>
+        <span class="operateur-beneficiaires">{{ paiement.repartitionOperateurs[0].nombreBeneficiaires }} bénéficiaires</span>
+        <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[0].montant) }}</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="paiement.repartitionOperateurs[0].pourcentage"></div>
+        </div>
+        <span class="progress-pct">{{ paiement.repartitionOperateurs[0].pourcentage }}%</span>
+      </div>
+
+      <div class="operateur-card operateur-orange">
+        <span class="operateur-nom">Orange Money</span>
+        <span class="operateur-beneficiaires">{{ paiement.repartitionOperateurs[1].nombreBeneficiaires }} bénéficiaires</span>
+        <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[1].montant) }}</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="paiement.repartitionOperateurs[1].pourcentage"></div>
+        </div>
+        <span class="progress-pct">{{ paiement.repartitionOperateurs[1].pourcentage }}%</span>
+      </div>
+    </div>
+
+    <div class="liste-header">
+      <h2 class="section-title">Liste des bénéficiaires</h2>
+      <button class="btn-outline-small" (click)="telechargerListe()">
+        <mat-icon>download</mat-icon>
+        Télécharger
+      </button>
+    </div>
+
+    <ng-container *ngTemplateOutlet="tableBeneficiaires"></ng-container>
+
+    <div class="actions-row">
+      <button class="btn-reject" (click)="rejeter()">Rejeter</button>
+      <button class="btn-approve" (click)="approuver()">Approuver</button>
+    </div>
+
+  </ng-container>
+
+  <!-- ============ VUE : APPROUVÉ / REJETÉ (structure commune) ============ -->
+  <ng-container *ngIf="paiement.statut === 'approved' || paiement.statut === 'rejected'">
+
+    <div class="notice-banner" [ngClass]="paiement.statut === 'approved' ? 'notice-success' : 'notice-error'">
+      <mat-icon>notifications</mat-icon>
+      <span *ngIf="paiement.statut === 'approved'">
+        Paiement de {{ formatMontant(paiement.montantTotal) }} déclenché avec succès.
+      </span>
+      <span *ngIf="paiement.statut === 'rejected'">
+        Paiement rejeté par {{ paiement.rejetePar }}. Aucun paiement effectué
+      </span>
+    </div>
+
+    <div class="ordre-row">
+      <div class="ordre-card">
+        <h3>Détails de l'ordre</h3>
+        <div class="ordre-item">
+          <mat-icon>description</mat-icon>
+          <div>
+            <span class="ordre-label">Libellé du paiement</span>
+            <span class="ordre-value">{{ paiement.libellePaiement }}</span>
+          </div>
+        </div>
+        <div class="ordre-item">
+          <mat-icon>groups</mat-icon>
+          <div>
+            <span class="ordre-label">Nombre de bénéficiaires</span>
+            <span class="ordre-value">{{ paiement.nombreBeneficiaires }}</span>
+          </div>
+        </div>
+        <div class="ordre-item">
+          <mat-icon>payments</mat-icon>
+          <div>
+            <span class="ordre-label">Montant total</span>
+            <span class="ordre-value">{{ formatMontant(paiement.montantTotal) }}</span>
+          </div>
+        </div>
+        <div class="ordre-item">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <div>
+            <span class="ordre-label">Opérateurs</span>
+            <span class="ordre-value">{{ paiement.nombreOperateurs }}</span>
+          </div>
+        </div>
+        <div class="ordre-item">
+          <mat-icon>event</mat-icon>
+          <div>
+            <span class="ordre-label">Date de soumission</span>
+            <span class="ordre-value">{{ paiement.dateSoumission }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ordre-card">
+        <h3>Demande créée par {{ paiement.demandeurNom }}</h3>
+
+        <div class="approbation-step" *ngFor="let etape of paiement.etapesApprobation">
+          <div class="approbation-header">
+            <span class="approbation-titre">Approbation - Niveau {{ etape.niveau }}</span>
+            <span class="badge-small" [ngClass]="'badge-' + etape.statut">
+              • {{ etape.statut === 'approved' ? 'Approuvé' : etape.statut === 'rejected' ? 'Rejeté' : 'En attente' }}
+            </span>
+          </div>
+          <div class="approbation-body">
+            <div class="avatar">{{ etape.validateurNom.charAt(0) }}</div>
+            <div class="approbation-infos">
+              <span class="validateur-nom">{{ etape.validateurNom }}</span>
+              <span class="validateur-role">{{ etape.validateurRole }}</span>
+              <span class="validateur-date" *ngIf="etape.dateModification">{{ etape.dateModification }}</span>
+            </div>
+          </div>
+          <div class="motif-rejet" *ngIf="etape.motifRejet">
+            <span class="motif-label">Motif du rejet</span>
+            <p>{{ etape.motifRejet }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="liste-header">
+      <h2 class="section-title">Liste des bénéficiaires</h2>
+      <button class="btn-outline-small" (click)="telechargerListe()">
+        <mat-icon>download</mat-icon>
+        Télécharger
+      </button>
+    </div>
+
+    <ng-container *ngTemplateOutlet="tableBeneficiaires"></ng-container>
+
+  </ng-container>
+
+</div>
+
+<!-- Tableau des bénéficiaires, partagé par les 3 vues -->
+<ng-template #tableBeneficiaires>
+  <div class="beneficiaires-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Téléphone</th>
+          <th>Montant</th>
+          <th>Opérateur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of paiement.beneficiaires">
+          <td>{{ b.nom }}</td>
+          <td>{{ b.prenom }}</td>
+          <td>{{ b.telephone }}</td>
+          <td>{{ formatMontant(b.montant) }}</td>
+          <td>{{ b.operateur }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>

@@ -1,0 +1,107 @@
+$color-navy: #0b1d3a;
+$color-navy-dark: #081226;
+$color-red: #d9483d;
+$color-text-secondary: #6b7280;
+$color-border: #e5e7eb;
+$color-bg-light: #f4f6fb;
+$color-white: #ffffff;
+
+.reject-dialog {
+  padding: 24px 28px;
+  width: 480px;
+  max-width: 100%;
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.reject-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+
+  .warning-icon {
+    color: $color-red;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: $color-red;
+    margin: 0;
+  }
+}
+
+.reject-dialog-subtitle {
+  font-size: 13px;
+  color: $color-red;
+  margin: 0 0 16px 28px;
+}
+
+.motif-textarea {
+  width: 100%;
+  background: $color-bg-light;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  color: $color-text-secondary;
+  font-style: italic;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+
+  &:focus {
+    border-color: $color-navy;
+    font-style: normal;
+    color: #1a1a1a;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+  }
+}
+
+.reject-dialog-actions {
+  display: flex;
+  gap: 12px;
+
+  button {
+    flex: 1;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+  }
+}
+
+.btn-cancel {
+  background: $color-white;
+  color: #1a1a1a;
+  border: 1px solid $color-border !important;
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+.btn-confirm {
+  background: $color-navy;
+  color: $color-white;
+
+  &:hover {
+    background: $color-navy-dark;
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+}
