@@ -67,6 +67,9 @@ import { ManualPaymentComponent } from './components/manual-payment.component/ma
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
 import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
 import { HistoryComponent } from './components/historyComponent/history.component';
+import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
+import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
+import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
 
 
 @NgModule({
@@ -100,6 +103,9 @@ import { HistoryComponent } from './components/historyComponent/history.componen
     FluxApprobationComponent,
     PaymentDetailsComponent,
     HistoryComponent,
+    TrackingApprovalsComponent,
+    TrackingApprovalsDetailsComponent,
+    RejectPaymentDialogComponent,
 
   ],
   imports: [

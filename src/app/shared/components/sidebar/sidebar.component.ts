@@ -56,6 +56,8 @@ export class SidebarComponent implements OnInit {
           this.dashboardNav = this.getMenuSuperAdmin(roles);
         } else if (roles.includes('ADMIN')) {
           this.dashboardNav = this.getMenuAdmin(roles);
+        } else if (roles.includes('APPROVER')) {
+          this.dashboardNav = this.getMenuApprover(roles);
         }
         // console.log({ user: this.currentUser });
       });
@@ -269,34 +271,32 @@ export class SidebarComponent implements OnInit {
     ];
   }
 
-  // toggleDropdown(item) {
-  //   if (item?.children) {
-  //     this.isDropdownOpened = !this.isDropdownOpened;
-  //   }
-  // }
-
-  // handleClick(item) {
-  //   if (item.children) {
-  //     this.toggleDropdown(item);
-  //   } else {
-  //     console.log("Item link =========>>>>>>>>>>", item);
-  //     this.router.navigate([item.link]);
-  //   }
-  // }
+    getMenuApprover(roles: string[]) {
+      return [
+        {
+        label: 'Suivi des validations',
+        link: '/dashboard/tracking-approvals',
+        icon: 'validate',
+        },
+        {
+          label: 'Mon Compte',
+          link: '/dashboard/user',
+          icon: 'person_outline',
+        },
+        {
+          label: 'Notifications',
+          link: '/dashboard/Notifications',
+          icon: 'notifications_none',
+        },
+      ]
+    }
 
       toggleDropdown(item) {
       if (item?.children) {
-        item.isOpen = !item.isOpen; // ✅ état propre à chaque item
+        item.isOpen = !item.isOpen; 
       }
     }
 
-    // handleClick(item) {
-    //   if (item.children) {
-    //     this.toggleDropdown(item);
-    //   } else {
-    //     this.router.navigate([item.link]);
-    //   }
-    // }
 
     handleClick(item) {
       if (item.children) {

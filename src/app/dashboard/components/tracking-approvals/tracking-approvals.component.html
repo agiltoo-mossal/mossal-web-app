@@ -1,0 +1,118 @@
+<div class="suivi-validations-container">
+
+  <header class="page-header">
+    <h1>Suivi des validations</h1>
+  </header>
+
+  <!-- Cartes statistiques -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-label">En attente</span>
+      <span class="stat-value stat-pending">{{ nombreEnAttente }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Approuvés</span>
+      <span class="stat-value stat-approved">{{ nombreApprouves }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Rejetés</span>
+      <span class="stat-value stat-rejected">{{ nombreRejetes }}</span>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+    <div class="filters-row">
+
+      <div class="filter-group">
+        <label>Recherche</label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            placeholder="Rechercher (libellé...)"
+            [(ngModel)]="recherche"
+          />
+          <mat-icon>expand_more</mat-icon>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Période</label>
+        <div class="input-wrapper date-range">
+          <input type="text" placeholder="01/01/2025" readonly />
+          <span class="arrow">→</span>
+          <input type="text" placeholder="31/05/2026" readonly />
+          <mat-icon>calendar_today</mat-icon>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Statut</label>
+        <div class="input-wrapper">
+          <select [(ngModel)]="statutFiltre">
+            <option *ngFor="let option of statutOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="filters-actions">
+      <button class="btn-secondary" (click)="reinitialiserFiltres()">
+        <mat-icon>tune</mat-icon>
+        Réinitialiser
+      </button>
+      <button class="btn-primary" (click)="appliquerFiltres()">
+        Appliquer
+      </button>
+    </div>
+  </div>
+
+  <!-- Liste des paiements -->
+  <div class="payments-list">
+    <div class="payment-card" *ngFor="let paiement of paiementsFiltres">
+
+      <div class="payment-main">
+        <h3>{{ paiement.titre }}</h3>
+        <p class="submitted-info">
+          Soumis par {{ paiement.soumisPar }}<br />
+          Le {{ paiement.dateSoumission }}
+        </p>
+      </div>
+
+      <div class="payment-col">
+        <span class="col-label">Bénéficiaires</span>
+        <span class="col-value">{{ paiement.nombreBeneficiaires }}</span>
+      </div>
+
+      <div class="payment-col">
+        <span class="col-label">Montant total</span>
+        <span class="col-value">{{ formatMontant(paiement.montantTotal) }}</span>
+      </div>
+
+      <div class="payment-status-col">
+        <span class="badge" [ngClass]="'badge-' + paiement.statut">
+          • {{ getStatutLabel(paiement.statut) }}
+        </span>
+        <div class="niveau-info">
+          <span class="col-label">Niveau de validation</span>
+          <span class="col-value">{{ paiement.niveauActuel }} sur {{ paiement.niveauTotal }}</span>
+        </div>
+      </div>
+
+      <div class="payment-action">
+        <button class="btn-outline" (click)="voirDetail(paiement)">
+          Voir le détail
+        </button>
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="paiementsFiltres.length === 0">
+      Aucun paiement ne correspond à vos critères.
+    </div>
+  </div>
+
+</div>
