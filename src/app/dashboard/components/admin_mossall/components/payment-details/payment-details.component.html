@@ -19,107 +19,134 @@
 
   <h2 class="suivi-title">Suivi des validations</h2>
 
-  <!-- Bannière dynamique -->
-  <div class="notif-banner" [ngClass]="{
-    'banner-pending': isPending,
-    'banner-success': isValidated,
-    'banner-error': isRejected
-  }">
-    <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+  <!-- Card principal unique -->
+  <div class="main-card">
 
-    <span *ngIf="isPending && currentApproverWaiting">
-      Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
-      (Approbateur N°{{ currentApproverWaiting.level }})
-    </span>
+    <!-- Bannière dynamique (dans le card) -->
+    <div class="notif-banner" [ngClass]="{
+      'banner-pending': isPending,
+      'banner-success': isApproved,
+      'banner-error': isRejected
+    }">
+      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
 
-    <span *ngIf="isValidated">
-      Paiement de {{ payment.amount | number:'1.0-0':'fr' }} XOF déclenché avec succès.
-    </span>
+      <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
+        Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
+        (Approbateur N°{{ currentApproverWaiting.level }})
+      </span>
 
-    <span *ngIf="isRejected && rejectedApprover">
-      Paiement rejeté par {{ rejectedApprover.firstName }} {{ rejectedApprover.lastName }}. Aucun paiement effectué
-    </span>
-  </div>
+      <span *ngIf="isPending && currentApproverWaiting && hasSomeoneApproved">
+        {{ lastApprovedApprover!.firstName }} {{ lastApprovedApprover!.lastName }} à approuvé.
+        Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
+        (Approbateur N°{{ currentApproverWaiting.level }})
+      </span>
 
-  <div class="suivi-grid">
-    <!-- Détails de l'ordre -->
-    <div class="suivi-card">
-      <h3>Détails de l'ordre</h3>
-      <div class="detail-row">
-        <mat-icon>label</mat-icon>
-        <span>Libellé du paiement : <strong>{{ payment.label }}</strong></span>
-      </div>
-      <div class="detail-row">
-        <mat-icon>group</mat-icon>
-        <span>Nombre de bénéficiaires : <strong>{{ payment.beneficiariesCount }}</strong></span>
-      </div>
-      <div class="detail-row">
-        <mat-icon>payments</mat-icon>
-        <span>Montant total : <strong>{{ payment.amount | number:'1.0-0':'fr' }} XOF</strong></span>
-      </div>
-      <div class="detail-row">
-        <mat-icon>account_balance_wallet</mat-icon>
-        <span>Opérateurs : <strong>{{ payment.operatorsCount }}</strong></span>
-      </div>
-      <div class="detail-row">
-        <mat-icon>schedule</mat-icon>
-        <span>Date de soumission : <strong>{{ payment.createdAt | date:'dd MMM yyyy à HH:mm' }}</strong></span>
-      </div>
+      <span *ngIf="isApproved">
+        Paiement de {{ payment.amount | number:'1.0-0':'fr' }} XOF déclenché avec succès.
+      </span>
+
+      <span *ngIf="isRejected && rejectedApprover">
+        Paiement rejeté par {{ rejectedApprover.firstName }} {{ rejectedApprover.lastName }}. Aucun paiement effectué
+      </span>
     </div>
 
-    <!-- Workflow de validation -->
-    <div class="suivi-card">
-      <h3>Workflow de validation</h3>
-      <div class="approval-step" *ngFor="let step of payment.approvals">
-        <div class="approval-step-header">
-          <span>Approbation - Niveau {{ step.level }}</span>
-          <span class="badge" [ngClass]="{
-            'badge-success': step.status === 'APPROVED',
-            'badge-pending': step.status === 'PENDING',
-            'badge-danger': step.status === 'REJECTED'
-          }">
-            {{ step.status === 'APPROVED' ? 'Approuvé' : step.status === 'REJECTED' ? 'Rejeté' : 'En attente' }}
-          </span>
+    <!-- Deux colonnes séparées par une bande verticale -->
+    <div class="suivi-columns">
+
+      <!-- Colonne gauche : Détails de l'ordre -->
+      <div class="col-details">
+        <h3>Détails De L'ordre</h3>
+        <div class="detail-row">
+          <img src="assets/img/payment_label.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Libellé du paiement</span>
+          <strong>{{ payment.label }}</strong>
         </div>
-        <div class="approval-step-body">
-          <div class="avatar">{{ step.firstName.charAt(0) }}</div>
-          <div>
-            <p class="approbateur-nom">{{ step.firstName }} {{ step.lastName }}</p>
-            <p class="approbateur-role">{{ step.position }}</p>
-            <p class="approbateur-date" *ngIf="step.notifiedAt">Notifié le {{ step.notifiedAt | date:'dd MMM yyyy' }}
-            </p>
+        <div class="detail-row">
+          <img src="assets/img/beneficiaries.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Nombre de bénéficiaires</span>
+          <strong>{{ payment.beneficiariesCount }}</strong>
+        </div>
+        <div class="detail-row">
+          <img src="assets/img/amount.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Montant total</span>
+          <strong>{{ payment.amount | number:'1.0-0':'fr' }} XOF</strong>
+        </div>
+        <div class="detail-row">
+          <img src="assets/img/operators.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Opérateurs</span>
+          <strong>{{ payment.operatorsCount }}</strong>
+        </div>
+        <div class="detail-row last">
+          <img src="assets/img/payment_date.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Date de soumissions</span>
+          <strong>{{ payment.createdAt | date:'dd MMM yyyy à HH:mm':'':'fr' }}</strong>
+        </div>
+      </div>
+
+      <!-- Bande verticale -->
+      <div class="col-divider"></div>
+
+      <!-- Colonne droite : Workflow de validation -->
+      <div class="col-workflow">
+        <h3>Workflow De Validation</h3>
+        <div class="approval-step" *ngFor="let step of payment.approvals" [class.step-indented]="step.level > 1">
+          <div class="approval-step-header">
+            <span>Approbation - Niveau {{ step.level }}</span>
+            <span class="badge" [ngClass]="{
+              'badge-success': step.status === 'APPROVED',
+              'badge-pending': step.status === 'PENDING' || step.status === 'APPROVED' && step.isCurrentLevel === false,
+              'badge-danger':  step.status === 'REJECTED'
+            }">
+              <span class="dot"></span>
+              {{ step.status === 'APPROVED' ? 'Approuvé' : step.status === 'REJECTED' ? 'Rejeté' : step.isCurrentLevel ?
+              'Notifié' : 'En attente' }}
+            </span>
+          </div>
+          <div class="approval-step-body">
+            <div class="avatar">{{ step.firstName.charAt(0) }}</div>
+            <div>
+              <p class="approbateur-nom">{{ step.firstName }} {{ step.lastName }}</p>
+              <p class="approbateur-role">{{ step.position }}</p>
+              <p class="approbateur-date" *ngIf="step.notifiedAt">
+                Notifié le {{ step.notifiedAt | date:'dd MMM yyyy':'':'fr' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="rejet-motif" *ngIf="step.status === 'REJECTED' && step.rejectReason">
+            <p class="rejet-label">Motif du rejet</p>
+            <p>{{ step.rejectReason }}</p>
           </div>
         </div>
-
-        <div class="rejet-motif" *ngIf="step.status === 'REJECTED' && step.rejectReason">
-          <p class="rejet-label">Motif du rejet</p>
-          <p>{{ step.rejectReason }}</p>
-        </div>
       </div>
+
     </div>
   </div>
 
-  <!-- Footer dynamique -->
+  <!-- Bouton relancer (En attente) -->
   <button class="btn-primary" *ngIf="isPending" (click)="relancerApprobateurs()">
     Relancer les approbateurs
   </button>
 
-  <div class="renouveler-card" *ngIf="isValidated">
-    <mat-icon class="renouveler-icon">autorenew</mat-icon>
-    <div class="renouveler-text">
-      <h4>Renouveler ce paiement</h4>
-      <p>Cette fonctionnalité vous permet de dupliquer ce paiement pour effectuer un nouveau virement avec les mêmes
-        bénéficiaires et montants.</p>
+  <!-- Section renouveler (Validé) -->
+  <div class="renouveler-card" *ngIf="isApproved">
+    <div class="renouveler-left">
+      <div class="renouveler-icon-wrapper">
+        <mat-icon>autorenew</mat-icon>
+      </div>
+      <div class="renouveler-text">
+        <h4>Renouveler ce paiement</h4>
+        <p>Cette fonctionnalité vous permet de dupliquer ce paiement pour effectuer un nouveau virement avec les mêmes
+          bénéficiaires et montants.</p>
+      </div>
     </div>
     <button class="btn-primary" (click)="renouvelerPaiement()">
       Renouveler ce paiement
     </button>
   </div>
 
-  
-
-<div class="beneficiaires-card" *ngIf="payment.beneficiaries?.length">
-  <div class="beneficiaires-header">
+  <!-- Header liste des bénéficiaires (détaché du tableau) -->
+  <div class="beneficiaires-header" *ngIf="payment.beneficiaries?.length">
     <button class="toggle-btn" (click)="toggleBeneficiairesList()">
       <span>Liste des bénéficiaires</span>
       <mat-icon class="chevron" [class.rotated]="isBeneficiairesOpen">expand_more</mat-icon>
@@ -129,30 +156,38 @@
     </button>
   </div>
 
-  <table class="beneficiaires-table" *ngIf="isBeneficiairesOpen">
-    <thead>
-      <tr>
-        <th>NOM</th>
-        <th>PRÉNOM</th>
-        <th>TÉLÉPHONE</th>
-        <th>MONTANT</th>
-        <th>OPÉRATEUR</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let b of payment.beneficiaries">
-        <td>{{ b.lastName }}</td>
-        <td>{{ b.firstName }}</td>
-        <td>{{ b.phone }}</td>
-        <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
-        <td>{{ b.operator }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <!-- Tableau des bénéficiaires -->
+  <div class="beneficiaires-table-wrapper" *ngIf="payment.beneficiaries?.length && isBeneficiairesOpen">
+    <table class="beneficiaires-table">
+      <thead>
+        <tr>
+          <th>NOM</th>
+          <th>PRÉNOM</th>
+          <th>TÉLÉPHONE</th>
+          <th>MONTANT</th>
+          <th>OPÉRATEUR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of payment.beneficiaries">
+          <td>{{ b.lastName }}</td>
+          <td>{{ b.firstName }}</td>
+          <td>{{ b.phone }}</td>
+          <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+          <td>{{ b.operator }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <div class="loading-state" *ngIf="isLoading">
   <mat-icon>hourglass_empty</mat-icon>
   <p>Chargement en cours...</p>
+</div>
+
+<div class="empty-state" *ngIf="!isLoading && !payment">
+  <mat-icon>inbox</mat-icon>
+  <p>Paiement introuvable</p>
 </div>

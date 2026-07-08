@@ -61,12 +61,6 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  // Libellés distincts pour peupler le select "Recherche"
-  get labelOptions(): string[] {
-    const labels = this.orders.map(o => o.label).filter((l): l is string => !!l);
-    return Array.from(new Set(labels));
-  }
-
   // Approbateurs distincts pour peupler le select "Approbateur"
   get approbateurOptions(): string[] {
     const names = this.orders
@@ -77,7 +71,8 @@ export class HistoryComponent implements OnInit {
 
   get filteredOrders(): BulkPaymentOrder[] {
     return this.orders.filter((o) => {
-      const matchSearch = !this.appliedSearch || o.label === this.appliedSearch;
+      const matchSearch = !this.appliedSearch ||
+        (o.label ?? '').toLowerCase().includes(this.appliedSearch.toLowerCase());
 
       const matchStatut = !this.appliedStatut || o.status === this.appliedStatut;
 

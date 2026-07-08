@@ -1,14 +1,20 @@
-$primary:    #0d2354;
-$primary-btn:#1a3a6e;
+$primary: #0d2354;
+$primary-btn: #1a3a6e;
 $blue-light: #e8eef8;
-$border:     #e2e8f0;
-$text:       #1e293b;
-$muted:      #64748b;
-$white:      #ffffff;
+$border: #e2e8f0;
+$text: #1e293b;
+$muted: #64748b;
+$white: #ffffff;
 
-$attente-bg:   #fff7e6;  $attente-dot:  #f59e0b;  $attente-text: #b45309;
-$valide-bg:    #f0fdf4;  $valide-dot:   #22c55e;  $valide-text:  #15803d;
-$rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
+$attente-bg: #FFF4E5;
+$attente-dot: #FF9500;
+$attente-text: #FF9500;
+$valide-bg: #DEFFDB;
+$valide-dot: #0EAF00;
+$valide-text: #0EAF00;
+$rejete-bg: #FEE7E7;
+$rejete-dot: #F41414;
+$rejete-text: #F41414;
 
 .payments-container {
   padding: 24px;
@@ -30,7 +36,7 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   border-radius: 6px;
   padding: 28px 24px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,7 +92,11 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   padding: 0 20px !important;
   height: 36px;
 
-  mat-icon { font-size: 16px; vertical-align: middle; margin-right: 4px; }
+  mat-icon {
+    font-size: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
 }
 
 .card-btn-dark {
@@ -108,7 +118,7 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   border-radius: 10px;
   overflow: hidden;
   height: 48px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
 }
 
 .filter-search {
@@ -126,10 +136,14 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
     background: transparent;
     color: $text;
     width: 100%;
-    &::placeholder { color: $muted; }
+
+    &::placeholder {
+      color: $muted;
+    }
   }
 
-  .search-icon, .clear-icon {
+  .search-icon,
+  .clear-icon {
     font-size: 20px;
     color: $muted;
     cursor: pointer;
@@ -150,8 +164,13 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   gap: 6px;
   height: 48px;
 
-  &.statut { width: 180px; }
-  &.date   { width: 220px; }
+  &.statut {
+    width: 180px;
+  }
+
+  &.date {
+    width: 220px;
+  }
 
   select {
     border: none;
@@ -164,7 +183,11 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
     width: 100%;
   }
 
-  mat-icon { font-size: 18px; color: $muted; flex-shrink: 0; }
+  mat-icon {
+    font-size: 18px;
+    color: $muted;
+    flex-shrink: 0;
+  }
 }
 
 .btn-reinitialiser {
@@ -184,9 +207,15 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   white-space: nowrap;
   flex-shrink: 0;
 
-  .btn-icon { width: 18px; height: 18px; object-fit: contain; }
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
 
-  &:hover { background: darken($primary, 8%); }
+  &:hover {
+    background: darken($primary, 8%);
+  }
 }
 
 .voir-historique {
@@ -197,13 +226,16 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   text-decoration: underline;
   white-space: nowrap;
   margin-left: auto;
-  &:hover { opacity: .8; }
+
+  &:hover {
+    opacity: .8;
+  }
 }
 
 .table-wrapper {
   background: $white;
   border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   overflow: hidden;
   margin-bottom: 24px;
 
@@ -228,8 +260,13 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
       border-bottom: 1px solid $border;
       transition: background .15s;
 
-      &:last-child { border-bottom: none; }
-      &:hover { background: #f8fafc; }
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: #f8fafc;
+      }
 
       td {
         padding: 13px 16px;
@@ -246,18 +283,50 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   gap: 5px;
   padding: 3px 10px;
   border-radius: 20px;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 400;
 
   .dot {
-    width: 7px; height: 7px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
   }
 
-  &-attente    { background: $attente-bg; color: $attente-text; .dot { background: $attente-dot; } }
-  &-valide     { background: $valide-bg;  color: $valide-text;  .dot { background: $valide-dot;  } }
-  &-rejete     { background: $rejete-bg;  color: $rejete-text;  .dot { background: $rejete-dot;  } }
-  &-brouillon  { background: #f1f5f9;     color: #475569;       .dot { background: #94a3b8;       } }
+  &-attente {
+    background: $attente-bg;
+    color: $attente-text;
+
+    .dot {
+      background: $attente-dot;
+    }
+  }
+
+  &-valide {
+    background: $valide-bg;
+    color: $valide-text;
+
+    .dot {
+      background: $valide-dot;
+    }
+  }
+
+  &-rejete {
+    background: $rejete-bg;
+    color: $rejete-text;
+
+    .dot {
+      background: $rejete-dot;
+    }
+  }
+
+  &-brouillon {
+    background: #F4F5F5;
+    color: #1D1E20;
+
+    .dot {
+      background: #1D1E20;
+    }
+  }
 }
 
 .voir-details {
@@ -266,7 +335,10 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  &:hover { text-decoration: underline; }
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .bottom-row {
@@ -275,11 +347,12 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   gap: 20px;
 }
 
-.historique-card, .modeles-card {
+.historique-card,
+.modeles-card {
   background: $white;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
 
   h3 {
     font-size: 15px;
@@ -309,11 +382,15 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
       color: $text;
     }
 
-    .montant-col { color: $primary; font-weight: 600; }
+    .montant-col {
+      color: $primary;
+      font-weight: 600;
+    }
   }
 }
 
-.voir-plus, .gerer {
+.voir-plus,
+.gerer {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -323,9 +400,14 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   cursor: pointer;
   margin-top: 16px;
   text-decoration: none;
-  &:hover { text-decoration: underline; }
 
-  mat-icon { font-size: 18px; }
+  &:hover {
+    text-decoration: underline;
+  }
+
+  mat-icon {
+    font-size: 18px;
+  }
 }
 
 .modele-item {
@@ -335,7 +417,10 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   padding: 14px 0;
   border-bottom: 1px solid $border;
 
-  .modele-icon { color: $primary; font-size: 22px; }
+  .modele-icon {
+    color: $primary;
+    font-size: 22px;
+  }
 
   span {
     flex: 1;
@@ -349,24 +434,42 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  &:hover { text-decoration: underline; }
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 // Tablet
 @media (max-width: 1100px) {
-  .card { width: auto; flex: 1; }
+  .card {
+    width: auto;
+    flex: 1;
+  }
 }
 
 // Mobile
 @media (max-width: 768px) {
-  .payments-container { padding: 16px; }
+  .payments-container {
+    padding: 16px;
+  }
 
   // Cartes
-  .cards-row { flex-direction: column; gap: 16px; }
-  .card { width: 100%; }
+  .cards-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card {
+    width: 100%;
+  }
 
   // Barre de filtres
-  .filters-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
 
   .filters-bar {
     flex-direction: column;
@@ -402,7 +505,9 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
   }
 
   // Table
-  .table-wrapper { overflow-x: auto; }
+  .table-wrapper {
+    overflow-x: auto;
+  }
 
   table {
     min-width: 600px;
@@ -412,7 +517,7 @@ $rejete-bg:    #fef2f2;  $rejete-dot:   #ef4444;  $rejete-text:  #b91c1c;
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;

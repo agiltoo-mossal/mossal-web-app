@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, Wallet } from 'src/graphql/generated';
 
 export interface Beneficiary {
   lastName: string;
@@ -15,6 +16,7 @@ export interface ApprovalStep {
   lastName: string;
   position: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isCurrentLevel: boolean;
   notifiedAt?: Date;
   rejectReason?: string;
 }
@@ -25,9 +27,10 @@ export interface PaymentOrderDetails {
   amount: number;
   operatorsCount: number;
   createdAt: Date;
-  status: 'PENDING' | 'VALIDATED' | 'REJECTED';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   approvals: ApprovalStep[];
   beneficiaries: Beneficiary[];
+  rejectedReason?: string;
 }
 
 @Component({
@@ -46,112 +49,108 @@ export class PaymentDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-  ) {}
+    private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
+  ) { }
 
   ngOnInit(): void {
-    const status = this.route.snapshot.queryParamMap.get('status') ?? 'PENDING';
-    setTimeout(() => {
-      this.payment = this.buildMock(status as PaymentOrderDetails['status']);
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
       this.isLoading = false;
-    }, 300);
+      return;
+    }
+
+    this.fetchBulkPaymentOrderByIdGQL
+      .fetch({ id }, { fetchPolicy: 'network-only' })
+      .subscribe({
+        next: (res) => {
+          const order = res.data?.fetchBulkPaymentOrderById;
+          if (!order) { this.isLoading = false; return; }
+
+          const approvers = order.approvers ?? [];
+          const approvals = order.approvals ?? [];
+
+          const approvalSteps: ApprovalStep[] = approvers.map((approver, index) => {
+            const level = index + 1;
+            const approval = approvals.find(a => a.level === level);
+
+            let status: 'APPROVED' | 'PENDING' | 'REJECTED';
+            if (approval?.approvedAt) {
+              status = 'APPROVED';
+            } else if (order.status === BulkPaymentOrderStatus.Rejected && level === order.currentApprovalLevel) {
+              status = 'REJECTED';
+            } else {
+              status = 'PENDING';
+            }
+
+            return {
+              level,
+              firstName: approver.firstName,
+              lastName: approver.lastName,
+              position: approver.position ?? '',
+              status,
+              isCurrentLevel: level === (order.currentApprovalLevel ?? 1),
+              notifiedAt: new Date(order.createdAt),
+              rejectReason: status === 'REJECTED' ? (order.rejectedReason ?? undefined) : undefined,
+
+            };
+          });
+
+          const payments = order.payments ?? [];
+          const operators = new Set(payments.map(p => p.wallet)).size;
+
+          const walletLabel: Record<string, string> = {
+            [Wallet.Wave]: 'Wave',
+            [Wallet.OrangeMoney]: 'Orange Money'
+          };
+
+          this.payment = {
+            label: order.label,
+            beneficiariesCount: payments.length,
+            amount: order.totalAmount,
+            operatorsCount: operators,
+            createdAt: new Date(order.createdAt),
+            status: order.status === BulkPaymentOrderStatus.Approved
+              ? 'APPROVED'
+              : order.status === BulkPaymentOrderStatus.Rejected
+                ? 'REJECTED'
+                : 'PENDING',
+            approvals: approvalSteps,
+            rejectedReason: order.rejectedReason ?? undefined,
+            beneficiaries: payments.map(p => ({
+              lastName: p.lastName,
+              firstName: p.firstName,
+              phone: p.phoneNumber,
+              amount: p.amount,
+              operator: walletLabel[p.wallet] ?? p.wallet,
+            })),
+          };
+
+          this.isLoading = false;
+        },
+        error: () => { this.isLoading = false; },
+      });
   }
 
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
   }
 
-  private buildMock(status: PaymentOrderDetails['status']): PaymentOrderDetails {
-    const mockBeneficiaries: Beneficiary[] = Array.from({ length: 8 }, (_, i) => ({
-      lastName: 'Diop',
-      firstName: 'Laurent',
-      phone: '77 700 77 77',
-      amount: 120000,
-      operator: i % 2 === 0 ? 'Wave' : 'Orange Money',
-    }));
-
-    const base: Omit<PaymentOrderDetails, 'status' | 'approvals'> = {
-      label: 'Paiement des primes de Juin 2026',
-      beneficiariesCount: 42,
-      amount: 2320000,
-      operatorsCount: 2,
-      createdAt: new Date('2026-06-12T10:45:00'),
-      beneficiaries: mockBeneficiaries,
-    };
-
-    const niveau1Approuve: ApprovalStep = {
-      level: 1,
-      firstName: 'Khadija',
-      lastName: 'Sarr',
-      position: 'Super Admin',
-      status: 'APPROVED',
-      notifiedAt: new Date('2026-03-15'),
-    };
-
-    if (status === 'PENDING') {
-      return {
-        ...base,
-        status,
-        approvals: [
-          niveau1Approuve,
-          {
-            level: 2,
-            firstName: 'Maïté',
-            lastName: 'Sarr',
-            position: 'Rh/Gestionnaire',
-            status: 'PENDING',
-            notifiedAt: new Date('2026-03-15'),
-          },
-        ],
-      };
-    }
-
-    if (status === 'VALIDATED') {
-      return {
-        ...base,
-        status,
-        approvals: [
-          niveau1Approuve,
-          {
-            level: 2,
-            firstName: 'Maïté',
-            lastName: 'Sarr',
-            position: 'Rh/Gestionnaire',
-            status: 'APPROVED',
-            notifiedAt: new Date('2026-03-15'),
-          },
-        ],
-      };
-    }
-
-    // REJECTED
-    return {
-      ...base,
-      status,
-      approvals: [
-        niveau1Approuve,
-        {
-          level: 2,
-          firstName: 'Maïté',
-          lastName: 'Sarr',
-          position: 'Rh/Gestionnaire',
-          status: 'REJECTED',
-          notifiedAt: new Date('2026-03-15'),
-          rejectReason: 'Le montant dépasse le plafond mensuel autorisé pour ce type de virement.',
-        },
-      ],
-    };
-  }
-
   get isPending(): boolean {
     return this.payment?.status === 'PENDING';
   }
 
-  get isValidated(): boolean {
-    return this.payment?.status === 'VALIDATED';
+  get isApproved(): boolean {
+    return this.payment?.status === 'APPROVED';
   }
 
   get isRejected(): boolean {
     return this.payment?.status === 'REJECTED';
+  }
+
+  get lastApprovedApprover(): ApprovalStep | undefined {
+    if (!this.payment) return undefined;
+    const approved = this.payment.approvals.filter(a => a.status === 'APPROVED');
+    return approved.length > 0 ? approved[approved.length - 1] : undefined;
   }
 
   get currentApproverWaiting(): ApprovalStep | undefined {
@@ -162,12 +161,16 @@ export class PaymentDetailsComponent implements OnInit {
     return this.payment?.approvals.find(a => a.status === 'REJECTED');
   }
 
+  get hasSomeoneApproved(): boolean {
+    return !!this.lastApprovedApprover;
+  }
+
   relancerApprobateurs(): void {
-    console.log('Relance envoyée (mock)');
+    console.log('Relance envoyée');
   }
 
   renouvelerPaiement(): void {
-    console.log('Renouvellement (mock)');
+    console.log('Renouvellement');
   }
 
   toggleBeneficiairesList(): void {
@@ -175,7 +178,7 @@ export class PaymentDetailsComponent implements OnInit {
   }
 
   telechargerListe(): void {
-    console.log('Téléchargement (mock)');
+    console.log('Téléchargement');
   }
 
   back(): void {

@@ -41,6 +41,7 @@ export type Activity = {
 /** Possible activities */
 export enum ActivityScope {
   Authentification = 'authentification',
+  BulkPayment = 'bulk_payment',
   Collaborateur = 'collaborateur',
   Demande = 'demande',
   Organisation = 'organisation'
@@ -2000,6 +2001,13 @@ export type FetchMyBulkPaymentsQueryVariables = Exact<{ [key: string]: never; }>
 
 export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any }> };
 
+export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
+
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3702,6 +3710,49 @@ export const FetchMyBulkPaymentsDocument = gql`
   })
   export class FetchMyBulkPaymentsGQL extends Apollo.Query<FetchMyBulkPaymentsQuery, FetchMyBulkPaymentsQueryVariables> {
     document = FetchMyBulkPaymentsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchBulkPaymentOrderByIdDocument = gql`
+    query FetchBulkPaymentOrderById($id: String!) {
+  fetchBulkPaymentOrderById(id: $id) {
+    id
+    label
+    totalAmount
+    status
+    rejectedReason
+    currentApprovalLevel
+    createdAt
+    approvers {
+      id
+      firstName
+      lastName
+      position
+    }
+    approvals {
+      level
+      approvedAt
+      approverId
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      wallet
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchBulkPaymentOrderByIdGQL extends Apollo.Query<FetchBulkPaymentOrderByIdQuery, FetchBulkPaymentOrderByIdQueryVariables> {
+    document = FetchBulkPaymentOrderByIdDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

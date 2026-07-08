@@ -8,18 +8,14 @@
 
             <div class="filter-field">
                 <label>Recherche</label>
-                <select [(ngModel)]="pendingSearch">
-                    <option value="">Rechercher (libellé...)</option>
-                    <option *ngFor="let l of labelOptions" [value]="l">{{ l }}</option>
-                </select>
+                <input type="text" placeholder="Rechercher (libellé...)" [(ngModel)]="pendingSearch" />
             </div>
             <div class="filter-field periode">
                 <label>Période</label>
                 <div class="periode-inputs">
                     <input type="date" [(ngModel)]="pendingStartDate" />
-                    <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                    <span class="arrow-separator">→</span>
                     <input type="date" [(ngModel)]="pendingEndDate" />
-                    <mat-icon class="calendar-icon">calendar_today</mat-icon>
                 </div>
             </div>
 
