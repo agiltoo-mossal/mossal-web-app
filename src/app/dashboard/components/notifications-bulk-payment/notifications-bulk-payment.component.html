@@ -1,0 +1,60 @@
+<div class="notifications-page">
+
+  <!-- Header -->
+  <header class="page-header">
+    <h1 class="page-title">Notifications</h1>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.active]="activeTab === 'all'"
+      (click)="selectTab('all')">
+      Toutes
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.active]="activeTab === 'unread'"
+      (click)="selectTab('unread')">
+      Non lues
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.active]="activeTab === 'read'"
+      (click)="selectTab('read')">
+      Lues
+    </button>
+  </nav>
+
+  <!-- Notifications list -->
+  <section class="notifications-list">
+    <article
+      *ngFor="let notification of filteredNotifications"
+      class="notification-card"
+      [class.unread]="!notification.read"
+      (click)="markAsRead(notification)">
+
+      <svg class="notification-bell" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 0 0-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor"/>
+      </svg>
+
+      <div class="notification-content">
+        <p class="notification-text">
+          {{ notification.message }}<strong>{{ notification.highlight }}</strong>{{ notification.suffix }}
+        </p>
+        <p class="notification-authors">{{ authorsLabel(notification) }}</p>
+      </div>
+
+      <span class="notification-time">{{ timeAgoLabel(notification.createdAt) }}</span>
+    </article>
+
+    <p class="empty-state" *ngIf="filteredNotifications.length === 0">
+      Aucune notification pour le moment.
+    </p>
+  </section>
+
+</div>

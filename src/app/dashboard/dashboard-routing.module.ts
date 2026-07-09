@@ -24,6 +24,7 @@ import { PaymentDetailsComponent } from './components/admin_mossall/components/p
 import { HistoryComponent } from './components/historyComponent/history.component';
 import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
+import { NotificationsBulkPaymentComponent } from './components/notifications-bulk-payment/notifications-bulk-payment.component';
 
 const routes: Routes = [
   {
@@ -154,6 +155,10 @@ const routes: Routes = [
       {
         path: 'tracking-approvals/:id',
         component: TrackingApprovalsDetailsComponent,
+      },
+      {
+        path: 'notifications-bulk-payment',
+        component: NotificationsBulkPaymentComponent,
       },
     ],
   },

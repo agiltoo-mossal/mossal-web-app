@@ -285,7 +285,7 @@ export class SidebarComponent implements OnInit {
         },
         {
           label: 'Notifications',
-          link: '/dashboard/Notifications',
+          link: '/dashboard/notifications-bulk-payment',
           icon: 'notifications_none',
         },
       ]
