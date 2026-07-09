@@ -257,11 +257,7 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/psp',
         icon: 'people',
       },
-      // {
-      //   label: 'Notifications',
-      //   link: '/dashboard/Notifications',
-      //   icon: 'notifications_none',
-      // },
+      
       {
         label: 'Mon Compte',
         link: '/dashboard/user_admin_mossall',

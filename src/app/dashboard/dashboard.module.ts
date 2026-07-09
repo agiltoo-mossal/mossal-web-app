@@ -70,6 +70,7 @@ import { HistoryComponent } from './components/historyComponent/history.componen
 import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
 import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
+import { NotificationsBulkPaymentComponent } from './components/notifications-bulk-payment/notifications-bulk-payment.component';
 
 
 @NgModule({
@@ -106,7 +107,7 @@ import { RejectPaymentDialogComponent } from './components/reject-payment-dialog
     TrackingApprovalsComponent,
     TrackingApprovalsDetailsComponent,
     RejectPaymentDialogComponent,
-
+    NotificationsBulkPaymentComponent,
   ],
   imports: [
     CreateEventModule,

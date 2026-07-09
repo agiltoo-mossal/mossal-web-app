@@ -1,0 +1,187 @@
+$navy: #16215c;
+$gold: #f2b90c;
+$text-muted: #8a93a6;
+$border-color: #eef1f6;
+$card-unread-bg: #eceff4;
+
+.notifications-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eaf1fb 0%, #f6f9fd 40%);
+  font-family: 'Poppins', 'Segoe UI', Roboto, sans-serif;
+}
+
+// ---------- Header ----------
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 40px;
+  background: linear-gradient(90deg, #d8e2f0 0%, #eef2f8 100%);
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: $navy;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bell-button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $navy;
+  padding: 4px;
+
+  .bell-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .bell-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $gold;
+  }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+
+  .user-name {
+    font-weight: 600;
+    color: $navy;
+    font-size: 14px;
+  }
+
+  .user-role {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+// ---------- Tabs ----------
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 28px 0 20px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: $text-muted;
+  padding-bottom: 8px;
+  position: relative;
+
+  &.active {
+    color: $navy;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: $gold;
+    }
+  }
+
+  &:hover:not(.active) {
+    color: darken($text-muted, 15%);
+  }
+}
+
+// ---------- Notifications list ----------
+.notifications-list {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 8px 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &.unread {
+    background: $card-unread-bg;
+  }
+
+  &:hover {
+    background: darken(#ffffff, 2%);
+  }
+
+  &.unread:hover {
+    background: darken($card-unread-bg, 2%);
+  }
+}
+
+.notification-bell {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: $navy;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-text {
+  margin: 0;
+  font-size: 15px;
+  color: #2b3242;
+  line-height: 1.4;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.notification-authors {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: $text-muted;
+}
+
+.notification-time {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: $text-muted;
+  white-space: nowrap;
+}
+
+.empty-state {
+  text-align: center;
+  color: $text-muted;
+  padding: 40px 0;
+}

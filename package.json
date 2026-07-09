@@ -52,6 +52,7 @@
     "socket.io-client": "^4.7.5",
     "sweetalert2": "^11.15.3",
     "tslib": "^2.3.0",
+    "xlsx-js-style": "^1.2.0",
     "xterm": "^5.2.1",
     "zone.js": "~0.14.4"
   },

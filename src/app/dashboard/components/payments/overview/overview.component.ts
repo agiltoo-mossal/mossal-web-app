@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Draft]: 'Brouillon',
@@ -149,32 +150,123 @@ export class OverviewComponent implements OnInit {
 
   }
 
-    onTelechargerModele(): void {
-    // Feuille "Modèle" avec en-têtes + ligne d'exemple
-    const modeleRows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Motif', 'Opérateur'],
-      ['Diallo', 'Moussa', '774757895', 5000, 'Salaire Mars', 'Wave'],
-    ];
+  //   onTelechargerModele(): void {
+  //   // Feuille "Modèle" avec en-têtes + ligne d'exemple
+  //   const modeleRows = [
+  //     ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Motif', 'Opérateur'],
+  //     ['Diallo', 'Moussa', '774757895', 5000, 'Salaire Mars', 'Wave'],
+  //   ];
 
-    // Feuille "Instructions"
-    const instructionsRows = [
-      ['Champ', 'Règle', 'Exemple valide', 'Exemple invalide'],
-      ['Nom', 'Obligatoire, non vide', 'Diallo', ''],
-      ['Prénom', 'Obligatoire, non vide', 'Moussa', ''],
-      ['Téléphone', '9 chiffres, préfixe 77/70/76/78/75', '774757895', '654789632'],
-      ['Montant', 'Nombre supérieur à 0', '5000', '-100, abc'],
-      ['Motif', 'Obligatoire, non vide', 'Salaire Mars', ''],
-      ['Opérateur', 'Orange Money, Wave ou Free Money', 'Wave', 'MTN'],
-    ];
+  //   // Feuille "Instructions"
+  //   const instructionsRows = [
+  //     ['Champ', 'Règle', 'Exemple valide', 'Exemple invalide'],
+  //     ['Nom', 'Obligatoire, non vide', 'Diallo', ''],
+  //     ['Prénom', 'Obligatoire, non vide', 'Moussa', ''],
+  //     ['Téléphone', '9 chiffres, préfixe 77/70/76/78/75', '774757895', '654789632'],
+  //     ['Montant', 'Nombre supérieur à 0', '5000', '-100, abc'],
+  //     ['Motif', 'Obligatoire, non vide', 'Salaire Mars', ''],
+  //     ['Opérateur', 'Orange Money, Wave ou Free Money', 'Wave', 'MTN'],
+  //   ];
 
-    this.convertToXLSXMultiSheet(
-      [
-        { name: 'Modèle', rows: modeleRows },
-        { name: 'Instructions', rows: instructionsRows },
-      ],
-      'modele_import_paiements'
-    );
+  //   this.convertToXLSXMultiSheet(
+  //     [
+  //       { name: 'Modèle', rows: modeleRows },
+  //       { name: 'Instructions', rows: instructionsRows },
+  //     ],
+  //     'modele_import_paiements'
+  //   );
+  // }
+
+
+  onTelechargerModele(): void {
+  const modeleRows = [
+    ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Motif', 'Opérateur'],
+    ['Diallo', 'Moussa', '774757895', 5000, 'Salaire Mars', 'Wave'],
+  ];
+
+  const instructionsRows = [
+    ['Règles métier récapitulées: Instructions de remplissage'],
+    ['Champ', 'Règle', 'Exemple valide', 'Exemple invalide'],
+    ['Nom', 'Obligatoire, non vide', 'Diallo', ''],
+    ['Prénom', 'Obligatoire, non vide', 'Moussa', ''],
+    ['Téléphone', '9 chiffres, préfixe 77/70/76/78/75', '774757895', '654789632'],
+    ['Montant', 'Nombre supérieur à 0', '5000', '-100, abc'],
+    ['Motif', 'Obligatoire, non vide', 'Salaire Mars', ''],
+    ['Opérateur', 'Orange Money, Wave ou Free Money', 'Wave', 'MTN'],
+  ];
+
+  const wsModele = this.buildStyledSheet(modeleRows, { headerRow: 0 });
+  const wsInstructions = this.buildStyledSheet(instructionsRows, {
+    titleRow: 0,
+    headerRow: 1,
+    mergeTitleCols: 4,
+  });
+
+  const workbook: XLSX.WorkBook = { Sheets: {}, SheetNames: [] };
+  workbook.Sheets['Modèle'] = wsModele;
+  workbook.SheetNames.push('Modèle');
+  workbook.Sheets['Instructions'] = wsInstructions;
+  workbook.SheetNames.push('Instructions');
+
+  const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  this.saveAsExcelFile(excelBuffer, 'modele_import_paiements');
+}
+
+private buildStyledSheet(
+  rows: any[][],
+  opts: { headerRow: number; titleRow?: number; mergeTitleCols?: number }
+): XLSX.WorkSheet {
+  const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(rows);
+
+  const thinBorder = {
+    top: { style: 'thin', color: { rgb: '000000' } },
+    bottom: { style: 'thin', color: { rgb: '000000' } },
+    left: { style: 'thin', color: { rgb: '000000' } },
+    right: { style: 'thin', color: { rgb: '000000' } },
+  };
+
+  const range = XLSX.utils.decode_range(ws['!ref']!);
+
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws[addr]) continue;
+
+      const isTitle = opts.titleRow !== undefined && R === opts.titleRow;
+      const isHeader = R === opts.headerRow;
+
+      ws[addr].s = {
+        border: isTitle ? undefined : thinBorder,
+        font: {
+          bold: isTitle || isHeader,
+          sz: isTitle ? 12 : 11,
+        },
+        fill: isHeader
+          ? { fgColor: { rgb: 'D9E1F2' } }
+          : undefined,
+        alignment: {
+          vertical: 'center',
+          horizontal: isTitle ? 'center' : 'left',
+          wrapText: true,
+        },
+      };
+    }
   }
+
+  // Fusionner la ligne de titre sur plusieurs colonnes
+  if (opts.titleRow !== undefined && opts.mergeTitleCols) {
+    ws['!merges'] = [
+      { s: { r: opts.titleRow, c: 0 }, e: { r: opts.titleRow, c: opts.mergeTitleCols - 1 } },
+    ];
+  }
+
+  // Largeur des colonnes
+  ws['!cols'] = [
+    { wch: 12 }, { wch: 35 }, { wch: 18 }, { wch: 18 },
+  ];
+
+  return ws;
+}
 
   convertToXLSXMultiSheet(
     sheets: { name: string; rows: any[][] }[],
