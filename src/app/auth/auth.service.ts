@@ -212,9 +212,9 @@ export class AuthService {
       } else if (isPaymentManagerOnly) {
         this.router.navigate(['/dashboard/organization/payments']);
       }
-      //  else if (roles.includes('APPROVER')){
-      //     this.router.navigate(['/dashboard/tracking-approvals']);
-      // }
+       else if (roles.includes('APPROVER')){
+          this.router.navigate(['/dashboard/tracking-approvals']);
+      }
       else {
         this.router.navigate(['/dashboard']);
       }
