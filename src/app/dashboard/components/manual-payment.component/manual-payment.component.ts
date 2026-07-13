@@ -265,24 +265,9 @@ export class ManualPaymentComponent implements OnInit {
   submitOrder(): void {
     this.isSubmitting = true;
 
-    const onSuccess = () => {
+    const navigateToDetails = (orderId: string) => {
       this.isSubmitting = false;
-      this.orderSummary = {
-        libelle: this.label,
-        nombreBeneficiaires: this.beneficiaries.length,
-        montantTotal: this.totalAmount,
-        operateurs: this.recapRepartition.length,
-        dateSoumission: new Date().toLocaleString('fr-FR'),
-      };
-      this.approvalSteps = this.approvalFlowApprovers.map((a, i) => ({
-        niveau: i + 1,
-        approbateurNom: a.nom,
-        approbateurRole: a.role,
-        statut: 'en_attente' as const,
-        dateNotification: new Date().toLocaleDateString('fr-FR'),
-      }));
-      this.currentStep = 3;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.router.navigate(['/dashboard/payments/details', orderId]);
     };
 
     const onError = () => {
@@ -291,9 +276,19 @@ export class ManualPaymentComponent implements OnInit {
     };
 
     if (this.draftOrderId) {
-      this.submitBulkPaymentOrderGQL.mutate({ id: this.draftOrderId }).subscribe({ next: onSuccess, error: onError });
+      this.submitBulkPaymentOrderGQL.mutate({ id: this.draftOrderId }).subscribe({
+        next: () => navigateToDetails(this.draftOrderId!),
+        error: onError,
+      });
     } else {
-      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({ next: onSuccess, error: onError });
+      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
+        next: ({ data }) => {
+          const id = data?.createBulkPaymentOrder?.id;
+          if (id) navigateToDetails(id);
+          else onError();
+        },
+        error: onError,
+      });
     }
   }
 

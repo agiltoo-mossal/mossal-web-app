@@ -1,9 +1,16 @@
-import { TrackingApprovalsComponent } from './../tracking-approvals/tracking-approvals.component';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
+
 import { RejectPaymentDialogComponent } from '../reject-payment-dialog/reject-payment-dialog.component';
+import {
+  ApproveBulkPaymentOrderGQL,
+  FetchOrderForApproverByIdGQL,
+  RejectBulkPaymentOrderGQL,
+} from 'src/graphql/bulk-payment-extended';
+import { Wallet } from 'src/graphql/generated';
+import { SnackBarService, SnackBarClassByResult } from 'src/app/shared/services/snackbar.service';
 
 export type StatutPaiement = 'pending' | 'approved' | 'rejected';
 export type StatutApprobation = 'approved' | 'rejected' | 'pending';
@@ -13,11 +20,11 @@ export interface Beneficiaire {
   prenom: string;
   telephone: string;
   montant: number;
-  operateur: 'Wave' | 'Orange Money';
+  operateur: string;
 }
 
 export interface RepartitionOperateur {
-  nom: 'Wave' | 'Orange Money';
+  nom: string;
   nombreBeneficiaires: number;
   montant: number;
   pourcentage: number;
@@ -48,6 +55,12 @@ export interface PaymentOrderDetails {
   rejetePar?: string;
 }
 
+const STATUS_MAP: Record<string, StatutPaiement> = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+};
+
 @Component({
   selector: 'app-tracking-approvals-details',
   templateUrl: './tracking-approvals-details.component.html',
@@ -56,125 +69,122 @@ export interface PaymentOrderDetails {
 export class TrackingApprovalsDetailsComponent implements OnInit {
 
   paiement!: PaymentOrderDetails;
+  isLoading = true;
+  isSubmitting = false;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private location: Location,
-    private dialog: MatDialog
-
+    private dialog: MatDialog,
+    private fetchOrderForApproverByIdGQL: FetchOrderForApproverByIdGQL,
+    private approveBulkPaymentOrderGQL: ApproveBulkPaymentOrderGQL,
+    private rejectBulkPaymentOrderGQL: RejectBulkPaymentOrderGQL,
+    private snackBarService: SnackBarService,
   ) {}
 
   ngOnInit(): void {
-    // Le statut arrive en query param depuis la liste (voir TrackingApprovalsComponent.voirDetail())
-    // ex: /tracking-approvals//1?statut=pending
-    const statut = (this.route.snapshot.queryParamMap.get('statut') as StatutPaiement) || 'pending';
-    this.paiement = this.buildMock(statut);
-  }
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
 
+    this.fetchOrderForApproverByIdGQL
+      .fetch({ id }, { fetchPolicy: 'network-only' })
+      .subscribe({
+        next: (res) => {
+          const order = res.data?.fetchOrderForApproverById;
+          if (!order) return;
 
-  private buildMock(statut: StatutPaiement): PaymentOrderDetails {
-    const beneficiairesMock: Beneficiaire[] = [
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Wave' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Orange Money' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Orange Money' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Wave' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Orange Money' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Orange Money' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Wave' },
-      { nom: 'DIOP', prenom: 'Laurent', telephone: '77 700 77 77', montant: 120000, operateur: 'Orange Money' }
-    ];
+          const statut = STATUS_MAP[order.status] ?? 'pending';
+          const payments = order.payments ?? [];
+          const approvers = order.approvers ?? [];
+          const approvals = order.approvals ?? [];
 
-    const base = {
-      id: '1',
-      titre: 'Paiement Mai 2026',
-      libellePaiement: 'Paiement des primes de Juin 2026',
-      nombreBeneficiaires: 42,
-      nombreOperateurs: 2,
-      demandeurNom: 'Awa Fall',
-      beneficiaires: beneficiairesMock,
-      repartitionOperateurs: [
-        { nom: 'Wave' as const, nombreBeneficiaires: 28, montant: 1390000, pourcentage: 65 },
-        { nom: 'Orange Money' as const, nombreBeneficiaires: 14, montant: 930000, pourcentage: 35 }
-      ]
-    };
+          const wavePayments = payments.filter(p => p.wallet === Wallet.Wave);
+          const omPayments = payments.filter(p => p.wallet === Wallet.OrangeMoney);
+          const totalAmt = order.totalAmount || 1;
+          const waveAmt = wavePayments.reduce((s, p) => s + p.amount, 0);
+          const omAmt = omPayments.reduce((s, p) => s + p.amount, 0);
 
-    switch (statut) {
-      case 'approved':
-        return {
-          ...base,
-          statut: 'approved',
-          montantTotal: 2320000,
-          dateSoumission: '12 juin 2026 à 10:45',
-          etapesApprobation: [
-            {
-              niveau: 1,
-              statut: 'approved',
-              validateurNom: 'Khadija Sarr',
-              validateurRole: 'Approbateur',
-              dateModification: 'Modifié le 13 mars 2026'
-            },
-            {
-              niveau: 2,
-              statut: 'approved',
-              validateurNom: 'Maître Sarr',
-              validateurRole: 'Super Admin',
-              dateModification: 'Modifié le 15 mars 2026'
+          const uniqueWallets = new Set(payments.map(p => p.wallet));
+
+          const etapesApprobation: ApprobationStep[] = approvers.map((approver, i) => {
+            const level = i + 1;
+            const approval = approvals.find(a => a.level === level);
+            const nom = `${approver.firstName} ${approver.lastName}`;
+
+            if (approval) {
+              return {
+                niveau: level,
+                statut: 'approved' as StatutApprobation,
+                validateurNom: nom,
+                validateurRole: 'Approbateur',
+                dateModification: approval.approvedAt
+                  ? new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(approval.approvedAt))
+                  : '',
+              };
+            } else if (statut === 'rejected' && level === order.currentApprovalLevel) {
+              return {
+                niveau: level,
+                statut: 'rejected' as StatutApprobation,
+                validateurNom: nom,
+                validateurRole: 'Approbateur',
+                dateModification: '',
+                motifRejet: order.rejectedReason ?? undefined,
+              };
+            } else {
+              return {
+                niveau: level,
+                statut: 'pending' as StatutApprobation,
+                validateurNom: nom,
+                validateurRole: 'Approbateur',
+                dateModification: '',
+              };
             }
-          ]
-        };
+          });
 
-      case 'rejected':
-        return {
-          ...base,
-          statut: 'rejected',
-          montantTotal: 3320000,
-          dateSoumission: '12 juin 2026 à 10:45',
-          rejetePar: 'Maité Sarr',
-          etapesApprobation: [
-            {
-              niveau: 1,
-              statut: 'approved',
-              validateurNom: 'Khadija Sarr',
-              validateurRole: 'Approbateur',
-              dateModification: 'Modifié le 13 mars 2026'
-            },
-            {
-              niveau: 2,
-              statut: 'rejected',
-              validateurNom: 'Maité Sarr',
-              validateurRole: 'Super Admin',
-              dateModification: 'Modifié le 15 mars 2026',
-              motifRejet: 'Le montant dépasse le plafond mensuel autorisé pour ce type de virement.'
-            }
-          ]
-        };
+          const rejectedStep = etapesApprobation.find(e => e.statut === 'rejected');
 
-      case 'pending':
-      default:
-        return {
-          ...base,
-          statut: 'pending',
-          montantTotal: 2320000,
-          dateSoumission: '15 mars 2026 à 09h07',
-          etapesApprobation: [
-            {
-              niveau: 1,
-              statut: 'pending',
-              validateurNom: 'Khadija Sarr',
-              validateurRole: 'Approbateur',
-              dateModification: ''
-            }
-          ]
-        };
-    }
+          this.paiement = {
+            id: order.id,
+            titre: order.label,
+            statut,
+            libellePaiement: order.label,
+            nombreBeneficiaires: payments.length,
+            montantTotal: order.totalAmount,
+            nombreOperateurs: uniqueWallets.size,
+            dateSoumission: new Intl.DateTimeFormat('fr-FR', {
+              day: 'numeric', month: 'long', year: 'numeric',
+              hour: '2-digit', minute: '2-digit',
+            }).format(new Date(order.createdAt)),
+            demandeurNom: order.createdByUser
+              ? `${order.createdByUser.firstName} ${order.createdByUser.lastName}`
+              : '—',
+            beneficiaires: payments.map(p => ({
+              nom: p.lastName,
+              prenom: p.firstName,
+              telephone: p.phoneNumber,
+              montant: p.amount,
+              operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
+            })),
+            repartitionOperateurs: [
+              { nom: 'Wave', nombreBeneficiaires: wavePayments.length, montant: waveAmt, pourcentage: Math.round(waveAmt / totalAmt * 100) },
+              { nom: 'Orange Money', nombreBeneficiaires: omPayments.length, montant: omAmt, pourcentage: Math.round(omAmt / totalAmt * 100) },
+            ],
+            etapesApprobation,
+            rejetePar: rejectedStep?.validateurNom,
+          };
+
+          this.isLoading = false;
+        },
+        error: () => { this.isLoading = false; },
+      });
   }
 
   get badgeLabel(): string {
-    switch (this.paiement.statut) {
+    switch (this.paiement?.statut) {
       case 'pending': return 'En attente';
       case 'approved': return 'Validé';
       case 'rejected': return 'Rejeté';
+      default: return '';
     }
   }
 
@@ -183,20 +193,59 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
   }
 
   retour(): void {
-    this.location.back(); 
+    this.location.back();
+  }
+
+  approuver(): void {
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
+
+    this.approveBulkPaymentOrderGQL.mutate({ id: this.paiement.id }).subscribe({
+      next: () => {
+        this.snackBarService.showSnackBar(
+          'Ordre approuvé avec succès.',
+          '✕',
+          { panelClass: SnackBarClassByResult.Success, duration: 3000 },
+        );
+        this.location.back();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        const message = err?.graphQLErrors?.[0]?.message ?? 'Une erreur est survenue.';
+        this.snackBarService.showSnackBar(message, '✕', {
+          panelClass: SnackBarClassByResult.Error,
+          duration: 4000,
+        });
+      },
+    });
   }
 
   rejeter(): void {
-    const dialogRef = this.dialog.open(RejectPaymentDialogComponent, { width: '480px' });
+    const dialogRef = this.dialog.open(RejectPaymentDialogComponent, { width: '720px' });
 
-        dialogRef.afterClosed().subscribe((motifRejet: string | undefined) => {
-            if (!motifRejet) return; // annulé
-            console.log('Rejeter', this.paiement.id, motifRejet);
-        });
-    }
+    dialogRef.afterClosed().subscribe((motifRejet: string | undefined) => {
+      if (!motifRejet || this.isSubmitting) return;
+      this.isSubmitting = true;
 
-  approuver(): void {
-    console.log('Approuver le paiement', this.paiement.id);
+      this.rejectBulkPaymentOrderGQL.mutate({ id: this.paiement.id, reason: motifRejet }).subscribe({
+        next: () => {
+          this.snackBarService.showSnackBar(
+            'Ordre rejeté.',
+            '✕',
+            { panelClass: SnackBarClassByResult.Success, duration: 3000 },
+          );
+          this.location.back();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          const message = err?.graphQLErrors?.[0]?.message ?? 'Une erreur est survenue.';
+          this.snackBarService.showSnackBar(message, '✕', {
+            panelClass: SnackBarClassByResult.Error,
+            duration: 4000,
+          });
+        },
+      });
+    });
   }
 
   telechargerListe(): void {

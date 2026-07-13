@@ -1,0 +1,163 @@
+<div class="suivi-container" *ngIf="!isLoading && orderDetail">
+
+  <div class="stepper-header">
+    <button class="back-btn" (click)="retour()">
+      <mat-icon>arrow_back</mat-icon> Retour
+    </button>
+  </div>
+
+  <p class="page-subtitle">Détails</p>
+  <h2 class="suivi-title">{{ orderDetail.libelle }}</h2>
+
+  <!-- Card principal -->
+  <div class="main-card">
+
+    <!-- Bannière dynamique -->
+    <div class="notif-banner" [ngClass]="{
+      'banner-pending': isPending,
+      'banner-success': isApproved,
+      'banner-error':   isRejected
+    }">
+      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+
+      <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
+        Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
+        (Approbateur N°{{ currentApproverWaiting.niveau }})
+      </span>
+
+      <span *ngIf="isPending && currentApproverWaiting && hasSomeoneApproved">
+        {{ lastApprovedApprover!.approbateurNom }} a approuvé.
+        Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
+        (Approbateur N°{{ currentApproverWaiting.niveau }})
+      </span>
+
+      <span *ngIf="isPending && !currentApproverWaiting">
+        En attente d'approbation.
+      </span>
+
+      <span *ngIf="isApproved">
+        L'ordre "{{ orderDetail.libelle }}" a été entièrement approuvé.
+      </span>
+
+      <span *ngIf="isRejected && rejectedApprover">
+        Ordre rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement ne sera effectué.
+      </span>
+    </div>
+
+    <!-- Deux colonnes -->
+    <div class="suivi-columns">
+
+      <!-- Colonne gauche : Détails de l'ordre -->
+      <div class="col-details">
+        <h3>Détails De L'ordre</h3>
+        <div class="detail-row">
+          <img src="assets/img/payment_label.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Libellé du paiement</span>
+          <strong>{{ orderDetail.libelle }}</strong>
+        </div>
+        <div class="detail-row">
+          <img src="assets/img/beneficiaries.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Nombre de bénéficiaires</span>
+          <strong>{{ orderDetail.nombreBeneficiaires }}</strong>
+        </div>
+        <div class="detail-row">
+          <img src="assets/img/amount.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Montant total</span>
+          <strong>{{ formatMontant(orderDetail.montantTotal) }}</strong>
+        </div>
+        <div class="detail-row">
+          <img src="assets/img/operators.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Opérateurs</span>
+          <strong>{{ orderDetail.operateurs }}</strong>
+        </div>
+        <div class="detail-row last">
+          <img src="assets/img/payment_date.svg" class="detail-icon" alt="" />
+          <span class="detail-label">Date de soumission</span>
+          <strong>{{ orderDetail.dateSoumission }}</strong>
+        </div>
+      </div>
+
+      <!-- Bande verticale -->
+      <div class="col-divider"></div>
+
+      <!-- Colonne droite : Workflow de validation -->
+      <div class="col-workflow">
+        <h3>Workflow De Validation</h3>
+        <div class="approval-step" *ngFor="let step of approvalSteps" [class.step-indented]="step.niveau > 1">
+          <div class="approval-step-header">
+            <span>Approbation - Niveau {{ step.niveau }}</span>
+            <span class="badge" [ngClass]="{
+              'badge-success': step.statut === 'valide',
+              'badge-pending': step.statut === 'en_attente',
+              'badge-danger':  step.statut === 'rejete'
+            }">
+              <span class="dot"></span>
+              {{ step.statut === 'valide' ? 'Approuvé' : step.statut === 'rejete' ? 'Rejeté' : 'En attente' }}
+            </span>
+          </div>
+          <div class="approval-step-body">
+            <div class="avatar">{{ step.approbateurNom.charAt(0) }}</div>
+            <div>
+              <p class="approbateur-nom">{{ step.approbateurNom }}</p>
+              <p class="approbateur-role">{{ step.approbateurRole }}</p>
+              <p class="approbateur-date" *ngIf="step.dateNotification">
+                Validé le {{ step.dateNotification }}
+              </p>
+            </div>
+          </div>
+          <div class="rejet-motif" *ngIf="step.statut === 'rejete' && step.motifRejet">
+            <p class="rejet-label">Motif du rejet</p>
+            <p>{{ step.motifRejet }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Header liste des bénéficiaires -->
+  <div class="beneficiaires-header" *ngIf="beneficiaires.length > 0">
+    <button class="toggle-btn" (click)="toggleBeneficiairesList()">
+      <span>Liste des bénéficiaires</span>
+      <mat-icon class="chevron" [class.rotated]="isBeneficiairesOpen">expand_more</mat-icon>
+    </button>
+    <button class="btn-download" (click)="telechargerListe()">
+      <mat-icon>file_download</mat-icon> Télécharger
+    </button>
+  </div>
+
+  <!-- Tableau des bénéficiaires -->
+  <div class="beneficiaires-table-wrapper" *ngIf="beneficiaires.length > 0 && isBeneficiairesOpen">
+    <table class="beneficiaires-table">
+      <thead>
+        <tr>
+          <th>NOM</th>
+          <th>PRÉNOM</th>
+          <th>TÉLÉPHONE</th>
+          <th>MONTANT</th>
+          <th>OPÉRATEUR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of beneficiaires">
+          <td>{{ b.nom }}</td>
+          <td>{{ b.prenom }}</td>
+          <td>{{ b.telephone }}</td>
+          <td>{{ formatMontant(b.montant) }}</td>
+          <td>{{ b.operateur }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="loading-state" *ngIf="isLoading">
+  <mat-icon>hourglass_empty</mat-icon>
+  <p>Chargement en cours...</p>
+</div>
+
+<div class="empty-state" *ngIf="!isLoading && !orderDetail">
+  <mat-icon>inbox</mat-icon>
+  <p>Ordre introuvable</p>
+</div>

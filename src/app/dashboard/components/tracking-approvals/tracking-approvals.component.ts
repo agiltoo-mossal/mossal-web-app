@@ -1,19 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
- 
+import { FetchOrdersForApproverGQL } from 'src/graphql/bulk-payment-extended';
+
 export type ValidationStatut = 'pending' | 'approved' | 'rejected';
- 
+
 export interface PaymentValidation {
   id: string;
   titre: string;
   soumisPar: string;
   dateSoumission: string;
+  dateISO: string;
   nombreBeneficiaires: number;
   montantTotal: number;
   statut: ValidationStatut;
   niveauActuel: number;
   niveauTotal: number;
+  dejaTraite: boolean;
+  estMonTour: boolean;
 }
+
+const STATUS_MAP: Record<string, ValidationStatut> = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+};
 
 @Component({
   selector: 'app-tracking-approvals',
@@ -22,134 +32,125 @@ export interface PaymentValidation {
 })
 export class TrackingApprovalsComponent implements OnInit {
 
-  // --- Filtres ---
   recherche = '';
-  dateDebut: Date | null = null;
-  dateFin: Date | null = null;
+  dateDebut = '';
+  dateFin = '';
   statutFiltre = 'tous';
- 
+
   statutOptions = [
     { value: 'tous', label: 'Tous les statuts' },
     { value: 'pending', label: 'En attente' },
     { value: 'approved', label: 'Approuvé' },
     { value: 'rejected', label: 'Rejeté' }
   ];
- 
-  // --- Données ---
+
+  isLoading = true;
   paiements: PaymentValidation[] = [];
   paiementsFiltres: PaymentValidation[] = [];
- 
-  constructor(private router: Router, private route: ActivatedRoute ) {}
- 
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private fetchOrdersForApproverGQL: FetchOrdersForApproverGQL,
+  ) {}
+
   ngOnInit(): void {
-    this.chargerDonneesMock();
-    this.appliquerFiltres();
+    this.fetchOrdersForApproverGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: (res) => {
+        const orders = res.data?.fetchOrdersForApprover ?? [];
+        this.paiements = orders.map((o) => {
+          const createdAt = new Date(o.createdAt);
+          const globalStatut = STATUS_MAP[o.status] ?? 'pending';
+
+          const isApprovedByCurrentUser = o.isApprovedByCurrentUser ?? false;
+          const dejaTraite = isApprovedByCurrentUser || globalStatut === 'approved' || globalStatut === 'rejected';
+          const estMonTour = !dejaTraite && globalStatut === 'pending';
+
+          return {
+            id: o.id,
+            titre: o.label,
+            soumisPar: o.createdByUser
+              ? `${o.createdByUser.firstName} ${o.createdByUser.lastName}`
+              : '—',
+            dateSoumission: new Intl.DateTimeFormat('fr-FR', {
+              day: 'numeric', month: 'long', year: 'numeric',
+              hour: '2-digit', minute: '2-digit',
+            }).format(createdAt),
+            dateISO: createdAt.toISOString().substring(0, 10),
+            nombreBeneficiaires: o.paymentsCount ?? 0,
+            montantTotal: o.totalAmount,
+            statut: globalStatut,
+            niveauActuel: o.currentApprovalLevel ?? 1,
+            niveauTotal: o.approvers?.length ?? 1,
+            dejaTraite,
+            estMonTour,
+          };
+        });
+        this.appliquerFiltres();
+        this.isLoading = false;
+      },
+      error: () => { this.isLoading = false; },
+    });
   }
- 
-  
-  private chargerDonneesMock(): void {
-    this.paiements = [
-      {
-        id: '1',
-        titre: 'Paiement Mai 2026',
-        soumisPar: 'Awa Fall',
-        dateSoumission: '15 Mars 2026 à 09h07',
-        nombreBeneficiaires: 42,
-        montantTotal: 2320000,
-        statut: 'pending',
-        niveauActuel: 1,
-        niveauTotal: 2
-      },
-      {
-        id: '2',
-        titre: 'Paiement Avril 2026',
-        soumisPar: 'Awa Fall',
-        dateSoumission: '06 Avril 2026 à 14h32',
-        nombreBeneficiaires: 42,
-        montantTotal: 2320000,
-        statut: 'approved',
-        niveauActuel: 1,
-        niveauTotal: 1
-      },
-      {
-        id: '3',
-        titre: 'Paiement Mars 2026',
-        soumisPar: 'Awa Fall',
-        dateSoumission: '15 Mars 2026 à 09h07',
-        nombreBeneficiaires: 42,
-        montantTotal: 2320000,
-        statut: 'rejected',
-        niveauActuel: 1,
-        niveauTotal: 2
-      },
-      {
-        id: '4',
-        titre: 'Paiement Février 2026',
-        soumisPar: 'Awa Fall',
-        dateSoumission: '02 Février 2026 à 16h32',
-        nombreBeneficiaires: 42,
-        montantTotal: 2320000,
-        statut: 'pending',
-        niveauActuel: 1,
-        niveauTotal: 2
-      }
-    ];
+
+  getBadgeLabel(p: PaymentValidation): string {
+    if (p.statut === 'rejected') return 'Rejeté';
+    if (p.dejaTraite) return 'Approuvé';
+    if (p.estMonTour) return 'En attente de votre approbation';
+    return 'En attente';
   }
- 
+
+  getBadgeClass(p: PaymentValidation): string {
+    if (p.statut === 'rejected') return 'badge-rejected';
+    if (p.dejaTraite) return 'badge-approved';
+    return 'badge-pending';
+  }
+
   get nombreEnAttente(): number {
-    return this.paiements.filter(p => p.statut === 'pending').length;
+    return this.paiements.filter(p => p.estMonTour).length;
   }
- 
+
   get nombreApprouves(): number {
-    return this.paiements.filter(p => p.statut === 'approved').length;
+    return this.paiements.filter(p => p.dejaTraite && p.statut !== 'rejected').length;
   }
- 
+
   get nombreRejetes(): number {
     return this.paiements.filter(p => p.statut === 'rejected').length;
   }
- 
+
   appliquerFiltres(): void {
     this.paiementsFiltres = this.paiements.filter(p => {
       const matchRecherche =
         !this.recherche ||
         p.titre.toLowerCase().includes(this.recherche.toLowerCase());
- 
+
       const matchStatut =
         this.statutFiltre === 'tous' || p.statut === this.statutFiltre;
- 
-      return matchRecherche && matchStatut;
+
+      const matchDateDebut = !this.dateDebut || p.dateISO >= this.dateDebut;
+      const matchDateFin = !this.dateFin || p.dateISO <= this.dateFin;
+
+      return matchRecherche && matchStatut && matchDateDebut && matchDateFin;
     });
   }
- 
+
   reinitialiserFiltres(): void {
     this.recherche = '';
-    this.dateDebut = null;
-    this.dateFin = null;
+    this.dateDebut = '';
+    this.dateFin = '';
     this.statutFiltre = 'tous';
     this.appliquerFiltres();
   }
- 
-  getStatutLabel(statut: ValidationStatut): string {
-    switch (statut) {
-      case 'pending':
-        return 'En attente de votre validation';
-      case 'approved':
-        return 'Approuvé';
-      case 'rejected':
-        return 'Rejeté';
-    }
-  }
- 
+
   formatMontant(montant: number): string {
     return montant.toLocaleString('fr-FR') + ' XOF';
   }
- 
 
   voirDetail(paiement: PaymentValidation): void {
-    this.router.navigate([paiement.id], {
-      relativeTo: this.route,       
-      queryParams: { statut: paiement.statut }
-    });
+    if (paiement.dejaTraite || paiement.statut !== 'pending') {
+      this.router.navigate([paiement.id, 'view'], { relativeTo: this.route });
+    } else {
+      this.router.navigate([paiement.id], { relativeTo: this.route });
+    }
   }
-
 }
