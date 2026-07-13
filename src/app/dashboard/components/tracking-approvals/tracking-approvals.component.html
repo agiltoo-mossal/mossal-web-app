@@ -22,97 +22,94 @@
 
   <!-- Filtres -->
   <div class="filters-card">
-    <div class="filters-row">
+    <div class="filters-grid-top">
 
-      <div class="filter-group">
+      <div class="filter-field">
         <label>Recherche</label>
-        <div class="input-wrapper">
-          <input
-            type="text"
-            placeholder="Rechercher (libellé...)"
-            [(ngModel)]="recherche"
-          />
-          <mat-icon>expand_more</mat-icon>
-        </div>
+        <input type="text" placeholder="Rechercher (libellé...)" [(ngModel)]="recherche" />
       </div>
 
-      <div class="filter-group">
+      <div class="filter-field periode">
         <label>Période</label>
-        <div class="input-wrapper date-range">
-          <input type="text" placeholder="01/01/2025" readonly />
-          <span class="arrow">→</span>
-          <input type="text" placeholder="31/05/2026" readonly />
-          <mat-icon>calendar_today</mat-icon>
+        <div class="periode-inputs">
+          <input type="date" [(ngModel)]="dateDebut" />
+          <span class="arrow-separator">→</span>
+          <input type="date" [(ngModel)]="dateFin" />
         </div>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-field">
         <label>Statut</label>
-        <div class="input-wrapper">
-          <select [(ngModel)]="statutFiltre">
-            <option *ngFor="let option of statutOptions" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
+        <select [(ngModel)]="statutFiltre">
+          <option *ngFor="let option of statutOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
       </div>
 
     </div>
 
     <div class="filters-actions">
-      <button class="btn-secondary" (click)="reinitialiserFiltres()">
-        <mat-icon>tune</mat-icon>
-        Réinitialiser
+      <button class="btn-reinitialiser" (click)="reinitialiserFiltres()">
+        <mat-icon>tune</mat-icon> Réinitialiser
       </button>
-      <button class="btn-primary" (click)="appliquerFiltres()">
+      <button class="btn-appliquer" (click)="appliquerFiltres()">
         Appliquer
       </button>
     </div>
   </div>
 
   <!-- Liste des paiements -->
-  <div class="payments-list">
-    <div class="payment-card" *ngFor="let paiement of paiementsFiltres">
+  <div class="loading-state" *ngIf="isLoading">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Chargement en cours...</p>
+  </div>
 
-      <div class="payment-main">
-        <h3>{{ paiement.titre }}</h3>
-        <p class="submitted-info">
-          Soumis par {{ paiement.soumisPar }}<br />
-          Le {{ paiement.dateSoumission }}
-        </p>
-      </div>
+  <ng-container *ngIf="!isLoading">
+    <div class="payments-list" *ngIf="paiementsFiltres.length > 0">
+      <div class="payment-card" *ngFor="let paiement of paiementsFiltres">
 
-      <div class="payment-col">
-        <span class="col-label">Bénéficiaires</span>
-        <span class="col-value">{{ paiement.nombreBeneficiaires }}</span>
-      </div>
-
-      <div class="payment-col">
-        <span class="col-label">Montant total</span>
-        <span class="col-value">{{ formatMontant(paiement.montantTotal) }}</span>
-      </div>
-
-      <div class="payment-status-col">
-        <span class="badge" [ngClass]="'badge-' + paiement.statut">
-          • {{ getStatutLabel(paiement.statut) }}
-        </span>
-        <div class="niveau-info">
-          <span class="col-label">Niveau de validation</span>
-          <span class="col-value">{{ paiement.niveauActuel }} sur {{ paiement.niveauTotal }}</span>
+        <div class="payment-main">
+          <h3>{{ paiement.titre }}</h3>
+          <p class="submitted-info">
+            Soumis par {{ paiement.soumisPar }}<br />
+            Le {{ paiement.dateSoumission }}
+          </p>
         </div>
-      </div>
 
-      <div class="payment-action">
-        <button class="btn-outline" (click)="voirDetail(paiement)">
-          Voir le détail
-        </button>
-      </div>
+        <div class="payment-col">
+          <span class="col-label">Bénéficiaires</span>
+          <span class="col-value">{{ paiement.nombreBeneficiaires }}</span>
+        </div>
 
+        <div class="payment-col">
+          <span class="col-label">Montant total</span>
+          <span class="col-value">{{ formatMontant(paiement.montantTotal) }}</span>
+        </div>
+
+        <div class="payment-status-col">
+          <span class="badge" [ngClass]="getBadgeClass(paiement)">
+            {{ getBadgeLabel(paiement) }}
+          </span>
+          <div class="niveau-info">
+            <span class="col-label">Niveau de validation</span>
+            <span class="col-value">{{ paiement.niveauActuel }} sur {{ paiement.niveauTotal }}</span>
+          </div>
+        </div>
+
+        <div class="payment-action">
+          <button class="btn-outline" (click)="voirDetail(paiement)">
+            Voir le détail
+          </button>
+        </div>
+
+      </div>
     </div>
 
     <div class="empty-state" *ngIf="paiementsFiltres.length === 0">
-      Aucun paiement ne correspond à vos critères.
+      <mat-icon>inbox</mat-icon>
+      <p>Aucun ordre de paiement trouvé.</p>
     </div>
-  </div>
+  </ng-container>
 
 </div>

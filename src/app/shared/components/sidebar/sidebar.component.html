@@ -16,7 +16,8 @@
           (click)="handleClick(item)"
           [ngClass]="{'active': isActive(item.link)}">
           <span class="icon" fxLayoutAlign="center center">
-            <mat-icon>{{ item.icon }}</mat-icon>
+            <img *ngIf="item.imgSrc; else matIconTpl" [src]="item.imgSrc" class="nav-svg-icon" />
+            <ng-template #matIconTpl><mat-icon>{{ item.icon }}</mat-icon></ng-template>
           </span>
           <span class="label" *ngIf="isSidebarOpened">{{ item.label }}</span>
           <mat-icon *ngIf="item.children">{{ item.isOpen ? 'expand_less' : 'expand_more' }}</mat-icon>

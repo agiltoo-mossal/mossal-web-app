@@ -53,6 +53,7 @@ import { RequestEventComponent } from './components/request-event/request-event.
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
@@ -70,6 +71,7 @@ import { HistoryComponent } from './components/historyComponent/history.componen
 import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
 import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
+import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
 
 
 @NgModule({
@@ -106,6 +108,7 @@ import { RejectPaymentDialogComponent } from './components/reject-payment-dialog
     TrackingApprovalsComponent,
     TrackingApprovalsDetailsComponent,
     RejectPaymentDialogComponent,
+    ApproverOrderViewComponent,
 
   ],
   imports: [
@@ -152,6 +155,7 @@ import { RejectPaymentDialogComponent } from './components/reject-payment-dialog
     MatDialogModule,
     OrganizationBalanceModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
   ],
   providers: [NotificationsService],
 })

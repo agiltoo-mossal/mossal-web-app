@@ -8,9 +8,11 @@ $color-white: #ffffff;
 
 .reject-dialog {
   padding: 24px 28px;
-  width: 480px;
+  width: 720px;
   max-width: 100%;
   font-family: 'Inter', 'Roboto', sans-serif;
+  border: 1px solid #F41414;
+  border-radius: 8px;
 }
 
 .reject-dialog-header {
@@ -40,9 +42,17 @@ $color-white: #ffffff;
   margin: 0 0 16px 28px;
 }
 
+.motif-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #F41414;
+  margin-bottom: 6px;
+}
+
 .motif-textarea {
   width: 100%;
-  background: $color-bg-light;
+  background: #F4F5F5;
   border: 1px solid $color-border;
   border-radius: 8px;
   padding: 12px 14px;
@@ -69,12 +79,13 @@ $color-white: #ffffff;
 
 .reject-dialog-actions {
   display: flex;
+  justify-content: flex-start;
   gap: 12px;
 
   button {
-    flex: 1;
-    border-radius: 8px;
-    padding: 12px 20px;
+    flex: 0 0 200px;
+    border-radius: 4px;
+    padding: 7px 0;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
@@ -93,7 +104,7 @@ $color-white: #ffffff;
 }
 
 .btn-confirm {
-  background: $color-navy;
+  background: #061E5C;
   color: $color-white;
 
   &:hover {

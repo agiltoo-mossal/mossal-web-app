@@ -276,7 +276,8 @@ export class SidebarComponent implements OnInit {
         {
         label: 'Suivi des validations',
         link: '/dashboard/tracking-approvals',
-        icon: 'validate',
+        icon: null,
+        imgSrc: 'assets/img/checkmark-done.svg',
         },
         {
           label: 'Mon Compte',

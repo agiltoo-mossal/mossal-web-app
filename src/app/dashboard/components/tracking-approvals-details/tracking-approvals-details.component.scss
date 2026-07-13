@@ -16,7 +16,7 @@ $color-bg-page: #f4f6fb;
 $color-white: #ffffff;
 
 .payment-details-container {
-  background: $color-bg-page;
+  background: transparent;
   padding: 24px 32px 48px;
   font-family: 'Inter', 'Roboto', sans-serif;
   color: $color-text-primary;
@@ -25,21 +25,24 @@ $color-white: #ffffff;
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: $color-text-secondary;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: $color-navy;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  padding: 8px 0 0;
   margin-bottom: 12px;
 
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 
-  &:hover {
-    color: $color-navy;
-  }
+  &:hover { opacity: 0.75; }
 }
 
 .details-header {
@@ -202,7 +205,7 @@ $color-white: #ffffff;
   gap: 6px;
   background: $color-white;
   border: 1px solid $color-border;
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
@@ -253,7 +256,7 @@ $color-white: #ffffff;
 // --- Actions (vue "en attente") ---
 .actions-row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 16px;
   margin-top: 28px;
 }
@@ -262,8 +265,9 @@ $color-white: #ffffff;
   background: $color-white;
   color: $color-red;
   border: 1px solid $color-red;
-  border-radius: 8px;
-  padding: 12px 40px;
+  border-radius: 4px;
+  padding: 12px 0;
+  width: 220px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -274,11 +278,12 @@ $color-white: #ffffff;
 }
 
 .btn-approve {
-  background: $color-navy;
+  background: #061E5C;
   color: $color-white;
   border: none;
-  border-radius: 8px;
-  padding: 12px 40px;
+  border-radius: 4px;
+  padding: 12px 0;
+  width: 220px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;

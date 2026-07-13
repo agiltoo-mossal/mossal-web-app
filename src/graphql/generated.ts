@@ -103,11 +103,14 @@ export type BulkPaymentOrder = {
   approvers?: Maybe<Array<User>>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
+  createdByUser?: Maybe<User>;
   currentApprovalLevel?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
+  isApprovedByCurrentUser?: Maybe<Scalars['Boolean']['output']>;
   label: Scalars['String']['output'];
   organization: Scalars['String']['output'];
   payments?: Maybe<Array<BulkPayment>>;
+  paymentsCount?: Maybe<Scalars['Int']['output']>;
   rejectedReason?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentOrderStatus;
   totalAmount: Scalars['Float']['output'];
@@ -1090,6 +1093,8 @@ export type Query = {
   fetchMyBulkPayments: Array<BulkPayment>;
   fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
+  fetchOrderForApproverById: BulkPaymentOrder;
+  fetchOrdersForApprover: Array<BulkPaymentOrder>;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
@@ -1250,6 +1255,11 @@ export type QueryFetchOperationsArgs = {
 export type QueryFetchOperationsMetricsArgs = {
   metricsInput: DemandesMetricsInput;
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchOrderForApproverByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 
