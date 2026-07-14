@@ -45,6 +45,7 @@ export class ManualPaymentComponent implements OnInit {
   @ViewChild('labelInput') labelInputRef: ElementRef<HTMLInputElement>;
 
   currentStep = 1;
+  isLoadingOrder = false;
   editingIndex: number | null = null;
   isSubmitting = false;
   isSavingDraft = false;
@@ -93,6 +94,8 @@ export class ManualPaymentComponent implements OnInit {
     const orderId = this.route.snapshot.queryParamMap.get('orderId');
     if (orderId) {
       this.draftOrderId = orderId;
+      this.currentStep = this.route.snapshot.queryParamMap.get('recap') === 'true' ? 2 : 1;
+      this.isLoadingOrder = true;
       this.fetchBulkPaymentOrderByIdGQL.fetch({ id: orderId }, { fetchPolicy: 'network-only' }).subscribe({
         next: ({ data }) => {
           const order = data?.fetchBulkPaymentOrderById;
@@ -105,10 +108,11 @@ export class ManualPaymentComponent implements OnInit {
             amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
             wallet: p.wallet as Wallet,
           }));
-          this.currentStep = 1;
+          this.isLoadingOrder = false;
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: () => {
+          this.isLoadingOrder = false;
           this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger le brouillon.');
         },
       });
@@ -216,7 +220,7 @@ export class ManualPaymentComponent implements OnInit {
         .subscribe({ next: onSuccess, error: onError });
     } else {
       this.createBulkPaymentOrderGQL
-        .mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true })
+        .mutate({ inputs: this.buildInputs(), label: this.label, isDraft: true, type: 'MANUAL' })
         .subscribe({
           next: ({ data }) => {
             this.draftOrderId = data?.createBulkPaymentOrder?.id ?? null;
@@ -281,7 +285,7 @@ export class ManualPaymentComponent implements OnInit {
         error: onError,
       });
     } else {
-      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false }).subscribe({
+      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false, type: 'MANUAL' }).subscribe({
         next: ({ data }) => {
           const id = data?.createBulkPaymentOrder?.id;
           if (id) navigateToDetails(id);

@@ -1,74 +1,24 @@
 <div class="import-container">
 
-  <div class="upload-step" *ngIf="step === 'upload'">
-    <h2 class="step-title">Importer un fichier Excel</h2>
-    <p class="step-subtitle">Formats acceptés : <strong>.xlsx</strong> et <strong>.xls</strong> uniquement</p>
-
-    <div
-      class="drop-zone"
-      [class.drag-over]="isDragging"
-      [class.has-file]="selectedFile && !fileError"
-      [class.has-error]="fileError"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave()"
-      (drop)="onDrop($event)"
-      (click)="fileInput.click()"
-    >
-      <input
-        #fileInput
-        type="file"
-        accept=".xlsx,.xls"
-        hidden
-        (change)="onFileSelected($event)"
-      />
-
-      <!-- État : erreur -->
-      <ng-container *ngIf="fileError">
-        <mat-icon class="zone-icon icon-error">error_outline</mat-icon>
-        <p class="zone-message error-msg">{{ fileError }}</p>
-        <p class="zone-hint">Cliquez pour choisir un autre fichier</p>
-      </ng-container>
-
-      <!-- État : fichier valide sélectionné -->
-      <ng-container *ngIf="selectedFile && !fileError">
-        <mat-icon class="zone-icon icon-success">check_circle_outline</mat-icon>
-        <p class="zone-filename">{{ selectedFile.name }}</p>
-        <p class="zone-filesize">{{ formatSize(selectedFile.size) }}</p>
-        <p class="zone-hint">Cliquez pour changer de fichier</p>
-      </ng-container>
-
-      <!-- État : vide -->
-      <ng-container *ngIf="!selectedFile && !fileError">
-        <mat-icon class="zone-icon">cloud_upload</mat-icon>
-        <p class="zone-message">Glissez-déposez votre fichier ici</p>
-        <p class="zone-hint">ou cliquez pour parcourir</p>
-      </ng-container>
-    </div>
-
-    <!-- Actions -->
-    <div class="upload-actions">
-      <button class="btn-secondary" (click)="onCancel()">
-        <mat-icon>close</mat-icon> Annuler
-      </button>
-      <button
-        class="btn-primary"
-        [disabled]="!selectedFile || !!fileError"
-        (click)="onConfirmImport()"
-      >
-        <mat-icon>cloud_upload</mat-icon> Confirmer l'import
-      </button>
-    </div>
-  </div>
-
-  <!-- ÉTAPE 2 : Validation fichier  -->
-  <div class="validation-step" *ngIf="step === 'validation'">
+  <div class="validation-step">
 
     <!-- Stepper -->
     <div class="stepper">
       <span class="step-item active">Validation fichier</span>
       <span class="step-item">Récapitulatif</span>
-      <span class="step-item">Approbation</span>
       <span class="step-item">Validation</span>
+    </div>
+
+    <!-- Libellé -->
+    <div class="label-section">
+      <label class="label-title">Libellé de paiement <span class="label-required">*</span></label>
+      <input
+        type="text"
+        class="label-input"
+        [(ngModel)]="label"
+        placeholder="Ex: Paiement du mois de mars 2026"
+      />
+      <p class="label-hint">Ce libellé sera associé à toutes les transactions de ce fichier.</p>
     </div>
 
     <!-- Alerte erreurs -->
@@ -87,139 +37,14 @@
             <th>PRÉNOM</th>
             <th>TÉLÉPHONE</th>
             <th>MONTANT</th>
-            <th>MOTIF</th>
             <th>OPÉRATEUR</th>
             <th>STATUT</th>
             <th>ACTION</th>
           </tr>
         </thead>
         <tbody>
-          <!-- <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length"> -->
-            <!-- Lecture -->
-            <!-- <ng-container *ngIf="!isEditing">
-              <td>{{ row.nom }}</td>
-              <td>{{ row.prenom }}</td>
-              <td>
-                <span [class.cell-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')">
-                  {{ row.telephone || '————' }}
-                </span>
-              </td>
-              <td>
-                <span [class.cell-error]="row.errors?.includes('montant')">
-                  {{ row.montant || '————' }}
-                </span>
-              </td>
-              <td>{{ row.motif || '—' }}</td>
-              <td>{{ row.operateur }}</td>
-              <td>
-                <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
-                  <span class="dot dot-green"></span> OK
-                </span>
-                <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
-                  <span class="dot dot-red"></span> {{ label }}
-                </span>
-              </td>
-            </ng-container> -->
-
-            <!-- Édition -->
-            <!-- <ng-container *ngIf="isEditing">
-              <td>
-                <input class="cell-input" [(ngModel)]="row.nom"
-                  [class.cell-input-error]="row.errors?.includes('nom_vide')"
-                  (blur)="onRowBlur(i)" />
-              </td>
-              <td>
-                <input class="cell-input" [(ngModel)]="row.prenom"
-                  [class.cell-input-error]="row.errors?.includes('prenom_vide')"
-                  (blur)="onRowBlur(i)" />
-              </td>
-              <td>
-                <input class="cell-input" [(ngModel)]="row.telephone"
-                  [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
-                  (blur)="onRowBlur(i)" />
-              </td>
-              <td>
-                <input class="cell-input" [(ngModel)]="row.montant"
-                  [class.cell-input-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')"
-                  (blur)="onRowBlur(i)" />
-              </td>
-              <td>
-                <input class="cell-input" [(ngModel)]="row.motif"
-                  [class.cell-input-error]="row.errors?.includes('motif_vide')"
-                  (blur)="onRowBlur(i)" />
-              </td>
-              <td>
-                <select class="cell-select" [(ngModel)]="row.operateur"
-                  [class.cell-input-error]="row.errors?.includes('operateur_vide')"
-                  (blur)="onRowBlur(i)">
-                  <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
-                </select>
-              </td>
-              <td>
-                <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
-                  <span class="dot dot-green"></span> OK
-                </span>
-                <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
-                  <span class="dot dot-red"></span> {{ label }}
-                </span>
-              </td>
-            </ng-container> -->
-          <!-- </tr> -->
-
-
-
-          <!-- <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
-            <td>
-              <input class="cell-input" [(ngModel)]="row.nom"
-                [class.cell-input-error]="row.errors?.includes('nom_vide')"
-                (blur)="onRowBlur(i)" />
-            </td>
-            <td>
-              <input class="cell-input" [(ngModel)]="row.prenom"
-                [class.cell-input-error]="row.errors?.includes('prenom_vide')"
-                (blur)="onRowBlur(i)" />
-            </td>
-            <td>
-              <input class="cell-input" [(ngModel)]="row.telephone"
-                [class.cell-input-error]="row.errors?.includes('telephone') || row.errors?.includes('telephone_vide')"
-                (blur)="onRowBlur(i)" />
-            </td>
-            <td>
-              <input class="cell-input" [(ngModel)]="row.montant"
-                [class.cell-input-error]="row.errors?.includes('montant_vide') || row.errors?.includes('montant_negatif')"
-                (blur)="onRowBlur(i)" />
-            </td>
-            <td>
-              <input class="cell-input" [(ngModel)]="row.motif"
-                [class.cell-input-error]="row.errors?.includes('motif_vide')"
-                (blur)="onRowBlur(i)" />
-            </td>
-            <td>
-              <select class="cell-select" [(ngModel)]="row.operateur"
-                [class.cell-input-error]="row.errors?.includes('operateur_vide')"
-                (blur)="onRowBlur(i)">
-                <option *ngFor="let op of OPERATEURS" [value]="op">{{ op }}</option>
-              </select>
-            </td>
-            <td>
-              <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
-                <span class="dot dot-green"></span> OK
-              </span>
-              <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
-                <span class="dot dot-red"></span> {{ label }}
-              </span>
-            </td>
-            <td class="action-cell">
-              <button class="btn-icon btn-edit" (click)="onEditRow(i)" title="Modifier">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button class="btn-icon btn-delete" (click)="onDeleteRow(i)" title="Supprimer">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </tr> -->
-
           <tr *ngFor="let row of validationRows; let i = index" [class.row-error]="row.errors?.length">
+
             <!-- NOM -->
             <td>
               <ng-container *ngIf="editingIndex === i; else readNom">
@@ -268,16 +93,6 @@
               </ng-template>
             </td>
 
-            <!-- MOTIF -->
-            <td>
-              <ng-container *ngIf="editingIndex === i; else readMotif">
-                <input class="cell-input" [(ngModel)]="row.motif"
-                  [class.cell-input-error]="row.errors?.includes('motif_vide')"
-                  (blur)="onRowBlur(i)" />
-              </ng-container>
-              <ng-template #readMotif>{{ row.motif || '—' }}</ng-template>
-            </td>
-
             <!-- OPÉRATEUR -->
             <td>
               <ng-container *ngIf="editingIndex === i; else readOp">
@@ -295,8 +110,8 @@
               <span class="badge badge-ok" *ngIf="!row.errors || row.errors.length === 0">
                 <span class="dot dot-green"></span> OK
               </span>
-              <span class="badge badge-error" *ngFor="let label of errorLabels(row)">
-                <span class="dot dot-red"></span> {{ label }}
+              <span class="badge badge-error" *ngFor="let errLabel of errorLabels(row)">
+                <span class="dot dot-red"></span> {{ errLabel }}
               </span>
             </td>
 
@@ -326,113 +141,15 @@
     </div>
 
     <div class="validation-actions">
-      <!-- <button class="btn-secondary" (click)="step = 'upload'; isEditing = false"> -->
-      <button class="btn-secondary" (click)="step = 'upload'; editingIndex = null">
+      <button class="btn-secondary" (click)="onReimporter()" [disabled]="isSaving">
         <mat-icon>arrow_back</mat-icon> Réimporter un fichier
       </button>
-      <!-- <button class="btn-primary" *ngIf="!isEditing" (click)="onValidate()">
-        {{ errorCount > 0 ? 'Corriger et valider' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
-      </button>
-      <button class="btn-primary" *ngIf="isEditing" (click)="onSaveEdits()" [disabled]="errorCount > 0">
-        Enregistrer les corrections <mat-icon>check</mat-icon>
-      </button> -->
-      <button class="btn-primary" (click)="onValidate()" [disabled]="errorCount > 0">
-        {{ errorCount > 0 ? 'Corrigez les erreurs' : 'Valider' }} <mat-icon>arrow_forward</mat-icon>
+      <button class="btn-primary" (click)="onEnregistrer()" [disabled]="errorCount > 0 || !label.trim() || isSaving">
+        <ng-container *ngIf="!isSaving">Enregistrer <mat-icon>arrow_forward</mat-icon></ng-container>
+        <ng-container *ngIf="isSaving">Enregistrement...</ng-container>
       </button>
     </div>
 
   </div>
-
-
-  <!-- ÉTAPE 3 : Récapitulatif -->
-<div class="recapitulatif-step" *ngIf="step === 'recapitulatif'">
-
-  <!-- Stepper -->
-  <div class="stepper">
-    <span class="step-item">Validation fichier</span>
-    <span class="step-item active">Récapitulatif</span>
-    <span class="step-item">Approbation</span>
-    <span class="step-item">Validation</span>
-  </div>
-
-  <!-- Titre -->
-  <div class="recap-header">
-    <p class="recap-label">Récapitulatif</p>
-    <h2 class="file-title">{{ recapitulatif.fichier }}</h2>
-  </div>
-
-  <!-- Cartes KPI -->
-  <div class="kpi-row">
-    <div class="kpi-card">
-      <p class="kpi-label">Bénéficiaires</p>
-      <p class="kpi-value">{{ recapitulatif.beneficiaires }}</p>
-    </div>
-    <div class="kpi-card">
-      <p class="kpi-label">Montant total</p>
-      <p class="kpi-value kpi-green">{{ recapitulatif.montantTotal }}</p>
-    </div>
-    <div class="kpi-card">
-      <p class="kpi-label">Opérateurs</p>
-      <p class="kpi-value">{{ recapitulatif.operateurs }}</p>
-    </div>
-  </div>
-
-  <!-- Répartition par opérateur -->
-  <div class="repartition-card">
-    <h3 class="section-title">Répartition par opérateur</h3>
-    <div class="operateurs-grid">
-      <div
-        class="operateur-card"
-        *ngFor="let op of recapitulatif.repartition"
-        [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}"
-      >
-        <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
-        <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaires</p>
-        <p class="op-montant">{{ op.montant }}</p>
-        <div class="progress-bar-bg">
-          <div
-            class="progress-bar-fill"
-            [ngStyle]="{'width': op.pourcentage + '%', 'background': op.couleur}"
-          ></div>
-        </div>
-        <p class="op-pct">{{ op.pourcentage }}%</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="validation-actions">
-    <button class="btn-secondary" (click)="step = 'validation'" [disabled]="isSubmitting || isSavingDraft">
-      <mat-icon>arrow_back</mat-icon> Précédent
-    </button>
-    <button class="btn-brouillon" (click)="onSaveDraft()" [disabled]="isSubmitting || isSavingDraft">
-      <span *ngIf="!isSavingDraft">
-        <mat-icon>save_outlined</mat-icon> Enregistrer en brouillon
-      </span>
-      <span *ngIf="isSavingDraft">Enregistrement...</span>
-    </button>
-    <button class="btn-primary" (click)="onSoumettre()" [disabled]="isSubmitting || isSavingDraft">
-      <span *ngIf="!isSubmitting">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
-      <span *ngIf="isSubmitting">Envoi en cours...</span>
-    </button>
-  </div>
-
-  <!-- Workflow de validation -->
-  <div class="workflow-card">
-    <div class="workflow-header">
-      <h3>Workflow de validation</h3>
-      <span class="badge-selected">{{ recapitulatif.approbateurs.length }}/{{ recapitulatif.approbateurs.length }} sélectionnés</span>
-    </div>
-    <div class="approbateur-row" *ngFor="let app of recapitulatif.approbateurs">
-      <div class="avatar">{{ app.avatar }}</div>
-      <div class="app-info">
-        <p class="app-nom">{{ app.nom }}</p>
-        <p class="app-role">{{ app.role }}</p>
-      </div>
-      <span class="badge-attente">{{ app.statut }}</span>
-    </div>
-  </div>
-
-</div>
 
 </div>

@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { CreateBulkPaymentOrderGQL, BulkPaymentInput, FetchApprovalFlowGQL, Wallet } from 'src/graphql/generated';
+import { CreateBulkPaymentOrderGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-
-interface RecapApprobateur {
-  nom: string;
-  role: string;
-  statut: string;
-  avatar: string;
-}
+import { BulkPaymentFileService } from 'src/app/shared/services/bulk-payment-file.service';
 
 interface ValidationRow {
   nom: string;
@@ -28,16 +22,10 @@ interface ValidationRow {
 })
 export class ImportFichierComponent implements OnInit {
 
-  step: 'upload' | 'validation' | 'recapitulatif' = 'upload';
-
   selectedFile: File | null = null;
-  fileError: string = '';
-  isDragging = false;
-  isSubmitting = false;
-  isSavingDraft = false;
-  isEditing = false;
+  label = '';
+  isSaving = false;
   editingIndex: number | null = null;
-  
 
   readonly OPERATEURS = ['Wave', 'Orange Money'];
 
@@ -78,109 +66,38 @@ export class ImportFichierComponent implements OnInit {
 
   validationRows: ValidationRow[] = [];
 
-  approvalFlowApprovers: RecapApprobateur[] = [];
-
-  recapitulatif = {
-    fichier: '',
-    beneficiaires: 0,
-    montantTotal: '0 XOF',
-    operateurs: 0,
-    repartition: [] as {
-      nom: string;
-      beneficiaires: number;
-      montant: string;
-      pourcentage: number;
-      couleur: string;
-    }[],
-    approbateurs: [] as RecapApprobateur[],
-  };
-
-  private readonly OPERATEUR_COLORS: Record<string, string> = {
-    'wave':         '#06b6d4',
-    'orange money': '#f97316',
-    'free money':   '#8b5cf6',
-    'mtn':          '#eab308',
-  };
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
-    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBar: SnackBarService,
+    private bulkPaymentFileService: BulkPaymentFileService,
   ) {}
 
   ngOnInit(): void {
-    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
-      next: ({ data }) => {
-        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
-          .sort((a, b) => a.level - b.level)
-          .map((item) => ({
-            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
-            role: `Approbateur ${item.level}`,
-            statut: 'En attente',
-            avatar: this.getInitials(item.approverFirstName, item.approverLastName),
-          }));
-      },
-    });
-  }
-
-  private getInitials(firstName?: string | null, lastName?: string | null): string {
-    return (firstName?.[0] ?? '').toUpperCase() + (lastName?.[0] ?? '').toUpperCase();
+    const preselectedFile = this.bulkPaymentFileService.take();
+    if (preselectedFile) {
+      this.processFile(preselectedFile);
+    }
   }
 
   get errorCount(): number {
     return this.validationRows.filter(r => r.errors && r.errors.length > 0).length;
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.length) this.processFile(input.files[0]);
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragging = true;
-  }
-
-  onDragLeave(): void {
-    this.isDragging = false;
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragging = false;
-    const file = event.dataTransfer?.files[0];
-    if (file) this.processFile(file);
-  }
-
   processFile(file: File): void {
     const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     if (!this.ACCEPTED_EXTENSIONS.includes(ext)) {
-      this.selectedFile = null;
-      this.fileError = 'Format non supporté. Veuillez sélectionner un fichier .xlsx ou .xls';
-    } else {
-      this.selectedFile = file;
-      this.fileError = '';
+      this.snackBar.showErrorSnackBar(4000, 'Format non supporté. Veuillez sélectionner un fichier .xlsx ou .xls');
+      this.router.navigate(['../'], { relativeTo: this.route });
+      return;
     }
+    this.selectedFile = file;
+    this.parseExcelFile(file);
   }
 
-  formatSize(bytes: number): string {
-    if (bytes < 1024)    return `${bytes} o`;
-    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} Ko`;
-    return `${(bytes / 1048576).toFixed(1)} Mo`;
-  }
-
-  onConfirmImport(): void {
-    if (this.selectedFile && !this.fileError) {
-      this.parseExcelFile(this.selectedFile);
-    }
-  }
-
-  onCancel(): void {
-    this.selectedFile = null;
-    this.fileError   = '';
-    this.validationRows = [];
+  onReimporter(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   private parseExcelFile(file: File): void {
@@ -198,21 +115,22 @@ export class ImportFichierComponent implements OnInit {
         });
 
         if (rawRows.length === 0) {
-          this.fileError = 'Le fichier est vide. Veuillez ajouter au moins une ligne.';
+          this.snackBar.showErrorSnackBar(4000, 'Le fichier est vide. Veuillez ajouter au moins une ligne.');
+          this.router.navigate(['../'], { relativeTo: this.route });
           return;
         }
 
         this.validationRows = rawRows.map(raw => this.mapRow(raw));
-        this.step = 'validation';
-        // this.isEditing = true;
       } catch (err) {
-        this.fileError = 'Impossible de lire le fichier. Vérifiez qu\'il s\'agit bien d\'un fichier Excel valide.';
         console.error('Erreur lecture Excel:', err);
+        this.snackBar.showErrorSnackBar(4000, 'Impossible de lire le fichier. Vérifiez qu\'il s\'agit bien d\'un fichier Excel valide.');
+        this.router.navigate(['../'], { relativeTo: this.route });
       }
     };
 
     reader.onerror = () => {
-      this.fileError = 'Erreur lors de la lecture du fichier.';
+      this.snackBar.showErrorSnackBar(4000, 'Erreur lors de la lecture du fichier.');
+      this.router.navigate(['../'], { relativeTo: this.route });
     };
 
     reader.readAsArrayBuffer(file);
@@ -256,27 +174,13 @@ export class ImportFichierComponent implements OnInit {
     return false;
   }
 
-  onValidate(): void {
-    if (this.errorCount > 0) {
-      // this.isEditing = true;
-      return;
-    }
-    this.buildRecapitulatif();
-    this.step = 'recapitulatif';
-  }
-
-  // onSaveEdits(): void {
-  //   this.validationRows = this.validationRows.map(row => this.revalidateRow(row));
-  //   this.isEditing = false;
-  // }
-
   onSaveRow(): void {
-  if (this.editingIndex !== null) {
-    this.validationRows[this.editingIndex] = 
-      this.revalidateRow(this.validationRows[this.editingIndex]);
+    if (this.editingIndex !== null) {
+      this.validationRows[this.editingIndex] =
+        this.revalidateRow(this.validationRows[this.editingIndex]);
+    }
+    this.editingIndex = null;
   }
-  this.editingIndex = null;
-}
 
   onRowBlur(index: number): void {
     const row = { ...this.validationRows[index] };
@@ -284,24 +188,24 @@ export class ImportFichierComponent implements OnInit {
     if (amount > 0) {
       row.montant = this.formatMontant(amount);
     }
+    if (row.telephone?.trim()) {
+      row.telephone = this.formatPhone(row.telephone);
+    }
     this.validationRows[index] = this.revalidateRow(row);
   }
 
-   onEditRow(index: number): void {
-      // this.isEditing = true;
-        this.editingIndex = index;
+  onEditRow(index: number): void {
+    this.editingIndex = index;
+  }
 
-    }
-
-    onDeleteRow(index: number): void {
-      this.validationRows.splice(index, 1);
-    }
+  onDeleteRow(index: number): void {
+    this.validationRows.splice(index, 1);
+  }
 
   private revalidateRow(row: ValidationRow): ValidationRow {
     const errors: string[] = [];
     if (!row.nom?.trim())       errors.push('nom_vide');
     if (!row.prenom?.trim())    errors.push('prenom_vide');
-    if (!row.motif?.trim())     errors.push('motif_vide');
     if (!row.operateur?.trim()) errors.push('operateur_vide');
     if (!row.telephone?.trim()) {
       errors.push('telephone_vide');
@@ -315,43 +219,6 @@ export class ImportFichierComponent implements OnInit {
       errors.push('montant_negatif');
     }
     return { ...row, errors };
-  }
-
-  private buildRecapitulatif(): void {
-    const validRows = this.validationRows.filter(r => !r.errors?.length);
-
-    let totalAmount = 0;
-    for (const row of validRows) {
-      totalAmount += this.parseMontant(row.montant);
-    }
-
-    const opMap = new Map<string, { count: number; total: number }>();
-    for (const row of validRows) {
-      const op   = row.operateur || 'Inconnu';
-      const prev = opMap.get(op) ?? { count: 0, total: 0 };
-      prev.count++;
-      prev.total += this.parseMontant(row.montant);
-      opMap.set(op, prev);
-    }
-
-    const repartition = Array.from(opMap.entries()).map(([nom, data]) => ({
-      nom,
-      beneficiaires: data.count,
-      montant:       this.formatAmount(data.total),
-      pourcentage:   validRows.length > 0
-        ? Math.round((data.count / validRows.length) * 100)
-        : 0,
-      couleur: this.OPERATEUR_COLORS[nom.toLowerCase()] ?? '#6366f1',
-    }));
-
-    this.recapitulatif = {
-      fichier:       this.selectedFile?.name ?? '',
-      beneficiaires: validRows.length,
-      montantTotal:  this.formatAmount(totalAmount),
-      operateurs:    opMap.size,
-      repartition,
-      approbateurs:  this.approvalFlowApprovers,
-    };
   }
 
   private parseMontant(montant: string): number {
@@ -368,8 +235,16 @@ export class ImportFichierComponent implements OnInit {
     return 'XOF ' + Math.round(amount);
   }
 
-  private formatAmount(amount: number): string {
-    return 'XOF ' + Math.round(amount);
+  private formatPhone(phone: string): string {
+    const digits = phone.replace(/[\s\-\+\(\)\.]/g, '');
+    if (digits.length === 9) {
+      return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`;
+    }
+    if (digits.length === 12 && digits.startsWith('221')) {
+      const local = digits.slice(3);
+      return `${local.slice(0, 2)} ${local.slice(2, 5)} ${local.slice(5, 7)} ${local.slice(7)}`;
+    }
+    return phone;
   }
 
   private normalizePhone(phone: string): string {
@@ -388,44 +263,29 @@ export class ImportFichierComponent implements OnInit {
         lastName:    row.nom,
         phoneNumber: this.normalizePhone(row.telephone),
         amount:      this.parseMontant(row.montant),
-        ...(row.motif && { reason: row.motif }),
         wallet:      this.toWallet(row.operateur),
       }));
   }
 
-  private get fileLabel(): string {
-    return this.selectedFile?.name ?? 'Import fichier';
-  }
-
-  onSoumettre(): void {
+  onEnregistrer(): void {
     const inputs = this.buildPaymentInputs();
-    if (!inputs.length || this.isSubmitting) return;
+    if (!inputs.length || this.isSaving) return;
 
-    this.isSubmitting = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: false }).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.router.navigate(['../'], { relativeTo: this.route });
+    this.isSaving = true;
+    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.label, isDraft: true, type: 'FILE_IMPORT' }).subscribe({
+      next: ({ data }) => {
+        this.isSaving = false;
+        const orderId = data?.createBulkPaymentOrder?.id;
+        if (orderId) {
+          this.router.navigate(['/dashboard/organization/payments/manual'], {
+            queryParams: { orderId, recap: 'true' },
+          });
+        } else {
+          this.router.navigate(['../'], { relativeTo: this.route });
+        }
       },
       error: () => {
-        this.isSubmitting = false;
-        this.snackBar.showErrorSnackBar(4000, 'Erreur lors de la soumission de l\'ordre de paiement.');
-      },
-    });
-  }
-
-  onSaveDraft(): void {
-    const inputs = this.buildPaymentInputs();
-    if (!inputs.length || this.isSavingDraft) return;
-
-    this.isSavingDraft = true;
-    this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.fileLabel, isDraft: true }).subscribe({
-      next: () => {
-        this.isSavingDraft = false;
-        this.router.navigate(['../'], { relativeTo: this.route });
-      },
-      error: () => {
-        this.isSavingDraft = false;
+        this.isSaving = false;
         this.snackBar.showErrorSnackBar(4000, 'Erreur lors de l\'enregistrement du brouillon.');
       },
     });

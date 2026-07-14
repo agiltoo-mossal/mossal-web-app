@@ -8,7 +8,8 @@
       </div>
       <h3>Importer un fichier Excel</h3>
       <p>Importer plusieurs paiements dans un fichier</p>
-      <button mat-raised-button color="primary" class="card-btn" (click)="onImporterFichier()">
+      <input #fileImportInput type="file" accept=".xlsx,.xls" hidden (change)="onFileImported($event)" />
+      <button mat-raised-button color="primary" class="card-btn" (click)="fileImportInput.click()">
         <mat-icon>file_download</mat-icon> Importer
       </button>
     </div>
