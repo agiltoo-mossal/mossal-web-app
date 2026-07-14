@@ -1,5 +1,5 @@
-mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean) {
-  createBulkPaymentOrder(inputs: $inputs, label: $label, isDraft: $isDraft) {
+mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String) {
+  createBulkPaymentOrder(inputs: $inputs, label: $label, isDraft: $isDraft, type: $type) {
     id
     label
     totalAmount

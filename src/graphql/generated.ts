@@ -114,6 +114,7 @@ export type BulkPaymentOrder = {
   rejectedReason?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentOrderStatus;
   totalAmount: Scalars['Float']['output'];
+  type?: Maybe<BulkPaymentOrderType>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -122,6 +123,11 @@ export enum BulkPaymentOrderStatus {
   Draft = 'DRAFT',
   Pending = 'PENDING',
   Rejected = 'REJECTED'
+}
+
+export enum BulkPaymentOrderType {
+  FileImport = 'FILE_IMPORT',
+  Manual = 'MANUAL'
 }
 
 export enum BulkPaymentStatus {
@@ -513,6 +519,7 @@ export type MutationCreateBulkPaymentOrderArgs = {
   inputs: Array<BulkPaymentInput>;
   isDraft?: InputMaybe<Scalars['Boolean']['input']>;
   label: Scalars['String']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1943,6 +1950,7 @@ export type CreateBulkPaymentOrderMutationVariables = Exact<{
   inputs: Array<BulkPaymentInput> | BulkPaymentInput;
   label: Scalars['String']['input'];
   isDraft?: InputMaybe<Scalars['Boolean']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -2021,7 +2029,7 @@ export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPa
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
+export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -3429,8 +3437,13 @@ export const UpdateCollaboratorDocument = gql`
     }
   }
 export const CreateBulkPaymentOrderDocument = gql`
-    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean) {
-  createBulkPaymentOrder(inputs: $inputs, label: $label, isDraft: $isDraft) {
+    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String) {
+  createBulkPaymentOrder(
+    inputs: $inputs
+    label: $label
+    isDraft: $isDraft
+    type: $type
+  ) {
     id
     label
     totalAmount
@@ -3775,6 +3788,7 @@ export const FetchMyBulkPaymentOrdersDocument = gql`
     label
     totalAmount
     status
+    type
     approvers {
       id
       firstName

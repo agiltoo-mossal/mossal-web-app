@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
 import * as XLSX from 'xlsx';
+import { BulkPaymentFileService } from 'src/app/shared/services/bulk-payment-file.service';
 
 const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Draft]: 'Brouillon',
@@ -34,6 +35,7 @@ export class OverviewComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
+    private bulkPaymentFileService: BulkPaymentFileService,
   ) { }
 
   isLoading = true;
@@ -124,7 +126,12 @@ export class OverviewComponent implements OnInit {
     this.selectedDate = '';
   }
 
-  onImporterFichier(): void {
+  onFileImported(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.bulkPaymentFileService.set(file);
     this.router.navigate(['../payments/import'], { relativeTo: this.route });
   }
 
@@ -134,10 +141,16 @@ export class OverviewComponent implements OnInit {
 
   onVoirDetails(order: BulkPaymentOrder): void {
     if (order.status === BulkPaymentOrderStatus.Draft) {
-      this.router.navigate(['../payments/manual'], {
-        relativeTo: this.route,
-        queryParams: { orderId: order.id },
-      });
+      if (order.type === 'FILE_IMPORT') {
+        this.router.navigate(['/dashboard/organization/payments/manual'], {
+          queryParams: { orderId: order.id, recap: 'true' },
+        });
+      } else {
+        this.router.navigate(['../payments/manual'], {
+          relativeTo: this.route,
+          queryParams: { orderId: order.id },
+        });
+      }
     } else {
       this.router.navigate(['/dashboard/payments/details', order.id]);
     }

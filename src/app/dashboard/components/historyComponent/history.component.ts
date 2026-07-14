@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
+import { BulkPaymentOrder, BulkPaymentOrderStatus, BulkPaymentOrderType, FetchMyBulkPaymentOrdersGQL } from 'src/graphql/generated';
 
 const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Draft]: 'Brouillon',
@@ -35,17 +35,15 @@ export class HistoryComponent implements OnInit {
   pageSize = 12;
   pageIndex = 0;
 
-  // Valeurs "en attente" liées aux champs du formulaire de filtre
   pendingSearch = '';
-  pendingStatut = '';
-  pendingApprobateur = '';
+  pendingStatus = '';
+  pendingApprover = '';
   pendingStartDate = '';
   pendingEndDate = '';
 
-  // Valeurs réellement appliquées à la liste (mises à jour au clic sur "Appliquer")
   appliedSearch = '';
-  appliedStatut = '';
-  appliedApprobateur = '';
+  appliedStatus = '';
+  appliedApprover = '';
   appliedStartDate = '';
   appliedEndDate = '';
 
@@ -61,8 +59,7 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  // Approbateurs distincts pour peupler le select "Approbateur"
-  get approbateurOptions(): string[] {
+  get approverOptions(): string[] {
     const names = this.orders
       .flatMap(o => o.approvers ?? [])
       .map(a => `${a.firstName} ${a.lastName}`);
@@ -74,10 +71,10 @@ export class HistoryComponent implements OnInit {
       const matchSearch = !this.appliedSearch ||
         (o.label ?? '').toLowerCase().includes(this.appliedSearch.toLowerCase());
 
-      const matchStatut = !this.appliedStatut || o.status === this.appliedStatut;
+      const matchStatus = !this.appliedStatus || o.status === this.appliedStatus;
 
-      const matchApprobateur = !this.appliedApprobateur ||
-        (o.approvers ?? []).some(a => `${a.firstName} ${a.lastName}` === this.appliedApprobateur);
+      const matchApprover = !this.appliedApprover ||
+        (o.approvers ?? []).some(a => `${a.firstName} ${a.lastName}` === this.appliedApprover);
 
       const matchDate = (() => {
         if (!o.createdAt) return !this.appliedStartDate && !this.appliedEndDate;
@@ -87,7 +84,7 @@ export class HistoryComponent implements OnInit {
         return afterStart && beforeEnd;
       })();
 
-      return matchSearch && matchStatut && matchApprobateur && matchDate;
+      return matchSearch && matchStatus && matchApprover && matchDate;
     });
   }
 
@@ -100,7 +97,6 @@ export class HistoryComponent implements OnInit {
     return Math.max(1, Math.ceil(this.filteredOrders.length / this.pageSize));
   }
 
-  // Numéros de page affichés, avec "..." si beaucoup de pages (comme sur la maquette : 1 2 3 4 ... 8)
   get pageNumbers(): (number | '...')[] {
     const total = this.totalPages;
     const current = this.pageIndex + 1;
@@ -146,35 +142,41 @@ export class HistoryComponent implements OnInit {
     return (order.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
   }
 
-  onAppliquer(): void {
+  onApply(): void {
     this.appliedSearch = this.pendingSearch;
-    this.appliedStatut = this.pendingStatut;
-    this.appliedApprobateur = this.pendingApprobateur;
+    this.appliedStatus = this.pendingStatus;
+    this.appliedApprover = this.pendingApprover;
     this.appliedStartDate = this.pendingStartDate;
     this.appliedEndDate = this.pendingEndDate;
     this.pageIndex = 0;
   }
 
-  onReinitialiser(): void {
+  onReset(): void {
     this.pendingSearch = '';
-    this.pendingStatut = '';
-    this.pendingApprobateur = '';
+    this.pendingStatus = '';
+    this.pendingApprover = '';
     this.pendingStartDate = '';
     this.pendingEndDate = '';
     this.appliedSearch = '';
-    this.appliedStatut = '';
-    this.appliedApprobateur = '';
+    this.appliedStatus = '';
+    this.appliedApprover = '';
     this.appliedStartDate = '';
     this.appliedEndDate = '';
     this.pageIndex = 0;
   }
 
-  onVoirDetails(order: BulkPaymentOrder): void {
+  onViewDetails(order: BulkPaymentOrder): void {
     if (order.status === BulkPaymentOrderStatus.Draft) {
-      this.router.navigate(['../payments/manual'], {
-        relativeTo: this.route,
-        queryParams: { orderId: order.id },
-      });
+      if (order.type === BulkPaymentOrderType.FileImport) {
+        this.router.navigate(['/dashboard/organization/payments/manual'], {
+          queryParams: { orderId: order.id, recap: 'true' },
+        });
+      } else {
+        this.router.navigate(['../payments/manual'], {
+          relativeTo: this.route,
+          queryParams: { orderId: order.id },
+        });
+      }
     } else {
       this.router.navigate(['/dashboard/payments/details', order.id]);
     }
