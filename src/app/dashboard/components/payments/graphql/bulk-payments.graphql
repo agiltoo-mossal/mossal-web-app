@@ -52,6 +52,7 @@ query FetchMyBulkPaymentOrders {
     label
     totalAmount
     status
+    type
     approvers {
       id
       firstName

@@ -88,6 +88,7 @@ export interface FetchBulkPaymentOrderByIdQuery {
     label: string;
     totalAmount: number;
     status: BulkPaymentOrderStatus;
+    type?: string | null;
     payments?: Array<{
       id: string;
       firstName: string;
@@ -122,6 +123,7 @@ const FetchBulkPaymentOrderByIdDocument = gql`
       label
       totalAmount
       status
+      type
       payments {
         id
         firstName

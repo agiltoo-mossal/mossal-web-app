@@ -1,4 +1,4 @@
-<div class="manual-payment-container">
+<div class="manual-payment-container" [class.no-bg]="currentStep === 2">
 
   <!-- STEPPER HEADER -->
   <div class="stepper-header">
@@ -18,8 +18,14 @@
     </div>
   </div>
 
+  <!-- Loading state when fetching an existing draft -->
+  <div class="loading-order-state" *ngIf="isLoadingOrder">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Chargement en cours...</p>
+  </div>
+
   <!-- STEP 1 : Saisie des bénéficiaires -->
-  <div class="step-content" *ngIf="currentStep === 1">
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 1">
     <div class="two-col-layout">
 
       <!-- LEFT: Label + Formulaire -->
@@ -186,7 +192,7 @@
   </div>
 
   <!-- STEP 2 : Récapitulatif -->
-  <div class="step-content" *ngIf="currentStep === 2">
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
 
     <div class="recap-header">
       <p class="recap-label">Récapitulatif</p>
@@ -269,7 +275,7 @@
   </div> -->
 
   <!-- STEP 3 : Suivi des validations -->
-  <div class="step-content" *ngIf="currentStep === 3">
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
     <h2 class="suivi-title">Suivi des validations</h2>
 
     <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">
