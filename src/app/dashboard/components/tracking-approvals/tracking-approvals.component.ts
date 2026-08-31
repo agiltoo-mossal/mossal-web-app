@@ -58,6 +58,7 @@ export class TrackingApprovalsComponent implements OnInit {
     this.fetchOrdersForApproverGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
       next: (res) => {
         const orders = res.data?.fetchOrdersForApprover ?? [];
+          console.log('orders bruts:', orders); // vérifie ici si createdByUser existe
         this.paiements = orders.map((o) => {
           const createdAt = new Date(o.createdAt);
           const globalStatut = STATUS_MAP[o.status] ?? 'pending';

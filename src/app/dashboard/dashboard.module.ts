@@ -72,6 +72,7 @@ import { TrackingApprovalsComponent } from './components/tracking-approvals/trac
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
 import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
 import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
+import { ApproveConfirmationDialogComponent } from './components/approve-confirmation-dialog/approve-confirmation-dialog.component';
 
 
 @NgModule({
@@ -109,6 +110,7 @@ import { ApproverOrderViewComponent } from './components/approver-order-view/app
     TrackingApprovalsDetailsComponent,
     RejectPaymentDialogComponent,
     ApproverOrderViewComponent,
+    ApproveConfirmationDialogComponent,
 
   ],
   imports: [

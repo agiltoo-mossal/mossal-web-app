@@ -199,6 +199,12 @@
       <h2 class="recap-title">{{ label }}</h2>
     </div>
 
+    <!-- Avertissement solde insuffisant -->
+    <div class="balance-warning-banner" *ngIf="isBalanceInsufficient">
+      <mat-icon>error_outline</mat-icon>
+      <span>Attention : le solde de votre organisation est insuffisant pour couvrir cet ordre de paiement.</span>
+    </div>
+
     <div class="kpi-row">
       <div class="kpi-card">
         <p class="kpi-label">Bénéficiaires</p>
