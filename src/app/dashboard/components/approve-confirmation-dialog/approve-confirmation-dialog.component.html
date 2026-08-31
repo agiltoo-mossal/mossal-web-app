@@ -1,0 +1,27 @@
+<div class="confirm-dialog">
+  <h2 class="confirm-title">Confirmer la validation</h2>
+  <p class="confirm-subtitle">
+    Vous êtes sur le point d'approuver cet ordre de paiement. Si vous êtes le dernier
+    approbateur, le paiement sera déclenché immédiatement.
+  </p>
+
+  <div class="confirm-summary">
+    <div class="summary-row">
+      <span class="summary-label">Libellé</span>
+      <span class="summary-value">{{ data.libelle }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Bénéficiaires</span>
+      <span class="summary-value">{{ data.nombreBeneficiaires }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Montant total</span>
+      <span class="summary-value summary-amount">{{ formatMontant(data.montantTotal) }}</span>
+    </div>
+  </div>
+
+  <div class="confirm-actions">
+    <button class="btn-secondary" (click)="annuler()">Annuler</button>
+    <button class="btn-primary" (click)="confirmer()">Confirmer l'approbation</button>
+  </div>
+</div>

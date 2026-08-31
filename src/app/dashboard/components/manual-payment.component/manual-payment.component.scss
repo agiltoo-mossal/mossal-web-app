@@ -1006,6 +1006,28 @@ table {
   }
 }
 
+.balance-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fdecea;
+  color: #c62828;
+  border: 1px solid #f5c2c0;
+  padding: 14px 18px;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+
+  mat-icon {
+    color: $danger;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
 .suivi-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
