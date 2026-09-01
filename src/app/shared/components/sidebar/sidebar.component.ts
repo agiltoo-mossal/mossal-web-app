@@ -49,9 +49,9 @@ export class SidebarComponent implements OnInit {
         const roles = this.currentUser.roles ?? [];
         const isPaymentManagerOnly = roles.length === 1 && roles.includes('PAYMENT_MANAGER');
         if (roles.includes('SUPER_ADMIN')) {
-          this.dashboardNav = this.menuAdminMossall;
+          this.dashboardNav = this.getMenuAdminMossall(roles);
         } else if (isPaymentManagerOnly) {
-          this.dashboardNav = this.menuPaymentManager;
+          this.dashboardNav = this.getMenuPaymentManager(roles);
         } else if (roles.includes('SUPER_ADMIN_ORG')) {
           this.dashboardNav = this.getMenuSuperAdmin(roles);
         } else if (roles.includes('ADMIN')) {
@@ -61,6 +61,15 @@ export class SidebarComponent implements OnInit {
         }
         // console.log({ user: this.currentUser });
       });
+  }
+
+  private getSuiviDesValidationsItem() {
+    return {
+      label: 'Suivi des validations',
+      link: '/dashboard/tracking-approvals',
+      icon: null,
+      imgSrc: 'assets/img/checkmark-done.svg',
+    };
   }
 
   getMenuAdmin(roles: string[]) {
@@ -97,6 +106,11 @@ export class SidebarComponent implements OnInit {
           },
         ],
       },
+    ];
+    if (roles.includes('APPROVER')) {
+      items.push(this.getSuiviDesValidationsItem());
+    }
+    items.push(
       {
         label: 'Collaborateurs',
         link: '/dashboard/collaborators',
@@ -107,7 +121,7 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
-    ];
+    );
     if (roles.includes('PAYMENT_MANAGER')) {
       items.push({
         label: 'Paiements',
@@ -123,13 +137,18 @@ export class SidebarComponent implements OnInit {
     return items;
   }
 
-  get menuPaymentManager() {
-    return [
+  getMenuPaymentManager(roles: string[]) {
+    const items: any[] = [
       {
         label: 'Paiement en masse',
         link: '/dashboard/organization/payments',
         icon: 'account_balance_wallet',
       },
+    ];
+    if (roles.includes('APPROVER')) {
+      items.push(this.getSuiviDesValidationsItem());
+    }
+    items.push(
       {
         label: 'Mon Compte',
         link: '/dashboard/user',
@@ -140,30 +159,24 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/Notifications',
         icon: 'notifications_none',
       },
-    ];
+    );
+    return items;
   }
 
   getMenuSuperAdmin(roles: string[]) {
     const orgChildren: any[] = [
       {
-        label: 'Avances',
+        label: 'Gestion des avances',
         link: '/dashboard/organization/avances',
         icon: 'admin_panel_settings',
       },
       {
-        label: 'Suivi des validations',
+        label: 'Gestion des paiements en masse',
         link: '/dashboard/organization/fluxAppro',
         icon: 'approval',
       },
     ];
-    if (roles.includes('PAYMENT_MANAGER')) {
-      orgChildren.push({
-        label: 'Paiements',
-        link: '/dashboard/organization/payments',
-        icon: 'payments',
-      });
-    }
-    return [
+    const items: any[] = [
       {
         label: 'Tableau de bord',
         link: '/dashboard/overview',
@@ -196,6 +209,18 @@ export class SidebarComponent implements OnInit {
           },
         ],
       },
+    ];
+    if (roles.includes('PAYMENT_MANAGER')) {
+      items.push({
+        label: 'Paiement en masse',
+        link: '/dashboard/organization/payments',
+        icon: 'payments',
+      });
+    }
+    if (roles.includes('APPROVER')) {
+      items.push(this.getSuiviDesValidationsItem());
+    }
+    items.push(
       {
         label: 'Administrateurs',
         link: '/dashboard/admins',
@@ -227,16 +252,22 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/activities',
         icon: 'feed',
       },
-    ];
+    );
+    return items;
   }
 
-  get menuAdminMossall() {
-    return [
+  getMenuAdminMossall(roles: string[]) {
+    const items: any[] = [
       {
         label: 'Tableau de bord',
         link: '/dashboard/admin-overview',
         icon: 'dashboard',
       },
+    ];
+    if (roles.includes('APPROVER')) {
+      items.push(this.getSuiviDesValidationsItem());
+    }
+    items.push(
       {
         label: 'Société',
         link: '/dashboard/society',
@@ -267,8 +298,8 @@ export class SidebarComponent implements OnInit {
         link: '/dashboard/user_admin_mossall',
         icon: 'person_outline',
       },
-      
-    ];
+    );
+    return items;
   }
 
     getMenuApprover(roles: string[]) {
