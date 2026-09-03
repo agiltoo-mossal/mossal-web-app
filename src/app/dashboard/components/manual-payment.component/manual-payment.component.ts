@@ -460,6 +460,72 @@ export class ManualPaymentComponent implements OnInit {
           this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger le brouillon.');
         },
       });
+      return;
+    }
+
+    const renewFrom = this.route.snapshot.queryParamMap.get('renewFrom');
+    if (renewFrom) {
+      this.isLoadingOrder = true;
+      this.fetchBulkPaymentOrderByIdGQL.fetch({ id: renewFrom }, { fetchPolicy: 'network-only' }).subscribe({
+        next: ({ data }) => {
+          const order = data?.fetchBulkPaymentOrderById;
+          if (!order) {
+            this.isLoadingOrder = false;
+            this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger l\'ordre à renouveler.');
+            return;
+          }
+
+          const renewalPrefix = 'Renouvellement - ';
+          const baseLabel = order.label.startsWith(renewalPrefix)
+            ? order.label.slice(renewalPrefix.length)
+            : order.label;
+          const label = `${renewalPrefix}${baseLabel}`;
+
+          const inputs: BulkPaymentInput[] = (order.payments ?? []).map((p) => ({
+            firstName: p.firstName,
+            lastName: p.lastName,
+            phoneNumber: p.phoneNumber,
+            amount: p.amount,
+            wallet: p.wallet as Wallet,
+          }));
+
+          this.createBulkPaymentOrderGQL.mutate({ inputs, label, isDraft: true, type: 'MANUAL' }).subscribe({
+            next: ({ data: createData }) => {
+              const newOrder = createData?.createBulkPaymentOrder;
+              if (!newOrder) {
+                this.isLoadingOrder = false;
+                this.snackBarService.showErrorSnackBar(4000, 'Impossible de créer le renouvellement.');
+                return;
+              }
+              this.draftOrderId = newOrder.id;
+              this.label = label;
+              this.beneficiaries = (order.payments ?? []).map((p) => ({
+                firstName: p.firstName,
+                lastName: p.lastName,
+                phoneNumber: this.formatPhoneValue(p.phoneNumber),
+                amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
+                wallet: p.wallet as Wallet,
+              }));
+              this.isLoadingOrder = false;
+              this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: { orderId: newOrder.id, renewFrom: null },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+              });
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+            error: () => {
+              this.isLoadingOrder = false;
+              this.snackBarService.showErrorSnackBar(4000, 'Impossible de créer le renouvellement.');
+            },
+          });
+        },
+        error: () => {
+          this.isLoadingOrder = false;
+          this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger l\'ordre à renouveler.');
+        },
+      });
     }
   }
 
