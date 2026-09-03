@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, Wallet } from 'src/graphql/generated';
 import { RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
@@ -226,7 +227,35 @@ export class PaymentDetailsComponent implements OnInit {
   }
 
   telechargerListe(): void {
-    console.log('Téléchargement');
+    if (!this.payment?.beneficiaries?.length) return;
+
+    const STATUT_LABELS: Record<string, string> = {
+      APPROVED: 'Validé',
+      REJECTED: 'Rejeté',
+      PENDING: 'En attente',
+    };
+    const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
+
+    const rows = [
+      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
+      ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    // Le nom du fichier doit correspondre exactement au libellé de l'ordre.
+    const filename = (this.payment.label ?? 'ordre').replace(/[\\/]/g, '-');
+    a.download = `${filename}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   back(): void {
