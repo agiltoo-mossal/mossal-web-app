@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { FetchOrdersForApproverGQL } from 'src/graphql/bulk-payment-extended';
-
+import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
 export type ValidationStatut = 'pending' | 'approved' | 'rejected';
 
 export interface PaymentValidation {
@@ -18,6 +19,9 @@ export interface PaymentValidation {
   dejaTraite: boolean;
   estMonTour: boolean;
 }
+
+const BALANCE_POLL_INTERVAL_MS = 10000;
+
 
 const STATUS_MAP: Record<string, ValidationStatut> = {
   PENDING: 'pending',
@@ -52,7 +56,14 @@ export class TrackingApprovalsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fetchOrdersForApproverGQL: FetchOrdersForApproverGQL,
+        private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    
   ) {}
+
+  private destroy$ = new Subject<void>();
+
+  isLoadingBalance = true;
+    organization: Organization | null = null;
 
   ngOnInit(): void {
     this.fetchOrdersForApproverGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
@@ -92,7 +103,28 @@ export class TrackingApprovalsComponent implements OnInit {
       },
       error: () => { this.isLoading = false; },
     });
+        this.startBalancePolling();
+
   }
+
+  private startBalancePolling(): void {
+      this.isLoadingBalance = true;
+      interval(BALANCE_POLL_INTERVAL_MS)
+        .pipe(
+          startWith(0), // premier appel immédiat, sans attendre le premier tick
+          switchMap(() => this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' })),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          next: (result) => {
+            if (result.data) {
+              this.organization = result.data.fetchCurrentAdmin.organization as Organization;
+            }
+            this.isLoadingBalance = false;
+          },
+          error: () => { this.isLoadingBalance = false; },
+        });
+    }
 
   getBadgeLabel(p: PaymentValidation): string {
     if (p.statut === 'rejected') return 'Rejeté';

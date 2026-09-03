@@ -1,3 +1,4 @@
+import { ResetApprovalFlowDialogComponent } from './components/flux-approbation.component/reset-approval-flow-dialog/reset-approval-flow-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -111,7 +112,7 @@ import { ApproveConfirmationDialogComponent } from './components/approve-confirm
     RejectPaymentDialogComponent,
     ApproverOrderViewComponent,
     ApproveConfirmationDialogComponent,
-
+    ResetApprovalFlowDialogComponent,
   ],
   imports: [
     CreateEventModule,
