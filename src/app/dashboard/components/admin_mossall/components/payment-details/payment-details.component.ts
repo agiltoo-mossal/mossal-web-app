@@ -43,6 +43,7 @@ export class PaymentDetailsComponent implements OnInit {
 
   payment: PaymentOrderDetails | null = null;
   isLoading = true;
+  orderId: string | null = null;
 
   isBeneficiairesOpen = true;
 
@@ -58,6 +59,7 @@ export class PaymentDetailsComponent implements OnInit {
       this.isLoading = false;
       return;
     }
+    this.orderId = id;
 
     this.fetchBulkPaymentOrderByIdGQL
       .fetch({ id }, { fetchPolicy: 'network-only' })
@@ -169,9 +171,12 @@ export class PaymentDetailsComponent implements OnInit {
     console.log('Relance envoyée');
   }
 
-  renouvelerPaiement(): void {
-    console.log('Renouvellement');
-  }
+  renouvelerPaiement = (): void => {
+    if (!this.orderId) return;
+    this.router.navigate(['/dashboard/organization/payments/manual'], {
+      queryParams: { renewFrom: this.orderId },
+    });
+  };
 
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;

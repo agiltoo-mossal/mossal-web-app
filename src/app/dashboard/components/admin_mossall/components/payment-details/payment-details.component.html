@@ -140,7 +140,12 @@
           bénéficiaires et montants.</p>
       </div>
     </div>
-    <button class="btn-primary" (click)="renouvelerPaiement()">
+    <button
+      class="btn-primary"
+      requiresConfirmation
+      [message]="'Voulez-vous renouveler cet ordre de paiement ?'"
+      [confirmCallback]="renouvelerPaiement"
+    >
       Renouveler ce paiement
     </button>
   </div>
