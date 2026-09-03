@@ -8,18 +8,93 @@
   min-height: 100vh;
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
 .title {
-  color: #061E5C;
+  color: #061e5c;
   font-size: 24px;
   font-weight: 600;
   line-height: 120%;
   letter-spacing: 0.16px;
-  text-align: center;
-  margin-top: 12px;
-  margin-bottom: 24px;
+  margin: 0;
 }
 
-/* ===== Card ===== */
+.btn-add {
+  background-color: #061e5c !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 0 20px !important;
+  height: 42px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-add:hover:not(:disabled) {
+  background-color: #0a2d8a !important;
+}
+
+.btn-add:disabled {
+  opacity: 0.5;
+}
+
+/* ===== Alertes ===== */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: #e6f7ec;
+  color: #1e7e34;
+}
+
+.alert-error {
+  background-color: #fdecea;
+  color: #c0392b;
+}
+
+/* ===== Etat vierge ===== */
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.empty-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #061e5c;
+  margin-bottom: 16px;
+}
+
+.empty-text {
+  color: #061e5c;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ===== Card générique ===== */
 .card {
   background: #ffffff;
   border-radius: 12px;
@@ -28,75 +103,25 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
 }
 
-/* ===== Nombre de niveaux ===== */
-.card-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.card-label {
-  font-weight: 600;
-  color: #1a1a2e;
-  margin: 0 0 4px;
-  font-size: 0.95rem;
-}
-
-.card-desc {
-  color: #6b7280;
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-.card-control {
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-}
-
-.select-label {
-  font-size: 0.82rem;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.select-field {
-  width: 100%;
-}
-
-/* ===== Section approbateurs ===== */
-.approbateurs-card {
-  padding-bottom: 28px;
-}
-
-.section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin: 0 0 24px;
-}
-
 /* ===== Liste des niveaux ===== */
 .niveaux-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
-}
-
-.niveau-item {
-  display: flex;
   gap: 20px;
-  align-items: flex-start;
 }
 
-/* Indicateur latéral */
-.niveau-indicator {
+.niveau-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.niveau-card-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding-top: 4px;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .niveau-badge {
@@ -113,22 +138,8 @@
   flex-shrink: 0;
 }
 
-.niveau-line {
-  width: 2px;
+.niveau-titles {
   flex: 1;
-  min-height: 40px;
-  background-color: #e0e5ef;
-  margin: 6px 0;
-}
-
-/* Contenu du niveau */
-.niveau-content {
-  flex: 1;
-  padding-bottom: 24px;
-}
-
-.niveau-header {
-  margin-bottom: 12px;
 }
 
 .niveau-title {
@@ -142,6 +153,25 @@
   color: #6b7280;
   font-size: 0.82rem;
   margin: 0;
+}
+
+.btn-delete {
+  color: #e53935 !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-delete:disabled {
+  opacity: 0.5;
+}
+
+.sequence-note {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 4px 0 0;
 }
 
 /* Champ approbateur */
@@ -173,22 +203,6 @@
   margin: 6px 0 0;
 }
 
-/* Option utilisateur dans le select */
-.user-option,
-.selected-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar-small {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: #e0e5ef;
-}
-
 /* ===== Actions ===== */
 .actions {
   display: flex;
@@ -199,8 +213,8 @@
 }
 
 .btn-reset {
-  border: 1.5px solid #061E5C !important;
-  color: #061E5C !important;
+  border: 1.5px solid #061e5c !important;
+  color: #061e5c !important;
   border-radius: 8px !important;
   padding: 0 28px !important;
   height: 42px;
@@ -213,7 +227,7 @@
 }
 
 .btn-save {
-  background-color: #061E5C !important;
+  background-color: #061e5c !important;
   color: #ffffff !important;
   border-radius: 8px !important;
   padding: 0 28px !important;
@@ -221,7 +235,7 @@
   font-weight: 500;
 }
 
-.btn-save:hover {
+.btn-save:hover:not(:disabled) {
   background-color: #0a2d8a !important;
 }
 
@@ -231,13 +245,14 @@
     padding: 16px;
   }
 
-  .card-row {
+  .header-row {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .card-control {
+  .btn-add {
     width: 100%;
+    justify-content: center;
   }
 
   .approbateur-select {

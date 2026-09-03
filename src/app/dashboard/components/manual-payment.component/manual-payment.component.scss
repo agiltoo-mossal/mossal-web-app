@@ -1247,3 +1247,65 @@ td{
     margin: 0;
   }
 }
+
+
+.balance-summary-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.balance-summary-row {
+  display: flex;
+  gap: 24px;
+}
+
+.balance-summary-item {
+  flex: 1;
+
+  .balance-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 4px;
+  }
+
+  .balance-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  &.balance-after {
+    background: #ecfdf5;
+    border-radius: 8px;
+    padding: 8px 12px;
+
+    .balance-value { color: #059669; }
+
+    &.balance-negative {
+      background: #fef2f2;
+
+      .balance-value { color: #dc2626; }
+    }
+  }
+}
+
+.balance-warning-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #fee2e2;
+  color: #dc2626;
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
