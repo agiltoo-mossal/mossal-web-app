@@ -5,6 +5,29 @@
     Retour
   </a>
 
+  <!-- Solde de l'organisation : uniquement pertinent tant que l'ordre est en attente -->
+  <div class="balance-summary-card" *ngIf="paiement.statut === 'pending' && organization">
+    <div class="balance-summary-row">
+      <div class="balance-summary-item">
+        <p class="balance-label">Solde actuel de l'organisation</p>
+        <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+      </div>
+      <div class="balance-summary-item">
+        <p class="balance-label">Montant de l'ordre</p>
+        <p class="balance-value">{{ formatMontant(paiement.montantTotal) }}</p>
+      </div>
+      <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+        <p class="balance-label">Solde après exécution</p>
+        <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+      </div>
+    </div>
+
+    <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+      <mat-icon>error_outline</mat-icon>
+      <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+    </div>
+  </div>
+
   <div class="details-header">
     <div>
       <p class="eyebrow">Détails</p>
