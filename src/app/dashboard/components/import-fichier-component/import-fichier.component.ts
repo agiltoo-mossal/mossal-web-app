@@ -34,6 +34,7 @@ export class ImportFichierComponent implements OnInit {
     prenom_vide:     'Prénom vide',
     motif_vide:      'Motif vide',
     operateur_vide:  'Opérateur vide',
+    operateur_invalide: 'Opérateur invalide',
     telephone_vide:  'Téléphone vide',
     telephone:       'N° invalide',
     montant_vide:    'Montant vide',
@@ -58,10 +59,10 @@ export class ImportFichierComponent implements OnInit {
     'opérateur': 'operateur',
   };
 
+  // Correspondance stricte, sensible à la casse : seuls 'Wave' et 'Orange Money' exactement sont acceptés.
   private readonly WALLET_MAP: Record<string, Wallet> = {
-    'wave':         Wallet.Wave,
-    'orange money': Wallet.OrangeMoney,
-    'orange':       Wallet.OrangeMoney,
+    'Wave':         Wallet.Wave,
+    'Orange Money': Wallet.OrangeMoney,
   };
 
   validationRows: ValidationRow[] = [];
@@ -206,7 +207,11 @@ export class ImportFichierComponent implements OnInit {
     const errors: string[] = [];
     if (!row.nom?.trim())       errors.push('nom_vide');
     if (!row.prenom?.trim())    errors.push('prenom_vide');
-    if (!row.operateur?.trim()) errors.push('operateur_vide');
+    if (!row.operateur?.trim()) {
+      errors.push('operateur_vide');
+    } else if (!this.OPERATEURS.includes(row.operateur.trim())) {
+      errors.push('operateur_invalide');
+    }
     if (!row.telephone?.trim()) {
       errors.push('telephone_vide');
     } else if (!this.isValidSenegalPhone(row.telephone)) {
@@ -252,7 +257,9 @@ export class ImportFichierComponent implements OnInit {
   }
 
   private toWallet(operateur: string): Wallet {
-    return this.WALLET_MAP[operateur.toLowerCase().trim()] ?? Wallet.Wave;
+    // Les lignes dont l'opérateur ne correspond pas exactement sont exclues plus haut
+    // (revalidateRow) avant d'arriver ici ; ce fallback ne devrait jamais être atteint.
+    return this.WALLET_MAP[operateur.trim()] ?? Wallet.Wave;
   }
 
   private buildPaymentInputs(): BulkPaymentInput[] {

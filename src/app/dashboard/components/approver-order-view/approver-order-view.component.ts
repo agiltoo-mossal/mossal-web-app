@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import * as XLSX from 'xlsx';
 import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
 import { Wallet } from 'src/graphql/generated';
 
@@ -157,15 +158,26 @@ export class ApproverOrderViewComponent implements OnInit {
 
   telechargerListe(): void {
     if (!this.beneficiaires.length) return;
-    const header = 'NOM;PRÉNOM;TÉLÉPHONE;MONTANT;OPÉRATEUR\n';
-    const rows = this.beneficiaires
-      .map(b => `${b.nom};${b.prenom};${b.telephone};${b.montant};${b.operateur}`)
-      .join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+
+    const statutGlobal = this.isApproved ? 'Validé' : this.isRejected ? 'Rejeté' : 'En attente';
+    const rows = [
+      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
+      ...this.beneficiaires.map(b => [b.nom, b.prenom, b.telephone, b.montant, b.operateur, statutGlobal]),
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    });
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `beneficiaires-${this.orderDetail?.libelle ?? 'ordre'}.csv`;
+    // Le nom du fichier doit correspondre exactement au libellé de l'ordre.
+    const filename = (this.orderDetail?.libelle ?? 'ordre').replace(/[\\/]/g, '-');
+    a.download = `${filename}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
   }

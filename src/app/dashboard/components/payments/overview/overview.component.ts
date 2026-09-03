@@ -469,6 +469,7 @@ import {
   Organization,
 } from 'src/graphql/generated';
 import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { BulkPaymentFileService } from 'src/app/shared/services/bulk-payment-file.service';
 import { Subject, interval } from 'rxjs';
 import { startWith, switchMap, takeUntil } from 'rxjs/operators';
@@ -670,7 +671,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.router.navigate(['../payments/history'], { relativeTo: this.route });
   }
 
-  onTelechargerModele(): void {
+  async onDownloadPaymentTemplate(): Promise<void> {
     const modeleRows = [
       ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Motif', 'Opérateur'],
       ['Diallo', 'Moussa', '774757895', 5000, 'Salaire Mars', 'Wave'],
@@ -686,13 +687,34 @@ export class OverviewComponent implements OnInit, OnDestroy {
       ['Opérateur', 'Orange Money, Wave ou Free Money', 'Wave', 'MTN'],
     ];
 
-    this.convertToXLSXMultiSheet(
-      [
-        { name: 'Modèle', rows: modeleRows },
-        { name: 'Instructions', rows: instructionsRows },
-      ],
-      'modele_import_paiements'
-    );
+    const workbook = new ExcelJS.Workbook();
+    workbook.addWorksheet('Modèle').addRows(modeleRows);
+
+    // La feuille "Instructions" est mise en forme (titre, en-tête en gras, bordures) via exceljs,
+    // seule librairie du projet permettant d'écrire des styles dans un .xlsx (xlsx/SheetJS CE ne le supporte pas.)
+    const instructionsSheet = workbook.addWorksheet('Instructions');
+    const columnCount = instructionsRows[0].length;
+
+    instructionsSheet.mergeCells(1, 1, 1, columnCount);
+    const titleCell = instructionsSheet.getCell(1, 1);
+    titleCell.value = 'Règles métier récapitulées: Instructions de remplissage';
+    titleCell.font = { bold: true };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    instructionsRows.forEach((row) => instructionsSheet.addRow(row));
+    instructionsSheet.getRow(2).font = { bold: true };
+    instructionsSheet.columns = [{ width: 14 }, { width: 40 }, { width: 20 }, { width: 20 }];
+
+    const border: Partial<ExcelJS.Border> = { style: 'thin' };
+    const totalRows = 1 + instructionsRows.length;
+    for (let r = 1; r <= totalRows; r++) {
+      for (let c = 1; c <= columnCount; c++) {
+        instructionsSheet.getCell(r, c).border = { top: border, left: border, bottom: border, right: border };
+      }
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    this.saveAsExcelFile(buffer, 'modele_import_paiements');
   }
 
   convertToXLSXMultiSheet(
