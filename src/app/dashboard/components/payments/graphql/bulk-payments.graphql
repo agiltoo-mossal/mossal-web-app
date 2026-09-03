@@ -24,6 +24,7 @@ query FetchBulkPaymentOrderById($id: String!) {
     rejectedReason
     currentApprovalLevel
     createdAt
+    lastRelaunchAt
     approvers {
       id
       firstName

@@ -124,9 +124,18 @@
   </div>
 
   <!-- Bouton relancer (En attente) -->
-  <button class="btn-primary" *ngIf="isPending" (click)="relancerApprobateurs()">
-    Relancer les approbateurs
-  </button>
+  <ng-container *ngIf="isPending">
+    <button
+      class="btn-primary"
+      [disabled]="!canRelaunch || isRelaunching"
+      (click)="relancerApprobateurs()"
+    >
+      Relancer les approbateurs
+    </button>
+    <p class="relaunch-info" *ngIf="!canRelaunch">
+      Vous pourrez relancer à nouveau dans {{ hoursUntilNextRelaunch }} heure{{ hoursUntilNextRelaunch > 1 ? 's' : '' }}
+    </p>
+  </ng-container>
 
   <!-- Section renouveler (Validé) -->
   <div class="renouveler-card" *ngIf="isApproved">
