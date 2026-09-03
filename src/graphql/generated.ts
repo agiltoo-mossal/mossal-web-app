@@ -108,6 +108,7 @@ export type BulkPaymentOrder = {
   id: Scalars['ID']['output'];
   isApprovedByCurrentUser?: Maybe<Scalars['Boolean']['output']>;
   label: Scalars['String']['output'];
+  lastRelaunchAt?: Maybe<Scalars['DateTime']['output']>;
   organization: Scalars['String']['output'];
   payments?: Maybe<Array<BulkPayment>>;
   paymentsCount?: Maybe<Scalars['Int']['output']>;
@@ -436,6 +437,7 @@ export type Mutation = {
   payeDemande: Scalars['Boolean']['output'];
   rejectBulkPaymentOrder: BulkPaymentOrder;
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
+  relaunchApprovers: BulkPaymentOrder;
   resendOtp: Scalars['Boolean']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   saveApprovalFlow: Scalars['Boolean']['output'];
@@ -665,6 +667,11 @@ export type MutationRejectBulkPaymentOrderArgs = {
 export type MutationRejectDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
   rejectedReason: Scalars['String']['input'];
+};
+
+
+export type MutationRelaunchApproversArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -2024,7 +2031,7 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3748,6 +3755,7 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
     rejectedReason
     currentApprovalLevel
     createdAt
+    lastRelaunchAt
     approvers {
       id
       firstName

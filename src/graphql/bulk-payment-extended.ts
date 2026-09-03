@@ -317,3 +317,31 @@ export class RejectBulkPaymentOrderGQL extends Apollo.Mutation<
     super(apollo);
   }
 }
+
+export interface RelaunchApproversMutationVariables {
+  id: string;
+}
+
+export interface RelaunchApproversMutation {
+  relaunchApprovers: { id: string; lastRelaunchAt?: string | null };
+}
+
+const RelaunchApproversDocument = gql`
+  mutation RelaunchApprovers($id: String!) {
+    relaunchApprovers(id: $id) {
+      id
+      lastRelaunchAt
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class RelaunchApproversGQL extends Apollo.Mutation<
+  RelaunchApproversMutation,
+  RelaunchApproversMutationVariables
+> {
+  document = RelaunchApproversDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
