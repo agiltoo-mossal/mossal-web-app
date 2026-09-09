@@ -66,3 +66,75 @@ table .mat-mdc-header-cell {
     }
   }
 }
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 13px;
+
+  &.badge-pending { background: #fff3cd; color: #b8860b; }
+  &.badge-validated { background: #d4f4dd; color: #1e7e34; }
+  &.badge-rejected { background: #fde2e2; color: #c0392b; }
+}
+
+.ref {
+  color: #1a56db;
+  font-weight: 600;
+}
+
+.amount {
+  color: #1e7e34;
+  font-weight: 600;
+}
+
+.filter-select {
+  width: 160px;
+  ::ng-deep .mat-mdc-text-field-wrapper { height: 44px; }
+}
+
+.scope-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  &.scope-bulk { background: #e3edff; color: #2255d6; }
+  &.scope-advance { background: #dff5e4; color: #1e8a3f; }
+}
+::ng-deep .text-status,
+::ng-deep .text-ref {
+  color: #d97706;
+  font-weight: 700;
+}
+
+::ng-deep .text-amount {
+  color: #1e8a3f;
+  font-weight: 700;
+}
+
+::ng-deep .text-status {
+  color: #eeb543;
+  font-weight: 700;
+  background: #fdf1c7;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+::ng-deep .text-ref {
+  color: #ee8b1a;
+  font-weight: 700;
+}
+
+::ng-deep .text-amount {
+  color: #16c94b;
+  font-weight: 700;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px !important;
+  color: #6b7280;
+  font-size: 15px;
+}
