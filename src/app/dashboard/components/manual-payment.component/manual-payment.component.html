@@ -199,10 +199,27 @@
       <h2 class="recap-title">{{ label }}</h2>
     </div>
 
-    <!-- Avertissement solde insuffisant -->
-    <div class="balance-warning-banner" *ngIf="isBalanceInsufficient">
-      <mat-icon>error_outline</mat-icon>
-      <span>Attention : le solde de votre organisation est insuffisant pour couvrir cet ordre de paiement.</span>
+    <!-- Solde de l'organisation -->
+    <div class="balance-summary-card" *ngIf="organization">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+        <mat-icon>error_outline</mat-icon>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
     </div>
 
     <div class="kpi-row">
@@ -263,24 +280,7 @@
     </div>
   </div>
 
-  <!-- STEP 3 : Succès -->
-  <!-- <div class="step-content" *ngIf="currentStep === 3">
-    <div class="validation-card">
-      <div class="success-icon">
-        <mat-icon>check_circle</mat-icon>
-      </div>
-      <h2>Ordre soumis avec succès</h2>
-      <p>
-        Vos <strong>{{ beneficiaries.length }}</strong> paiements ont été soumis pour approbation.<br/>
-        Montant total : <strong>{{ totalAmount | number:'1.0-0':'fr' }} XOF</strong>
-      </p>
-      <button class="btn-primary" (click)="backToHome()">
-        Retour à l'accueil
-      </button>
-    </div>
-  </div> -->
-
-  <!-- STEP 3 : Suivi des validations -->
+    <!-- STEP 3 : Suivi des validations -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
     <h2 class="suivi-title">Suivi des validations</h2>
 

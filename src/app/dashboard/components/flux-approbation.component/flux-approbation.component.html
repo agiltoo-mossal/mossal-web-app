@@ -1,152 +1,87 @@
 <div class="page-container">
-  <h1 class="title">Paramétrage du flux d'approbation</h1>
-
-  <!-- Nombre de niveaux -->
-  <div class="card">
-    <div class="card-row">
-      <div class="card-info">
-        <p class="card-label">Nombre de niveaux de validation</p>
-        <p class="card-desc">Sélectionnez le nombre de niveaux requis pour valider un paiement de masse.</p>
-      </div>
-      <div class="card-control">
-        <label class="select-label">Niveaux</label>
-        <mat-form-field appearance="outline" class="select-field">
-          <mat-select
-            [(ngModel)]="nombreNiveaux"
-            (ngModelChange)="onNiveauxChange()"
-            placeholder="Sélectionner"
-          >
-            <mat-option [value]="1">1 niveau</mat-option>
-            <mat-option [value]="2">2 niveaux</mat-option>
-            <mat-option [value]="3">3 niveaux</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
+  <div class="header-row">
+    <h1 class="title">Paramétrage du flux d'approbation</h1>
+    <button
+      mat-flat-button
+      class="btn-add"
+      (click)="ajouterNiveau()"
+      [disabled]="!canAddNiveau"
+    >
+      <mat-icon>add</mat-icon>
+      Ajouter un niveau de validation
+    </button>
   </div>
 
-  <!-- Désignation des approbateurs -->
-  <div class="card approbateurs-card">
-    <h2 class="section-title">Designation des approbateurs</h2>
+  <div class="alert alert-success" *ngIf="successMessage">
+    <mat-icon>check_circle</mat-icon>
+    <span>{{ successMessage }}</span>
+  </div>
 
-    <!-- Etat vierge -->
-    <div class="empty-state" *ngIf="isFlowEmpty">
-      <p>Aucun flux d'approbation configuré. Veuillez ajouter au moins un niveau.</p>
-    </div>
+  <div class="alert alert-error" *ngIf="errorMessage">
+    <mat-icon>info</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
 
-    <div class="niveaux-list" *ngIf="!isFlowEmpty">
-      <div class="niveau-item" *ngFor="let niveau of niveaux; let i = index">
-        <div class="niveau-indicator">
-          <div class="niveau-badge">{{ i + 1 }}</div>
-          <div class="niveau-line" *ngIf="i < niveaux.length - 1"></div>
+  <!-- Etat vierge -->
+  <div class="card empty-state-card" *ngIf="isFlowEmpty">
+    <mat-icon class="empty-icon">alt_route</mat-icon>
+    <p class="empty-text">Aucun flux d'approbation configuré. Veuillez ajouter au moins un niveau.</p>
+  </div>
+
+  <!-- Liste des niveaux -->
+  <div class="niveaux-list" *ngIf="!isFlowEmpty">
+    <div class="niveau-card" *ngFor="let niveau of niveaux; let i = index">
+      <div class="niveau-card-header">
+        <div class="niveau-badge">{{ i + 1 }}</div>
+        <div class="niveau-titles">
+          <p class="niveau-title">Niveau {{ i + 1 }}</p>
+          <p class="niveau-subtitle">{{ getNiveauSubtitle(i) }}</p>
         </div>
+        <button
+          mat-button
+          class="btn-delete"
+          (click)="supprimerNiveau(i)"
+          [disabled]="loading || resetting"
+        >
+          <mat-icon>delete_outline</mat-icon>
+          Supprimer
+        </button>
+      </div>
 
-        <div class="niveau-content">
-          <div class="niveau-header">
-            <p class="niveau-title">Niveau {{ i + 1 }}</p>
-            <p class="niveau-subtitle">{{ getNiveauSubtitle(i) }}</p>
-          </div>
-
-          <div class="approbateur-field">
-            <label class="field-label">Approbateur <span class="required">*</span></label>
-            <mat-form-field appearance="outline" class="approbateur-select">
-              <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur" [compareWith]="compareApprovers">
-                <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
-                  {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <p class="field-hint">{{ getNiveauHint(i) }}</p>
-          </div>
-        </div>
+      <div class="approbateur-field">
+        <label class="field-label">Approbateur <span class="required">*</span></label>
+        <mat-form-field appearance="outline" class="approbateur-select">
+          <mat-select
+            [(ngModel)]="niveau.approbateur"
+            placeholder="Sélectionner un approbateur"
+            [compareWith]="compareApprovers"
+          >
+            <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
+              {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <p class="field-hint">{{ getNiveauHint(i) }}</p>
       </div>
     </div>
 
-    <!-- Actions -->
-    <div class="actions">
-      <button
-        mat-stroked-button
-        class="btn-reset"
-        (click)="reinitialiser()"
-        [disabled]="loading || resetting || isFlowEmpty"
-      >
-        Réinitialiser
-      </button>
-      <button mat-flat-button class="btn-save" (click)="enregistrer()" [disabled]="loading || isFlowEmpty">
-        {{ loading ? 'Enregistrement...' : 'Enregistrer le paramétrage' }}
-      </button>
-    </div>
+    <p class="sequence-note" *ngIf="niveaux.length > 1">
+      Les validations se font séquentiellement, du niveau 1 au niveau {{ niveaux.length }}
+    </p>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions" *ngIf="!isFlowEmpty">
+    <button
+      mat-stroked-button
+      class="btn-reset"
+      (click)="reinitialiser()"
+      [disabled]="loading || resetting"
+    >
+      Réinitialiser
+    </button>
+    <button mat-flat-button class="btn-save" (click)="enregistrer()" [disabled]="loading">
+      {{ loading ? 'Enregistrement...' : 'Enregistrer le paramétrage' }}
+    </button>
   </div>
 </div>
-
-
-
-<!-- <div class="page-container">
-  <h1 class="title">Paramétrage du flux d'approbation</h1> -->
-
-  <!-- Nombre de niveaux -->
-  <!-- <div class="card">
-    <div class="card-row">
-      <div class="card-info">
-        <p class="card-label">Nombre de niveaux de validation</p>
-        <p class="card-desc">Sélectionnez le nombre de niveaux requis pour valider un paiement de masse.</p>
-      </div> -->
-      <!-- <div class="card-control">
-        <label class="select-label">Niveaux</label>
-        <mat-form-field appearance="outline" class="select-field">
-          <mat-select [(ngModel)]="nombreNiveaux" (ngModelChange)="onNiveauxChange()">
-            <mat-option [value]="1">1 niveau</mat-option>
-            <mat-option [value]="2">2 niveaux</mat-option>
-            <mat-option [value]="3">3 niveaux</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </div> -->
-
-  <!-- Désignation des approbateurs -->
-  <!-- <div class="card approbateurs-card">
-    <h2 class="section-title">Designation des approbateurs</h2> -->
-
-    <!-- <div class="niveaux-list">
-      <div class="niveau-item" *ngFor="let niveau of niveaux; let i = index"> -->
-        <!-- Indicateur de niveau -->
-        <!-- <div class="niveau-indicator">
-          <div class="niveau-badge">{{ i + 1 }}</div>
-          <div class="niveau-line" *ngIf="i < niveaux.length - 1"></div>
-        </div> -->
-
-        <!-- Contenu du niveau -->
-        <!-- <div class="niveau-content">
-          <div class="niveau-header">
-            <p class="niveau-title">Niveau {{ i + 1 }}</p>
-            <p class="niveau-subtitle">{{ getNiveauSubtitle(i) }}</p>
-          </div>
-
-          <div class="approbateur-field">
-            <label class="field-label">Approbateur <span class="required">*</span></label>
-            <mat-form-field appearance="outline" class="approbateur-select">
-              <mat-select [(ngModel)]="niveau.approbateur" placeholder="Sélectionner un approbateur" [compareWith]="compareApprovers">
-                <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
-                  {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <p class="field-hint">{{ getNiveauHint(i) }}</p>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-    <!-- Actions -->
-    <!-- <div class="actions">
-      <button mat-stroked-button class="btn-reset" (click)="reinitialiser()" [disabled]="loading">
-        Réinitialiser
-      </button>
-      <button mat-flat-button class="btn-save" (click)="enregistrer()" [disabled]="loading">
-        {{ loading ? 'Enregistrement...' : 'Enregistrer le paramétrage' }}
-      </button>
-    </div>
-  </div>
-</div> -->
-
