@@ -47,13 +47,16 @@ export class SidebarComponent implements OnInit {
 
         // Attribution du menu selon le rôle de l'utilisateur
         const roles = this.currentUser.roles ?? [];
+        const subscriptionCodes: string[] = (this.currentUser.organization?.subscriptions ?? [])
+          .map((s: any) => s?.code)
+          .filter(Boolean);
         const isPaymentManagerOnly = roles.length === 1 && roles.includes('PAYMENT_MANAGER');
         if (roles.includes('SUPER_ADMIN')) {
           this.dashboardNav = this.getMenuAdminMossall(roles);
         } else if (isPaymentManagerOnly) {
           this.dashboardNav = this.getMenuPaymentManager(roles);
         } else if (roles.includes('SUPER_ADMIN_ORG')) {
-          this.dashboardNav = this.getMenuSuperAdmin(roles);
+          this.dashboardNav = this.getMenuSuperAdmin(roles, subscriptionCodes);
         } else if (roles.includes('ADMIN')) {
           this.dashboardNav = this.getMenuAdmin(roles);
         } else if (roles.includes('APPROVER')) {
@@ -163,74 +166,94 @@ export class SidebarComponent implements OnInit {
     return items;
   }
 
-  getMenuSuperAdmin(roles: string[]) {
-    const orgChildren: any[] = [
-      {
+  getMenuSuperAdmin(roles: string[], subscriptionCodes: string[] = []) {
+    // La souscription est obligatoire : un onglet n'apparaît que si l'organisation
+    // est souscrite à l'offre correspondante.
+    const showSalaryAdvance = subscriptionCodes.includes('SALARY_ADVANCE');
+    const showBulkPayment = subscriptionCodes.includes('BULK_PAYMENT');
+
+    const orgChildren: any[] = [];
+    if (showSalaryAdvance) {
+      orgChildren.push({
         label: 'Gestion des avances',
         link: '/dashboard/organization/avances',
         icon: 'admin_panel_settings',
-      },
-      {
+      });
+    }
+    if (showBulkPayment) {
+      orgChildren.push({
         label: 'Gestion des paiements en masse',
         link: '/dashboard/organization/fluxAppro',
         icon: 'approval',
-      },
-    ];
-    const items: any[] = [
-      {
-        label: 'Tableau de bord',
-        link: '/dashboard/overview',
-        icon: 'dashboard',
-      },
-      {
-        label: 'Liste des demandes',
-        link: '/dashboard/requests-list',
-        icon: 'list_alt',
-        children: [
-          {
-            label: "Dépannage d'urgence",
-            link: '/dashboard/emergency-repair',
-            icon: 'build',
-          },
-          {
-            label: 'Avance sur événement',
-            link: '/dashboard/event-advance',
-            icon: 'event',
-          },
-          {
-            label: 'Avance salariale',
-            link: '/dashboard/salary-advance',
-            icon: 'attach_money',
-          },
-          {
-            label: 'Avance salariale remboursable mensuellement',
-            link: '/dashboard/monthly-repayable-advance',
-            icon: 'schedule',
-          },
-        ],
-      },
-    ];
-    if (roles.includes('PAYMENT_MANAGER')) {
+      });
+    }
+
+    const items: any[] = [];
+
+    if (showSalaryAdvance) {
+      items.push(
+        {
+          label: 'Tableau de bord',
+          link: '/dashboard/overview',
+          icon: 'dashboard',
+        },
+        {
+          label: 'Liste des demandes',
+          link: '/dashboard/requests-list',
+          icon: 'list_alt',
+          children: [
+            {
+              label: "Dépannage d'urgence",
+              link: '/dashboard/emergency-repair',
+              icon: 'build',
+            },
+            {
+              label: 'Avance sur événement',
+              link: '/dashboard/event-advance',
+              icon: 'event',
+            },
+            {
+              label: 'Avance salariale',
+              link: '/dashboard/salary-advance',
+              icon: 'attach_money',
+            },
+            {
+              label: 'Avance salariale remboursable mensuellement',
+              link: '/dashboard/monthly-repayable-advance',
+              icon: 'schedule',
+            },
+          ],
+        },
+      );
+    }
+
+    // La souscription BULK_PAYMENT s'ajoute à la condition de rôle existante.
+    if (showBulkPayment && roles.includes('PAYMENT_MANAGER')) {
       items.push({
         label: 'Paiement en masse',
         link: '/dashboard/organization/payments',
         icon: 'payments',
       });
     }
-    if (roles.includes('APPROVER')) {
+    if (showBulkPayment && roles.includes('APPROVER')) {
       items.push(this.getSuiviDesValidationsItem());
     }
-    items.push(
-      {
-        label: 'Administrateurs',
-        link: '/dashboard/admins',
-        icon: 'person',
-      },
-      {
+
+    items.push({
+      label: 'Administrateurs',
+      link: '/dashboard/admins',
+      icon: 'person',
+    });
+
+    if (showSalaryAdvance) {
+      items.push({
         label: 'Collaborateurs',
         link: '/dashboard/collaborators',
         icon: 'people',
-      },
+      });
+    }
+
+    items.push(
       {
         label: 'Notifications',
         link: '/dashboard/Notifications',
