@@ -8,6 +8,9 @@ import {
 import { NotificationsService } from './notifications.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { AuthService } from 'src/app/auth/auth.service';
+
+type NotifTab = 'toutes' | 'non-lues' | 'lues';
 
 @Component({
   selector: 'app-notifications',
@@ -18,6 +21,7 @@ export class NotificationsComponent implements OnDestroy, OnInit {
   notfis = [];
   subscriptions: Subscription[] = [];
   resultsLength: number = 0;
+  activeTab: NotifTab = 'toutes';
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
@@ -25,8 +29,32 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
-    private paginatedNofif: FetchPaginatedNotificationsGQL
+    private paginatedNofif: FetchPaginatedNotificationsGQL,
+    private authService: AuthService,
   ) { }
+
+  get filteredNotifs(): any[] {
+    if (this.activeTab === 'non-lues') return this.notfis.filter((n: any) => !n.viewedByMe);
+    if (this.activeTab === 'lues') return this.notfis.filter((n: any) => n.viewedByMe);
+    return this.notfis;
+  }
+
+  setActiveTab(tab: NotifTab): void {
+    this.activeTab = tab;
+  }
+
+  // Une notif de paiement en masse doit ouvrir la page de détail correspondant au rôle connecté ;
+  // les autres notifications (ex: demandes) gardent leur route existante.
+  getNotifLink(notif: any): any[] {
+    const roles: string[] = this.authService.getSessionAsObject()?.roles ?? [];
+    if (roles.includes('PAYMENT_MANAGER')) {
+      return ['/dashboard/payments/details', notif.entityId];
+    }
+    if (roles.includes('APPROVER')) {
+      return ['/dashboard/tracking-approvals', notif.entityId, 'view'];
+    }
+    return ['/dashboard/requests/details', notif.entityId];
+  }
 
   getNotifications() {
     const subscription = this.fetchPaginatedNotificationsGQL.fetch().subscribe({

@@ -1,3 +1,26 @@
+.notif-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 16px;
+
+    .tab {
+        cursor: pointer;
+        padding-bottom: 8px;
+        font-family: Poppins;
+        font-size: 16px;
+        font-weight: 500;
+        color: #8E8E93;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+            color: var(--Primary, #001F60);
+            font-weight: 700;
+            border-bottom-color: #FFC400;
+        }
+    }
+}
+
 .notif-list-container {
     border-radius: 10px;
     border: 1px solid #33343D;
