@@ -344,6 +344,70 @@
        animation: spin 1s ease-in-out infinite;
    }
 
+   // La section se place dans la colonne de droite, sous "Informations du super admin".
+   .subscriptions-section {
+       grid-column: 2;
+   }
+
+   .subscriptions-list {
+       display: flex;
+       flex-direction: column;
+       gap: 16px;
+   }
+
+   .subscription-card {
+       display: flex;
+       align-items: flex-start;
+       gap: 12px;
+       padding: 16px;
+       border: 1px solid #d1d5db;
+       border-radius: 10px;
+       cursor: pointer;
+       transition: border-color 0.15s ease, background-color 0.15s ease;
+
+       &.selected {
+           border-color: #001F60;
+           background-color: #f2f4fb;
+       }
+
+       input[type='checkbox'] {
+           width: 16px;
+           height: 16px;
+           margin-top: 2px;
+           cursor: pointer;
+           accent-color: #001F60;
+           flex-shrink: 0;
+       }
+   }
+
+   .subscription-body {
+       display: flex;
+       flex-direction: column;
+       gap: 4px;
+   }
+
+   .subscription-heading {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       color: #001F60;
+
+       .material-icons {
+           font-size: 18px;
+       }
+
+       .subscription-name {
+           font-weight: 700;
+           font-size: 15px;
+       }
+   }
+
+   .subscription-description {
+       margin: 0;
+       font-size: 13px;
+       color: #6b7280;
+   }
+
    @keyframes spin {
        to {
            transform: rotate(360deg);
