@@ -71,12 +71,16 @@ export type BulkPayment = {
   amount: Scalars['Float']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
+  failureReason?: Maybe<Scalars['String']['output']>;
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   number?: Maybe<Scalars['Int']['output']>;
   organization: Scalars['String']['output'];
+  paidAt?: Maybe<Scalars['DateTime']['output']>;
   phoneNumber: Scalars['String']['output'];
+  provider?: Maybe<Scalars['String']['output']>;
+  providerReference?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentStatus;
   updatedAt: Scalars['DateTime']['output'];
   wallet: Wallet;
