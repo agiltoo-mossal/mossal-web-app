@@ -1,6 +1,11 @@
+<div class="notif-tabs">
+  <span class="tab" [class.active]="activeTab === 'toutes'" (click)="setActiveTab('toutes')">Toutes</span>
+  <span class="tab" [class.active]="activeTab === 'non-lues'" (click)="setActiveTab('non-lues')">Non lues</span>
+  <span class="tab" [class.active]="activeTab === 'lues'" (click)="setActiveTab('lues')">Lues</span>
+</div>
 <div class="page-wrapper notif-list-container">
   <div matSort class="notif" fxLayout="column" fxLayoutGap="13px"
-    [routerLink]="['/dashboard/requests/details', notif.entityId]" *ngFor="let notif of notfis">
+    [routerLink]="getNotifLink(notif)" *ngFor="let notif of filteredNotifs">
     <!-- [queryParams]="{ entity: notif.entityId }" -->
     <div fxLayout="row" fxLayoutAlign="space-between start">
       <span class="notif-title">{{ notif.title }}</span>

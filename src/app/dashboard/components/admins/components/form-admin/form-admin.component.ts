@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
+  FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorGQL,
   InviteAdminGQL,
   LockUserGQL,
@@ -34,11 +35,14 @@ export class FormAdminComponent {
 
   isRoleDropdownOpen: boolean = false;
   selectedRoles: string[] = [];
-  availableRoles = [
+  // Catalogue complet (utilisé pour les libellés). Le dropdown n'affiche que `availableRoles`,
+  // filtré selon les souscriptions de l'organisation.
+  private readonly allRoles = [
     { value: 'ADMIN', label: 'Administrateur' },
     { value: 'PAYMENT_MANAGER', label: 'Gestionnaire des paiements' },
     { value: 'APPROVER', label: 'Approbateur' },
   ];
+  availableRoles = [...this.allRoles];
 
   constructor(
     private fb: FormBuilder,
@@ -50,7 +54,8 @@ export class FormAdminComponent {
 
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL
+    private unlockUserGQL: UnlockUserGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
   ) {
     this.collaboratorForm = this.fb.group({
       email: ['', Validators.required],
@@ -84,7 +89,25 @@ export class FormAdminComponent {
         ? "Modifier les infos de l'admin "
         : 'Création compte admin';
 
+    this.loadAllowedRoles();
     this.initSearch();
+  }
+
+  // Filtre le dropdown Rôle selon les souscriptions de l'organisation :
+  // SALARY_ADVANCE -> ADMIN ; BULK_PAYMENT -> PAYMENT_MANAGER + APPROVER.
+  private loadAllowedRoles(): void {
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe((result) => {
+      const codes: string[] = (result.data?.fetchCurrentAdmin?.organization?.subscriptions ?? [])
+        .map((s: any) => s?.code)
+        .filter(Boolean);
+      const allowed = new Set<string>();
+      if (codes.includes('SALARY_ADVANCE')) allowed.add('ADMIN');
+      if (codes.includes('BULK_PAYMENT')) {
+        allowed.add('PAYMENT_MANAGER');
+        allowed.add('APPROVER');
+      }
+      this.availableRoles = this.allRoles.filter((r) => allowed.has(r.value));
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -399,7 +422,7 @@ private isApproverInActiveFlow(): boolean {
 
   getSelectedRolesLabel(): string {
     return this.selectedRoles
-      .map(v => this.availableRoles.find(r => r.value === v)?.label)
+      .map(v => this.allRoles.find(r => r.value === v)?.label ?? v)
       .join(', ');
   }
 }

@@ -140,6 +140,9 @@
             </div>
         </div>
 
+        <!-- Colonne de droite : super admin + services souscrits -->
+        <div class="right-column">
+
         <!-- Section Informations du super admin -->
         <div class="form-section">
             <h3 class="section-title">Informations du super admin</h3>
@@ -209,6 +212,36 @@
                 </div>
             </div>
         </div>
+
+        <!-- Section Services souscrits -->
+        <div class="form-section subscriptions-section">
+            <h3 class="section-title">Services souscrits</h3>
+
+            <div class="subscriptions-list">
+                <label class="subscription-card" *ngFor="let sub of availableSubscriptions"
+                    [class.selected]="isSubscriptionSelected(sub.id)">
+                    <input type="checkbox" [checked]="isSubscriptionSelected(sub.id)"
+                        (change)="toggleSubscription(sub.id)" />
+                    <div class="subscription-body">
+                        <div class="subscription-heading">
+                            <span class="material-icons">account_balance_wallet</span>
+                            <span class="subscription-name">{{ sub.name }}</span>
+                        </div>
+                        <p class="subscription-description" *ngIf="sub.description">{{ sub.description }}</p>
+                    </div>
+                </label>
+            </div>
+
+            <div *ngIf="societyForm.get('subscriptions')?.invalid && societyForm.get('subscriptions')?.touched"
+                class="error-message">
+                <span *ngIf="societyForm.get('subscriptions')?.errors?.['required']">
+                    Veuillez souscrire à au moins un service.
+                </span>
+            </div>
+        </div>
+
+        </div>
+        <!-- /Colonne de droite -->
 
         <!-- Boutons -->
         <div class="form-buttons">

@@ -7,7 +7,7 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
@@ -18,9 +18,11 @@ import {
   FetchCategorySocioprosGQL,
   FetchOrganizationGQL,
   FetchPaginatedFinancialOrganizationGQL,
+  FetchSubscriptionsGQL,
   FinancialOrganization,
   OrganisationService,
   Organization,
+  SubscriptionPlan,
   UpdateOrganizationGQL,
   User,
 } from 'src/graphql/generated';
@@ -63,6 +65,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   title = 'Ajout d\'une nouvelle société';
 
   psps: Partial<FinancialOrganization & { error: boolean }>[] = [];
+  availableSubscriptions: SubscriptionPlan[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -73,6 +76,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     private createOrganizationGQL: CreateOrganizationGQL,
     private fetchOrganizationGQL: FetchOrganizationGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
+    private fetchSubscriptionsGQL: FetchSubscriptionsGQL,
   ) {
     this.societyForm = this.fb.group({
       // Section Informations de la société
@@ -103,7 +107,14 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         ]
       ],
       adminEmail: ['', [Validators.required, Validators.email]],
+
+      // Section Service souscrit — au moins une offre obligatoire
+      subscriptions: [[] as string[], [FormSocietyComponent.minOneSubscription]],
     });
+  }
+
+  private static minOneSubscription(control: AbstractControl): ValidationErrors | null {
+    return Array.isArray(control.value) && control.value.length > 0 ? null : { required: true };
   }
 
   ngOnInit(): void {
@@ -121,6 +132,10 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       .subscribe((result) => {
         this.psps = result.data.fetchPaginatedFinancialOrganization.results;
       });
+
+    this.fetchSubscriptionsGQL.fetch().subscribe((result) => {
+      this.availableSubscriptions = (result.data?.fetchSubscriptions ?? []) as SubscriptionPlan[];
+    });
 
     // Initialiser les validations
     if (this.formType !== 'edit') {
@@ -176,6 +191,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
               // Vérifiez votre interface/type Organization
               adminFunction: this.society.user.roles?.[0] || '',
               adminPhone: this.society.phone || '',
+
+              subscriptions: (this.society.subscriptions ?? []).map((s) => s.id),
             });
 
             console.log('Valeurs appliquées au formulaire:', this.societyForm.value);
@@ -187,6 +204,18 @@ export class FormSocietyComponent implements OnInit, OnChanges {
           }
         });
     }
+  }
+
+  isSubscriptionSelected(id: string): boolean {
+    return (this.societyForm.get('subscriptions')?.value ?? []).includes(id);
+  }
+
+  toggleSubscription(id: string): void {
+    const control = this.societyForm.get('subscriptions');
+    const current: string[] = control?.value ?? [];
+    const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+    control?.setValue(next);
+    control?.markAsTouched();
   }
 
   // Déclencher l'input file pour le logo
@@ -345,7 +374,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       amountPercent: formValue.amountPercent,
       financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
-      phone: formValue.phone
+      phone: formValue.phone,
+      subscriptions: formValue.subscriptions,
     };
 
     // ✅ AJOUTER LE LOGO EN BASE64
@@ -422,7 +452,8 @@ export class FormSocietyComponent implements OnInit, OnChanges {
       // amountPercent: formValue.amountPercent,
       financialOrganization: formValue.psp,
       postalAddress: `${formValue.address}, ${formValue.city}`,
-      phone: formValue.phone
+      phone: formValue.phone,
+      subscriptions: formValue.subscriptions,
     };
 
     // Variables pour la mutation

@@ -430,7 +430,22 @@ query FetchOrganization($organizationId: ID!) {
       approverLastName
       approverPosition
     }
+    subscriptions {
+      id
+      name
+      description
+      code
+    }
 	}
+}
+
+query FetchSubscriptions {
+  fetchSubscriptions {
+    id
+    name
+    description
+    code
+  }
 }
 
 query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {

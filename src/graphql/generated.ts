@@ -931,6 +931,8 @@ export type Organization = {
   postalAddress: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
   rootEmail: Scalars['String']['output'];
+  /** Offres de souscription de l'organisation */
+  subscriptions?: Maybe<Array<SubscriptionPlan>>;
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
 };
@@ -955,6 +957,8 @@ export type OrganizationInput = {
   rootFirstname: Scalars['String']['input'];
   /** Nom de l'utilisateur racine */
   rootLastname: Scalars['String']['input'];
+  /** Identifiants des offres de souscription (au moins une obligatoire) */
+  subscriptions: Array<Scalars['String']['input']>;
 };
 
 export type OrganizationLogo = {
@@ -987,6 +991,8 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   postalAddress?: InputMaybe<Scalars['String']['input']>;
+  /** Identifiants des offres de souscription */
+  subscriptions?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type PaginatedActivityResult = {
@@ -1138,6 +1144,7 @@ export type Query = {
   fetchServicePub: Service;
   fetchServices: PaginatedServiceResult;
   fetchServicesPub: PaginatedServiceResult;
+  fetchSubscriptions: Array<SubscriptionPlan>;
   fetchSupportPaiement: Array<Demande>;
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
@@ -1527,6 +1534,24 @@ export type Session = {
   token_type?: Maybe<Scalars['String']['output']>;
   /** Null if user must reset his password */
   user?: Maybe<User>;
+};
+
+/** Code identifiant une offre de souscription */
+export enum SubscriptionCode {
+  BulkPayment = 'BULK_PAYMENT',
+  SalaryAdvance = 'SALARY_ADVANCE'
+}
+
+export type SubscriptionPlan = {
+  __typename?: 'SubscriptionPlan';
+  code: SubscriptionCode;
+  createdAt: Scalars['DateTime']['output'];
+  /** Description courte de l'offre */
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** Nom affiché de l'offre de souscription */
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type UpdateCollaboratorInput = {
@@ -1986,7 +2011,12 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> | null } };
+
+export type FetchSubscriptionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchSubscriptionsQuery = { __typename?: 'Query', fetchSubscriptions: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> };
 
 export type FetchOrganizationApproversQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2173,7 +2203,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, roles?: Array<string> | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null } | null } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, roles?: Array<string> | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', code: SubscriptionCode }> | null } | null } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -3584,6 +3614,12 @@ export const FetchOrganizationDocument = gql`
       approverLastName
       approverPosition
     }
+    subscriptions {
+      id
+      name
+      description
+      code
+    }
   }
 }
     `;
@@ -3593,6 +3629,27 @@ export const FetchOrganizationDocument = gql`
   })
   export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
     document = FetchOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchSubscriptionsDocument = gql`
+    query FetchSubscriptions {
+  fetchSubscriptions {
+    id
+    name
+    description
+    code
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchSubscriptionsGQL extends Apollo.Query<FetchSubscriptionsQuery, FetchSubscriptionsQueryVariables> {
+    document = FetchSubscriptionsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -4384,6 +4441,9 @@ export const FetchCurrentAdminDocument = gql`
       organisationService {
         id
         serviceId
+      }
+      subscriptions {
+        code
       }
     }
   }

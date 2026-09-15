@@ -25,7 +25,9 @@ query FetchCurrentAdmin {
         id
         serviceId
       }
-      
+      subscriptions {
+        code
+      }
     }
   }
 
