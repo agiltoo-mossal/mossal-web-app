@@ -19,8 +19,8 @@
 
           <div class="dropdown-content" id="dropdown-notfification">
             <div class="notif-content-wrapper personnaliez-sidebar">
-              <div [routerLink]="['/dashboard/requests-list']" [queryParams]="{ entity: notif.entityId }"
-                routerLinkActive="router-link-active" routerLinkActive="router-link-active"
+              <div [routerLink]="getNotifLink(notif)"
+                routerLinkActive="router-link-active"
                 *ngFor="let notif of notificationList; let i = index" fxLayout="column" fxLayoutGap="15px">
                 <div class="dropdown-option notif" fxLayout="column" fxLayoutGap="12px">
                   <div fxLayout="column">
