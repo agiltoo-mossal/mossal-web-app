@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, merge, startWith, Subscription, switchMap } from 'rxjs';
 import {
   FetchOrganizationNotificationsGQL,
@@ -8,7 +9,6 @@ import {
 import { NotificationsService } from './notifications.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { AuthService } from 'src/app/auth/auth.service';
 
 type NotifTab = 'toutes' | 'non-lues' | 'lues';
 
@@ -30,7 +30,7 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
     private paginatedNofif: FetchPaginatedNotificationsGQL,
-    private authService: AuthService,
+    private router: Router,
   ) { }
 
   get filteredNotifs(): any[] {
@@ -43,17 +43,10 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     this.activeTab = tab;
   }
 
-  // Une notif de paiement en masse doit ouvrir la page de détail correspondant au rôle connecté ;
-  // les autres notifications (ex: demandes) gardent leur route existante.
-  getNotifLink(notif: any): any[] {
-    const roles: string[] = this.authService.getSessionAsObject()?.roles ?? [];
-    if (roles.includes('PAYMENT_MANAGER')) {
-      return ['/dashboard/payments/details', notif.entityId];
-    }
-    if (roles.includes('APPROVER')) {
-      return ['/dashboard/tracking-approvals', notif.entityId, 'view'];
-    }
-    return ['/dashboard/requests/details', notif.entityId];
+  onNotifClick(notif: any): void {
+    this.notificationsService.resolveNotifLink(notif).subscribe((link) => {
+      this.router.navigate(link);
+    });
   }
 
   getNotifications() {

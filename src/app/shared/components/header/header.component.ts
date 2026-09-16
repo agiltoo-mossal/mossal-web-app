@@ -109,6 +109,12 @@ export class HeaderComponent implements OnDestroy, OnInit {
     return (this.user.roles?.[0] ?? '').toLowerCase();
   }
 
+  onNotifClick(notif: any): void {
+    this.notificationsService.resolveNotifLink(notif).subscribe((link) => {
+      this.router.navigate(link);
+    });
+  }
+
   logout() {
     this.authService.logout();
     // this.keycloakService.logout().then((result) => {
