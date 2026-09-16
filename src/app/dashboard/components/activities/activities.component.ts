@@ -1,21 +1,24 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { debounceTime, distinctUntilChanged, map, merge, startWith, switchMap } from 'rxjs';
-import { Activity, FetchPaginatedActivitiesGQL } from 'src/graphql/generated';
+import { Activity, FetchCurrentAdminGQL, FetchPaginatedActivitiesGQL, SubscriptionCode } from 'src/graphql/generated';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-activities',
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.scss'
 })
-export class ActivitiesComponent {
+export class ActivitiesComponent implements OnInit {
   dateRangeForm: FormGroup;
+
+  // Les statuts "Validé"/"Payée" (demande) et "Approuvé" (paiement en masse) ne sont
+  // proposés dans le filtre que si l'organisation est souscrite à l'offre correspondante.
+  showSalaryAdvance = false;
+  showBulkPayment = false;
 
   searchForm: FormGroup;
   displayedColumns: string[] = [
@@ -40,36 +43,61 @@ export class ActivitiesComponent {
   constructor(
     private fb: FormBuilder,
     private fetchPaginatedActivitiesGQL: FetchPaginatedActivitiesGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private sanitizer: DomSanitizer
 
   ) {
     this.initSearchForm();
   }
 
-  // initSearchForm() {
-  //   this.searchForm = this.fb.group({
-  //     search: [''],
-  //   });
-  // }
+  ngOnInit() {
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe((result) => {
+      const codes = (result.data.fetchCurrentAdmin?.organization?.subscriptions ?? [])
+        .map((s) => s?.code)
+        .filter(Boolean);
+      this.showSalaryAdvance = codes.includes(SubscriptionCode.SalaryAdvance);
+      this.showBulkPayment = codes.includes(SubscriptionCode.BulkPayment);
+    });
+  }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
       search: [''],
       status: [''],
-      period: [''],
-      scope: [''],
-      action: [''], // nouveau
-  });
-  this.dateRangeForm = this.fb.group({
-    start: [null],
-    end: [null],
-  });
+    });
+    this.dateRangeForm = this.fb.group({
+      start: [null],
+      end: [null],
+    });
+  }
+
+  isDateMenuOpen = false;
+
+  toggleDateMenu() {
+    this.isDateMenuOpen = !this.isDateMenuOpen;
+  }
+
+  @ViewChild('periodToggle') periodToggle: ElementRef;
+  @ViewChild('periodPanel') periodPanel: ElementRef;
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    if (!this.isDateMenuOpen) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (
+      !this.periodToggle?.nativeElement.contains(target) &&
+      !this.periodPanel?.nativeElement.contains(target)
+    ) {
+      this.isDateMenuOpen = false;
+    }
   }
 
   getScopeLabel(scope: string): string {
     const labels: Record<string, string> = {
       bulk_payment: 'Paiement en masse',
-      advance_request: "Demande d'avance",
+      demande: "Demande d'avance",
     };
     return labels[scope] || scope;
   }
@@ -77,7 +105,7 @@ export class ActivitiesComponent {
   getScopeClass(scope: string): string {
     const classes: Record<string, string> = {
       bulk_payment: 'scope-bulk',
-      advance_request: 'scope-advance',
+      demande: 'scope-advance',
     };
     return classes[scope] || '';
   }
@@ -117,121 +145,48 @@ export class ActivitiesComponent {
       return div.innerHTML;
     }
 
-  // resetFilters() {
-  //   this.searchForm.reset({ search: '', status: '', period: '', scope: '' });
-  //   this.paginator.firstPage();
-  // }
-
-  // ngAfterViewInit() {
-  //   this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-  //   this.searchForm
-  //     .get('search')
-  //     .valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged(),
-  //       startWith('')
-  //     )
-  //     .subscribe((r) => {
-  //       this.paginator.firstPage();
-  //     });
-
-  //   merge(
-  //     this.sort.sortChange,
-  //     this.paginator.page,
-  //     this.searchForm.get('search').valueChanges.pipe(
-  //       debounceTime(300),
-  //       distinctUntilChanged()
-  //       // startWith('')
-  //     )
-  //   )
-  //     .pipe(
-  //       startWith({}),
-  //       switchMap(() => {
-  //         this.isLoadingResults = true;
-  //         const queryFilter = {
-  //           limit: this.paginator.pageSize,
-  //           page: this.paginator.pageIndex + 1,
-  //           // sortField: this.sort.active,
-  //           // sortOrder: this.sort.direction,
-  //           search: this.searchForm?.value?.search,
-  //           status: this.searchForm?.value?.status || undefined,
-  //           period: this.searchForm?.value?.period || undefined,
-  //           scope: this.searchForm?.value?.scope || undefined,
-  //         };
-
-  //         return this.fetchPaginatedActivitiesGQL.fetch(
-  //           { queryFilter },
-  //           { fetchPolicy: 'no-cache' }
-  //         );
-  //       }),
-  //       map((result) => {
-  //         // Flip flag to show that loading has finished.
-  //         this.isLoadingResults = false;
-  //         this.isRateLimitReached = result === null;
-
-  //         if (result === null) {
-  //           return [];
-  //         }
-
-  //         // Only refresh the result length if there is new data. In case of rate
-  //         // limit errors, we do not want to reset the paginator to zero, as that
-  //         // would prevent users from re-triggering requests
-  //         return result.data;
-  //       })
-  //     )
-  //     .subscribe((data: any) => {
-  //       this.data = data.fetchPaginatedActivities.results as any;
-  //       this.dataSource.data = this.data as any;
-  //       this.resultsLength =
-  //         data.fetchPaginatedActivities.pagination.totalItems;
-  //     });
-  // }
-
-
   ngAfterViewInit() {
-  this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-  merge(
-    this.sort.sortChange,
-    this.paginator.page,
-    this.searchForm.valueChanges.pipe(debounceTime(300), distinctUntilChanged()),
-    this.dateRangeForm.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
-  )
-    .pipe(
-      startWith({}),
-      switchMap(() => {
-        this.isLoadingResults = true;
-        const { search, status, scope, action } = this.searchForm.value;
-        const { start, end } = this.dateRangeForm.value;
-
-        const queryFilter = {
-          limit: this.paginator.pageSize,
-          page: this.paginator.pageIndex + 1,
-          search: search || undefined,
-          status: status || undefined,
-          scope: scope || undefined,
-          action: action || undefined,
-          startDate: start ? start.toISOString() : undefined,
-          endDate: end ? end.toISOString() : undefined,
-        };
-
-        return this.fetchPaginatedActivitiesGQL.fetch({ queryFilter }, { fetchPolicy: 'no-cache' });
-      }),
-      map((result) => {
-        this.isLoadingResults = false;
-        this.isRateLimitReached = result === null;
-        return result === null ? [] : result.data;
-      })
+    merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.searchForm.valueChanges.pipe(debounceTime(300), distinctUntilChanged()),
+      this.dateRangeForm.valueChanges.pipe(debounceTime(300), distinctUntilChanged())
     )
-    .subscribe((data: any) => {
-      this.data = data.fetchPaginatedActivities.results as any;
-      this.dataSource.data = this.data as any;
-      this.resultsLength = data.fetchPaginatedActivities.pagination.totalItems;
-    });
-}
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          this.isLoadingResults = true;
+          const { search, status } = this.searchForm.value;
+          const { start, end } = this.dateRangeForm.value;
+
+          const queryFilter = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+            search: search || undefined,
+            status: status || undefined,
+            startDate: start ? new Date(start).toISOString() : undefined,
+            endDate: end ? new Date(end).toISOString() : undefined,
+          };
+
+          return this.fetchPaginatedActivitiesGQL.fetch({ queryFilter }, { fetchPolicy: 'no-cache' });
+        }),
+        map((result) => {
+          this.isLoadingResults = false;
+          this.isRateLimitReached = result === null;
+          return result === null ? [] : result.data;
+        })
+      )
+      .subscribe((data: any) => {
+        this.data = data.fetchPaginatedActivities.results as any;
+        this.dataSource.data = this.data as any;
+        this.resultsLength = data.fetchPaginatedActivities.pagination.totalItems;
+      });
+  }
 
   resetFilters() {
-    this.searchForm.reset({ search: '', status: '', scope: '', action: '' });
+    this.searchForm.reset({ search: '', status: '' });
     this.dateRangeForm.reset({ start: null, end: null });
     this.paginator.firstPage();
   }

@@ -34,6 +34,7 @@ export type Activity = {
   meta?: Maybe<Scalars['Any']['output']>;
   organization: Organization;
   scope: ActivityScope;
+  status?: Maybe<ActivityStatus>;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
 };
@@ -45,6 +46,18 @@ export enum ActivityScope {
   Collaborateur = 'collaborateur',
   Demande = 'demande',
   Organisation = 'organisation'
+}
+
+/** Normalized status of the underlying operation an activity records */
+export enum ActivityStatus {
+  Approved = 'APPROVED',
+  Cancelled = 'CANCELLED',
+  Draft = 'DRAFT',
+  InProcess = 'IN_PROCESS',
+  Payed = 'PAYED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+  Validated = 'VALIDATED'
 }
 
 export enum AmountUnit {
@@ -71,12 +84,16 @@ export type BulkPayment = {
   amount: Scalars['Float']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
+  failureReason?: Maybe<Scalars['String']['output']>;
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   number?: Maybe<Scalars['Int']['output']>;
   organization: Scalars['String']['output'];
+  paidAt?: Maybe<Scalars['DateTime']['output']>;
   phoneNumber: Scalars['String']['output'];
+  provider?: Maybe<Scalars['String']['output']>;
+  providerReference?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentStatus;
   updatedAt: Scalars['DateTime']['output'];
   wallet: Wallet;
@@ -1444,10 +1461,13 @@ export type QueryUniqueIdentifierExistsArgs = {
 };
 
 export type QueryDataConfigInput = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<OrderByInput>;
   page?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Remboursement = {
@@ -1719,7 +1739,7 @@ export type FetchPaginatedActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, status?: ActivityStatus | null, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
 
 export type FetchMossallAdminQueryVariables = Exact<{
   adminId: Scalars['String']['input'];
@@ -2448,6 +2468,7 @@ export const FetchPaginatedActivitiesDocument = gql`
       id
       message
       scope
+      status
       user {
         id
         firstName

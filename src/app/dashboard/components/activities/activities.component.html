@@ -6,56 +6,53 @@
 >
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
    
-    <div fxLayout="row" fxLayoutGap="19px" [formGroup]="searchForm">
-      <div class="search-container" fxFlex="auto" fxLayoutAlign="start center">
+    <div class="filters-row" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" [formGroup]="searchForm">
+      <div class="search-container" fxLayoutAlign="start center">
         <mat-icon class="icon">search</mat-icon>
-        <input formControlName="search" type="text" class="form-control" placeholder="Recherche" />
+        <input formControlName="search" type="text" class="form-control" placeholder="Rechercher" />
       </div>
 
-      <!-- <mat-form-field appearance="outline" class="filter-select">
-        <mat-select formControlName="status" placeholder="En attente">
+      <mat-form-field appearance="outline" class="filter-select">
+        <mat-select formControlName="status" placeholder="Statut">
           <mat-option value="">Tous</mat-option>
           <mat-option value="PENDING">En attente</mat-option>
-          <mat-option value="VALIDATED">Validé</mat-option>
+          <mat-option *ngIf="showSalaryAdvance" value="VALIDATED">Validé</mat-option>
+          <mat-option *ngIf="showBulkPayment" value="APPROVED">Approuvé</mat-option>
+          <mat-option *ngIf="showSalaryAdvance" value="PAYED">Payée</mat-option>
           <mat-option value="REJECTED">Rejeté</mat-option>
         </mat-select>
-      </mat-form-field> -->
-
-      <mat-form-field appearance="outline" class="filter-select">
-        <mat-select formControlName="action" placeholder="Action">
-          <mat-option value="">Tous</mat-option>
-          <mat-option value="SUBMITTED">Soumission</mat-option>
-          <mat-option value="VALIDATED">Validation</mat-option>
-          <mat-option value="REJECTED">Rejet</mat-option>
-        </mat-select>
       </mat-form-field>
 
-      <!-- <mat-form-field appearance="outline" class="filter-select">
-        <mat-select formControlName="period" placeholder="Période">
-          <mat-option value="today">Aujourd'hui</mat-option>
-          <mat-option value="week">7 derniers jours</mat-option>
-          <mat-option value="month">Ce mois</mat-option>
-        </mat-select>
-      </mat-form-field> -->
+      <div class="period-select" [formGroup]="dateRangeForm">
+        <div
+          #periodToggle
+          class="period-toggle"
+          fxLayout="row"
+          fxLayoutAlign="space-between center"
+          (click)="toggleDateMenu()"
+        >
+          <span class="period-text" [class.has-value]="dateRangeForm.value.start && dateRangeForm.value.end">
+            <ng-container *ngIf="dateRangeForm.value.start && dateRangeForm.value.end; else periodPlaceholder">
+              Du {{ dateRangeForm.value.start | date:'dd/MM/yyyy' }} Au {{ dateRangeForm.value.end | date:'dd/MM/yyyy' }}
+            </ng-container>
+            <ng-template #periodPlaceholder>Période</ng-template>
+          </span>
+          <mat-icon class="period-arrow">keyboard_arrow_down</mat-icon>
+        </div>
 
-      <mat-form-field appearance="outline" class="filter-select date-range">
-        <mat-date-range-input [formGroup]="dateRangeForm" [rangePicker]="picker">
-          <input matStartDate formControlName="start" placeholder="Début">
-          <input matEndDate formControlName="end" placeholder="Fin">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
+        <div class="period-panel" *ngIf="isDateMenuOpen" #periodPanel>
+          <div class="period-field">
+            <label for="periodStart">Du</label>
+            <input formControlName="start" type="date" id="periodStart">
+          </div>
+          <div class="period-field">
+            <label for="periodEnd">Au</label>
+            <input formControlName="end" type="date" id="periodEnd">
+          </div>
+        </div>
+      </div>
 
-      <mat-form-field appearance="outline" class="filter-select">
-        <mat-select formControlName="scope" placeholder="Scope">
-          <mat-option value="">Tous</mat-option>
-          <mat-option value="bulk_payment">Paiement en masse</mat-option>
-          <mat-option value="advance_request">Demande d'avance</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <button mat-flat-button color="primary" class="btn-reset" (click)="resetFilters()">
+      <button mat-flat-button class="btn-reset" (click)="resetFilters()">
         <mat-icon>refresh</mat-icon> Réinitialiser
       </button>
     </div>
@@ -73,11 +70,8 @@
         matSortDirection="desc" -->
         <!-- Number Column -->
         <ng-container matColumnDef="message">
-          <th  mat-header-cell *matHeaderCellDef class="title " >Message</th>
-          <!-- <td class="title" mat-cell *matCellDef="let row">
-            {{ row.message }}
-          </td> -->
-          <td class="title" mat-cell *matCellDef="let row" [innerHTML]="formatMessage(row.message)"></td>
+          <th mat-header-cell *matHeaderCellDef class="title message-col">Message</th>
+          <td class="title message-col" mat-cell *matCellDef="let row" [innerHTML]="formatMessage(row.message)"></td>
         </ng-container>
 
         <!-- Title Column -->
@@ -96,11 +90,6 @@
         </ng-container>
 
         <!-- State Column -->
-        <!-- <ng-container matColumnDef="scope">
-          <th mat-header-cell *matHeaderCellDef class="title">Scope</th>
-          <td mat-cell *matCellDef="let row">{{ row.scope }}</td>
-        </ng-container> -->
-
         <ng-container matColumnDef="scope">
             <th mat-header-cell *matHeaderCellDef class="title">Scope</th>
             <td mat-cell *matCellDef="let row">
