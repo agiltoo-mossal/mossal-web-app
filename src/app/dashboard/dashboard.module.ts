@@ -113,6 +113,7 @@ import { ApproveConfirmationDialogComponent } from './components/approve-confirm
     ApproverOrderViewComponent,
     ApproveConfirmationDialogComponent,
     ResetApprovalFlowDialogComponent,
+    ApproverOrderViewComponent,
   ],
   imports: [
     CreateEventModule,

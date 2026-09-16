@@ -26,6 +26,29 @@
 
   <!-- STEP 1 : Saisie des bénéficiaires -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 1">
+
+        <!-- Solde de l'organisation -->
+    <div class="balance-summary-card" *ngIf="organization">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+        <mat-icon>error_outline</mat-icon>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
+    </div>
     <div class="two-col-layout">
 
       <!-- LEFT: Label + Formulaire -->
@@ -194,10 +217,7 @@
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
 
-    <div class="recap-header">
-      <p class="recap-label">Récapitulatif</p>
-      <h2 class="recap-title">{{ label }}</h2>
-    </div>
+    
 
     <!-- Solde de l'organisation -->
     <div class="balance-summary-card" *ngIf="organization">
@@ -220,6 +240,11 @@
         <mat-icon>error_outline</mat-icon>
         <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
       </div>
+    </div>
+
+    <div class="recap-header">
+      <p class="recap-label">Récapitulatif</p>
+      <h2 class="recap-title">{{ label }}</h2>
     </div>
 
     <div class="kpi-row">
@@ -282,7 +307,30 @@
 
     <!-- STEP 3 : Suivi des validations -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
-    <h2 class="suivi-title">Suivi des validations</h2>
+        <!-- Solde de l'organisation -->
+    <!-- <div class="balance-summary-card" *ngIf="organization">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+        <mat-icon>error_outline</mat-icon>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
+    </div> -->
+
+    <h2 class="suivi-title">Suivi des validations pour</h2>
 
     <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">
       <mat-icon>notifications</mat-icon>
