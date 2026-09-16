@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, merge, startWith, Subscription, switchMap } from 'rxjs';
 import {
   FetchOrganizationNotificationsGQL,
@@ -29,6 +30,7 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
     private paginatedNofif: FetchPaginatedNotificationsGQL,
+    private router: Router,
   ) { }
 
   get filteredNotifs(): any[] {
@@ -41,8 +43,10 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     this.activeTab = tab;
   }
 
-  getNotifLink(notif: any): any[] {
-    return this.notificationsService.getNotifLink(notif);
+  onNotifClick(notif: any): void {
+    this.notificationsService.resolveNotifLink(notif).subscribe((link) => {
+      this.router.navigate(link);
+    });
   }
 
   getNotifications() {
