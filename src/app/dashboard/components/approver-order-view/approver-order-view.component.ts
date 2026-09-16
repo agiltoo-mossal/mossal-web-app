@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+// import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
 import { Wallet } from 'src/graphql/generated';
+import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
+
 
 interface ApprovalStep {
   niveau: number;
@@ -29,6 +33,8 @@ interface OrderDetail {
   operateurs: number;
   dateSoumission: string;
 }
+const BALANCE_POLL_INTERVAL_MS = 10000;
+
 
 @Component({
   selector: 'app-approver-order-view',
@@ -49,7 +55,14 @@ export class ApproverOrderViewComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private fetchOrderForApproverByIdGQL: FetchOrderForApproverByIdGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+
   ) {}
+
+  private destroy$ = new Subject<void>();
+  isLoadingBalance = true;
+  organization: Organization | null = null;
+
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -129,6 +142,32 @@ export class ApproverOrderViewComponent implements OnInit {
         },
         error: () => { this.isLoading = false; },
       });
+        this.startBalancePolling();
+
+  }
+
+    private startBalancePolling(): void {
+    this.isLoadingBalance = true;
+    interval(BALANCE_POLL_INTERVAL_MS)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' })),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (result) => {
+          if (result.data) {
+            this.organization = result.data.fetchCurrentAdmin.organization as Organization;
+          }
+          this.isLoadingBalance = false;
+        },
+        error: () => { this.isLoadingBalance = false; },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get currentApproverWaiting(): ApprovalStep | undefined {
