@@ -109,8 +109,10 @@ export class HeaderComponent implements OnDestroy, OnInit {
     return (this.user.roles?.[0] ?? '').toLowerCase();
   }
 
-  getNotifLink(notif: any): any[] {
-    return this.notificationsService.getNotifLink(notif);
+  onNotifClick(notif: any): void {
+    this.notificationsService.resolveNotifLink(notif).subscribe((link) => {
+      this.router.navigate(link);
+    });
   }
 
   logout() {
