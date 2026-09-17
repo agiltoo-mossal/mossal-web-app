@@ -4,7 +4,6 @@ import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
 import { RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
-import { FetchCurrentAdminGQL, Organization } from 'src/graphql/generated';
 
 export interface Beneficiary {
   lastName: string;
@@ -55,13 +54,11 @@ export class PaymentDetailsComponent implements OnInit {
 
   isRelaunching = false;
 
-  organization: Organization | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private relaunchApproversGQL: RelaunchApproversGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
@@ -69,11 +66,7 @@ export class PaymentDetailsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-<<<<<<< HEAD
-      this.loadOrganizationBalance();
-=======
     this.loadOrganizationBalance();
->>>>>>> 155633604f15efdfbc42ed619a4af561174461f7
 
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
@@ -159,23 +152,7 @@ export class PaymentDetailsComponent implements OnInit {
       });
   }
 
-  private loadOrganizationBalance(): void {
-  this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
-    next: (result) => {
-            console.log('fetchCurrentAdmin result:', result);
-
-      if (result.data) {
-        this.organization = result.data.fetchCurrentAdmin.organization as Organization;
-      }
-            console.log('organization après affectation:', this.organization);
-
-    },
-    error: (err) => {
-            console.error('fetchCurrentAdmin error:', err);
-
-       this.organization = null; },
-  });
-}
+ 
 
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
@@ -193,15 +170,6 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
-  get isBalanceInsufficient(): boolean {
-    if (!this.organization || !this.payment) return false;
-    return this.organization.balance < this.payment.amount;
-  }
-
-  get balanceAfterExecution(): number {
-    if (!this.organization || !this.payment) return 0;
-    return this.organization.balance - this.payment.amount;
-  }
 
   get isPending(): boolean {
     return this.payment?.status === 'PENDING';
