@@ -40,7 +40,10 @@
         <button
           mat-button
           class="btn-delete"
-          (click)="supprimerNiveau(i)"
+          requiresConfirmation
+          [message]="'Voulez-vous supprimer le niveau ' + (i + 1) + ' de validation ?'"
+          [confirmCallback]="supprimerNiveau"
+          [confirmCallbackParam]="i"
           [disabled]="loading || resetting"
         >
           <mat-icon>delete_outline</mat-icon>
