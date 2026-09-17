@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
 import { RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
@@ -53,15 +53,20 @@ export class PaymentDetailsComponent implements OnInit {
 
   isRelaunching = false;
 
+  organization: Organization | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private relaunchApproversGQL: RelaunchApproversGQL,
     private snackBarService: SnackBarService,
   ) { }
 
   ngOnInit(): void {
+    this.loadOrganizationBalance();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.isLoading = false;
@@ -148,6 +153,28 @@ export class PaymentDetailsComponent implements OnInit {
 
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
+  }
+
+  private loadOrganizationBalance(): void {
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+      next: (result) => {
+        if (result.data) {
+          this.organization = result.data.fetchCurrentAdmin.organization as Organization;
+        }
+      },
+      // Si l'appel échoue, on n'affiche pas l'avertissement plutôt que de bloquer le parcours.
+      error: () => { this.organization = null; },
+    });
+  }
+
+  get isBalanceInsufficient(): boolean {
+    if (!this.organization || !this.payment) return false;
+    return this.organization.balance < this.payment.amount;
+  }
+
+  get balanceAfterExecution(): number {
+    if (!this.organization || !this.payment) return 0;
+    return this.organization.balance - this.payment.amount;
   }
 
   get isPending(): boolean {
