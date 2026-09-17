@@ -414,6 +414,7 @@ $radius-sm: 4px;
   tr:last-child td { border-bottom: none; }
 }
 
+// Widget de solde, identique à celui des étapes Saisie/Récapitulatif (manual-payment.component.scss).
 .balance-summary-card {
   background: #fff;
   border: 1px solid #e5e7eb;
