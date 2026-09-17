@@ -44,6 +44,7 @@ export interface PaymentOrderDetails {
 })
 export class PaymentDetailsComponent implements OnInit {
   currentStep = 1;
+  organization: Organization | null = null;
 
   payment: PaymentOrderDetails | null = null;
   isLoading = true;
@@ -53,15 +54,15 @@ export class PaymentDetailsComponent implements OnInit {
 
   isRelaunching = false;
 
-  organization: Organization | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
-    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private relaunchApproversGQL: RelaunchApproversGQL,
     private snackBarService: SnackBarService,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+
   ) { }
 
   ngOnInit(): void {
@@ -151,6 +152,8 @@ export class PaymentDetailsComponent implements OnInit {
       });
   }
 
+ 
+
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
   }
@@ -167,15 +170,6 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
-  get isBalanceInsufficient(): boolean {
-    if (!this.organization || !this.payment) return false;
-    return this.organization.balance < this.payment.amount;
-  }
-
-  get balanceAfterExecution(): number {
-    if (!this.organization || !this.payment) return 0;
-    return this.organization.balance - this.payment.amount;
-  }
 
   get isPending(): boolean {
     return this.payment?.status === 'PENDING';
@@ -207,6 +201,15 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
+  get isBalanceInsufficient(): boolean {
+    if (!this.organization || !this.payment) return false;
+    return this.organization.balance < this.payment.amount;
+  }
+
+  get balanceAfterExecution(): number {
+    if (!this.organization || !this.payment) return 0;
+    return this.organization.balance - this.payment.amount;
+  }
   // Nombre d'heures avant de pouvoir relancer à nouveau (0 si la relance est déjà possible).
   get hoursUntilNextRelaunch(): number {
     if (!this.payment?.lastRelaunchAt) return 0;
