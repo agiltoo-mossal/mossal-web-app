@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, Wallet } from 'src/graphql/generated';
 import { RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { FetchCurrentAdminGQL, Organization } from 'src/graphql/generated';
 
 export interface Beneficiary {
   lastName: string;
@@ -44,6 +45,7 @@ export interface PaymentOrderDetails {
 })
 export class PaymentDetailsComponent implements OnInit {
   currentStep = 1;
+  organization: Organization | null = null;
 
   payment: PaymentOrderDetails | null = null;
   isLoading = true;
@@ -59,9 +61,13 @@ export class PaymentDetailsComponent implements OnInit {
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private relaunchApproversGQL: RelaunchApproversGQL,
     private snackBarService: SnackBarService,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+
   ) { }
 
   ngOnInit(): void {
+      this.loadOrganizationBalance();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.isLoading = false;
@@ -146,6 +152,24 @@ export class PaymentDetailsComponent implements OnInit {
       });
   }
 
+  private loadOrganizationBalance(): void {
+  this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+    next: (result) => {
+            console.log('fetchCurrentAdmin result:', result);
+
+      if (result.data) {
+        this.organization = result.data.fetchCurrentAdmin.organization as Organization;
+      }
+            console.log('organization après affectation:', this.organization);
+
+    },
+    error: (err) => {
+            console.error('fetchCurrentAdmin error:', err);
+
+       this.organization = null; },
+  });
+}
+
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
   }
@@ -180,6 +204,15 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
+  get isBalanceInsufficient(): boolean {
+    if (!this.organization || !this.payment) return false;
+    return this.organization.balance < this.payment.amount;
+  }
+
+  get balanceAfterExecution(): number {
+    if (!this.organization || !this.payment) return 0;
+    return this.organization.balance - this.payment.amount;
+  }
   // Nombre d'heures avant de pouvoir relancer à nouveau (0 si la relance est déjà possible).
   get hoursUntilNextRelaunch(): number {
     if (!this.payment?.lastRelaunchAt) return 0;
