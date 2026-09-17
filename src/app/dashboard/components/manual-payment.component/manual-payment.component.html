@@ -27,7 +27,7 @@
   <!-- STEP 1 : Saisie des bénéficiaires -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 1">
 
-        <!-- Solde de l'organisation -->
+    <!-- Solde de l'organisation -->
     <div class="balance-summary-card" *ngIf="organization">
       <div class="balance-summary-row">
         <div class="balance-summary-item">
@@ -46,7 +46,8 @@
 
       <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
         <mat-icon>error_outline</mat-icon>
-        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
+          organization.balance | number:'1.0-0':'fr' }} XOF</span>
       </div>
     </div>
     <div class="two-col-layout">
@@ -208,7 +209,8 @@
       <button class="btn-secondary" (click)="back()">Annuler la saisie</button>
       <button class="btn-primary" (click)="goToRecap()"
         [disabled]="beneficiaries.length === 0 || !label.trim() || isSavingDraft">
-        <span *ngIf="!isSavingDraft" style="display:inline-flex;align-items:center;gap:4px;">Suivant <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="!isSavingDraft" style="display:inline-flex;align-items:center;gap:4px;">Suivant
+          <mat-icon>arrow_forward</mat-icon></span>
         <span *ngIf="isSavingDraft">Enregistrement...</span>
       </button>
     </div>
@@ -217,7 +219,7 @@
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
 
-    
+
 
     <!-- Solde de l'organisation -->
     <div class="balance-summary-card" *ngIf="organization">
@@ -238,7 +240,8 @@
 
       <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
         <mat-icon>error_outline</mat-icon>
-        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
+          organization.balance | number:'1.0-0':'fr' }} XOF</span>
       </div>
     </div>
 
@@ -305,10 +308,10 @@
     </div>
   </div>
 
-    <!-- STEP 3 : Suivi des validations -->
+  <!-- STEP 3 : Suivi des validations -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
-        <!-- Solde de l'organisation -->
-    <!-- <div class="balance-summary-card" *ngIf="organization">
+    <!-- Solde de l'organisation -->
+    <div class="balance-summary-card" *ngIf="organization">
       <div class="balance-summary-row">
         <div class="balance-summary-item">
           <p class="balance-label">Solde actuel de l'organisation</p>
@@ -326,9 +329,10 @@
 
       <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
         <mat-icon>error_outline</mat-icon>
-        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{ organization.balance | number:'1.0-0':'fr' }} XOF</span>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
+          organization.balance | number:'1.0-0':'fr' }} XOF</span>
       </div>
-    </div> -->
+    </div>
 
     <h2 class="suivi-title">Suivi des validations pour</h2>
 
@@ -393,45 +397,45 @@
       Relancer les approbateurs
     </button>
     <!-- Liste des bénéficiaires -->
-      <div class="beneficiaries-section" *ngIf="beneficiaries.length > 0">
+    <div class="beneficiaries-section" *ngIf="beneficiaries.length > 0">
 
-        <div class="beneficiaries-header">
-          <h2>
-            Liste des bénéficiaires
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          </h2>
+      <div class="beneficiaries-header">
+        <h2>
+          Liste des bénéficiaires
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </h2>
 
-          <button class="btn-download">
-            <mat-icon>download</mat-icon>
-            Télécharger
-          </button>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>NOM</th>
-                <th>PRÉNOM</th>
-                <th>TÉLÉPHONE</th>
-                <th>MONTANT</th>
-                <th>OPÉRATEUR</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr *ngFor="let b of beneficiaries">
-                <td>{{ b.lastName }}</td>
-                <td>{{ b.firstName }}</td>
-                <td>{{ b.phoneNumber }}</td>
-                <td>{{ b.amount }} XOF</td>
-                <td>{{ b.wallet }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+        <button class="btn-download">
+          <mat-icon>download</mat-icon>
+          Télécharger
+        </button>
       </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>NOM</th>
+              <th>PRÉNOM</th>
+              <th>TÉLÉPHONE</th>
+              <th>MONTANT</th>
+              <th>OPÉRATEUR</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let b of beneficiaries">
+              <td>{{ b.lastName }}</td>
+              <td>{{ b.firstName }}</td>
+              <td>{{ b.phoneNumber }}</td>
+              <td>{{ b.amount }} XOF</td>
+              <td>{{ b.wallet }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
 
 </div>

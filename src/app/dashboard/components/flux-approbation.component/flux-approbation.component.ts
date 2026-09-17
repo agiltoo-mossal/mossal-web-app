@@ -141,7 +141,9 @@ export class FluxApprobationComponent implements OnInit {
     this.clearMessages();
   }
 
-  supprimerNiveau(index: number): void {
+  // Propriété fléchée (et non méthode) car RequiresConfirmationDirective appelle
+  // confirmCallback(param) sans rebinder `this` sur le composant.
+  supprimerNiveau = (index: number): void => {
     this.niveaux.splice(index, 1);
     this.clearMessages();
   }
