@@ -41,6 +41,8 @@
     "graphql": "^16.8.1",
     "install": "^0.13.0",
     "jquery": "^3.7.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "keycloak-angular": "^15.2.1",
     "keycloak-js": "^24.0.2",
     "ng-apexcharts": "^1.10.0",
@@ -53,6 +55,7 @@
     "socket.io-client": "^4.7.5",
     "sweetalert2": "^11.15.3",
     "tslib": "^2.3.0",
+    "xlsx-js-style": "^1.2.0",
     "xterm": "^5.2.1",
     "zone.js": "~0.14.4"
   },

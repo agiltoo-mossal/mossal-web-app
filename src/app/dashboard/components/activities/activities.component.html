@@ -52,9 +52,28 @@
         </div>
       </div>
 
-      <button mat-flat-button class="btn-reset" (click)="resetFilters()">
-        <mat-icon>refresh</mat-icon> Réinitialiser
-      </button>
+        <button mat-flat-button class="btn-reset" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon> Réinitialiser
+        </button>
+
+        <div class="export-select">
+          <div
+            #exportToggle
+            class="export-toggle"
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            (click)="toggleExportMenu()"
+          >
+            <mat-icon>file_download</mat-icon>
+            <span>Exporter</span>
+          </div>
+
+          <div class="export-panel" *ngIf="isExportMenuOpen" #exportPanel>
+            <button class="export-option" (click)="exportActivities('csv')">CSV</button>
+            <button class="export-option" (click)="exportActivities('xlsx')">Excel (.xlsx)</button>
+            <button class="export-option" (click)="exportActivities('pdf')">PDF</button>
+          </div>
+      </div>
     </div>
 
 
