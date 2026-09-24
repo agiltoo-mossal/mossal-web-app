@@ -111,33 +111,36 @@ export class ActivitiesComponent implements OnInit {
   }
 
     formatMessage(message: string): SafeHtml {
-      let html = this.escapeHtml(message); // échapper d'abord, cf. remarque XSS précédente
+    let html = this.escapeHtml(message); // échapper d'abord, cf. remarque XSS précédente
 
-      html = html.replace(/^([^\n]+?) a /, '<strong>$1</strong> a ');
+    // Supprime l'email entre parenthèses juste après le nom (ex: "John Doe (john@mail.com) a ...")
+    html = html.replace(/\s*\([^()\s]+@[^()\s]+\)/g, '');
 
-      // Statuts en orange gras
-      html = html.replace(/\b(EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED)\b/g,
-        '<span class="text-status">$1</span>');
+    html = html.replace(/^([^\n]+?) a /, '<strong>$1</strong> a ');
 
-      // Référence (PM-2026-00158, ADV-2026_0124) en orange gras aussi
-      html = html.replace(/\b([A-Z]{2,4}[-_]\d{4}[-_]\d+)\b/g,
-        '<span class="text-ref">$1</span>');
+    // Statuts en orange gras
+    html = html.replace(/\b(EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED)\b/g,
+      '<span class="text-status">$1</span>');
 
-      // Montants en vert gras
-      html = html.replace(/([\d.,\s]+ XOF)/g, '<span class="text-amount">$1</span>');
+    // Référence (PM-2026-00158, ADV-2026_0124) en orange gras aussi
+    html = html.replace(/\b([A-Z]{2,4}[-_]\d{4}[-_]\d+)\b/g,
+      '<span class="text-ref">$1</span>');
 
-      html = html.replace(
-        /\b(DRAFT|EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED|SOUMIS|SUBMITTED)\b/g,
-        '<span class="text-status">$1</span>'
-      );
+    // Montants en vert gras
+    html = html.replace(/([\d.,\s]+ XOF)/g, '<span class="text-amount">$1</span>');
 
-      html = html.replace(
-        /([\d.,\s]+ XOF)/g,
-        '<span class="text-amount">$1</span>'
-      );
+    html = html.replace(
+      /\b(DRAFT|EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED|SOUMIS|SUBMITTED)\b/g,
+      '<span class="text-status">$1</span>'
+    );
 
-      return this.sanitizer.bypassSecurityTrustHtml(html);
-    }
+    html = html.replace(
+      /([\d.,\s]+ XOF)/g,
+      '<span class="text-amount">$1</span>'
+    );
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
 
     private escapeHtml(str: string): string {
       const div = document.createElement('div');
