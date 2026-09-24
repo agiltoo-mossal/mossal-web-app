@@ -1309,3 +1309,144 @@ td{
     height: 18px;
   }
 }
+
+.approvers-card {
+  background: $white;
+  border-radius: $radius;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  margin-bottom: 20px;
+}
+
+.approvers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text;
+    margin: 0;
+  }
+}
+
+.approvers-subtitle {
+  font-size: 18px;
+  color: black;
+  margin: 8px 0 20px;
+  // font-weight: bold;
+}
+
+.approvers-global-error {
+  background: #fdecea;
+  color: $danger;
+  border: 1px solid #f5c2c0;
+  border-radius: $radius-sm;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.approver-level {
+  margin-bottom: 16px;
+  max-width: 640px;
+}
+
+.approver-level-label {
+  display: block;
+  font-size: 13px;
+  color: $text;
+  margin-bottom: 6px;
+}
+
+.approver-select {
+  position: relative;
+}
+
+.approver-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $white;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+  cursor: pointer;
+
+  .placeholder { color: $muted; }
+
+  &.invalid { border-color: $danger; background: #fef2f2; }
+  &.disabled { cursor: default; background: #f4f6fb; }
+}
+
+.approver-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  padding: 6px 0;
+}
+
+.approver-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+
+  &:hover { background: $bg; }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #9ca3af;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &.checked { background: $primary; border-color: $primary; }
+
+    mat-icon { font-size: 14px; width: 14px; height: 14px; color: $white; }
+  }
+
+  .opt-nom { font-size: 13px; font-weight: 700; margin: 0; }
+  .opt-fonction { font-size: 11px; color: $muted; margin: 2px 0 0; }
+}
+
+.approver-info {
+  font-size: 12px;
+  color: $muted;
+  margin: 6px 0 0;
+}
+
+.approver-select {
+  width: 100%;
+  max-width: 640px;
+  display: block;
+}
+
+// Bordure rouge en cas d'erreur (Material legacy + MDC)
+.approver-invalid {
+  ::ng-deep .mat-form-field-outline,
+  ::ng-deep .mat-form-field-outline-thick {
+    color: $danger;
+  }
+
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: $danger !important;
+  }
+}
