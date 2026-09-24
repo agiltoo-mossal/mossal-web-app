@@ -1,11 +1,6 @@
-<div
-  class="page-wrapper"
-  fxLayout="row"
-  fxLayoutAlign="none start"
-  fxLayoutGap="40px"
->
+<div class="page-wrapper" fxLayout="row" fxLayoutAlign="none start" fxLayoutGap="40px">
   <div fxFlex="auto" fxLayout="column" fxLayoutGap="18px">
-   
+
     <div class="filters-row" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" [formGroup]="searchForm">
       <div class="search-container" fxLayoutAlign="start center">
         <mat-icon class="icon">search</mat-icon>
@@ -24,16 +19,12 @@
       </mat-form-field>
 
       <div class="period-select" [formGroup]="dateRangeForm">
-        <div
-          #periodToggle
-          class="period-toggle"
-          fxLayout="row"
-          fxLayoutAlign="space-between center"
-          (click)="toggleDateMenu()"
-        >
+        <div #periodToggle class="period-toggle" fxLayout="row" fxLayoutAlign="space-between center"
+          (click)="toggleDateMenu()">
           <span class="period-text" [class.has-value]="dateRangeForm.value.start && dateRangeForm.value.end">
             <ng-container *ngIf="dateRangeForm.value.start && dateRangeForm.value.end; else periodPlaceholder">
-              Du {{ dateRangeForm.value.start | date:'dd/MM/yyyy' }} Au {{ dateRangeForm.value.end | date:'dd/MM/yyyy' }}
+              Du {{ dateRangeForm.value.start | date:'dd/MM/yyyy' }} Au {{ dateRangeForm.value.end | date:'dd/MM/yyyy'
+              }}
             </ng-container>
             <ng-template #periodPlaceholder>Période</ng-template>
           </span>
@@ -59,12 +50,7 @@
 
 
     <div class="example-table-container">
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        class="example-table"
-        matSort
-      >
+      <table mat-table [dataSource]="dataSource" class="example-table" matSort>
         <!-- matSortActive="uniqueIdentifier"
         matSortDisableClear
         matSortDirection="desc" -->
@@ -91,19 +77,19 @@
 
         <!-- State Column -->
         <ng-container matColumnDef="scope">
-            <th mat-header-cell *matHeaderCellDef class="title">Scope</th>
-            <td mat-cell *matCellDef="let row">
-              <span class="scope-badge" [ngClass]="getScopeClass(row.scope)">
-                {{ getScopeLabel(row.scope) }}
-              </span>
-            </td>
+          <th mat-header-cell *matHeaderCellDef class="title">Scope</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="scope-badge" [ngClass]="getScopeClass(row.scope)">
+              {{ getScopeLabel(row.scope) }}
+            </span>
+          </td>
         </ng-container>
 
         <!-- Created Column -->
         <ng-container matColumnDef="createdAt">
           <th mat-header-cell *matHeaderCellDef class="title" disableClear>Date</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.createdAt | date : "dd-MM-yyyy HH:mm" }}
+            {{ row.createdAt | date : "dd-MM-YYYY HH:mm" }}
           </td>
         </ng-container>
 
@@ -117,12 +103,8 @@
           </td>
         </tr>
       </table>
-      <mat-paginator
-        [pageSizeOptions]="[10, 20, 50, 100]"
-        [pageSize]="20"
-        [length]="resultsLength"
-        aria-label=""
-      ></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" [pageSize]="20" [length]="resultsLength"
+        aria-label=""></mat-paginator>
     </div>
   </div>
 </div>
