@@ -219,8 +219,6 @@
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
 
-
-
     <!-- Solde de l'organisation -->
     <div class="balance-summary-card" *ngIf="organization">
       <div class="balance-summary-row">
@@ -281,9 +279,44 @@
       </div>
     </div>
 
+    <!-- Sélection des approbateurs -->
+    <div class="approvers-card" *ngIf="approvalLevels.length > 0">
+      <div class="approvers-header">
+        <h3>Sélection des approbateurs</h3>
+        <span class="badge-selected">{{ selectedApproversCount }}/{{ approvalLevels.length }} sélectionnés</span>
+      </div>
+      <p class="approvers-subtitle">
+        Choisissez l'approbateur qui traitera l'ordre à chaque niveau du flux configuré par le Super Admin.
+      </p>
+
+      <div class="approvers-global-error" *ngIf="approversSubmitAttempted && noApproverSelected">
+        Veuillez sélectionner un approbateur pour chaque niveau de validation.
+      </div>
+
+      <div class="approver-level" *ngFor="let level of approvalLevels; let i = index">
+        <label class="approver-level-label">Niveau {{ level.level }} - Validation <span class="color-danger">*</span></label>
+
+        <mat-form-field appearance="outline" class="approver-select"
+          [class.approver-invalid]="approversSubmitAttempted && level.approbateurs.length === 0">
+          <mat-select multiple [(ngModel)]="level.approbateurs" placeholder="-- Sélectionner un approbateur --"
+            [compareWith]="compareApprovers">
+            <mat-select-trigger>{{ selectedNames(level) }}</mat-select-trigger>
+            <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
+              {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <p class="error-message"
+          *ngIf="approversSubmitAttempted && level.approbateurs.length === 0 && !noApproverSelected">
+          Veuillez sélectionner un approbateur pour le niveau {{ level.level }}.
+        </p>
+      </div>
+    </div>
+
     <div class="bottom-actions">
       <button class="btn-secondary" (click)="goBackFromRecap()" [disabled]="isSubmitting">
-        <mat-icon>arrow_back</mat-icon> Retour
+        <mat-icon>arrow_back</mat-icon> Précédent
       </button>
       <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
         <span *ngIf="!isSubmitting" class="btn-inner">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
@@ -310,30 +343,7 @@
 
   <!-- STEP 3 : Suivi des validations -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
-    <!-- Solde de l'organisation -->
-    <!-- <div class="balance-summary-card" *ngIf="organization">
-      <div class="balance-summary-row">
-        <div class="balance-summary-item">
-          <p class="balance-label">Solde actuel de l'organisation</p>
-          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-        <div class="balance-summary-item">
-          <p class="balance-label">Montant de l'ordre</p>
-          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
-          <p class="balance-label">Solde après exécution</p>
-          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-      </div>
-
-      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
-        <mat-icon>error_outline</mat-icon>
-        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
-          organization.balance | number:'1.0-0':'fr' }} XOF</span>
-      </div>
-    </div> -->
-
+    
     <h2 class="suivi-title">Suivi des validations pour</h2>
 
     <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">

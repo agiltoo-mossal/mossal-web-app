@@ -1,11 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   BulkPaymentInput,
   CreateBulkPaymentOrderGQL,
   FetchApprovalFlowGQL,
   FetchCurrentAdminGQL,
+  FetchOrganizationApproversGQL,
   Organization,
   Wallet,
 } from 'src/graphql/generated';
@@ -43,6 +46,18 @@ interface OrderSummary {
   dateSoumission: string;
 }
 
+interface Approver {
+  id: string;
+  firstName: string;
+  lastName: string;
+  position?: string | null;
+}
+
+interface ApprovalLevel {
+  level: number;
+  approbateurs: Approver[];
+}
+
 @Component({
   selector: 'app-manual-payment',
   templateUrl: './manual-payment.component.html',
@@ -57,6 +72,11 @@ export class ManualPaymentComponent implements OnInit {
   isSubmitting = false;
   isSavingDraft = false;
   draftOrderId: string | null = null;
+
+  // Sélection des approbateurs (un niveau = une liste déroulante à choix multiple)
+  approvers: Approver[] = [];
+  approvalLevels: ApprovalLevel[] = [];
+  approversSubmitAttempted = false;
 
   // Solde de l'organisation, utilisé pour l'avertissement de solde insuffisant
   organization: Organization | null = null;
@@ -80,6 +100,7 @@ export class ManualPaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
+    private fetchOrganizationApproversGQL: FetchOrganizationApproversGQL,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private submitBulkPaymentOrderGQL: SubmitBulkPaymentOrderGQL,
     private updateBulkPaymentOrderGQL: UpdateBulkPaymentOrderGQL,
@@ -88,9 +109,24 @@ export class ManualPaymentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
-      next: ({ data }) => {
-        this.approvalFlowApprovers = [...(data.fetchApprovalFlow?.approvalFlow ?? [])]
+    forkJoin({
+      approvers: this.fetchOrganizationApproversGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
+      flow: this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
+    }).subscribe({
+      next: ({ approvers, flow }) => {
+        this.approvers = (approvers.fetchOrganizationApprovers ?? []).map((u) => ({
+          id: u.id,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          position: u.position,
+        }));
+
+        const org = flow.fetchApprovalFlow;
+        const count = org?.approvalLevelsCount ?? 0;
+        // Aucun pré-remplissage : chaque niveau démarre sans approbateur sélectionné
+        this.approvalLevels = Array.from({ length: count }, (_, i) => ({ level: i + 1, approbateurs: [] }));
+
+        this.approvalFlowApprovers = [...(org?.approvalFlow ?? [])]
           .filter((item) => !!item.approverId)
           .sort((a, b) => a.level - b.level)
           .map((item) => ({
@@ -99,6 +135,9 @@ export class ManualPaymentComponent implements OnInit {
             statut: 'En attente',
             avatar: (item.approverFirstName?.[0] ?? '').toUpperCase() + (item.approverLastName?.[0] ?? '').toUpperCase(),
           }));
+      },
+      error: () => {
+        this.snackBarService.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs.');
       },
     });
 
@@ -118,7 +157,7 @@ export class ManualPaymentComponent implements OnInit {
             firstName: p.firstName,
             lastName: p.lastName,
             phoneNumber: this.formatPhoneValue(p.phoneNumber),
-            amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
+            amount: p.amount.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0'),
             wallet: p.wallet as Wallet,
           }));
           this.isLoadingOrder = false;
@@ -172,7 +211,7 @@ export class ManualPaymentComponent implements OnInit {
                 firstName: p.firstName,
                 lastName: p.lastName,
                 phoneNumber: this.formatPhoneValue(p.phoneNumber),
-                amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
+                amount: p.amount.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0'),
                 wallet: p.wallet as Wallet,
               }));
               this.isLoadingOrder = false;
@@ -198,6 +237,50 @@ export class ManualPaymentComponent implements OnInit {
     }
   }
 
+  // ===== Sélection des approbateurs =====
+
+  /** Nombre de niveaux ayant au moins un approbateur sélectionné */
+  get selectedApproversCount(): number {
+    return this.approvalLevels.filter((l) => l.approbateurs.length > 0).length;
+  }
+
+  get allApproversSelected(): boolean {
+    return this.approvalLevels.every((l) => l.approbateurs.length > 0);
+  }
+
+  get noApproverSelected(): boolean {
+    return this.selectedApproversCount === 0;
+  }
+
+  /** Exclut les approbateurs déjà choisis aux autres niveaux */
+  getAvailableApprovers(levelIndex: number): Approver[] {
+    const selectedIds = this.approvalLevels
+      .filter((_, i) => i !== levelIndex)
+      .flatMap((l) => l.approbateurs.map((a) => a.id));
+    return this.approvers.filter((a) => !selectedIds.includes(a.id));
+  }
+
+  compareApprovers(a: Approver, b: Approver): boolean {
+    return a?.id === b?.id;
+  }
+
+  selectedNames(level: ApprovalLevel): string {
+    return level.approbateurs.map((a) => `${a.firstName} ${a.lastName}`).join(', ');
+  }
+
+  /**
+   * Payload à envoyer au backend avec la soumission.
+   * TODO: brancher sur la mutation de soumission une fois l'input défini côté backend.
+   */
+  get selectedApproversPayload(): { level: number; approverIds: string[] }[] {
+    return this.approvalLevels.map((l) => ({
+      level: l.level,
+      approverIds: l.approbateurs.map((a) => a.id),
+    }));
+  }
+
+  // ===== Solde =====
+
   private loadOrganizationBalance(): void {
     this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
       next: (result) => {
@@ -219,7 +302,7 @@ export class ManualPaymentComponent implements OnInit {
     if (!this.organization) return false;
     return this.organization.balance < this.totalAmount;
   }
-  
+
   get balanceAfterExecution(): number {
     if (!this.organization) return 0;
     return this.organization.balance - this.totalAmount;
@@ -357,7 +440,7 @@ export class ManualPaymentComponent implements OnInit {
       return;
     }
     const num = parseInt(digits, 10);
-    const fmt = num.toLocaleString('fr-FR').replace(/ /g, ' ').replace(/ /g, ' ');
+    const fmt = num.toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0');
     input.value = fmt;
     this.form.amount = fmt;
   }
@@ -373,6 +456,10 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   submitOrder(): void {
+    // Blocage si au moins un niveau n'a aucun approbateur sélectionné
+    this.approversSubmitAttempted = true;
+    if (!this.allApproversSelected) return;
+
     this.isSubmitting = true;
 
     const navigateToDetails = (orderId: string) => {
