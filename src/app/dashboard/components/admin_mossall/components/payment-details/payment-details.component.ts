@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
-import { RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
+import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
+import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 export interface Beneficiary {
@@ -30,7 +30,8 @@ export interface PaymentOrderDetails {
   amount: number;
   operatorsCount: number;
   createdAt: Date;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  type: BulkPaymentOrderType;
   approvals: ApprovalStep[];
   beneficiaries: Beneficiary[];
   rejectedReason?: string;
@@ -53,6 +54,7 @@ export class PaymentDetailsComponent implements OnInit {
   isBeneficiairesOpen = true;
 
   isRelaunching = false;
+  isCancelling = false;
 
 
   constructor(
@@ -60,6 +62,7 @@ export class PaymentDetailsComponent implements OnInit {
     private router: Router,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private relaunchApproversGQL: RelaunchApproversGQL,
+    private cancelBulkPaymentOrderGQL: CancelBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
 
@@ -133,7 +136,10 @@ export class PaymentDetailsComponent implements OnInit {
               ? 'APPROVED'
               : order.status === BulkPaymentOrderStatus.Rejected
                 ? 'REJECTED'
-                : 'PENDING',
+                : order.status === BulkPaymentOrderStatus.Cancelled
+                  ? 'CANCELLED'
+                  : 'PENDING',
+            type: order.type ?? BulkPaymentOrderType.Manual,
             approvals: approvalSteps,
             rejectedReason: order.rejectedReason ?? undefined,
             lastRelaunchAt,
@@ -201,6 +207,12 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
+  // "Modifier" n'est proposé que tant qu'aucun approbateur n'a encore traité l'ordre :
+  // dès qu'un niveau a validé, le circuit est engagé et l'ordre ne peut plus être modifié.
+  get isModifiable(): boolean {
+    return this.isPending && !this.hasSomeoneApproved;
+  }
+
   get isBalanceInsufficient(): boolean {
     if (!this.organization || !this.payment) return false;
     return this.organization.balance < this.payment.amount;
@@ -249,6 +261,33 @@ export class PaymentDetailsComponent implements OnInit {
     if (!this.orderId) return;
     this.router.navigate(['/dashboard/organization/payments/manual'], {
       queryParams: { renewFrom: this.orderId },
+    });
+  };
+
+  // Les deux modes de création (saisie manuelle / import de fichier) partagent la même
+  // table de bénéficiaires modifiable dans manual-payment ; le composant d'import ne sait
+  // que traiter un fichier fraîchement déposé et ne peut pas recharger un ordre existant.
+  modifierOrdre(): void {
+    if (!this.orderId || !this.isModifiable) return;
+    this.router.navigate(['/dashboard/organization/payments/manual'], {
+      queryParams: { editOrderId: this.orderId },
+    });
+  }
+
+  annulerOrdre = (): void => {
+    if (!this.orderId || !this.isPending || this.isCancelling) return;
+    this.isCancelling = true;
+    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId }).subscribe({
+      next: () => {
+        this.isCancelling = false;
+        this.snackBarService.showSuccessSnackBar(4000, 'Ordre de paiement annulé.');
+        this.router.navigate(['/dashboard/organization/payments']);
+      },
+      error: (err) => {
+        this.isCancelling = false;
+        const message = err?.message?.replace('GraphQL error: ', '') || 'Erreur lors de l\'annulation de l\'ordre.';
+        this.snackBarService.showErrorSnackBar(4000, message);
+      },
     });
   };
 

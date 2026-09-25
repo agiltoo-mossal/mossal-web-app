@@ -13,7 +13,7 @@
   </form>
 
   <div fxFlex="100" class="footer" fxLayout="row wrap" fxLayoutAlign="end center" fxLayoutGap="16px">
-    <button class="cancel" (click)="onCancel()" mat-dialog-close>Annuler</button>
-    <button class="confirm" (click)="onConfirm()">Confirmer</button>
+    <button class="cancel" (click)="onCancel()" mat-dialog-close>{{ data.cancelLabel || 'Annuler' }}</button>
+    <button class="confirm" (click)="onConfirm()">{{ data.confirmLabel || 'Confirmer' }}</button>
   </div>
 </div>
