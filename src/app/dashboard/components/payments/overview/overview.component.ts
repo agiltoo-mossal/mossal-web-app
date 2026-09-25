@@ -19,6 +19,7 @@ const STATUS_LABELS: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Pending]: 'En attente',
   [BulkPaymentOrderStatus.Approved]: 'Validé',
   [BulkPaymentOrderStatus.Rejected]: 'Rejeté',
+  [BulkPaymentOrderStatus.Cancelled]: 'Annulé',
 };
 
 const STATUS_BADGE: Record<BulkPaymentOrderStatus, string> = {
@@ -26,6 +27,7 @@ const STATUS_BADGE: Record<BulkPaymentOrderStatus, string> = {
   [BulkPaymentOrderStatus.Pending]: 'badge-attente',
   [BulkPaymentOrderStatus.Approved]: 'badge-valide',
   [BulkPaymentOrderStatus.Rejected]: 'badge-rejete',
+  [BulkPaymentOrderStatus.Cancelled]: 'badge-rejete',
 };
 
 // Intervalle de rafraîchissement automatique du solde (60s).

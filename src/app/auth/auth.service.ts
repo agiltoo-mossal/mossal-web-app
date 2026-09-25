@@ -22,6 +22,7 @@ export enum AuthConstant {
   sessionLocalName = 'userSession',
   otpEmailLocalName = 'otpEmail',
   pendingAuthLocalName = 'pendingAuth',
+  otpExpiresAtLocalName = 'otpExpiresAt',
 }
 
 @Injectable({
@@ -137,6 +138,9 @@ export class AuthService {
       if (session.otpRequired) {
         sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
         sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
+        if (session.otpExpiresAt) {
+          sessionStorage.setItem(AuthConstant.otpExpiresAtLocalName, session.otpExpiresAt);
+        }
 
         this.snackBarService.showSnackBar(
           'Un code OTP a été envoyé à votre adresse email.',
@@ -162,12 +166,17 @@ export class AuthService {
 
   async resendOtp(email: string) {
     try {
-      await lastValueFrom(
+      const res = await lastValueFrom(
         this.resendOtpGQL.mutate(
           { email },
           { fetchPolicy: 'no-cache' }
         )
       );
+
+      const otpExpiresAt = res.data?.resendOtp;
+      if (otpExpiresAt) {
+        sessionStorage.setItem(AuthConstant.otpExpiresAtLocalName, otpExpiresAt);
+      }
 
       this.snackBarService.showSnackBar(
         'Un nouveau code OTP a été envoyé à votre email.',
@@ -175,7 +184,7 @@ export class AuthService {
         { duration: 3000 }
       );
 
-      return true;
+      return otpExpiresAt;
     } catch (e) {
       this.snackBarService.showSnackBar(
         "Erreur lors de l'envoi du code OTP.",
@@ -240,6 +249,7 @@ export class AuthService {
 
       sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
       sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
+      sessionStorage.removeItem(AuthConstant.otpExpiresAtLocalName);
 
       this.completeLogin(session);
 
