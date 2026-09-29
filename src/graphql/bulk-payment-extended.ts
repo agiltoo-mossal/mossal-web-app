@@ -261,6 +261,69 @@ export class UpdateBulkPaymentOrderGQL extends Apollo.Mutation<
   }
 }
 
+export interface UpdateSubmittedBulkPaymentOrderMutationVariables {
+  id: string;
+  inputs: BulkPaymentInput[];
+  label: string;
+}
+
+export interface UpdateSubmittedBulkPaymentOrderMutation {
+  updateSubmittedBulkPaymentOrder: {
+    id: string;
+    label: string;
+    status: BulkPaymentOrderStatus;
+  };
+}
+
+const UpdateSubmittedBulkPaymentOrderDocument = gql`
+  mutation UpdateSubmittedBulkPaymentOrder($id: String!, $inputs: [BulkPaymentInput!]!, $label: String!) {
+    updateSubmittedBulkPaymentOrder(id: $id, inputs: $inputs, label: $label) {
+      id
+      label
+      status
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class UpdateSubmittedBulkPaymentOrderGQL extends Apollo.Mutation<
+  UpdateSubmittedBulkPaymentOrderMutation,
+  UpdateSubmittedBulkPaymentOrderMutationVariables
+> {
+  document = UpdateSubmittedBulkPaymentOrderDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
+export interface CancelBulkPaymentOrderMutationVariables {
+  id: string;
+}
+
+export interface CancelBulkPaymentOrderMutation {
+  cancelBulkPaymentOrder: { id: string; status: BulkPaymentOrderStatus };
+}
+
+const CancelBulkPaymentOrderDocument = gql`
+  mutation CancelBulkPaymentOrder($id: String!) {
+    cancelBulkPaymentOrder(id: $id) {
+      id
+      status
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class CancelBulkPaymentOrderGQL extends Apollo.Mutation<
+  CancelBulkPaymentOrderMutation,
+  CancelBulkPaymentOrderMutationVariables
+> {
+  document = CancelBulkPaymentOrderDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
 export interface ApproveBulkPaymentOrderMutationVariables {
   id: string;
 }

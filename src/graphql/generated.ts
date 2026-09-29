@@ -138,6 +138,7 @@ export type BulkPaymentOrder = {
 
 export enum BulkPaymentOrderStatus {
   Approved = 'APPROVED',
+  Cancelled = 'CANCELLED',
   Draft = 'DRAFT',
   Pending = 'PENDING',
   Rejected = 'REJECTED'
@@ -424,6 +425,7 @@ export type Mutation = {
   addCredit: Credit;
   approveBulkPaymentOrder: BulkPaymentOrder;
   cancelBulkPayment: Scalars['Boolean']['output'];
+  cancelBulkPaymentOrder: BulkPaymentOrder;
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
   createBulkPayment: BulkPayment;
   createBulkPaymentOrder: BulkPaymentOrder;
@@ -455,7 +457,7 @@ export type Mutation = {
   rejectBulkPaymentOrder: BulkPaymentOrder;
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
   relaunchApprovers: BulkPaymentOrder;
-  resendOtp: Scalars['Boolean']['output'];
+  resendOtp: Scalars['DateTime']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
   saveApprovalFlow: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
@@ -474,6 +476,7 @@ export type Mutation = {
   updateOrganisationService: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
   updateService: Scalars['Boolean']['output'];
+  updateSubmittedBulkPaymentOrder: BulkPaymentOrder;
   upladFile: Scalars['Boolean']['output'];
   validateDemande: ValidationResponse;
   validateRemboursement: Scalars['Boolean']['output'];
@@ -521,6 +524,11 @@ export type MutationApproveBulkPaymentOrderArgs = {
 
 export type MutationCancelBulkPaymentArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -797,6 +805,13 @@ export type MutationUpdateOrganizationArgs = {
 export type MutationUpdateServiceArgs = {
   serviceId: Scalars['ID']['input'];
   serviceInput: ServiceUpdateInput;
+};
+
+
+export type MutationUpdateSubmittedBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput>;
+  label: Scalars['String']['input'];
 };
 
 
@@ -1536,6 +1551,8 @@ export type Session = {
   enabled: Scalars['Boolean']['output'];
   /** Null if user must reset his password */
   expires_in?: Maybe<Scalars['Float']['output']>;
+  /** Date d'expiration du code OTP en cours, si otpRequired est vrai */
+  otpExpiresAt?: Maybe<Scalars['DateTime']['output']>;
   /** Not null if required */
   otpRequired?: Maybe<Scalars['Boolean']['output']>;
   /** Null if user must reset his password */
@@ -1697,7 +1714,7 @@ export type LoginAdminQueryVariables = Exact<{
 }>;
 
 
-export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, roles?: Array<string> | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
+export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, roles?: Array<string> | null, otpRequired?: boolean | null, otpExpiresAt?: any | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
 
 export type ResetAdminPasswordMutationVariables = Exact<{
   resetPasswordInput: ResetPasswordInput;
@@ -1732,7 +1749,7 @@ export type ResendOtpMutationVariables = Exact<{
 }>;
 
 
-export type ResendOtpMutation = { __typename?: 'Mutation', resendOtp: boolean };
+export type ResendOtpMutation = { __typename?: 'Mutation', resendOtp: any };
 
 export type FetchPaginatedActivitiesQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
@@ -2081,7 +2098,7 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2341,6 +2358,7 @@ export const LoginAdminDocument = gql`
     expires_in
     roles
     otpRequired
+    otpExpiresAt
   }
 }
     `;
@@ -3830,6 +3848,7 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
     label
     totalAmount
     status
+    type
     rejectedReason
     currentApprovalLevel
     createdAt

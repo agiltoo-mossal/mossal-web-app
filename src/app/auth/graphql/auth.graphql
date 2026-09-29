@@ -17,6 +17,7 @@ query LoginAdmin($loginInput: LoginInput!) {
 		expires_in
 		roles
 		otpRequired
+		otpExpiresAt
 	}
 }
 

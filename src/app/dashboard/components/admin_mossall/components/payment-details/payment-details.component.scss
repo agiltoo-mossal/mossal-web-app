@@ -68,10 +68,71 @@ $radius-sm: 4px;
   }
 }
 
+.suivi-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .suivi-title {
   font-size: 22px;
   font-weight: 700;
+  margin-bottom: 0;
+}
+
+.suivi-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-outline,
+.btn-danger-outline {
+  padding: 10px 20px;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 600;
+  background: $white;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-outline {
+  border: 1.5px solid $primary;
+  color: $primary;
+
+  &:hover:not(:disabled) { background: $primary-light; }
+}
+
+.btn-danger-outline {
+  border: 1.5px solid $danger;
+  color: $danger;
+
+  &:hover:not(:disabled) { background: #fdecea; }
+}
+
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
   margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #eef1fa;
+  border: 1px solid $border;
+  border-radius: 8px;
+  color: $text;
+
+  mat-icon { font-size: 18px; flex-shrink: 0; color: $primary; }
 }
 
 .main-card {

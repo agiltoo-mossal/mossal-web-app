@@ -12,7 +12,7 @@ import {
   Organization,
   Wallet,
 } from 'src/graphql/generated';
-import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
 interface WorkflowApprobateur {
@@ -72,6 +72,7 @@ export class ManualPaymentComponent implements OnInit {
   isSubmitting = false;
   isSavingDraft = false;
   draftOrderId: string | null = null;
+  editOrderId: string | null = null;
 
   // Sélection des approbateurs (un niveau = une liste déroulante à choix multiple)
   approvers: Approver[] = [];
@@ -104,6 +105,7 @@ export class ManualPaymentComponent implements OnInit {
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private submitBulkPaymentOrderGQL: SubmitBulkPaymentOrderGQL,
     private updateBulkPaymentOrderGQL: UpdateBulkPaymentOrderGQL,
+    private updateSubmittedBulkPaymentOrderGQL: UpdateSubmittedBulkPaymentOrderGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private snackBarService: SnackBarService,
   ) { }
@@ -142,6 +144,40 @@ export class ManualPaymentComponent implements OnInit {
     });
 
     this.loadOrganizationBalance();
+
+    const editOrderId = this.route.snapshot.queryParamMap.get('editOrderId');
+    if (editOrderId) {
+      this.editOrderId = editOrderId;
+      this.currentStep = 1;
+      this.isLoadingOrder = true;
+      this.fetchBulkPaymentOrderByIdGQL.fetch({ id: editOrderId }, { fetchPolicy: 'network-only' }).subscribe({
+        next: ({ data }) => {
+          const order = data?.fetchBulkPaymentOrderById;
+          if (!order) {
+            this.isLoadingOrder = false;
+            this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger l\'ordre à modifier.');
+            this.router.navigate(['/dashboard/payments/details', editOrderId]);
+            return;
+          }
+          this.label = order.label;
+          this.beneficiaries = (order.payments ?? []).map((p) => ({
+            firstName: p.firstName,
+            lastName: p.lastName,
+            phoneNumber: this.formatPhoneValue(p.phoneNumber),
+            amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
+            wallet: p.wallet as Wallet,
+          }));
+          this.isLoadingOrder = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        error: () => {
+          this.isLoadingOrder = false;
+          this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger l\'ordre à modifier.');
+          this.router.navigate(['/dashboard/payments/details', editOrderId]);
+        },
+      });
+      return;
+    }
 
     const orderId = this.route.snapshot.queryParamMap.get('orderId');
     if (orderId) {
@@ -376,6 +412,24 @@ export class ManualPaymentComponent implements OnInit {
     this.beneficiaries.splice(index, 1);
   }
 
+  // En mode édition d'un ordre déjà soumis, la suppression du dernier bénéficiaire
+  // est bloquée : un ordre de paiement ne peut pas se retrouver sans aucun bénéficiaire.
+  attemptDeleteBeneficiary = (index: number): void => {
+    if (this.beneficiaries.length <= 1) {
+      this.snackBarService.showErrorSnackBar(
+        5000,
+        'Un ordre de paiement doit contenir au moins un bénéficiaire. Si vous souhaitez annuler cet ordre, utilisez le bouton "Annuler l\'ordre".',
+      );
+      return;
+    }
+    this.deleteBeneficiary(index);
+  };
+
+  deleteConfirmMessage(index: number): string {
+    const b = this.beneficiaries[index];
+    return `Êtes-vous sûr de vouloir retirer ${b?.firstName ?? ''} ${b?.lastName ?? ''} de cet ordre de paiement ?`;
+  }
+
 
   clearList(): void {
     if (confirm('Voulez-vous vraiment vider la liste des bénéficiaires ?')) {
@@ -454,6 +508,34 @@ export class ManualPaymentComponent implements OnInit {
       wallet: b.wallet as Wallet,
     }));
   }
+
+  saveEditedOrder(): void {
+    if (!this.editOrderId || this.beneficiaries.length === 0 || !this.label.trim() || this.isSubmitting) return;
+
+    this.isSubmitting = true;
+    this.updateSubmittedBulkPaymentOrderGQL
+      .mutate({ id: this.editOrderId, inputs: this.buildInputs(), label: this.label })
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.snackBarService.showSuccessSnackBar(4000, 'Ordre de paiement modifié avec succès.');
+          this.router.navigate(['/dashboard/payments/details', this.editOrderId]);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          const message = err?.message?.replace('GraphQL error: ', '') || 'Erreur lors de la modification de l\'ordre.';
+          this.snackBarService.showErrorSnackBar(5000, message);
+        },
+      });
+  }
+
+  cancelEdit = (): void => {
+    if (this.editOrderId) {
+      this.router.navigate(['/dashboard/payments/details', this.editOrderId]);
+    } else {
+      this.backToHome();
+    }
+  };
 
   submitOrder(): void {
     // Blocage si au moins un niveau n'a aucun approbateur sélectionné

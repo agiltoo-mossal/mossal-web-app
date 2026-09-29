@@ -21,6 +21,7 @@ query FetchBulkPaymentOrderById($id: String!) {
     label
     totalAmount
     status
+    type
     rejectedReason
     currentApprovalLevel
     createdAt

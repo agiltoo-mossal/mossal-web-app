@@ -40,7 +40,33 @@
     </div>
   </div>
 
-  <h2 class="suivi-title">Suivi des validations</h2>
+  <div class="suivi-title-row">
+    <h2 class="suivi-title">Suivi des validations</h2>
+
+    <div class="suivi-title-actions" *ngIf="isPending">
+      <button
+        class="btn-outline"
+        *ngIf="isModifiable"
+        (click)="modifierOrdre()"
+      >
+        Modifier l'ordre de paiement
+      </button>
+      <button
+        class="btn-danger-outline"
+        requiresConfirmation
+        [message]="'Êtes-vous sûr de vouloir annuler cet ordre de paiement ? Cette action est irréversible.'"
+        [confirmCallback]="annulerOrdre"
+        [disabled]="isCancelling"
+      >
+        Annuler l'ordre de paiement
+      </button>
+    </div>
+  </div>
+
+  <div class="info-banner" *ngIf="isPending && hasSomeoneApproved">
+    <mat-icon>info</mat-icon>
+    <span>Cet ordre est en cours de validation et ne peut plus être modifié.</span>
+  </div>
 
   <!-- Card principal unique -->
   <div class="main-card">
