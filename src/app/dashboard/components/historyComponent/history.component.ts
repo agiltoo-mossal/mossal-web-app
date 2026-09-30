@@ -63,7 +63,8 @@ export class HistoryComponent implements OnInit {
 
   get approverOptions(): string[] {
     const names = this.orders
-      .flatMap(o => o.approvers ?? [])
+      .flatMap(o => o.approversByLevel ?? [])
+      .flatMap(l => l.approvers ?? [])
       .map(a => `${a.firstName} ${a.lastName}`);
     return Array.from(new Set(names));
   }
@@ -76,7 +77,9 @@ export class HistoryComponent implements OnInit {
       const matchStatus = !this.appliedStatus || o.status === this.appliedStatus;
 
       const matchApprover = !this.appliedApprover ||
-        (o.approvers ?? []).some(a => `${a.firstName} ${a.lastName}` === this.appliedApprover);
+        (o.approversByLevel ?? [])
+          .flatMap(l => l.approvers ?? [])
+          .some(a => `${a.firstName} ${a.lastName}` === this.appliedApprover);
 
       const matchDate = (() => {
         if (!o.createdAt) return !this.appliedStartDate && !this.appliedEndDate;
@@ -141,7 +144,10 @@ export class HistoryComponent implements OnInit {
   }
 
   approversLabel(order: BulkPaymentOrder): string {
-    return (order.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
+    return (order.approversByLevel ?? [])
+      .flatMap(l => l.approvers ?? [])
+      .map(a => `${a.firstName} ${a.lastName}`)
+      .join(' / ');
   }
 
   onApply(): void {

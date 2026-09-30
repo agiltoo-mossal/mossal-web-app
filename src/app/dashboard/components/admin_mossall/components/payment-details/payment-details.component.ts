@@ -15,8 +15,7 @@ export interface Beneficiary {
 
 export interface ApprovalStep {
   level: number;
-  firstName: string;
-  lastName: string;
+  approbateurNom: string;
   position: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   isCurrentLevel: boolean;
@@ -85,13 +84,14 @@ export class PaymentDetailsComponent implements OnInit {
           const order = res.data?.fetchBulkPaymentOrderById;
           if (!order) { this.isLoading = false; return; }
 
-          const approvers = order.approvers ?? [];
+          const approversByLevel = order.approversByLevel ?? [];
           const approvals = order.approvals ?? [];
 
           const lastRelaunchAt = order.lastRelaunchAt ? new Date(order.lastRelaunchAt) : undefined;
 
-          const approvalSteps: ApprovalStep[] = approvers.map((approver, index) => {
-            const level = index + 1;
+          const approvalSteps: ApprovalStep[] = approversByLevel.map((levelEntry) => {
+            const level = levelEntry.level;
+            const levelApprovers = levelEntry.approvers ?? [];
             const approval = approvals.find(a => a.level === level);
             const isCurrentLevel = level === (order.currentApprovalLevel ?? 1);
 
@@ -106,9 +106,8 @@ export class PaymentDetailsComponent implements OnInit {
 
             return {
               level,
-              firstName: approver.firstName,
-              lastName: approver.lastName,
-              position: approver.position ?? '',
+              approbateurNom: levelApprovers.map(a => `${a.firstName} ${a.lastName}`).join(' / '),
+              position: [...new Set(levelApprovers.map(a => a.position).filter(Boolean))].join(' / '),
               status,
               isCurrentLevel,
               // Pour le niveau en cours, la date de notification reflète une éventuelle relance.

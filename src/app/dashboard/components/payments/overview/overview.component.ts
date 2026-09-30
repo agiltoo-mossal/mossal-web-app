@@ -167,7 +167,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   approversLabel(order: BulkPaymentOrder): string {
-    return (order.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
+    return (order.approversByLevel ?? [])
+      .flatMap(l => l.approvers ?? [])
+      .map(a => `${a.firstName} ${a.lastName}`)
+      .join(' / ');
   }
 
   resetPage(): void {

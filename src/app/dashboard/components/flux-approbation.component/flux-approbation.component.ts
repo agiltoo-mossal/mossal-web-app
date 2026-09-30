@@ -65,7 +65,7 @@ export class FluxApprobationComponent implements OnInit {
     private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
     private snackBar: SnackBarService,
     private dialog: MatDialog,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -89,8 +89,7 @@ export class FluxApprobationComponent implements OnInit {
         this.nombreNiveaux = count || null;
         this.niveaux = Array.from({ length: count }, (_, i) => {
           const saved = org?.approvalFlow?.find((f) => f.level === i + 1);
-          // ⚠️ nécessite `approverIds: string[]` côté backend (cf. notes)
-          return { approbateurs: this.approvers.filter((a) => (saved?.approverId ?? []).includes(a.id)) };
+          return { approbateurs: this.approvers.filter((a) => (saved?.approverIds ?? []).includes(a.id)) };
         });
         this.savedApprovers = this.niveaux.flatMap((n) => n.approbateurs);
       },
@@ -222,9 +221,9 @@ export class FluxApprobationComponent implements OnInit {
         const counts: Record<string, number> = {};
         (res.data?.fetchMyBulkPaymentOrders ?? [])
           .filter((o) => o.status === BulkPaymentOrderStatus.Pending)
-          .forEach((o: any) => (o.approvers ?? []).forEach((a: { id: string }) => {
-            counts[a.id] = (counts[a.id] ?? 0) + 1;
-          }));
+          .forEach((o) => (o.approversByLevel ?? []).forEach((l) => (l.approverIds ?? []).forEach((id) => {
+            counts[id] = (counts[id] ?? 0) + 1;
+          })));
         return counts;
       }),
     );
