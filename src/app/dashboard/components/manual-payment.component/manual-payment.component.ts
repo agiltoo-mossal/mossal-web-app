@@ -334,14 +334,55 @@ export class ManualPaymentComponent implements OnInit {
    * on compare le solde actuel de l'organisation au montant total de l'ordre en cours.
    * Retourne false tant que le solde n'est pas encore chargé (on n'affiche rien par défaut).
    */
-  get isBalanceInsufficient(): boolean {
-    if (!this.organization) return false;
-    return this.organization.balance < this.totalAmount;
+  // get isBalanceInsufficient(): boolean {
+  //   if (!this.organization) return false;
+  //   return this.organization.balance < this.totalAmount;
+  // }
+
+  // get balanceAfterExecution(): number {
+  //   if (!this.organization) return 0;
+  //   return this.organization.balance - this.totalAmount;
+  // }
+
+
+  /** Seuil d'alerte : solde après exécution < X % du solde actuel */
+  private readonly LOW_BALANCE_THRESHOLD = 0.10;
+
+  // TODO: remplacer par la vraie règle de frais (idéalement fournie par le backend)
+  private readonly WALLET_FEE_RATES: Record<string, number> = {
+    [Wallet.Wave]: 0.0165,
+    [Wallet.OrangeMoney]: 0.021,
+  };
+
+  private computeFee(wallet: string, amount: number): number {
+    return Math.round(amount * (this.WALLET_FEE_RATES[wallet] ?? 0));
+  }
+
+  get totalFees(): number {
+    return this.beneficiaries.reduce(
+      (sum, b) => sum + this.computeFee(b.wallet as string, this.parseAmount(b.amount)), 0);
+  }
+
+  get totalCost(): number {
+    return this.totalAmount + this.totalFees;
   }
 
   get balanceAfterExecution(): number {
-    if (!this.organization) return 0;
-    return this.organization.balance - this.totalAmount;
+    return this.organization ? this.organization.balance - this.totalCost : 0;
+  }
+
+  get isBalanceInsufficient(): boolean {
+    return !!this.organization && this.organization.balance < this.totalCost;
+  }
+
+  get isBalanceLow(): boolean {
+    if (!this.organization || this.isBalanceInsufficient) return false;
+    return this.balanceAfterExecution < this.organization.balance * this.LOW_BALANCE_THRESHOLD;
+  }
+
+  get balanceState(): 'ok' | 'low' | 'insufficient' {
+    if (this.isBalanceInsufficient) return 'insufficient';
+    return this.isBalanceLow ? 'low' : 'ok';
   }
 
   private formatPhoneValue(phone: string): string {
@@ -365,18 +406,41 @@ export class ManualPaymentComponent implements OnInit {
     return this.beneficiaries.reduce((sum, b) => sum + this.parseAmount(b.amount), 0);
   }
 
-  get recapRepartition(): { nom: string; beneficiaires: number; montant: number; pourcentage: number; couleur: string }[] {
-    const map = new Map<string, { count: number; total: number }>();
+  // get recapRepartition(): { nom: string; beneficiaires: number; montant: number; pourcentage: number; couleur: string }[] {
+  //   const map = new Map<string, { count: number; total: number }>();
+  //   for (const b of this.beneficiaries) {
+  //     const key = b.wallet as string;
+  //     const prev = map.get(key) ?? { count: 0, total: 0 };
+  //     map.set(key, { count: prev.count + 1, total: prev.total + this.parseAmount(b.amount) });
+  //   }
+  //   const total = this.beneficiaries.length;
+  //   return Array.from(map.entries()).map(([wallet, data]) => ({
+  //     nom: this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
+  //     beneficiaires: data.count,
+  //     montant: data.total,
+  //     pourcentage: total > 0 ? Math.round((data.count / total) * 100) : 0,
+  //     couleur: this.WALLET_COLORS[wallet] ?? '#6366f1',
+  //   }));
+  // }
+
+  get recapRepartition(): { nom: string; beneficiaires: number; montant: number; frais: number; pourcentage: number; couleur: string }[] {
+    const map = new Map<string, { count: number; total: number; fees: number }>();
     for (const b of this.beneficiaries) {
       const key = b.wallet as string;
-      const prev = map.get(key) ?? { count: 0, total: 0 };
-      map.set(key, { count: prev.count + 1, total: prev.total + this.parseAmount(b.amount) });
+      const amt = this.parseAmount(b.amount);
+      const prev = map.get(key) ?? { count: 0, total: 0, fees: 0 };
+      map.set(key, {
+        count: prev.count + 1,
+        total: prev.total + amt,
+        fees: prev.fees + this.computeFee(key, amt),
+      });
     }
     const total = this.beneficiaries.length;
     return Array.from(map.entries()).map(([wallet, data]) => ({
       nom: this.walletOptions.find(o => o.value === wallet)?.label ?? wallet,
       beneficiaires: data.count,
       montant: data.total,
+      frais: data.fees,
       pourcentage: total > 0 ? Math.round((data.count / total) * 100) : 0,
       couleur: this.WALLET_COLORS[wallet] ?? '#6366f1',
     }));
@@ -549,9 +613,14 @@ export class ManualPaymentComponent implements OnInit {
       this.router.navigate(['/dashboard/payments/details', orderId]);
     };
 
-    const onError = () => {
+    // const onError = () => {
+    //   this.isSubmitting = false;
+    //   this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
+    // };
+    const onError = (err?: any) => {
       this.isSubmitting = false;
-      this.snackBarService.showErrorSnackBar(4000, 'Erreur lors de la validation!');
+      const message = err?.message?.replace('GraphQL error: ', '') || 'Erreur lors de la validation!';
+      this.snackBarService.showErrorSnackBar(6000, message);
     };
 
     if (this.draftOrderId) {
