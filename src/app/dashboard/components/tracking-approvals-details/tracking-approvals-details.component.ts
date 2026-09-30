@@ -100,7 +100,7 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
 
           const statut = STATUS_MAP[order.status] ?? 'pending';
           const payments = order.payments ?? [];
-          const approvers = order.approvers ?? [];
+          const approversByLevel = order.approversByLevel ?? [];
           const approvals = order.approvals ?? [];
 
           const wavePayments = payments.filter(p => p.wallet === Wallet.Wave);
@@ -111,10 +111,10 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
 
           const uniqueWallets = new Set(payments.map(p => p.wallet));
 
-          const etapesApprobation: ApprobationStep[] = approvers.map((approver, i) => {
-            const level = i + 1;
+          const etapesApprobation: ApprobationStep[] = approversByLevel.map((levelEntry) => {
+            const level = levelEntry.level;
             const approval = approvals.find(a => a.level === level);
-            const nom = `${approver.firstName} ${approver.lastName}`;
+            const nom = (levelEntry.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
 
             if (approval) {
               return {

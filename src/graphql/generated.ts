@@ -65,17 +65,15 @@ export enum AmountUnit {
   Percentage = 'Percentage'
 }
 
-export type ApprovalFlowLevel = {
-  __typename?: 'ApprovalFlowLevel';
-  approverFirstName?: Maybe<Scalars['String']['output']>;
-  approverId?: Maybe<Scalars['ID']['output']>;
-  approverLastName?: Maybe<Scalars['String']['output']>;
-  approverPosition?: Maybe<Scalars['String']['output']>;
+export type ApprovalLevel = {
+  __typename?: 'ApprovalLevel';
+  approverIds?: Maybe<Array<Scalars['ID']['output']>>;
+  approvers?: Maybe<Array<User>>;
   level: Scalars['Int']['output'];
 };
 
-export type ApprovalFlowLevelInput = {
-  approverId?: InputMaybe<Scalars['ID']['input']>;
+export type ApprovalLevelInput = {
+  approverIds: Array<Scalars['ID']['input']>;
   level: Scalars['Int']['input'];
 };
 
@@ -117,7 +115,7 @@ export type BulkPaymentInput = {
 export type BulkPaymentOrder = {
   __typename?: 'BulkPaymentOrder';
   approvals?: Maybe<Array<BulkPaymentApproval>>;
-  approvers?: Maybe<Array<User>>;
+  approversByLevel?: Maybe<Array<ApprovalLevel>>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
   createdByUser?: Maybe<User>;
@@ -543,6 +541,7 @@ export type MutationCreateBulkPaymentArgs = {
 
 
 export type MutationCreateBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
   inputs: Array<BulkPaymentInput>;
   isDraft?: InputMaybe<Scalars['Boolean']['input']>;
   label: Scalars['String']['input'];
@@ -711,7 +710,7 @@ export type MutationResetAdminPasswordArgs = {
 
 
 export type MutationSaveApprovalFlowArgs = {
-  approvalFlow: Array<ApprovalFlowLevelInput>;
+  approvalFlow: Array<ApprovalLevelInput>;
   approvalLevelsCount: Scalars['Float']['input'];
 };
 
@@ -722,6 +721,7 @@ export type MutationStartForgotPasswordArgs = {
 
 
 export type MutationSubmitBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
   id: Scalars['String']['input'];
 };
 
@@ -809,6 +809,7 @@ export type MutationUpdateServiceArgs = {
 
 
 export type MutationUpdateSubmittedBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
   id: Scalars['String']['input'];
   inputs: Array<BulkPaymentInput>;
   label: Scalars['String']['input'];
@@ -942,7 +943,7 @@ export type OrganisationServiceUpdateInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
-  approvalFlow?: Maybe<Array<ApprovalFlowLevel>>;
+  approvalFlow?: Maybe<Array<ApprovalLevel>>;
   approvalLevelsCount?: Maybe<Scalars['Int']['output']>;
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
@@ -1012,7 +1013,7 @@ export type OrganizationLogoInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
-  approvalFlow?: InputMaybe<Array<ApprovalFlowLevelInput>>;
+  approvalFlow?: InputMaybe<Array<ApprovalLevelInput>>;
   approvalLevelsCount?: InputMaybe<Scalars['Int']['input']>;
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
@@ -2020,6 +2021,7 @@ export type CreateBulkPaymentOrderMutationVariables = Exact<{
   label: Scalars['String']['input'];
   isDraft?: InputMaybe<Scalars['Boolean']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput> | ApprovalLevelInput>;
 }>;
 
 
@@ -2048,7 +2050,7 @@ export type FetchOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> | null } };
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> | null } };
 
 export type FetchSubscriptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2062,7 +2064,7 @@ export type FetchOrganizationApproversQuery = { __typename?: 'Query', fetchOrgan
 
 export type SaveApprovalFlowMutationVariables = Exact<{
   approvalLevelsCount: Scalars['Float']['input'];
-  approvalFlow: Array<ApprovalFlowLevelInput> | ApprovalFlowLevelInput;
+  approvalFlow: Array<ApprovalLevelInput> | ApprovalLevelInput;
 }>;
 
 
@@ -2071,7 +2073,7 @@ export type SaveApprovalFlowMutation = { __typename?: 'Mutation', saveApprovalFl
 export type FetchApprovalFlowQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchApprovalFlowQuery = { __typename?: 'Query', fetchApprovalFlow: { __typename?: 'Organization', approvalLevelsCount?: number | null, approvalFlow?: Array<{ __typename?: 'ApprovalFlowLevel', level: number, approverId?: string | null, approverFirstName?: string | null, approverLastName?: string | null, approverPosition?: string | null }> | null } };
+export type FetchApprovalFlowQuery = { __typename?: 'Query', fetchApprovalFlow: { __typename?: 'Organization', approvalLevelsCount?: number | null, approvalFlow?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -2098,12 +2100,12 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> };
+export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -3513,12 +3515,13 @@ export const UpdateCollaboratorDocument = gql`
     }
   }
 export const CreateBulkPaymentOrderDocument = gql`
-    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String) {
+    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String, $approversByLevel: [ApprovalLevelInput!]) {
   createBulkPaymentOrder(
     inputs: $inputs
     label: $label
     isDraft: $isDraft
     type: $type
+    approversByLevel: $approversByLevel
   ) {
     id
     label
@@ -3648,10 +3651,13 @@ export const FetchOrganizationDocument = gql`
     approvalLevelsCount
     approvalFlow {
       level
-      approverId
-      approverFirstName
-      approverLastName
-      approverPosition
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
     subscriptions {
       id
@@ -3716,7 +3722,7 @@ export const FetchOrganizationApproversDocument = gql`
     }
   }
 export const SaveApprovalFlowDocument = gql`
-    mutation SaveApprovalFlow($approvalLevelsCount: Float!, $approvalFlow: [ApprovalFlowLevelInput!]!) {
+    mutation SaveApprovalFlow($approvalLevelsCount: Float!, $approvalFlow: [ApprovalLevelInput!]!) {
   saveApprovalFlow(
     approvalLevelsCount: $approvalLevelsCount
     approvalFlow: $approvalFlow
@@ -3740,10 +3746,13 @@ export const FetchApprovalFlowDocument = gql`
     approvalLevelsCount
     approvalFlow {
       level
-      approverId
-      approverFirstName
-      approverLastName
-      approverPosition
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
   }
 }
@@ -3853,11 +3862,15 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
     currentApprovalLevel
     createdAt
     lastRelaunchAt
-    approvers {
-      id
-      firstName
-      lastName
-      position
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
     approvals {
       level
@@ -3894,10 +3907,14 @@ export const FetchMyBulkPaymentOrdersDocument = gql`
     totalAmount
     status
     type
-    approvers {
-      id
-      firstName
-      lastName
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
     }
     createdAt
   }

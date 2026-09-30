@@ -93,7 +93,7 @@ export class TrackingApprovalsComponent implements OnInit {
             montantTotal: o.totalAmount,
             statut: globalStatut,
             niveauActuel: o.currentApprovalLevel ?? 1,
-            niveauTotal: o.approvers?.length ?? 1,
+            niveauTotal: o.approversByLevel?.length ?? 1,
             dejaTraite,
             estMonTour,
           };

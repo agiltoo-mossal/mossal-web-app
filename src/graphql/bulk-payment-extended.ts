@@ -26,7 +26,11 @@ export interface FetchOrderForApproverByIdQuery {
       amount: number;
       wallet: Wallet;
     }> | null;
-    approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    approversByLevel?: Array<{
+      level: number;
+      approverIds?: string[] | null;
+      approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    }> | null;
     approvals?: Array<{ level: number; approverId: string; approvedAt?: string | null }> | null;
   };
 }
@@ -53,10 +57,14 @@ const FetchOrderForApproverByIdDocument = gql`
         amount
         wallet
       }
-      approvers {
-        id
-        firstName
-        lastName
+      approversByLevel {
+        level
+        approverIds
+        approvers {
+          id
+          firstName
+          lastName
+        }
       }
       approvals {
         level
@@ -97,16 +105,22 @@ export interface FetchBulkPaymentOrderByIdQuery {
       amount: number;
       wallet: Wallet;
     }> | null;
-    approvers?: Array<{
-      id: string;
-      firstName: string;
-      lastName: string;
+    approversByLevel?: Array<{
+      level: number;
+      approverIds?: string[] | null;
+      approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
     }> | null;
   };
 }
 
+export interface ApprovalLevelSelectionInput {
+  level: number;
+  approverIds: string[];
+}
+
 export interface SubmitBulkPaymentOrderMutationVariables {
   id: string;
+  approversByLevel?: ApprovalLevelSelectionInput[];
 }
 
 export interface SubmitBulkPaymentOrderMutation {
@@ -132,10 +146,14 @@ const FetchBulkPaymentOrderByIdDocument = gql`
         amount
         wallet
       }
-      approvers {
-        id
-        firstName
-        lastName
+      approversByLevel {
+        level
+        approverIds
+        approvers {
+          id
+          firstName
+          lastName
+        }
       }
     }
   }
@@ -153,8 +171,8 @@ export class FetchBulkPaymentOrderByIdGQL extends Apollo.Query<
 }
 
 const SubmitBulkPaymentOrderDocument = gql`
-  mutation SubmitBulkPaymentOrder($id: String!) {
-    submitBulkPaymentOrder(id: $id) {
+  mutation SubmitBulkPaymentOrder($id: String!, $approversByLevel: [ApprovalLevelInput!]) {
+    submitBulkPaymentOrder(id: $id, approversByLevel: $approversByLevel) {
       id
       status
     }
@@ -182,7 +200,11 @@ export interface FetchOrdersForApproverQuery {
     paymentsCount: number;
     createdAt: string;
     createdByUser?: { firstName: string; lastName: string } | null;
-    approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    approversByLevel?: Array<{
+      level: number;
+      approverIds?: string[] | null;
+      approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    }> | null;
     approvals?: Array<{ approverId: string }> | null;
     isApprovedByCurrentUser?: boolean | null;
   }>;
@@ -202,10 +224,14 @@ const FetchOrdersForApproverDocument = gql`
         firstName
         lastName
       }
-      approvers {
-        id
-        firstName
-        lastName
+      approversByLevel {
+        level
+        approverIds
+        approvers {
+          id
+          firstName
+          lastName
+        }
       }
       approvals {
         approverId
@@ -265,6 +291,7 @@ export interface UpdateSubmittedBulkPaymentOrderMutationVariables {
   id: string;
   inputs: BulkPaymentInput[];
   label: string;
+  approversByLevel?: ApprovalLevelSelectionInput[];
 }
 
 export interface UpdateSubmittedBulkPaymentOrderMutation {
@@ -276,8 +303,13 @@ export interface UpdateSubmittedBulkPaymentOrderMutation {
 }
 
 const UpdateSubmittedBulkPaymentOrderDocument = gql`
-  mutation UpdateSubmittedBulkPaymentOrder($id: String!, $inputs: [BulkPaymentInput!]!, $label: String!) {
-    updateSubmittedBulkPaymentOrder(id: $id, inputs: $inputs, label: $label) {
+  mutation UpdateSubmittedBulkPaymentOrder(
+    $id: String!
+    $inputs: [BulkPaymentInput!]!
+    $label: String!
+    $approversByLevel: [ApprovalLevelInput!]
+  ) {
+    updateSubmittedBulkPaymentOrder(id: $id, inputs: $inputs, label: $label, approversByLevel: $approversByLevel) {
       id
       label
       status

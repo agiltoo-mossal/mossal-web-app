@@ -17,12 +17,8 @@
     <div class="levels-field">
       <label class="field-label">Niveaux</label>
       <mat-form-field appearance="outline" class="levels-select" subscriptSizing="dynamic">
-        <mat-select
-          [ngModel]="nombreNiveaux"
-          (ngModelChange)="onNombreNiveauxChange($event)"
-          placeholder="Sélectionner"
-          [disabled]="loading || resetting"
-        >
+        <mat-select [ngModel]="nombreNiveaux" (ngModelChange)="onNombreNiveauxChange($event)" placeholder="Sélectionner"
+          [disabled]="loading || resetting">
           <mat-option *ngFor="let n of niveauxOptions" [value]="n">
             {{ n }} niveau{{ n > 1 ? 'x' : '' }}
           </mat-option>
@@ -66,17 +62,13 @@
 
           <mat-form-field appearance="outline" class="add-select" subscriptSizing="dynamic">
             <mat-icon matPrefix>add_circle_outline</mat-icon>
-            <mat-select
-              multiple
-              placeholder="Ajouter un approbateur"
-              [ngModel]="niveau.approbateurs"
-              (ngModelChange)="onApproversChange(i, $event)"
-              [compareWith]="compareApprovers"
-              [disabled]="noApproverAvailable || loading"
-            >
+            <mat-select multiple placeholder="Ajouter un approbateur" [ngModel]="niveau.approbateurs"
+              (ngModelChange)="onApproversChange(i, $event)" [compareWith]="compareApprovers"
+              [disabled]="noApproverAvailable || loading">
               <mat-select-trigger>Ajouter un approbateur</mat-select-trigger>
               <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
-                {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
+                {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{
+                  approver.position }})</ng-container>
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -87,8 +79,8 @@
               <span class="chip-label">
                 {{ a.firstName }} {{ a.lastName }}<ng-container *ngIf="a.position"> ({{ a.position }})</ng-container>
               </span>
-              <button type="button" class="chip-remove" (click)="removeApprover(i, a)"
-                      [disabled]="loading" [attr.aria-label]="'Retirer ' + a.firstName + ' ' + a.lastName">
+              <button type="button" class="chip-remove" (click)="removeApprover(i, a)" [disabled]="loading"
+                [attr.aria-label]="'Retirer ' + a.firstName + ' ' + a.lastName">
                 <mat-icon>close</mat-icon>
               </button>
             </span>

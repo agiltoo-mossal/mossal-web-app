@@ -76,7 +76,7 @@ export class ApproverOrderViewComponent implements OnInit {
           if (!order) { this.isLoading = false; return; }
 
           const payments = order.payments ?? [];
-          const approvers = order.approvers ?? [];
+          const approversByLevel = order.approversByLevel ?? [];
           const approvals = order.approvals ?? [];
           const uniqueWallets = new Set(payments.map(p => p.wallet));
 
@@ -95,10 +95,10 @@ export class ApproverOrderViewComponent implements OnInit {
             }).format(new Date(order.createdAt)),
           };
 
-          this.approvalSteps = approvers.map((approver, i) => {
-            const level = i + 1;
+          this.approvalSteps = approversByLevel.map((levelEntry) => {
+            const level = levelEntry.level;
             const approval = approvals.find(a => a.level === level);
-            const nom = `${approver.firstName} ${approver.lastName}`;
+            const nom = (levelEntry.approvers ?? []).map(a => `${a.firstName} ${a.lastName}`).join(' / ');
 
             if (approval) {
               return {
