@@ -425,10 +425,13 @@ query FetchOrganization($organizationId: ID!) {
     approvalLevelsCount
     approvalFlow {
       level
-      approverId
-      approverFirstName
-      approverLastName
-      approverPosition
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
     subscriptions {
       id
@@ -483,7 +486,7 @@ query FetchOrganizationApprovers {
 
 mutation SaveApprovalFlow(
   $approvalLevelsCount: Float!
-  $approvalFlow: [ApprovalFlowLevelInput!]!
+  $approvalFlow: [ApprovalLevelInput!]!
 ) {
   saveApprovalFlow(
     approvalLevelsCount: $approvalLevelsCount
@@ -496,10 +499,13 @@ query FetchApprovalFlow {
     approvalLevelsCount
     approvalFlow {
       level
-      approverId
-      approverFirstName
-      approverLastName
-      approverPosition
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
   }
 }

@@ -26,11 +26,15 @@ query FetchBulkPaymentOrderById($id: String!) {
     currentApprovalLevel
     createdAt
     lastRelaunchAt
-    approvers {
-      id
-      firstName
-      lastName
-      position
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
     }
     approvals {
       level
@@ -55,10 +59,14 @@ query FetchMyBulkPaymentOrders {
     totalAmount
     status
     type
-    approvers {
-      id
-      firstName
-      lastName
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
     }
     createdAt
   }

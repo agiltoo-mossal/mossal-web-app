@@ -1,14 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
 import {
   BulkPaymentInput,
   CreateBulkPaymentOrderGQL,
   FetchApprovalFlowGQL,
   FetchCurrentAdminGQL,
-  FetchOrganizationApproversGQL,
   Organization,
   Wallet,
 } from 'src/graphql/generated';
@@ -55,6 +52,9 @@ interface Approver {
 
 interface ApprovalLevel {
   level: number;
+  /** Approbateurs configurés pour ce niveau dans le flux (super admin) — seuls choix possibles. */
+  candidats: Approver[];
+  /** Sous-ensemble de `candidats` choisi par le gestionnaire pour cet ordre. */
   approbateurs: Approver[];
 }
 
@@ -74,8 +74,8 @@ export class ManualPaymentComponent implements OnInit {
   draftOrderId: string | null = null;
   editOrderId: string | null = null;
 
-  // Sélection des approbateurs (un niveau = une liste déroulante à choix multiple)
-  approvers: Approver[] = [];
+  // Sélection des approbateurs (un niveau = une liste déroulante à choix multiple,
+  // restreinte aux approbateurs configurés pour ce niveau dans le flux)
   approvalLevels: ApprovalLevel[] = [];
   approversSubmitAttempted = false;
 
@@ -101,7 +101,6 @@ export class ManualPaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
-    private fetchOrganizationApproversGQL: FetchOrganizationApproversGQL,
     private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
     private submitBulkPaymentOrderGQL: SubmitBulkPaymentOrderGQL,
     private updateBulkPaymentOrderGQL: UpdateBulkPaymentOrderGQL,
@@ -111,32 +110,35 @@ export class ManualPaymentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    forkJoin({
-      approvers: this.fetchOrganizationApproversGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
-      flow: this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(map((r) => r.data)),
-    }).subscribe({
-      next: ({ approvers, flow }) => {
-        this.approvers = (approvers.fetchOrganizationApprovers ?? []).map((u) => ({
-          id: u.id,
-          firstName: u.firstName,
-          lastName: u.lastName,
-          position: u.position,
-        }));
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        const org = data?.fetchApprovalFlow;
+        const configLevels = [...(org?.approvalFlow ?? [])].sort((a, b) => a.level - b.level);
 
-        const org = flow.fetchApprovalFlow;
-        const count = org?.approvalLevelsCount ?? 0;
-        // Aucun pré-remplissage : chaque niveau démarre sans approbateur sélectionné
-        this.approvalLevels = Array.from({ length: count }, (_, i) => ({ level: i + 1, approbateurs: [] }));
-
-        this.approvalFlowApprovers = [...(org?.approvalFlow ?? [])]
-          .filter((item) => !!item.approverId)
-          .sort((a, b) => a.level - b.level)
-          .map((item) => ({
-            nom: `${item.approverFirstName ?? ''} ${item.approverLastName ?? ''}`.trim(),
-            role: `Approbateur ${item.level}`,
-            statut: 'En attente',
-            avatar: (item.approverFirstName?.[0] ?? '').toUpperCase() + (item.approverLastName?.[0] ?? '').toUpperCase(),
+        this.approvalLevels = configLevels.map((item) => {
+          const candidats: Approver[] = (item.approvers ?? []).map((u) => ({
+            id: u.id,
+            firstName: u.firstName,
+            lastName: u.lastName,
+            position: u.position,
           }));
+          // Pré-sélection par défaut : si un seul approbateur est configuré pour ce niveau.
+          const approbateurs = candidats.length === 1 ? [...candidats] : [];
+          return { level: item.level, candidats, approbateurs };
+        });
+
+        this.approvalFlowApprovers = configLevels
+          .filter((item) => (item.approvers ?? []).length > 0)
+          .map((item) => {
+            const noms = (item.approvers ?? []).map((u) => `${u.firstName} ${u.lastName}`);
+            const first = item.approvers![0];
+            return {
+              nom: noms.join(' / '),
+              role: `Approbateur ${item.level}`,
+              statut: 'En attente',
+              avatar: (first.firstName?.[0] ?? '').toUpperCase() + (first.lastName?.[0] ?? '').toUpperCase(),
+            };
+          });
       },
       error: () => {
         this.snackBarService.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs.');
@@ -288,12 +290,9 @@ export class ManualPaymentComponent implements OnInit {
     return this.selectedApproversCount === 0;
   }
 
-  /** Exclut les approbateurs déjà choisis aux autres niveaux */
+  /** Choix possibles pour ce niveau : uniquement les approbateurs configurés dans le flux pour ce niveau précis. */
   getAvailableApprovers(levelIndex: number): Approver[] {
-    const selectedIds = this.approvalLevels
-      .filter((_, i) => i !== levelIndex)
-      .flatMap((l) => l.approbateurs.map((a) => a.id));
-    return this.approvers.filter((a) => !selectedIds.includes(a.id));
+    return this.approvalLevels[levelIndex]?.candidats ?? [];
   }
 
   compareApprovers(a: Approver, b: Approver): boolean {
@@ -304,10 +303,7 @@ export class ManualPaymentComponent implements OnInit {
     return level.approbateurs.map((a) => `${a.firstName} ${a.lastName}`).join(', ');
   }
 
-  /**
-   * Payload à envoyer au backend avec la soumission.
-   * TODO: brancher sur la mutation de soumission une fois l'input défini côté backend.
-   */
+  /** Payload envoyé au backend à la soumission de l'ordre. */
   get selectedApproversPayload(): { level: number; approverIds: string[] }[] {
     return this.approvalLevels.map((l) => ({
       level: l.level,
@@ -555,19 +551,29 @@ export class ManualPaymentComponent implements OnInit {
     };
 
     if (this.draftOrderId) {
-      this.submitBulkPaymentOrderGQL.mutate({ id: this.draftOrderId }).subscribe({
-        next: () => navigateToDetails(this.draftOrderId!),
-        error: onError,
-      });
+      this.submitBulkPaymentOrderGQL
+        .mutate({ id: this.draftOrderId, approversByLevel: this.selectedApproversPayload })
+        .subscribe({
+          next: () => navigateToDetails(this.draftOrderId!),
+          error: onError,
+        });
     } else {
-      this.createBulkPaymentOrderGQL.mutate({ inputs: this.buildInputs(), label: this.label, isDraft: false, type: 'MANUAL' }).subscribe({
-        next: ({ data }) => {
-          const id = data?.createBulkPaymentOrder?.id;
-          if (id) navigateToDetails(id);
-          else onError();
-        },
-        error: onError,
-      });
+      this.createBulkPaymentOrderGQL
+        .mutate({
+          inputs: this.buildInputs(),
+          label: this.label,
+          isDraft: false,
+          type: 'MANUAL',
+          approversByLevel: this.selectedApproversPayload,
+        })
+        .subscribe({
+          next: ({ data }) => {
+            const id = data?.createBulkPaymentOrder?.id;
+            if (id) navigateToDetails(id);
+            else onError();
+          },
+          error: onError,
+        });
     }
   }
 

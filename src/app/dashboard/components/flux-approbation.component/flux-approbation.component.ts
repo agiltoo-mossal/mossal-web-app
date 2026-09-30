@@ -23,7 +23,7 @@ export interface Approver {
 }
 
 interface Niveau {
-  approbateur: Approver | null;
+  approbateurs: Approver[];
 }
 
 @Component({
@@ -80,9 +80,11 @@ export class FluxApprobationComponent implements OnInit {
         const count = org?.approvalLevelsCount ?? 0;
         this.niveaux = Array.from({ length: count }, (_, i) => {
           const saved = org?.approvalFlow?.find((f) => f.level === i + 1);
-          if (!saved?.approverId) return { approbateur: null };
-          const fromList = this.approvers.find((a) => a.id === saved.approverId);
-          return { approbateur: fromList ?? null };
+          const savedIds = saved?.approverIds ?? [];
+          const approbateurs = savedIds
+            .map((id) => this.approvers.find((a) => a.id === id))
+            .filter((a): a is Approver => !!a);
+          return { approbateurs };
         });
       },
       error: () => {
@@ -137,7 +139,7 @@ export class FluxApprobationComponent implements OnInit {
 
   ajouterNiveau(): void {
     if (!this.canAddNiveau) return;
-    this.niveaux.push({ approbateur: null });
+    this.niveaux.push({ approbateurs: [] });
     this.clearMessages();
   }
 
@@ -153,13 +155,18 @@ export class FluxApprobationComponent implements OnInit {
     this.errorMessage = null;
   }
 
-  /** Retourne les approbateurs disponibles pour un niveau — exclut ceux sélectionnés aux autres niveaux */
+  /**
+   * Retourne les approbateurs disponibles pour un niveau — exclut uniquement ceux déjà
+   * sélectionnés sur les niveaux ADJACENTS (n-1 et n+1) : un approbateur ne peut pas se
+   * retrouver sur deux niveaux consécutifs, mais peut réapparaître plus loin dans le flux.
+   */
   getAvailableApprovers(levelIndex: number): Approver[] {
-    const selectedIds = this.niveaux
-      .filter((_, i) => i !== levelIndex)
-      .map((n) => n.approbateur?.id)
-      .filter(Boolean);
-    return this.approvers.filter((a) => !selectedIds.includes(a.id));
+    const adjacentIndexes = [levelIndex - 1, levelIndex + 1];
+    const excludedIds = adjacentIndexes
+      .map((i) => this.niveaux[i])
+      .filter((n): n is Niveau => !!n)
+      .flatMap((n) => n.approbateurs.map((a) => a.id));
+    return this.approvers.filter((a) => !excludedIds.includes(a.id));
   }
 
   compareApprovers(a: Approver, b: Approver): boolean {
@@ -183,7 +190,7 @@ export class FluxApprobationComponent implements OnInit {
   enregistrer(): void {
     this.clearMessages();
 
-    const allSelected = this.niveaux.length > 0 && this.niveaux.every((n) => n.approbateur !== null);
+    const allSelected = this.niveaux.length > 0 && this.niveaux.every((n) => n.approbateurs.length > 0);
     if (!allSelected) {
       this.errorMessage = 'Veuillez affecter au moins un approbateur à chaque niveau de validation';
       return;
@@ -192,7 +199,7 @@ export class FluxApprobationComponent implements OnInit {
     this.loading = true;
     const approvalFlow = this.niveaux.map((n, i) => ({
       level: i + 1,
-      approverId: n.approbateur!.id,
+      approverIds: n.approbateurs.map((a) => a.id),
     }));
 
     this.saveApprovalFlowGQL.mutate({ approvalLevelsCount: this.niveaux.length, approvalFlow }).subscribe({

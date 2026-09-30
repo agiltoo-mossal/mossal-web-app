@@ -80,13 +80,13 @@
       <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
 
       <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
-        Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
+        Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
         (Approbateur N°{{ currentApproverWaiting.level }})
       </span>
 
       <span *ngIf="isPending && currentApproverWaiting && hasSomeoneApproved">
-        {{ lastApprovedApprover!.firstName }} {{ lastApprovedApprover!.lastName }} à approuvé.
-        Notification envoyée à {{ currentApproverWaiting.firstName }} {{ currentApproverWaiting.lastName }}
+        {{ lastApprovedApprover!.approbateurNom }} à approuvé.
+        Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
         (Approbateur N°{{ currentApproverWaiting.level }})
       </span>
 
@@ -95,7 +95,7 @@
       </span>
 
       <span *ngIf="isRejected && rejectedApprover">
-        Paiement rejeté par {{ rejectedApprover.firstName }} {{ rejectedApprover.lastName }}. Aucun paiement effectué
+        Paiement rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement effectué
       </span>
     </div>
 
@@ -152,9 +152,9 @@
             </span>
           </div>
           <div class="approval-step-body">
-            <div class="avatar">{{ step.firstName.charAt(0) }}</div>
+            <div class="avatar">{{ step.approbateurNom.charAt(0) }}</div>
             <div>
-              <p class="approbateur-nom">{{ step.firstName }} {{ step.lastName }}</p>
+              <p class="approbateur-nom">{{ step.approbateurNom }}</p>
               <p class="approbateur-role">{{ step.position }}</p>
               <p class="approbateur-date" *ngIf="step.notifiedAt">
                 Notifié le {{ step.notifiedAt | date:'dd MMM yyyy':'':'fr' }}

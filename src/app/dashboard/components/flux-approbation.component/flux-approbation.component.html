@@ -52,11 +52,12 @@
       </div>
 
       <div class="approbateur-field">
-        <label class="field-label">Approbateur <span class="required">*</span></label>
+        <label class="field-label">Approbateur(s) <span class="required">*</span></label>
         <mat-form-field appearance="outline" class="approbateur-select">
           <mat-select
-            [(ngModel)]="niveau.approbateur"
-            placeholder="Sélectionner un approbateur"
+            [(ngModel)]="niveau.approbateurs"
+            multiple
+            placeholder="Sélectionner un ou plusieurs approbateurs"
             [compareWith]="compareApprovers"
           >
             <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
