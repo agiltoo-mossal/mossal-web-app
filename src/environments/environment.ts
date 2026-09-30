@@ -1,13 +1,13 @@
 export const environment = {
 
-  GRAPHQL_URI: 'http://localhost:3003/graphql',
-  API_URI: 'http://localhost:3003/',
-  ENTERPRISE_URI: 'http://localhost:3003/graphql',
+  // GRAPHQL_URI: 'http://localhost:3003/graphql',
+  // API_URI: 'http://localhost:3003/',
+  // ENTERPRISE_URI: 'http://localhost:3003/graphql',
 
   // New server address
-  // GRAPHQL_URI: 'https://mossall-ent-preprod.mossall.com/graphql',
-  // API_URI: 'https://mossall-ent-preprod.mossall.com/',
-  // ENTERPRISE_URI: 'https://mossall-ent-preprod.mossall.com',
+  GRAPHQL_URI: 'https://mossall-ent-preprod.mossall.com/graphql',
+  API_URI: 'https://mossall-ent-preprod.mossall.com/',
+  ENTERPRISE_URI: 'https://mossall-ent-preprod.mossall.com',
 
 
   // GRAPHQL_URI: 'https://mossall-ent-prod.mossall.com/graphql',
