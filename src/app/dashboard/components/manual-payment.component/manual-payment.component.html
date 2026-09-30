@@ -250,7 +250,7 @@
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
 
     <!-- Solde de l'organisation -->
-    <div class="balance-summary-card" *ngIf="organization">
+    <!-- <div class="balance-summary-card" *ngIf="organization">
       <div class="balance-summary-row">
         <div class="balance-summary-item">
           <p class="balance-label">Solde actuel de l'organisation</p>
@@ -270,6 +270,37 @@
         <mat-icon>error_outline</mat-icon>
         <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
           organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
+    </div> -->
+
+    <div class="balance-summary-card" *ngIf="organization" [ngClass]="'state-' + balanceState">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Total Frais Opérateur</p>
+          <p class="balance-value">{{ totalFees | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-message" *ngIf="balanceState !== 'ok'">
+        <mat-icon>{{ balanceState === 'insufficient' ? 'error_outline' : 'warning_amber' }}</mat-icon>
+        <span *ngIf="balanceState === 'insufficient'">
+          Le montant de cet ordre dépasse le solde disponible. Veuillez contacter votre administrateur
+        </span>
+        <span *ngIf="balanceState === 'low'">
+          Après exécution de cet ordre votre solde sera de {{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF. Pensez à recharger votre compte.
+        </span>
       </div>
     </div>
 
@@ -300,7 +331,11 @@
           [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}">
           <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
           <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaire{{ op.beneficiaires > 1 ? 's' : '' }}</p>
-          <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p>
+          <!-- <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p> -->
+          <div class="op-montant-row">
+            <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p>
+            <span class="op-frais">Frais : {{ op.frais | number:'1.0-0':'fr' }} XOF</span>
+          </div>
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" [ngStyle]="{'width': op.pourcentage + '%', 'background': op.couleur}"></div>
           </div>

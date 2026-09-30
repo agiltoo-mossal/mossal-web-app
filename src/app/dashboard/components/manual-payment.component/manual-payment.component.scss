@@ -1278,37 +1278,37 @@ td{
     margin: 0;
   }
 
-  &.balance-after {
-    background: #ecfdf5;
-    border-radius: 8px;
-    padding: 8px 12px;
+  // &.balance-after {
+  //   background: #ecfdf5;
+  //   border-radius: 8px;
+  //   padding: 8px 12px;
 
-    .balance-value { color: #059669; }
+  //   .balance-value { color: #059669; }
 
-    &.balance-negative {
-      background: #fef2f2;
+  //   &.balance-negative {
+  //     background: #fef2f2;
 
-      .balance-value { color: #dc2626; }
-    }
-  }
+  //     .balance-value { color: #dc2626; }
+  //   }
+  // }
 }
 
-.balance-warning-inline {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #fee2e2;
-  color: #dc2626;
-  font-size: 13px;
+// .balance-warning-inline {
+//   display: flex;
+//   align-items: center;
+//   gap: 6px;
+//   margin-top: 12px;
+//   padding-top: 12px;
+//   border-top: 1px solid #fee2e2;
+//   color: #dc2626;
+//   font-size: 13px;
 
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
+//   mat-icon {
+//     font-size: 18px;
+//     width: 18px;
+//     height: 18px;
+//   }
+// }
 
 .approvers-card {
   background: $white;
@@ -1449,4 +1449,54 @@ td{
   ::ng-deep .mdc-notched-outline__trailing {
     border-color: $danger !important;
   }
+}
+
+.balance-summary-row { display: flex; gap: 24px; flex-wrap: wrap; }
+
+.balance-summary-item.balance-after {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.balance-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+// Vert : solde suffisant
+.balance-summary-card.state-ok .balance-after {
+  background: #dcfce7;
+  .balance-value { color: #16a34a; }
+}
+
+// Jaune/orange : solde bas
+.balance-summary-card.state-low {
+  .balance-after {
+    background: #fef3c7;
+    .balance-value { color: #eab308; }
+  }
+  .balance-message { color: #fb923c; }
+}
+
+// Rouge : solde insuffisant
+.balance-summary-card.state-insufficient {
+  .balance-after {
+    background: #fecaca;
+    .balance-value { color: #dc2626; }
+  }
+  .balance-message { color: #dc2626; }
+}
+
+.op-montant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  .op-montant { margin: 0; }
+  .op-frais { font-size: 11px; color: $muted; }
 }
