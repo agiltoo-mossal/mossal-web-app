@@ -74,6 +74,7 @@ import { TrackingApprovalsDetailsComponent } from './components/tracking-approva
 import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
 import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
 import { ApproveConfirmationDialogComponent } from './components/approve-confirmation-dialog/approve-confirmation-dialog.component';
+import { ApproverRemovalWarningDialogComponent } from './components/flux-approbation.component/approver-removal-warning-dialog/approver-removal-warning-dialog.component';
 
 
 @NgModule({
@@ -114,6 +115,7 @@ import { ApproveConfirmationDialogComponent } from './components/approve-confirm
     ApproveConfirmationDialogComponent,
     ResetApprovalFlowDialogComponent,
     ApproverOrderViewComponent,
+    ApproverRemovalWarningDialogComponent
   ],
   imports: [
     CreateEventModule,
