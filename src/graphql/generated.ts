@@ -83,6 +83,7 @@ export type BulkPayment = {
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
   failureReason?: Maybe<Scalars['String']['output']>;
+  fee?: Maybe<Scalars['Float']['output']>;
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
@@ -130,6 +131,7 @@ export type BulkPaymentOrder = {
   rejectedReason?: Maybe<Scalars['String']['output']>;
   status: BulkPaymentOrderStatus;
   totalAmount: Scalars['Float']['output'];
+  totalFees?: Maybe<Scalars['Float']['output']>;
   type?: Maybe<BulkPaymentOrderType>;
   updatedAt: Scalars['DateTime']['output'];
 };
