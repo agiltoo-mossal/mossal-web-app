@@ -147,10 +147,22 @@ $color-white: #ffffff;
     color: $color-text-secondary;
   }
 
+  .operateur-montant-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
   .operateur-montant {
     font-size: 17px;
     font-weight: 700;
-    margin-bottom: 6px;
+  }
+
+  .operateur-frais {
+    font-size: 12px;
+    color: $color-text-secondary;
   }
 
   .progress-bar {

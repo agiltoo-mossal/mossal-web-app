@@ -16,6 +16,10 @@
         <p class="balance-label">Montant de l'ordre</p>
         <p class="balance-value">{{ formatMontant(paiement.montantTotal) }}</p>
       </div>
+      <div class="balance-summary-item">
+        <p class="balance-label">Total Frais opérateur</p>
+        <p class="balance-value">{{ formatMontant(paiement.fraisTotal) }}</p>
+      </div>
       <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
         <p class="balance-label">Solde après exécution</p>
         <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
@@ -61,7 +65,10 @@
       <div class="operateur-card operateur-wave">
         <span class="operateur-nom">Wave</span>
         <span class="operateur-beneficiaires">{{ paiement.repartitionOperateurs[0].nombreBeneficiaires }} bénéficiaires</span>
-        <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[0].montant) }}</span>
+        <div class="operateur-montant-row">
+          <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[0].montant) }}</span>
+          <span class="operateur-frais">Frais : {{ formatMontant(paiement.repartitionOperateurs[0].frais) }}</span>
+        </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="paiement.repartitionOperateurs[0].pourcentage"></div>
         </div>
@@ -71,7 +78,10 @@
       <div class="operateur-card operateur-orange">
         <span class="operateur-nom">Orange Money</span>
         <span class="operateur-beneficiaires">{{ paiement.repartitionOperateurs[1].nombreBeneficiaires }} bénéficiaires</span>
-        <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[1].montant) }}</span>
+        <div class="operateur-montant-row">
+          <span class="operateur-montant">{{ formatMontant(paiement.repartitionOperateurs[1].montant) }}</span>
+          <span class="operateur-frais">Frais : {{ formatMontant(paiement.repartitionOperateurs[1].frais) }}</span>
+        </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="paiement.repartitionOperateurs[1].pourcentage"></div>
         </div>
@@ -131,6 +141,13 @@
           <div>
             <span class="ordre-label">Montant total</span>
             <span class="ordre-value">{{ formatMontant(paiement.montantTotal) }}</span>
+          </div>
+        </div>
+        <div class="ordre-item">
+          <mat-icon>percent</mat-icon>
+          <div>
+            <span class="ordre-label">Total Frais opérateur</span>
+            <span class="ordre-value">{{ formatMontant(paiement.fraisTotal) }}</span>
           </div>
         </div>
         <div class="ordre-item">
@@ -199,6 +216,8 @@
           <th>Prénom</th>
           <th>Téléphone</th>
           <th>Montant</th>
+          <th>Frais</th>
+          <th>Coût total</th>
           <th>Opérateur</th>
         </tr>
       </thead>
@@ -208,6 +227,8 @@
           <td>{{ b.prenom }}</td>
           <td>{{ b.telephone }}</td>
           <td>{{ formatMontant(b.montant) }}</td>
+          <td>{{ formatMontant(b.frais) }}</td>
+          <td>{{ formatMontant(b.montant + b.frais) }}</td>
           <td>{{ b.operateur }}</td>
         </tr>
       </tbody>

@@ -13,6 +13,7 @@ export interface FetchOrderForApproverByIdQuery {
     id: string;
     label: string;
     totalAmount: number;
+    totalFees: number;
     status: BulkPaymentOrderStatus;
     currentApprovalLevel: number;
     rejectedReason?: string | null;
@@ -24,6 +25,7 @@ export interface FetchOrderForApproverByIdQuery {
       lastName: string;
       phoneNumber: string;
       amount: number;
+      fee: number;
       wallet: Wallet;
     }> | null;
     approversByLevel?: Array<{
@@ -41,6 +43,7 @@ const FetchOrderForApproverByIdDocument = gql`
       id
       label
       totalAmount
+      totalFees
       status
       currentApprovalLevel
       rejectedReason
@@ -55,6 +58,7 @@ const FetchOrderForApproverByIdDocument = gql`
         lastName
         phoneNumber
         amount
+        fee
         wallet
       }
       approversByLevel {
