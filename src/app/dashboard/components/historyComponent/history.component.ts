@@ -189,4 +189,13 @@ export class HistoryComponent implements OnInit {
       this.router.navigate(['/dashboard/payments/details', order.id]);
     }
   }
+
+  totalFees(order: BulkPaymentOrder): number {
+    return order.totalFees ?? 0;
+  }
+
+  totalCost(order: BulkPaymentOrder): number {
+    return (order.totalAmount ?? 0) + this.totalFees(order);
+  }
+
 }

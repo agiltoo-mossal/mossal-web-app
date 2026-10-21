@@ -111,6 +111,7 @@ export class ActivitiesComponent implements OnInit {
     const labels: Record<string, string> = {
       bulk_payment: 'Paiement en masse',
       demande: "Demande d'avance",
+      paiement: 'Paiement',
     };
     return labels[scope] || scope;
   }
@@ -119,35 +120,79 @@ export class ActivitiesComponent implements OnInit {
     const classes: Record<string, string> = {
       bulk_payment: 'scope-bulk',
       demande: 'scope-advance',
+      paiement: 'scope-payment',
     };
     return classes[scope] || '';
   }
 
-  formatMessage(message: string): SafeHtml {
-    let html = this.escapeHtml(message); // échapper d'abord, cf. remarque XSS précédente
+  // formatMessage(message: string): SafeHtml {
+  //   let html = this.escapeHtml(message); // échapper d'abord, cf. remarque XSS précédente
 
-    // Supprime l'email entre parenthèses juste après le nom (ex: "John Doe (john@mail.com) a ...")
-    html = html.replace(/\s*\([^()\s]+@[^()\s]+\)/g, '');
+  //   // Supprime l'email entre parenthèses juste après le nom (ex: "John Doe (john@mail.com) a ...")
+  //   html = html.replace(/\s*\([^()\s]+@[^()\s]+\)/g, '');
 
-    html = html.replace(/^([^\n]+?) a /, '<strong>$1</strong> a ');
+  //   html = html.replace(/^([^\n]+?) a /, '<strong>$1</strong> a ');
 
-    html = html.replace(
-      /\b(DRAFT|EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED|SOUMIS|SUBMITTED)\b/g,
-      '<span class="text-status">$1</span>'
-    );
+  //   html = html.replace(
+  //     /\b(DRAFT|EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED|SOUMIS|SUBMITTED)\b/g,
+  //     '<span class="text-status">$1</span>'
+  //   );
 
-    // Référence (PM-2026-00158, ADV-2026_0124) en orange gras
-    html = html.replace(/\b([A-Z]{2,4}[-_]\d{4}[-_]\d+)\b/g,
-      '<span class="text-ref">$1</span>');
+  //   // Référence (PM-2026-00158, ADV-2026_0124) en orange gras
+  //   html = html.replace(/\b([A-Z]{2,4}[-_]\d{4}[-_]\d+)\b/g,
+  //     '<span class="text-ref">$1</span>');
 
-    // Montants en vert gras
-    html = html.replace(
-      /([\d.,\s]+ XOF)/g,
-      '<span class="text-amount">$1</span>'
-    );
+  //   // Montants en vert gras
+  //   html = html.replace(
+  //     /([\d.,\s]+ XOF)/g,
+  //     '<span class="text-amount">$1</span>'
+  //   );
 
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-  }
+  //   return this.sanitizer.bypassSecurityTrustHtml(html);
+  // }
+
+
+
+ formatMessage(message: string): SafeHtml {
+  const text = this.escapeHtml(message ?? '').replace(/\s*\([^()\s]+@[^()\s]+\)/g, '');
+
+  const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const bulletRe = /^\s*[-•]\s+/;
+  const labelRe = /^(montant de|montant total|frais operateurs?|cout total(?: debite)?|solde avant|solde apres)(\s*:)?/;
+
+  const out: string[] = [];
+  let inList = false;
+
+  text.split('\n').forEach((raw, i) => {
+    const line = raw.trim();
+    if (!line) return;
+
+    const withoutBullet = line.replace(bulletRe, '');
+    const m = labelRe.exec(norm(withoutBullet));
+    const isItem = i > 0 && (bulletRe.test(line) || !!m);
+
+    if (isItem) {
+      const li = m
+        ? `<strong>${withoutBullet.slice(0, m[0].length)}</strong>${withoutBullet.slice(m[0].length)}`
+        : withoutBullet;
+      if (!inList) { out.push('<ul>'); inList = true; }
+      out.push(`<li>${li}</li>`);
+      return;
+    }
+
+    if (inList) { out.push('</ul>'); inList = false; }
+    const html = i === 0 ? line.replace(/^(?!Ordre\b)(.+?) a /, '<strong>$1</strong> a ') : line;
+    out.push(`<div>${html}</div>`);
+  });
+  if (inList) out.push('</ul>');
+
+  let html = out.join('');
+  html = html.replace(/\b(DRAFT|EN ATTENTE|PENDING|VALIDÉ|VALIDATED|REJETÉ|REJECTED|SOUMIS|SUBMITTED)\b/g, '<span class="text-status">$1</span>');
+  html = html.replace(/\b([A-Z]{2,4}[-_]\d{4}[-_]\d+)\b/g, '<span class="text-ref">$1</span>');
+  html = html.replace(/(\d(?:[\d.,\u00a0\u202f ]*\d)?[\u00a0\u202f ]XOF)/g, '<span class="text-amount">$1</span>');
+
+  return this.sanitizer.bypassSecurityTrustHtml(html);
+}
 
   private escapeHtml(str: string): string {
     const div = document.createElement('div');
@@ -181,6 +226,7 @@ export class ActivitiesComponent implements OnInit {
       )
       .subscribe((data: any) => {
         this.data = data.fetchPaginatedActivities.results as any;
+        console.log(this.data.map((a: any) => JSON.stringify(a.message)));
         this.dataSource.data = this.data as any;
         this.resultsLength = data.fetchPaginatedActivities.pagination.totalItems;
       });
@@ -344,6 +390,12 @@ export class ActivitiesComponent implements OnInit {
       }
     }
     worksheet['!cols'] = [{ wch: 50 }, { wch: 22 }, { wch: 28 }, { wch: 18 }, { wch: 20 }];
+
+    const range = XLSX.utils.decode_range(worksheet['!ref']!);
+    for (let r = 1; r <= range.e.r; r++) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r, c: 0 })];
+      if (cell) cell.s = { alignment: { wrapText: true, vertical: 'top' } };
+    }
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Activités');
