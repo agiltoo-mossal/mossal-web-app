@@ -78,6 +78,13 @@ export class ManualPaymentComponent implements OnInit {
   // restreinte aux approbateurs configurés pour ce niveau dans le flux)
   approvalLevels: ApprovalLevel[] = [];
   approversSubmitAttempted = false;
+  // Distingue "en cours de chargement" de "confirmé vide", pour ne pas afficher
+  // le message de blocage avant que la réponse du flux ne soit arrivée.
+  approvalFlowLoaded = false;
+
+  get isApprovalFlowEmpty(): boolean {
+    return this.approvalFlowLoaded && this.approvalLevels.length === 0;
+  }
 
   // Solde de l'organisation, utilisé pour l'avertissement de solde insuffisant
   organization: Organization | null = null;
@@ -139,9 +146,11 @@ export class ManualPaymentComponent implements OnInit {
               avatar: (first.firstName?.[0] ?? '').toUpperCase() + (first.lastName?.[0] ?? '').toUpperCase(),
             };
           });
+        this.approvalFlowLoaded = true;
       },
       error: () => {
         this.snackBarService.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs.');
+        this.approvalFlowLoaded = true;
       },
     });
 
@@ -283,7 +292,9 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   get allApproversSelected(): boolean {
-    return this.approvalLevels.every((l) => l.approbateurs.length > 0);
+    // .every() sur un tableau vide renvoie true par défaut : sans la garde explicite sur
+    // la longueur, un flux non configuré (approvalLevels = []) laisserait passer la soumission.
+    return this.approvalLevels.length > 0 && this.approvalLevels.every((l) => l.approbateurs.length > 0);
   }
 
   get noApproverSelected(): boolean {
@@ -598,6 +609,7 @@ export class ManualPaymentComponent implements OnInit {
   };
 
   submitOrder(): void {
+    if (this.isApprovalFlowEmpty) return;
     // Blocage si au moins un niveau n'a aucun approbateur sélectionné
     this.approversSubmitAttempted = true;
     if (!this.allApproversSelected) return;
