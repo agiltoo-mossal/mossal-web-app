@@ -21,6 +21,7 @@ export interface Beneficiaire {
   prenom: string;
   telephone: string;
   montant: number;
+  frais: number;
   operateur: string;
 }
 
@@ -28,6 +29,7 @@ export interface RepartitionOperateur {
   nom: string;
   nombreBeneficiaires: number;
   montant: number;
+  frais: number;
   pourcentage: number;
 }
 
@@ -47,6 +49,7 @@ export interface PaymentOrderDetails {
   libellePaiement: string;
   nombreBeneficiaires: number;
   montantTotal: number;
+  fraisTotal: number;
   nombreOperateurs: number;
   dateSoumission: string;
   demandeurNom: string;
@@ -108,6 +111,8 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
           const totalAmt = order.totalAmount || 1;
           const waveAmt = wavePayments.reduce((s, p) => s + p.amount, 0);
           const omAmt = omPayments.reduce((s, p) => s + p.amount, 0);
+          const waveFees = wavePayments.reduce((s, p) => s + (p.fee ?? 0), 0);
+          const omFees = omPayments.reduce((s, p) => s + (p.fee ?? 0), 0);
 
           const uniqueWallets = new Set(payments.map(p => p.wallet));
 
@@ -155,6 +160,7 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
             libellePaiement: order.label,
             nombreBeneficiaires: payments.length,
             montantTotal: order.totalAmount,
+            fraisTotal: order.totalFees ?? 0,
             nombreOperateurs: uniqueWallets.size,
             dateSoumission: new Intl.DateTimeFormat('fr-FR', {
               day: 'numeric', month: 'long', year: 'numeric',
@@ -168,11 +174,12 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
               prenom: p.firstName,
               telephone: p.phoneNumber,
               montant: p.amount,
+              frais: p.fee ?? 0,
               operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
             })),
             repartitionOperateurs: [
-              { nom: 'Wave', nombreBeneficiaires: wavePayments.length, montant: waveAmt, pourcentage: Math.round(waveAmt / totalAmt * 100) },
-              { nom: 'Orange Money', nombreBeneficiaires: omPayments.length, montant: omAmt, pourcentage: Math.round(omAmt / totalAmt * 100) },
+              { nom: 'Wave', nombreBeneficiaires: wavePayments.length, montant: waveAmt, frais: waveFees, pourcentage: Math.round(waveAmt / totalAmt * 100) },
+              { nom: 'Orange Money', nombreBeneficiaires: omPayments.length, montant: omAmt, frais: omFees, pourcentage: Math.round(omAmt / totalAmt * 100) },
             ],
             etapesApprobation,
             rejetePar: rejectedStep?.validateurNom,
@@ -196,12 +203,12 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
 
   get isBalanceInsufficient(): boolean {
     if (!this.organization || !this.paiement) return false;
-    return this.organization.balance < this.paiement.montantTotal;
+    return this.organization.balance < this.paiement.montantTotal + this.paiement.fraisTotal;
   }
 
   get balanceAfterExecution(): number {
     if (!this.organization || !this.paiement) return 0;
-    return this.organization.balance - this.paiement.montantTotal;
+    return this.organization.balance - this.paiement.montantTotal - this.paiement.fraisTotal;
   }
 
   get badgeLabel(): string {
@@ -245,7 +252,7 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
           return;
         }
 
-        if (organization.balance < this.paiement.montantTotal) {
+        if (organization.balance < this.paiement.montantTotal + this.paiement.fraisTotal) {
           this.isSubmitting = false;
           this.snackBarService.showSnackBar(
             "Merci de recharger votre compte, le solde actuel ne permet pas d'effectuer ce paiement.",

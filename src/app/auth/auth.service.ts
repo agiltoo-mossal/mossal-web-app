@@ -185,12 +185,9 @@ export class AuthService {
       );
 
       return otpExpiresAt;
-    } catch (e) {
-      this.snackBarService.showSnackBar(
-        "Erreur lors de l'envoi du code OTP.",
-        '',
-        { duration: 3000 }
-      );
+    } catch (e: any) {
+      const message = e?.graphQLErrors?.[0]?.message ?? "Erreur lors de l'envoi du code OTP.";
+      this.snackBarService.showSnackBar(message, '', { duration: 4000 });
       throw e;
     }
   }
@@ -255,12 +252,9 @@ export class AuthService {
 
       return session;
 
-    } catch (e) {
-      this.snackBarService.showSnackBar(
-        'Code OTP incorrect ou expiré!',
-        '',
-        { duration: 4000 }
-      );
+    } catch (e: any) {
+      const message = e?.graphQLErrors?.[0]?.message ?? 'Code OTP incorrect ou expiré!';
+      this.snackBarService.showSnackBar(message, '', { duration: 4000 });
       throw e;
     }
   }

@@ -7,6 +7,18 @@ $error: #dc2626;
 $success: #16a34a;
 $white: #ffffff;
 
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.alert-warning { background-color: #FFF4E5; color: #9a6400; }
+
 .import-container {
   font-family: 'Segoe UI', sans-serif;
   background: #f4f7fc;

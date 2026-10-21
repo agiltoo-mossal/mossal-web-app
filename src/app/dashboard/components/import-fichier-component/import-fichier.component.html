@@ -9,6 +9,15 @@
       <span class="step-item">Validation</span>
     </div>
 
+    <div class="alert alert-warning" *ngIf="isApprovalFlowEmpty">
+      <mat-icon>warning</mat-icon>
+      <span>
+        ⚠️ Aucun flux de validation n'est configuré pour votre organisation.
+        La création d'ordres de paiement est temporairement désactivée.
+        Veuillez contacter votre Super Administrateur.
+      </span>
+    </div>
+
     <!-- Libellé -->
     <div class="label-section">
       <label class="label-title">Libellé de paiement <span class="label-required">*</span></label>
@@ -144,7 +153,7 @@
       <button class="btn-secondary" (click)="onReimporter()" [disabled]="isSaving">
         <mat-icon>arrow_back</mat-icon> Réimporter un fichier
       </button>
-      <button class="btn-primary" (click)="onEnregistrer()" [disabled]="errorCount > 0 || !label.trim() || isSaving">
+      <button class="btn-primary" (click)="onEnregistrer()" [disabled]="errorCount > 0 || !label.trim() || isSaving || isApprovalFlowEmpty">
         <ng-container *ngIf="!isSaving">Enregistrer <mat-icon>arrow_forward</mat-icon></ng-container>
         <ng-container *ngIf="isSaving">Enregistrement...</ng-container>
       </button>

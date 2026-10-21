@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { CreateBulkPaymentOrderGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
+import { CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { BulkPaymentFileService } from 'src/app/shared/services/bulk-payment-file.service';
 
@@ -26,6 +26,7 @@ export class ImportFichierComponent implements OnInit {
   label = '';
   isSaving = false;
   editingIndex: number | null = null;
+  isApprovalFlowEmpty = false;
 
   readonly OPERATEURS = ['Wave', 'Orange Money'];
 
@@ -71,6 +72,7 @@ export class ImportFichierComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private createBulkPaymentOrderGQL: CreateBulkPaymentOrderGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBar: SnackBarService,
     private bulkPaymentFileService: BulkPaymentFileService,
   ) {}
@@ -80,6 +82,14 @@ export class ImportFichierComponent implements OnInit {
     if (preselectedFile) {
       this.processFile(preselectedFile);
     }
+
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        const levels = data?.fetchApprovalFlow?.approvalFlow ?? [];
+        this.isApprovalFlowEmpty = !levels.length || levels.every((l) => !(l.approverIds ?? []).length);
+      },
+      error: () => { this.isApprovalFlowEmpty = false; },
+    });
   }
 
   get errorCount(): number {
@@ -276,7 +286,7 @@ export class ImportFichierComponent implements OnInit {
 
   onEnregistrer(): void {
     const inputs = this.buildPaymentInputs();
-    if (!inputs.length || this.isSaving) return;
+    if (!inputs.length || this.isSaving || this.isApprovalFlowEmpty) return;
 
     this.isSaving = true;
     this.createBulkPaymentOrderGQL.mutate({ inputs, label: this.label, isDraft: true, type: 'FILE_IMPORT' }).subscribe({

@@ -14,6 +14,10 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   invalidOtp = false;
   isVerifying = false;
   isResending = false;
+  // Distinct du message générique "code incorrect/expiré" : après 3 échecs, le backend
+  // bloque la vérification ET le renvoi de code pendant 15 minutes (voir auth.service.ts).
+  isLockedOut = false;
+  lockoutMessage = '';
   timer = 0;
   userEmail = '';
   private otpExpiresAt: number | null = null;
@@ -69,7 +73,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   }
 
   verifyOtp(): void {
-    if (this.form.invalid || this.isVerifying) return;
+    if (this.form.invalid || this.isVerifying || this.isLockedOut) return;
 
     this.isVerifying = true;
     this.invalidOtp = false;
@@ -80,14 +84,20 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       .finally(() => {
         this.isVerifying = false;
       })
-      .catch(() => {
-        this.invalidOtp = true;
+      .catch((e: any) => {
         this.form.reset();
+        const message = e?.graphQLErrors?.[0]?.message ?? '';
+        if (message.includes('Trop de tentatives')) {
+          this.lockOut(message);
+        } else {
+          this.invalidOtp = true;
+        }
       });
   }
 
 
   resendOtp(): void {
+    if (this.isResending || this.isLockedOut) return;
     this.isResending = true;
     this.invalidOtp = false;
 
@@ -99,10 +109,22 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
           this.startTimer();
           this.form.reset();
         },
-        (error) => {
+        (e: any) => {
           this.isResending = false;
+          const message = e?.graphQLErrors?.[0]?.message ?? '';
+          if (message.includes('Trop de tentatives')) {
+            this.lockOut(message);
+          }
         }
       );
+  }
+
+  private lockOut(message: string): void {
+    this.isLockedOut = true;
+    this.invalidOtp = false;
+    this.lockoutMessage = message;
+    this.stopTimer();
+    this.form.disable();
   }
 
   cancel(): void {
