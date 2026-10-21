@@ -6,6 +6,7 @@ import {
   BulkPaymentOrderStatus,
   FetchMyBulkPaymentOrdersGQL,
   FetchCurrentAdminGQL,
+  FetchApprovalFlowGQL,
   Organization,
 } from 'src/graphql/generated';
 import * as XLSX from 'xlsx';
@@ -51,11 +52,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private bulkPaymentFileService: BulkPaymentFileService,
   ) { }
 
   isLoading = true;
   isLoadingBalance = true;
+  // Tant que le flux de validation n'est pas chargé, on ne bloque pas la création par
+  // précaution (évite un faux "aucun flux configuré" pendant le chargement initial).
+  isApprovalFlowEmpty = false;
   pageSize = 10;
   pageIndex = 0;
 
@@ -102,6 +107,16 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
 
     this.startBalancePolling();
+
+    this.fetchApprovalFlowGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
+      next: ({ data }) => {
+        const levels = data?.fetchApprovalFlow?.approvalFlow ?? [];
+        this.isApprovalFlowEmpty = !levels.length || levels.every((l) => !(l.approverIds ?? []).length);
+      },
+      // En cas d'échec de la vérification, on ne bloque pas la création par précaution :
+      // le backend reste de toute façon la garde-fou final à la soumission.
+      error: () => { this.isApprovalFlowEmpty = false; },
+    });
   }
 
   ngOnDestroy(): void {
@@ -138,7 +153,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     input.value = '';
-    if (!file) return;
+    if (!file || this.isApprovalFlowEmpty) return;
     this.bulkPaymentFileService.set(file);
     this.router.navigate(['../payments/import'], { relativeTo: this.route });
   }
@@ -194,10 +209,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   onImporterFichier(): void {
+    if (this.isApprovalFlowEmpty) return;
     this.router.navigate(['../payments/import'], { relativeTo: this.route });
   }
 
   onGestionManuelle(): void {
+    if (this.isApprovalFlowEmpty) return;
     this.router.navigate(['../payments/manual'], { relativeTo: this.route });
   }
 

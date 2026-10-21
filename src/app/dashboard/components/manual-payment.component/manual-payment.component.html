@@ -344,6 +344,18 @@
       </div>
     </div>
 
+    <!-- Sélection des approbateurs : flux non configuré -->
+    <div class="approvers-card" *ngIf="isApprovalFlowEmpty">
+      <div class="approvers-header">
+        <h3>Sélection des approbateurs</h3>
+      </div>
+      <div class="approvers-global-error">
+        ⚠️ Aucun flux de validation configuré.
+        Vous ne pouvez pas soumettre cet ordre.
+        Contactez votre Super Administrateur pour configurer le flux de validation.
+      </div>
+    </div>
+
     <!-- Sélection des approbateurs -->
     <div class="approvers-card" *ngIf="approvalLevels.length > 0">
       <div class="approvers-header">
@@ -383,7 +395,7 @@
       <button class="btn-secondary" (click)="goBackFromRecap()" [disabled]="isSubmitting">
         <mat-icon>arrow_back</mat-icon> Précédent
       </button>
-      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
+      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting || isApprovalFlowEmpty">
         <span *ngIf="!isSubmitting" class="btn-inner">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
         <span *ngIf="isSubmitting">Envoi en cours...</span>
       </button>

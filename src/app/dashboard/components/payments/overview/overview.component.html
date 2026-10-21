@@ -1,6 +1,16 @@
 <div class="payments-container">
 
  <app-organization-balance [organization]="organization"></app-organization-balance>
+
+  <div class="alert alert-warning" *ngIf="isApprovalFlowEmpty">
+    <mat-icon>warning</mat-icon>
+    <span>
+      ⚠️ Aucun flux de validation n'est configuré pour votre organisation.
+      La création d'ordres de paiement est temporairement désactivée.
+      Veuillez contacter votre Super Administrateur.
+    </span>
+  </div>
+
   <div class="cards-row">
 
     <div class="card">
@@ -9,8 +19,8 @@
       </div>
       <h3>Importer un fichier Excel</h3>
       <p>Importer plusieurs paiements dans un fichier</p>
-      <input #fileImportInput type="file" accept=".xlsx,.xls" hidden (change)="onFileImported($event)" />
-      <button mat-raised-button color="primary" class="card-btn" (click)="fileImportInput.click()">
+      <input #fileImportInput type="file" accept=".xlsx,.xls" hidden (change)="onFileImported($event)" [disabled]="isApprovalFlowEmpty" />
+      <button mat-raised-button color="primary" class="card-btn" (click)="fileImportInput.click()" [disabled]="isApprovalFlowEmpty">
         <mat-icon>file_download</mat-icon> Importer
       </button>
     </div>
@@ -21,7 +31,7 @@
       </div>
       <h3>Gestion manuelle</h3>
       <p>Ajouter des paiements ligne par ligne</p>
-      <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()">
+      <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()" [disabled]="isApprovalFlowEmpty">
         <mat-icon>cloud_upload</mat-icon> Créer
       </button>
     </div>

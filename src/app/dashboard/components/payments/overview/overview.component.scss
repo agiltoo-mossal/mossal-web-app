@@ -16,6 +16,18 @@ $rejete-bg: #FEE7E7;
 $rejete-dot: #F41414;
 $rejete-text: #F41414;
 
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.alert-warning { background-color: #FFF4E5; color: #9a6400; }
+
 .payments-container {
   padding: 24px;
   background: transparent;
