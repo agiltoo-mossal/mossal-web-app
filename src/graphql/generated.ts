@@ -2107,7 +2107,7 @@ export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPa
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null }> };
+export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, totalFees?: number | null, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -3907,6 +3907,7 @@ export const FetchMyBulkPaymentOrdersDocument = gql`
     id
     label
     totalAmount
+    totalFees
     status
     type
     approversByLevel {

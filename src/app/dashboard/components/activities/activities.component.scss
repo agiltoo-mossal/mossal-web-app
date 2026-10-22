@@ -225,17 +225,19 @@ table .mat-mdc-header-cell {
 
   &.scope-bulk { background: #e3edff; color: #2255d6; }
   &.scope-advance { background: #DEFFDB; color: #0EAF00; }
-}
-::ng-deep .text-status,
-::ng-deep .text-ref {
-  color: #d97706;
-  font-weight: 700;
-}
+  &.scope-payment { background: #fff3e0; color: #e07b00; }
 
-::ng-deep .text-amount {
-  color: #1e8a3f;
-  font-weight: 700;
 }
+// ::ng-deep .text-status,
+// ::ng-deep .text-ref {
+//   color: #d97706;
+//   font-weight: 700;
+// }
+
+// ::ng-deep .text-amount {
+//   color: #1e8a3f;
+//   font-weight: 700;
+// }
 
 ::ng-deep .text-status {
   color: #eeb543;
@@ -245,14 +247,41 @@ table .mat-mdc-header-cell {
   border-radius: 3px;
 }
 
-::ng-deep .text-ref {
-  color: #ee8b1a;
-  font-weight: 700;
-}
+// ::ng-deep .text-ref {
+//   color: #ee8b1a;
+//   font-weight: 700;
+// }
+
+// ::ng-deep .text-amount {
+//   color: #16c94b;
+//   font-weight: 700;
+// }
 
 ::ng-deep .text-amount {
   color: #16c94b;
   font-weight: 700;
+}
+
+// Référence : verte et grasse dans la maquette
+::ng-deep .text-ref {
+  color: #16c94b;
+  font-weight: 700;
+}
+
+// Statut : surligné
+::ng-deep .text-status {
+  color: #f59e0b;
+  font-weight: 700;
+  background: #fdf1c7;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.message-col {
+  width: 30%;
+  max-width: 320px;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .message-col {
@@ -317,5 +346,20 @@ table .mat-mdc-header-cell {
 
   &:hover {
     background-color: #f4f6fa;
+  }
+}
+
+.activity-message {
+  line-height: 1.5;
+  padding: 4px 0;
+
+  ul {
+    margin: 4px 0;
+    padding-left: 20px;
+    list-style: disc;
+  }
+
+  li {
+    margin: 0;
   }
 }

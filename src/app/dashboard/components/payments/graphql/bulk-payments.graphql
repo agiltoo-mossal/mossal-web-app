@@ -57,6 +57,7 @@ query FetchMyBulkPaymentOrders {
     id
     label
     totalAmount
+    totalFees
     status
     type
     approversByLevel {
