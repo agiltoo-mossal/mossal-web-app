@@ -5,11 +5,13 @@ import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderById
 import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
+
 export interface Beneficiary {
   lastName: string;
   firstName: string;
   phone: string;
   amount: number;
+  fees: number;
   operator: string;
 }
 
@@ -147,6 +149,7 @@ export class PaymentDetailsComponent implements OnInit {
               firstName: p.firstName,
               phone: p.phoneNumber,
               amount: p.amount,
+              fees: p.fees ?? 0,
               operator: walletLabel[p.wallet] ?? p.wallet,
             })),
           };
@@ -157,7 +160,9 @@ export class PaymentDetailsComponent implements OnInit {
       });
   }
 
- 
+  beneficiaryTotal(b: Beneficiary): number {
+    return (b.amount ?? 0) + (b.fees ?? 0);
+  }
 
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
@@ -304,9 +309,16 @@ export class PaymentDetailsComponent implements OnInit {
     };
     const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
 
+    // const rows = [
+    //   ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
+    //   ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
+    // ];
+
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
-      ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
+      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut'],
+      ...this.payment.beneficiaries.map(b => [
+        b.lastName, b.firstName, b.phone, b.amount, b.fees, this.beneficiaryTotal(b), b.operator, statutGlobal,
+      ]),
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(rows);

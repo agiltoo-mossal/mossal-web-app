@@ -124,6 +124,14 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  totalFees(order: BulkPaymentOrder): number {
+    return order.totalFees ?? 0;
+  }
+
+  totalCost(order: BulkPaymentOrder): number {
+    return (order.totalAmount ?? 0) + this.totalFees(order);
+  }
+
   /**
    * Scénario Gherkin "Actualisation du solde après validation en dernier ressort":
    * rafraîchit le solde immédiatement, puis toutes les BALANCE_POLL_INTERVAL_MS,
