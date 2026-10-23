@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Réinitialiser le flux d'approbation</h2>
+
+<mat-dialog-content>
+  <p>
+    Êtes-vous sûr de vouloir réinitialiser le flux d'approbation ?
+    Tous les niveaux de validation seront supprimés.
+  </p>
+
+  <p class="warning" *ngIf="data.hasPendingOrders">
+    <mat-icon class="warning-icon">warning</mat-icon>
+    Des ordres de paiement sont en cours de validation.
+    La réinitialisation n'affectera que les nouveaux ordres soumis.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="onCancel()">Annuler</button>
+  <button mat-flat-button color="warn" (click)="onConfirm()">Confirmer</button>
+</mat-dialog-actions>

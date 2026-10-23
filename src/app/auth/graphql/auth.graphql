@@ -15,8 +15,9 @@ query LoginAdmin($loginInput: LoginInput!) {
 		access_token
 		refresh_token
 		expires_in
-		role
+		roles
 		otpRequired
+		otpExpiresAt
 	}
 }
 
@@ -49,7 +50,7 @@ mutation VerifyOtp($verifyOtpInput: VerifyOtpInput!) {
 		access_token
 		refresh_token
 		expires_in
-		role
+		roles
 		otpRequired
 	}
 }

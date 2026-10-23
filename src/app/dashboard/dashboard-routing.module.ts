@@ -15,6 +15,16 @@ import { RequestSalaryComponent } from './components/request-salary/request-sala
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
+import { OverviewComponent as PaymentsOverviewComponent } from './components/payments/overview/overview.component';
+import { AvancesComponent } from './components/avancesComponent/avances.component';
+import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
+import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
+import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
+import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
+import { HistoryComponent } from './components/historyComponent/history.component';
+import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
+import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
+import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
 
 const routes: Routes = [
   {
@@ -114,8 +124,41 @@ const routes: Routes = [
         component: OrganizationComponent,
       },
       {
+        path: 'organization/payments',  
+        component: PaymentsOverviewComponent,
+      },
+      {
+        path: 'organization/avances',
+        component: AvancesComponent,
+      },
+      {
+        path: 'organization/fluxAppro',
+        component: FluxApprobationComponent,
+      },
+      {
         path: 'activities',
         component: ActivitiesComponent,
+      },
+      { path: 'organization/payments/import',
+        component: ImportFichierComponent 
+      },
+      { path: 'organization/payments/manual', component: ManualPaymentComponent },
+      { path: 'payments/details/:id', component: PaymentDetailsComponent },
+      {
+        path: 'organization/payments/history',
+        component: HistoryComponent,
+      },
+      {
+        path: 'tracking-approvals',
+        component: TrackingApprovalsComponent,
+      },
+      {
+        path: 'tracking-approvals/:id',
+        component: TrackingApprovalsDetailsComponent,
+      },
+      {
+        path: 'tracking-approvals/:id/view',
+        component: ApproverOrderViewComponent,
       },
     ],
   },

@@ -1,3 +1,5 @@
+  import { from } from 'rxjs'; 
+
 import {
   Component,
   Input,
@@ -149,7 +151,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/collaborators']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Invitation envoyé au collaborateur'
             );
           }
@@ -192,7 +194,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/collaborators']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Collaborator modifié avec succés'
             );
           }
@@ -330,6 +332,36 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
       });
   }
 
+
+// checkUniqueIdentifier() {
+//   this.collaboratorForm
+//     .get('uniqueIdentifier')
+//     .valueChanges.pipe(
+//       debounceTime(300),
+//       distinctUntilChanged(),
+//       switchMap((value) =>
+//         from(
+//           this.searchService.uniqueIdentifierExists(
+//             value,
+//             false,
+//             this.collaboratorId,
+//             true  // ← organizationScoped
+//           )
+//         )
+//       )
+//     )
+//     .subscribe((result: boolean) => {
+//       this.collaboratorForm.controls['uniqueIdentifier'].setErrors(null);
+//       this.collaboratorForm.controls['uniqueIdentifier'].updateValueAndValidity();
+//       if (result) {
+//         this.collaboratorForm.controls['uniqueIdentifier'].setErrors({
+//           uniqueIdentifierExists: true,
+//         });
+//       }
+//       this.uniqueIdentifierExists = result;
+//     });
+// }
+
   initSearch() {
     this.checkPhone();
     // this.checkBankAccount();
@@ -349,7 +381,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.getCollab();
@@ -362,7 +394,7 @@ export class FormCollaboratorComponent implements OnInit, OnChanges {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.getCollab();

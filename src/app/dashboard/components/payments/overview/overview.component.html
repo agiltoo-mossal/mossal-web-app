@@ -1,0 +1,144 @@
+<div class="payments-container">
+
+ <app-organization-balance [organization]="organization"></app-organization-balance>
+
+  <div class="alert alert-warning" *ngIf="isApprovalFlowEmpty">
+    <mat-icon>warning</mat-icon>
+    <span>
+      ⚠️ Aucun flux de validation n'est configuré pour votre organisation.
+      La création d'ordres de paiement est temporairement désactivée.
+      Veuillez contacter votre Super Administrateur.
+    </span>
+  </div>
+
+  <div class="cards-row">
+
+    <div class="card">
+      <div class="card-icon-wrapper">
+        <img src="assets/img/Group 8908.png" alt="Importer un fichier" class="card-img-icon" />
+      </div>
+      <h3>Importer un fichier Excel</h3>
+      <p>Importer plusieurs paiements dans un fichier</p>
+      <input #fileImportInput type="file" accept=".xlsx,.xls" hidden (change)="onFileImported($event)" [disabled]="isApprovalFlowEmpty" />
+      <button mat-raised-button color="primary" class="card-btn" (click)="fileImportInput.click()" [disabled]="isApprovalFlowEmpty">
+        <mat-icon>file_download</mat-icon> Importer
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon-wrapper">
+        <img src="assets/img/Group 8910.png" alt="Gestion manuelle" class="card-img-icon" />
+      </div>
+      <h3>Gestion manuelle</h3>
+      <p>Ajouter des paiements ligne par ligne</p>
+      <button mat-raised-button color="primary" class="card-btn" (click)="onGestionManuelle()" [disabled]="isApprovalFlowEmpty">
+        <mat-icon>cloud_upload</mat-icon> Créer
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-row">
+    <div class="filters-bar">
+      <div class="filter-search">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" placeholder="Rechercher" [(ngModel)]="searchText" />
+        <mat-icon *ngIf="searchText" class="clear-icon" (click)="searchText = ''">close</mat-icon>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <div class="filter-select statut">
+        <select [(ngModel)]="selectedStatut">
+          <option value="">Statut</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+        </select>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <div class="filter-select date">
+        <select [(ngModel)]="selectedDate">
+          <option value="">Date</option>
+          <option *ngFor="let d of dateOptions" [value]="d.value">{{ d.label }}</option>
+        </select>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
+
+      <button class="btn-reinitialiser" (click)="reinitialiser()">
+        <img src="assets/img/Frame.png" alt="" class="btn-icon" /> Réinitialiser
+      </button>
+    </div>
+
+    <a class="voir-historique" (click)="onVoirHistorique()">Voir toute l'historique</a>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-wrapper">
+
+    <div class="loading-state" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement en cours...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <table *ngIf="filteredOrders.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Libellé</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Approbateur(s)</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of paginatedOrders">
+            <td>{{ o.label }}</td>
+            <td>{{ o.createdAt | date:'dd MMM yyyy' }}</td>
+            <td>{{ o.totalAmount | number:'1.0-0':'fr' }} XOF</td>
+            <td>
+              <span class="badge" [ngClass]="statusBadge(o.status)">
+                <span class="dot"></span> {{ statusLabel(o.status) }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="o.status !== 'DRAFT' && approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
+              <ng-template #noApprover><span class="text-muted">—</span></ng-template>
+            </td>
+            <td><a class="voir-details" (click)="onVoirDetails(o)">Voir les détails</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucun ordre de paiement trouvé</p>
+        </div>
+      </ng-template>
+
+      <mat-paginator
+        [length]="filteredOrders.length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        aria-label="Pagination des ordres de paiement">
+      </mat-paginator>
+    </ng-container>
+  </div>
+
+  <div class="modeles-card">
+    <h3>Modèles Préenregistrés</h3>
+    <div class="modele-item">
+      <mat-icon class="modele-icon">attach_file</mat-icon>
+      <span>Modèle d'import fichier excel</span>
+      <a class="telecharger" (click)="onDownloadPaymentTemplate()">Télécharger</a>
+    </div>
+  </div>
+
+</div>

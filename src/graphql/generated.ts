@@ -34,6 +34,7 @@ export type Activity = {
   meta?: Maybe<Scalars['Any']['output']>;
   organization: Organization;
   scope: ActivityScope;
+  status?: Maybe<ActivityStatus>;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
 };
@@ -41,15 +42,126 @@ export type Activity = {
 /** Possible activities */
 export enum ActivityScope {
   Authentification = 'authentification',
+  BulkPayment = 'bulk_payment',
   Collaborateur = 'collaborateur',
   Demande = 'demande',
   Organisation = 'organisation'
+}
+
+/** Normalized status of the underlying operation an activity records */
+export enum ActivityStatus {
+  Approved = 'APPROVED',
+  Cancelled = 'CANCELLED',
+  Draft = 'DRAFT',
+  InProcess = 'IN_PROCESS',
+  Payed = 'PAYED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+  Validated = 'VALIDATED'
 }
 
 export enum AmountUnit {
   Fixed = 'Fixed',
   Percentage = 'Percentage'
 }
+
+export type ApprovalLevel = {
+  __typename?: 'ApprovalLevel';
+  approverIds?: Maybe<Array<Scalars['ID']['output']>>;
+  approvers?: Maybe<Array<User>>;
+  level: Scalars['Int']['output'];
+};
+
+export type ApprovalLevelInput = {
+  approverIds: Array<Scalars['ID']['input']>;
+  level: Scalars['Int']['input'];
+};
+
+export type BulkPayment = {
+  __typename?: 'BulkPayment';
+  amount: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  failureReason?: Maybe<Scalars['String']['output']>;
+  fee?: Maybe<Scalars['Float']['output']>;
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastName: Scalars['String']['output'];
+  number?: Maybe<Scalars['Int']['output']>;
+  organization: Scalars['String']['output'];
+  paidAt?: Maybe<Scalars['DateTime']['output']>;
+  phoneNumber: Scalars['String']['output'];
+  provider?: Maybe<Scalars['String']['output']>;
+  providerReference?: Maybe<Scalars['String']['output']>;
+  status: BulkPaymentStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  wallet: Wallet;
+};
+
+export type BulkPaymentApproval = {
+  __typename?: 'BulkPaymentApproval';
+  approvedAt?: Maybe<Scalars['DateTime']['output']>;
+  approverId?: Maybe<Scalars['String']['output']>;
+  level: Scalars['Int']['output'];
+};
+
+export type BulkPaymentInput = {
+  amount: Scalars['Float']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phoneNumber: Scalars['String']['input'];
+  wallet: Wallet;
+};
+
+export type BulkPaymentOrder = {
+  __typename?: 'BulkPaymentOrder';
+  approvals?: Maybe<Array<BulkPaymentApproval>>;
+  approversByLevel?: Maybe<Array<ApprovalLevel>>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  createdByUser?: Maybe<User>;
+  currentApprovalLevel?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  isApprovedByCurrentUser?: Maybe<Scalars['Boolean']['output']>;
+  label: Scalars['String']['output'];
+  lastRelaunchAt?: Maybe<Scalars['DateTime']['output']>;
+  organization: Scalars['String']['output'];
+  payments?: Maybe<Array<BulkPayment>>;
+  paymentsCount?: Maybe<Scalars['Int']['output']>;
+  rejectedReason?: Maybe<Scalars['String']['output']>;
+  status: BulkPaymentOrderStatus;
+  totalAmount: Scalars['Float']['output'];
+  totalFees?: Maybe<Scalars['Float']['output']>;
+  type?: Maybe<BulkPaymentOrderType>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum BulkPaymentOrderStatus {
+  Approved = 'APPROVED',
+  Cancelled = 'CANCELLED',
+  Draft = 'DRAFT',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
+export enum BulkPaymentOrderType {
+  FileImport = 'FILE_IMPORT',
+  Manual = 'MANUAL'
+}
+
+export enum BulkPaymentStatus {
+  Cancelled = 'CANCELLED',
+  InProcess = 'IN_PROCESS',
+  Payed = 'PAYED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+  Validated = 'VALIDATED'
+}
+
+export type BulkPaymentUpdateInput = {
+  id: Scalars['ID']['input'];
+  status?: InputMaybe<BulkPaymentStatus>;
+};
 
 export type CategorySociopro = {
   __typename?: 'CategorySociopro';
@@ -292,6 +404,7 @@ export type InviteCollaboratorInput = {
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
   position: Scalars['String']['input'];
+  roles?: InputMaybe<Array<UserRole>>;
   salary?: InputMaybe<Scalars['Float']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -310,7 +423,12 @@ export type Mutation = {
   activateOrganisationService: Scalars['Boolean']['output'];
   activateService: Scalars['Boolean']['output'];
   addCredit: Credit;
+  approveBulkPaymentOrder: BulkPaymentOrder;
+  cancelBulkPayment: Scalars['Boolean']['output'];
+  cancelBulkPaymentOrder: BulkPaymentOrder;
   cancelDemandeByAdmin: Scalars['Boolean']['output'];
+  createBulkPayment: BulkPayment;
+  createBulkPaymentOrder: BulkPaymentOrder;
   createCategorySociopro: CategorySociopro;
   createCategorySocioproService: CategorySocioproService;
   createEvent: Event;
@@ -336,12 +454,18 @@ export type Mutation = {
   lockAdmin: Scalars['Boolean']['output'];
   lockUser: Scalars['Boolean']['output'];
   payeDemande: Scalars['Boolean']['output'];
+  rejectBulkPaymentOrder: BulkPaymentOrder;
   rejectDemandeByAdmin: Scalars['Boolean']['output'];
-  resendOtp: Scalars['Boolean']['output'];
+  relaunchApprovers: BulkPaymentOrder;
+  resendOtp: Scalars['DateTime']['output'];
   resetAdminPassword: Scalars['Boolean']['output'];
+  saveApprovalFlow: Scalars['Boolean']['output'];
   startForgotPassword: Scalars['Boolean']['output'];
+  submitBulkPaymentOrder: BulkPaymentOrder;
   suspendOrganization: Scalars['Boolean']['output'];
   unlockUser: Scalars['Boolean']['output'];
+  updateBulkPaymentOrder: BulkPaymentOrder;
+  updateBulkPaymentStatus: Scalars['Boolean']['output'];
   updateCategorySociopro: Scalars['Boolean']['output'];
   updateCategorySocioproService: Scalars['Boolean']['output'];
   updateCollaborator: Scalars['Boolean']['output'];
@@ -352,6 +476,7 @@ export type Mutation = {
   updateOrganisationService: Scalars['Boolean']['output'];
   updateOrganization: Scalars['Boolean']['output'];
   updateService: Scalars['Boolean']['output'];
+  updateSubmittedBulkPaymentOrder: BulkPaymentOrder;
   upladFile: Scalars['Boolean']['output'];
   validateDemande: ValidationResponse;
   validateRemboursement: Scalars['Boolean']['output'];
@@ -392,8 +517,37 @@ export type MutationAddCreditArgs = {
 };
 
 
+export type MutationApproveBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationCancelBulkPaymentArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationCancelDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateBulkPaymentArgs = {
+  input: BulkPaymentInput;
+};
+
+
+export type MutationCreateBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
+  inputs: Array<BulkPaymentInput>;
+  isDraft?: InputMaybe<Scalars['Boolean']['input']>;
+  label: Scalars['String']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -530,9 +684,20 @@ export type MutationPayeDemandeArgs = {
 };
 
 
+export type MutationRejectBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationRejectDemandeByAdminArgs = {
   demandeId: Scalars['ID']['input'];
   rejectedReason: Scalars['String']['input'];
+};
+
+
+export type MutationRelaunchApproversArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -546,8 +711,20 @@ export type MutationResetAdminPasswordArgs = {
 };
 
 
+export type MutationSaveApprovalFlowArgs = {
+  approvalFlow: Array<ApprovalLevelInput>;
+  approvalLevelsCount: Scalars['Float']['input'];
+};
+
+
 export type MutationStartForgotPasswordArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationSubmitBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
+  id: Scalars['String']['input'];
 };
 
 
@@ -558,6 +735,18 @@ export type MutationSuspendOrganizationArgs = {
 
 export type MutationUnlockUserArgs = {
   userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateBulkPaymentOrderArgs = {
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput>;
+  label: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateBulkPaymentStatusArgs = {
+  input: BulkPaymentUpdateInput;
 };
 
 
@@ -618,6 +807,14 @@ export type MutationUpdateOrganizationArgs = {
 export type MutationUpdateServiceArgs = {
   serviceId: Scalars['ID']['input'];
   serviceInput: ServiceUpdateInput;
+};
+
+
+export type MutationUpdateSubmittedBulkPaymentOrderArgs = {
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput>>;
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput>;
+  label: Scalars['String']['input'];
 };
 
 
@@ -748,6 +945,8 @@ export type OrganisationServiceUpdateInput = {
 export type Organization = {
   __typename?: 'Organization';
   amountPercent: Scalars['Float']['output'];
+  approvalFlow?: Maybe<Array<ApprovalLevel>>;
+  approvalLevelsCount?: Maybe<Scalars['Int']['output']>;
   balance: Scalars['Float']['output'];
   blocked?: Maybe<Scalars['Boolean']['output']>;
   /** Code unique de l'organisation (5 premiers caractères du nom) */
@@ -767,6 +966,8 @@ export type Organization = {
   postalAddress: Scalars['String']['output'];
   /** Email de l'utilisateur racine ou admin */
   rootEmail: Scalars['String']['output'];
+  /** Offres de souscription de l'organisation */
+  subscriptions?: Maybe<Array<SubscriptionPlan>>;
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
 };
@@ -791,6 +992,8 @@ export type OrganizationInput = {
   rootFirstname: Scalars['String']['input'];
   /** Nom de l'utilisateur racine */
   rootLastname: Scalars['String']['input'];
+  /** Identifiants des offres de souscription (au moins une obligatoire) */
+  subscriptions: Array<Scalars['String']['input']>;
 };
 
 export type OrganizationLogo = {
@@ -812,6 +1015,8 @@ export type OrganizationLogoInput = {
 
 export type OrganizationUpdateInput = {
   amountPercent?: InputMaybe<Scalars['Float']['input']>;
+  approvalFlow?: InputMaybe<Array<ApprovalLevelInput>>;
+  approvalLevelsCount?: InputMaybe<Scalars['Int']['input']>;
   balance?: InputMaybe<Scalars['Float']['input']>;
   demandeDeadlineDay?: InputMaybe<Scalars['Float']['input']>;
   fees?: InputMaybe<Scalars['Float']['input']>;
@@ -821,6 +1026,8 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   postalAddress?: InputMaybe<Scalars['String']['input']>;
+  /** Identifiants des offres de souscription */
+  subscriptions?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type PaginatedActivityResult = {
@@ -916,12 +1123,15 @@ export type Query = {
   emailExists: Scalars['Boolean']['output'];
   fetchAccountantData: Array<Demande>;
   fetchActivity: Activity;
+  fetchAllBulkPayments: Array<BulkPayment>;
   fetchAllCategorySocioproServices: Array<CategorySocioproService>;
   fetchAllCategorySociopros: Array<CategorySociopro>;
   fetchAllEvents: Array<Event>;
   fetchAllOrganisationServices: Array<OrganisationService>;
   fetchAllRemboursements: Array<Remboursement>;
   fetchAllServices: Array<Service>;
+  fetchApprovalFlow: Organization;
+  fetchBulkPaymentOrderById: BulkPaymentOrder;
   fetchCategorySociopro: CategorySociopro;
   fetchCategorySocioproService: CategorySocioproService;
   fetchCategorySocioproServices: PaginatedCategorySocioproServiceResult;
@@ -934,13 +1144,18 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchMyBulkPaymentOrders: Array<BulkPaymentOrder>;
+  fetchMyBulkPayments: Array<BulkPayment>;
   fetchOperations: Array<OperationSummary>;
   fetchOperationsMetrics: OperationsMetrics;
+  fetchOrderForApproverById: BulkPaymentOrder;
+  fetchOrdersForApprover: Array<BulkPaymentOrder>;
   fetchOrganisationService: OrganisationService;
   fetchOrganisationServiceByOrganisationIdAndServiceId?: Maybe<OrganisationService>;
   fetchOrganisationServices: PaginatedOrganisationServiceResult;
   fetchOrganization: Organization;
   fetchOrganizationAdmins: Array<User>;
+  fetchOrganizationApprovers: Array<User>;
   fetchOrganizationCollaborator: User;
   fetchOrganizationCollaborators: Array<User>;
   fetchOrganizationDemandes: Array<Demande>;
@@ -964,6 +1179,7 @@ export type Query = {
   fetchServicePub: Service;
   fetchServices: PaginatedServiceResult;
   fetchServicesPub: PaginatedServiceResult;
+  fetchSubscriptions: Array<SubscriptionPlan>;
   fetchSupportPaiement: Array<Demande>;
   fetchTotalDemandesAmount?: Maybe<Scalars['Float']['output']>;
   loginAdmin: Session;
@@ -1022,6 +1238,11 @@ export type QueryFetchAllOrganisationServicesArgs = {
 
 export type QueryFetchAllServicesArgs = {
   queryConfig?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchBulkPaymentOrderByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1090,6 +1311,11 @@ export type QueryFetchOperationsArgs = {
 export type QueryFetchOperationsMetricsArgs = {
   metricsInput: DemandesMetricsInput;
   organizationId: Scalars['ID']['input'];
+};
+
+
+export type QueryFetchOrderForApproverByIdArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -1253,10 +1479,13 @@ export type QueryUniqueIdentifierExistsArgs = {
 };
 
 export type QueryDataConfigInput = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<OrderByInput>;
   page?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Remboursement = {
@@ -1325,14 +1554,16 @@ export type Session = {
   enabled: Scalars['Boolean']['output'];
   /** Null if user must reset his password */
   expires_in?: Maybe<Scalars['Float']['output']>;
+  /** Date d'expiration du code OTP en cours, si otpRequired est vrai */
+  otpExpiresAt?: Maybe<Scalars['DateTime']['output']>;
   /** Not null if required */
   otpRequired?: Maybe<Scalars['Boolean']['output']>;
   /** Null if user must reset his password */
   refresh_expires_in?: Maybe<Scalars['Float']['output']>;
   /** Null if user must reset his password */
   refresh_token?: Maybe<Scalars['String']['output']>;
-  /** Not null if user exist */
-  role?: Maybe<Scalars['String']['output']>;
+  /** Roles of the user */
+  roles?: Maybe<Array<Scalars['String']['output']>>;
   /** Null if user must reset his password */
   scope?: Maybe<Scalars['String']['output']>;
   /** Null if user must reset his password */
@@ -1345,6 +1576,24 @@ export type Session = {
   user?: Maybe<User>;
 };
 
+/** Code identifiant une offre de souscription */
+export enum SubscriptionCode {
+  BulkPayment = 'BULK_PAYMENT',
+  SalaryAdvance = 'SALARY_ADVANCE'
+}
+
+export type SubscriptionPlan = {
+  __typename?: 'SubscriptionPlan';
+  code: SubscriptionCode;
+  createdAt: Scalars['DateTime']['output'];
+  /** Description courte de l'offre */
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** Nom affiché de l'offre de souscription */
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type UpdateCollaboratorInput = {
   address: Scalars['String']['input'];
   bankAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1354,6 +1603,7 @@ export type UpdateCollaboratorInput = {
   lastName: Scalars['String']['input'];
   phoneNumber: Scalars['String']['input'];
   position: Scalars['String']['input'];
+  roles?: InputMaybe<Array<UserRole>>;
   salary?: InputMaybe<Scalars['Float']['input']>;
   uniqueIdentifier: Scalars['String']['input'];
   wizallAccountNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1392,7 +1642,7 @@ export type User = {
   otpExpiresAt?: Maybe<Scalars['DateTime']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   position?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
+  roles?: Maybe<Array<Scalars['String']['output']>>;
   salary?: Maybe<Scalars['Float']['output']>;
   status?: Maybe<Scalars['Float']['output']>;
   totalDemandeAmount: Scalars['Float']['output'];
@@ -1404,13 +1654,16 @@ export type User = {
 export type UserFilterInput = {
   endDate?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<UserRole>;
+  roles?: InputMaybe<Array<UserRole>>;
   startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Possible user role */
 export enum UserRole {
   Admin = 'ADMIN',
+  Approver = 'APPROVER',
   Collaborator = 'COLLABORATOR',
+  PaymentManager = 'PAYMENT_MANAGER',
   SuperAdmin = 'SUPER_ADMIN',
   SuperAdminOrg = 'SUPER_ADMIN_ORG'
 }
@@ -1445,7 +1698,7 @@ export type WalletInfoInput = {
   value: Scalars['String']['input'];
 };
 
-export type _Entity = Credit | Demande | Organization | Remboursement;
+export type _Entity = BulkPayment | Credit | Demande | Organization | Remboursement;
 
 export type _Service = {
   __typename?: '_Service';
@@ -1464,7 +1717,7 @@ export type LoginAdminQueryVariables = Exact<{
 }>;
 
 
-export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, role?: string | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
+export type LoginAdminQuery = { __typename?: 'Query', loginAdmin: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, roles?: Array<string> | null, otpRequired?: boolean | null, otpExpiresAt?: any | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
 
 export type ResetAdminPasswordMutationVariables = Exact<{
   resetPasswordInput: ResetPasswordInput;
@@ -1492,21 +1745,21 @@ export type VerifyOtpMutationVariables = Exact<{
 }>;
 
 
-export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOtp: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, role?: string | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOtp: { __typename?: 'Session', enabled: boolean, token?: string | null, access_token?: string | null, refresh_token?: string | null, expires_in?: number | null, roles?: Array<string> | null, otpRequired?: boolean | null, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, organization?: { __typename?: 'Organization', id: string, rootEmail: string, name: string } | null } | null } };
 
 export type ResendOtpMutationVariables = Exact<{
   email: Scalars['String']['input'];
 }>;
 
 
-export type ResendOtpMutation = { __typename?: 'Mutation', resendOtp: boolean };
+export type ResendOtpMutation = { __typename?: 'Mutation', resendOtp: any };
 
 export type FetchPaginatedActivitiesQueryVariables = Exact<{
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 }>;
 
 
-export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, status?: ActivityStatus | null, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
 
 export type FetchMossallAdminQueryVariables = Exact<{
   adminId: Scalars['String']['input'];
@@ -1541,64 +1794,6 @@ export type FetchPaginatedMossallAdminsQueryVariables = Exact<{
 
 
 export type FetchPaginatedMossallAdminsQuery = { __typename?: 'Query', fetchPaginatedMossallAdmins: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, blocked?: boolean | null, position?: string | null, createdAt: any }> } };
-
-export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
-  metricsInput?: InputMaybe<DemandesMetricsInput>;
-}>;
-
-
-export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null, organization?: { __typename?: 'Organization', name: string } | null }> };
-
-export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
-  metricsInput?: InputMaybe<DemandesMetricsInput>;
-  queryFilter?: InputMaybe<QueryDataConfigInput>;
-  hasPendingDemandes?: InputMaybe<Scalars['Boolean']['input']>;
-}>;
-
-
-export type FetchPaginatedOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchPaginatedOrganizationCollaborators: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> } };
-
-export type InviteCollaboratorMutationVariables = Exact<{
-  collaboratorInput: InviteCollaboratorInput;
-  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type InviteCollaboratorMutation = { __typename?: 'Mutation', inviteCollaborator: boolean };
-
-export type FetchOrganizationCollaboratorQueryVariables = Exact<{
-  collaboratorId: Scalars['String']['input'];
-}>;
-
-
-export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, organization?: { __typename?: 'Organization', name: string } | null, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null } | null } };
-
-export type UpdateCollaboratorMutationVariables = Exact<{
-  collaboratorInput: UpdateCollaboratorInput;
-  collaboratorId: Scalars['String']['input'];
-  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
-
-export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
-
-export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
-
-export type FetchPaginatedNotificationsQueryVariables = Exact<{
-  metricsInput?: InputMaybe<DemandesMetricsInput>;
-  queryFilter?: InputMaybe<QueryDataConfigInput>;
-}>;
-
-
-export type FetchPaginatedNotificationsQuery = { __typename?: 'Query', fetchPaginatedNotifications: { __typename?: 'PaginatedNotificationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> } };
 
 export type UpdateOrganizationMutationVariables = Exact<{
   organizationId: Scalars['ID']['input'];
@@ -1769,13 +1964,6 @@ export type CreateOrganizationMutationVariables = Exact<{
 
 export type CreateOrganizationMutation = { __typename?: 'Mutation', createOrganization: { __typename?: 'Organization', id: string, rootEmail: string, name: string } };
 
-export type FetchOrganizationQueryVariables = Exact<{
-  organizationId: Scalars['ID']['input'];
-}>;
-
-
-export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, user?: { __typename?: 'User', firstName: string, lastName: string, role?: string | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null } };
-
 export type FetchPaginatedFinancialOrganizationQueryVariables = Exact<{
   queryConfig: QueryDataConfigInput;
 }>;
@@ -1789,6 +1977,105 @@ export type SuspendOrganizationMutationVariables = Exact<{
 
 
 export type SuspendOrganizationMutation = { __typename?: 'Mutation', suspendOrganization: boolean };
+
+export type FetchOrganizationCollaboratorsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+}>;
+
+
+export type FetchOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchOrganizationCollaborators: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null, categorySociopro?: { __typename?: 'CategorySociopro', title?: string | null } | null, organization?: { __typename?: 'Organization', name: string } | null }> };
+
+export type FetchPaginatedOrganizationCollaboratorsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+  hasPendingDemandes?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type FetchPaginatedOrganizationCollaboratorsQuery = { __typename?: 'Query', fetchPaginatedOrganizationCollaborators: { __typename?: 'PaginatedUserResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, balance?: number | null, totalDemandeAmount: number, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, createdAt: any, updatedAt: any, blocked?: boolean | null, favoriteWallet?: Wallet | null, birthDate?: any | null }> } };
+
+export type InviteCollaboratorMutationVariables = Exact<{
+  collaboratorInput: InviteCollaboratorInput;
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type InviteCollaboratorMutation = { __typename?: 'Mutation', inviteCollaborator: boolean };
+
+export type FetchOrganizationCollaboratorQueryVariables = Exact<{
+  collaboratorId: Scalars['String']['input'];
+}>;
+
+
+export type FetchOrganizationCollaboratorQuery = { __typename?: 'Query', fetchOrganizationCollaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, uniqueIdentifier?: string | null, address?: string | null, salary?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, position?: string | null, authorizedAdvance: number, favoriteWallet?: Wallet | null, birthDate?: any | null, blocked?: boolean | null, balance?: number | null, totalDemandeAmount: number, roles?: Array<string> | null, organization?: { __typename?: 'Organization', name: string } | null, categorySociopro?: { __typename?: 'CategorySociopro', id: any, title?: string | null } | null } };
+
+export type UpdateCollaboratorMutationVariables = Exact<{
+  collaboratorInput: UpdateCollaboratorInput;
+  collaboratorId: Scalars['String']['input'];
+  categorySocioProId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
+
+export type CreateBulkPaymentOrderMutationVariables = Exact<{
+  inputs: Array<BulkPaymentInput> | BulkPaymentInput;
+  label: Scalars['String']['input'];
+  isDraft?: InputMaybe<Scalars['Boolean']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput> | ApprovalLevelInput>;
+}>;
+
+
+export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any } };
+
+export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
+
+export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewOrganizationNotificationsMutation = { __typename?: 'Mutation', viewOrganizationNotifications: boolean };
+
+export type FetchPaginatedNotificationsQueryVariables = Exact<{
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedNotificationsQuery = { __typename?: 'Query', fetchPaginatedNotifications: { __typename?: 'PaginatedNotificationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> } };
+
+export type FetchOrganizationQueryVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+}>;
+
+
+export type FetchOrganizationQuery = { __typename?: 'Query', fetchOrganization: { __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, balance: number, maxDemandeAmount: number, approvalLevelsCount?: number | null, user?: { __typename?: 'User', firstName: string, lastName: string, roles?: Array<string> | null, phoneNumber?: string | null } | null, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, name: string } | null, logo?: { __typename?: 'OrganizationLogo', id: string, data?: string | null } | null, approvalFlow?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> | null } };
+
+export type FetchSubscriptionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchSubscriptionsQuery = { __typename?: 'Query', fetchSubscriptions: Array<{ __typename?: 'SubscriptionPlan', id: string, name: string, description?: string | null, code: SubscriptionCode }> };
+
+export type FetchOrganizationApproversQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrganizationApproversQuery = { __typename?: 'Query', fetchOrganizationApprovers: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> };
+
+export type SaveApprovalFlowMutationVariables = Exact<{
+  approvalLevelsCount: Scalars['Float']['input'];
+  approvalFlow: Array<ApprovalLevelInput> | ApprovalLevelInput;
+}>;
+
+
+export type SaveApprovalFlowMutation = { __typename?: 'Mutation', saveApprovalFlow: boolean };
+
+export type FetchApprovalFlowQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchApprovalFlowQuery = { __typename?: 'Query', fetchApprovalFlow: { __typename?: 'Organization', approvalLevelsCount?: number | null, approvalFlow?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null } };
 
 export type FetchDemandesMetricsQueryVariables = Exact<{
   metricsInput: DemandesMetricsInput;
@@ -1804,6 +2091,23 @@ export type FetchOperationsMetricsQueryVariables = Exact<{
 
 
 export type FetchOperationsMetricsQuery = { __typename?: 'Query', fetchOperationsMetrics: { __typename?: 'OperationsMetrics', credit: Array<{ __typename?: 'OperationsMetricsRow', y: number, x: string }>, debit: Array<{ __typename?: 'OperationsMetricsRow', y: number, x: string }> } };
+
+export type FetchMyBulkPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchMyBulkPaymentsQuery = { __typename?: 'Query', fetchMyBulkPayments: Array<{ __typename?: 'BulkPayment', id: string, number?: number | null, firstName: string, lastName: string, phoneNumber: string, amount: number, status: BulkPaymentStatus, wallet: Wallet, organization: string, createdBy: string, createdAt: any, updatedAt: any }> };
+
+export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, wallet: Wallet }> | null } };
+
+export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchMyBulkPaymentOrdersQuery = { __typename?: 'Query', fetchMyBulkPaymentOrders: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, totalFees?: number | null, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, createdAt: any, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null }> };
 
 export type FetchOrganizationDemandesQueryVariables = Exact<{
   metricsInput?: InputMaybe<DemandesMetricsInput>;
@@ -1881,7 +2185,7 @@ export type FetchOrganisationServiceQueryVariables = Exact<{
 }>;
 
 
-export type FetchOrganisationServiceQuery = { __typename?: 'Query', fetchOrganisationService: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, demandes?: Array<{ __typename?: 'Demande', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees: number, status: DemandeStatus, rejectedReason?: string | null, statusText?: string | null, collaborator: { __typename?: 'User', createdAt: any, updatedAt: any, id: string, email: string, firstName: string, lastName: string, phoneNumber?: string | null, address?: string | null, position?: string | null, uniqueIdentifier?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, totalDemandeAmount: number, role?: string | null, blocked?: boolean | null, birthDate?: any | null, favoriteWallet?: Wallet | null, enableEmailNotification?: boolean | null, status?: number | null, authorizedAdvance: number } }> | null } };
+export type FetchOrganisationServiceQuery = { __typename?: 'Query', fetchOrganisationService: { __typename?: 'OrganisationService', id: any, amount?: number | null, amountUnit: AmountUnit, refundDuration: number, refundDurationUnit: DurationUnit, activated: boolean, activatedAt?: any | null, activationDurationDay: number, autoValidate: boolean, organizationId: string, serviceId: string, demandes?: Array<{ __typename?: 'Demande', createdAt: any, updatedAt: any, id: string, amount: number, number: number, fees: number, status: DemandeStatus, rejectedReason?: string | null, statusText?: string | null, collaborator: { __typename?: 'User', createdAt: any, updatedAt: any, id: string, email: string, firstName: string, lastName: string, phoneNumber?: string | null, address?: string | null, position?: string | null, uniqueIdentifier?: string | null, salary?: number | null, balance?: number | null, wizallAccountNumber?: string | null, bankAccountNumber?: string | null, totalDemandeAmount: number, roles?: Array<string> | null, blocked?: boolean | null, birthDate?: any | null, favoriteWallet?: Wallet | null, enableEmailNotification?: boolean | null, status?: number | null, authorizedAdvance: number } }> | null } };
 
 export type FetchCollaboratorCountQueryVariables = Exact<{
   filter?: InputMaybe<UserFilterInput>;
@@ -1940,7 +2244,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, role?: string | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null } | null } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, roles?: Array<string> | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', code: SubscriptionCode }> | null } | null } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -2056,8 +2360,9 @@ export const LoginAdminDocument = gql`
     access_token
     refresh_token
     expires_in
-    role
+    roles
     otpRequired
+    otpExpiresAt
   }
 }
     `;
@@ -2140,7 +2445,7 @@ export const VerifyOtpDocument = gql`
     access_token
     refresh_token
     expires_in
-    role
+    roles
     otpRequired
   }
 }
@@ -2185,6 +2490,7 @@ export const FetchPaginatedActivitiesDocument = gql`
       id
       message
       scope
+      status
       user {
         id
         firstName
@@ -2356,257 +2662,6 @@ export const FetchPaginatedMossallAdminsDocument = gql`
   })
   export class FetchPaginatedMossallAdminsGQL extends Apollo.Query<FetchPaginatedMossallAdminsQuery, FetchPaginatedMossallAdminsQueryVariables> {
     document = FetchPaginatedMossallAdminsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchOrganizationCollaboratorsDocument = gql`
-    query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
-  fetchOrganizationCollaborators(metricsInput: $metricsInput) {
-    id
-    firstName
-    lastName
-    email
-    phoneNumber
-    uniqueIdentifier
-    address
-    salary
-    balance
-    totalDemandeAmount
-    wizallAccountNumber
-    bankAccountNumber
-    position
-    authorizedAdvance
-    createdAt
-    updatedAt
-    blocked
-    favoriteWallet
-    birthDate
-    categorySociopro {
-      title
-    }
-    organization {
-      name
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
-    document = FetchOrganizationCollaboratorsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
-    query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $hasPendingDemandes: Boolean) {
-  fetchPaginatedOrganizationCollaborators(
-    metricsInput: $metricsInput
-    queryFilter: $queryFilter
-    hasPendingDemandes: $hasPendingDemandes
-  ) {
-    pagination {
-      totalItems
-      pageCount
-      currentPage
-      pageSize
-    }
-    results {
-      id
-      firstName
-      lastName
-      email
-      phoneNumber
-      uniqueIdentifier
-      address
-      salary
-      balance
-      totalDemandeAmount
-      wizallAccountNumber
-      bankAccountNumber
-      position
-      authorizedAdvance
-      createdAt
-      updatedAt
-      blocked
-      favoriteWallet
-      birthDate
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedOrganizationCollaboratorsGQL extends Apollo.Query<FetchPaginatedOrganizationCollaboratorsQuery, FetchPaginatedOrganizationCollaboratorsQueryVariables> {
-    document = FetchPaginatedOrganizationCollaboratorsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const InviteCollaboratorDocument = gql`
-    mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!, $categorySocioProId: String) {
-  inviteCollaborator(
-    collaborator: $collaboratorInput
-    categorySocioProId: $categorySocioProId
-  )
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
-    document = InviteCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchOrganizationCollaboratorDocument = gql`
-    query FetchOrganizationCollaborator($collaboratorId: String!) {
-  fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
-    id
-    firstName
-    lastName
-    email
-    phoneNumber
-    uniqueIdentifier
-    address
-    salary
-    wizallAccountNumber
-    bankAccountNumber
-    position
-    authorizedAdvance
-    favoriteWallet
-    birthDate
-    blocked
-    balance
-    totalDemandeAmount
-    organization {
-      name
-    }
-    categorySociopro {
-      id
-      title
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
-    document = FetchOrganizationCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const UpdateCollaboratorDocument = gql`
-    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!, $categorySocioProId: String) {
-  updateCollaborator(
-    collaborator: $collaboratorInput
-    collaboratorId: $collaboratorId
-    categorySocioProId: $categorySocioProId
-  )
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
-    document = UpdateCollaboratorDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchOrganizationNotificationsDocument = gql`
-    query FetchOrganizationNotifications {
-  fetchOrganizationNotifications {
-    entityId
-    title
-    content
-    author {
-      firstName
-      lastName
-    }
-    viewedByMe
-    organization
-    date: createdAt
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationNotificationsGQL extends Apollo.Query<FetchOrganizationNotificationsQuery, FetchOrganizationNotificationsQueryVariables> {
-    document = FetchOrganizationNotificationsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const ViewOrganizationNotificationsDocument = gql`
-    mutation ViewOrganizationNotifications {
-  viewOrganizationNotifications
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ViewOrganizationNotificationsGQL extends Apollo.Mutation<ViewOrganizationNotificationsMutation, ViewOrganizationNotificationsMutationVariables> {
-    document = ViewOrganizationNotificationsDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const FetchPaginatedNotificationsDocument = gql`
-    query FetchPaginatedNotifications($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
-  fetchPaginatedNotifications(
-    metricsInput: $metricsInput
-    queryFilter: $queryFilter
-  ) {
-    pagination {
-      totalItems
-      pageCount
-      currentPage
-      pageSize
-    }
-    results {
-      entityId
-      title
-      content
-      author {
-        firstName
-        lastName
-      }
-      viewedByMe
-      organization
-      date: createdAt
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchPaginatedNotificationsGQL extends Apollo.Query<FetchPaginatedNotificationsQuery, FetchPaginatedNotificationsQueryVariables> {
-    document = FetchPaginatedNotificationsDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -3246,45 +3301,6 @@ export const CreateOrganizationDocument = gql`
       super(apollo);
     }
   }
-export const FetchOrganizationDocument = gql`
-    query FetchOrganization($organizationId: ID!) {
-  fetchOrganization(organizationId: $organizationId) {
-    id
-    name
-    rootEmail
-    postalAddress
-    phone
-    user {
-      firstName
-      lastName
-      role
-      phoneNumber
-    }
-    financialOrganization {
-      id
-      name
-    }
-    logo {
-      id
-      data
-    }
-    blocked
-    balance
-    maxDemandeAmount
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
-    document = FetchOrganizationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
 export const FetchPaginatedFinancialOrganizationDocument = gql`
     query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
   fetchPaginatedFinancialOrganization(queryConfig: $queryConfig) {
@@ -3324,6 +3340,431 @@ export const SuspendOrganizationDocument = gql`
   })
   export class SuspendOrganizationGQL extends Apollo.Mutation<SuspendOrganizationMutation, SuspendOrganizationMutationVariables> {
     document = SuspendOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationCollaboratorsDocument = gql`
+    query FetchOrganizationCollaborators($metricsInput: DemandesMetricsInput) {
+  fetchOrganizationCollaborators(metricsInput: $metricsInput) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    balance
+    totalDemandeAmount
+    wizallAccountNumber
+    bankAccountNumber
+    position
+    authorizedAdvance
+    createdAt
+    updatedAt
+    blocked
+    favoriteWallet
+    birthDate
+    categorySociopro {
+      title
+    }
+    organization {
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationCollaboratorsGQL extends Apollo.Query<FetchOrganizationCollaboratorsQuery, FetchOrganizationCollaboratorsQueryVariables> {
+    document = FetchOrganizationCollaboratorsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedOrganizationCollaboratorsDocument = gql`
+    query FetchPaginatedOrganizationCollaborators($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput, $hasPendingDemandes: Boolean) {
+  fetchPaginatedOrganizationCollaborators(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+    hasPendingDemandes: $hasPendingDemandes
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      firstName
+      lastName
+      email
+      phoneNumber
+      uniqueIdentifier
+      address
+      salary
+      balance
+      totalDemandeAmount
+      wizallAccountNumber
+      bankAccountNumber
+      position
+      authorizedAdvance
+      createdAt
+      updatedAt
+      blocked
+      favoriteWallet
+      birthDate
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedOrganizationCollaboratorsGQL extends Apollo.Query<FetchPaginatedOrganizationCollaboratorsQuery, FetchPaginatedOrganizationCollaboratorsQueryVariables> {
+    document = FetchPaginatedOrganizationCollaboratorsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const InviteCollaboratorDocument = gql`
+    mutation InviteCollaborator($collaboratorInput: InviteCollaboratorInput!, $categorySocioProId: String) {
+  inviteCollaborator(
+    collaborator: $collaboratorInput
+    categorySocioProId: $categorySocioProId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class InviteCollaboratorGQL extends Apollo.Mutation<InviteCollaboratorMutation, InviteCollaboratorMutationVariables> {
+    document = InviteCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationCollaboratorDocument = gql`
+    query FetchOrganizationCollaborator($collaboratorId: String!) {
+  fetchOrganizationCollaborator(collaboratorId: $collaboratorId) {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+    uniqueIdentifier
+    address
+    salary
+    wizallAccountNumber
+    bankAccountNumber
+    position
+    authorizedAdvance
+    favoriteWallet
+    birthDate
+    blocked
+    balance
+    totalDemandeAmount
+    roles
+    organization {
+      name
+    }
+    categorySociopro {
+      id
+      title
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationCollaboratorGQL extends Apollo.Query<FetchOrganizationCollaboratorQuery, FetchOrganizationCollaboratorQueryVariables> {
+    document = FetchOrganizationCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateCollaboratorDocument = gql`
+    mutation UpdateCollaborator($collaboratorInput: UpdateCollaboratorInput!, $collaboratorId: String!, $categorySocioProId: String) {
+  updateCollaborator(
+    collaborator: $collaboratorInput
+    collaboratorId: $collaboratorId
+    categorySocioProId: $categorySocioProId
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateCollaboratorGQL extends Apollo.Mutation<UpdateCollaboratorMutation, UpdateCollaboratorMutationVariables> {
+    document = UpdateCollaboratorDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateBulkPaymentOrderDocument = gql`
+    mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String, $approversByLevel: [ApprovalLevelInput!]) {
+  createBulkPaymentOrder(
+    inputs: $inputs
+    label: $label
+    isDraft: $isDraft
+    type: $type
+    approversByLevel: $approversByLevel
+  ) {
+    id
+    label
+    totalAmount
+    status
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateBulkPaymentOrderGQL extends Apollo.Mutation<CreateBulkPaymentOrderMutation, CreateBulkPaymentOrderMutationVariables> {
+    document = CreateBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationNotificationsDocument = gql`
+    query FetchOrganizationNotifications {
+  fetchOrganizationNotifications {
+    entityId
+    title
+    content
+    author {
+      firstName
+      lastName
+    }
+    viewedByMe
+    organization
+    date: createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationNotificationsGQL extends Apollo.Query<FetchOrganizationNotificationsQuery, FetchOrganizationNotificationsQueryVariables> {
+    document = FetchOrganizationNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ViewOrganizationNotificationsDocument = gql`
+    mutation ViewOrganizationNotifications {
+  viewOrganizationNotifications
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ViewOrganizationNotificationsGQL extends Apollo.Mutation<ViewOrganizationNotificationsMutation, ViewOrganizationNotificationsMutationVariables> {
+    document = ViewOrganizationNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedNotificationsDocument = gql`
+    query FetchPaginatedNotifications($metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedNotifications(
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      entityId
+      title
+      content
+      author {
+        firstName
+        lastName
+      }
+      viewedByMe
+      organization
+      date: createdAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedNotificationsGQL extends Apollo.Query<FetchPaginatedNotificationsQuery, FetchPaginatedNotificationsQueryVariables> {
+    document = FetchPaginatedNotificationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationDocument = gql`
+    query FetchOrganization($organizationId: ID!) {
+  fetchOrganization(organizationId: $organizationId) {
+    id
+    name
+    rootEmail
+    postalAddress
+    phone
+    user {
+      firstName
+      lastName
+      roles
+      phoneNumber
+    }
+    financialOrganization {
+      id
+      name
+    }
+    logo {
+      id
+      data
+    }
+    blocked
+    balance
+    maxDemandeAmount
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
+    }
+    subscriptions {
+      id
+      name
+      description
+      code
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationGQL extends Apollo.Query<FetchOrganizationQuery, FetchOrganizationQueryVariables> {
+    document = FetchOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchSubscriptionsDocument = gql`
+    query FetchSubscriptions {
+  fetchSubscriptions {
+    id
+    name
+    description
+    code
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchSubscriptionsGQL extends Apollo.Query<FetchSubscriptionsQuery, FetchSubscriptionsQueryVariables> {
+    document = FetchSubscriptionsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrganizationApproversDocument = gql`
+    query FetchOrganizationApprovers {
+  fetchOrganizationApprovers {
+    id
+    firstName
+    lastName
+    position
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrganizationApproversGQL extends Apollo.Query<FetchOrganizationApproversQuery, FetchOrganizationApproversQueryVariables> {
+    document = FetchOrganizationApproversDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SaveApprovalFlowDocument = gql`
+    mutation SaveApprovalFlow($approvalLevelsCount: Float!, $approvalFlow: [ApprovalLevelInput!]!) {
+  saveApprovalFlow(
+    approvalLevelsCount: $approvalLevelsCount
+    approvalFlow: $approvalFlow
+  )
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SaveApprovalFlowGQL extends Apollo.Mutation<SaveApprovalFlowMutation, SaveApprovalFlowMutationVariables> {
+    document = SaveApprovalFlowDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchApprovalFlowDocument = gql`
+    query FetchApprovalFlow {
+  fetchApprovalFlow {
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchApprovalFlowGQL extends Apollo.Query<FetchApprovalFlowQuery, FetchApprovalFlowQueryVariables> {
+    document = FetchApprovalFlowDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -3377,6 +3818,117 @@ export const FetchOperationsMetricsDocument = gql`
   })
   export class FetchOperationsMetricsGQL extends Apollo.Query<FetchOperationsMetricsQuery, FetchOperationsMetricsQueryVariables> {
     document = FetchOperationsMetricsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchMyBulkPaymentsDocument = gql`
+    query FetchMyBulkPayments {
+  fetchMyBulkPayments {
+    id
+    number
+    firstName
+    lastName
+    phoneNumber
+    amount
+    status
+    wallet
+    organization
+    createdBy
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMyBulkPaymentsGQL extends Apollo.Query<FetchMyBulkPaymentsQuery, FetchMyBulkPaymentsQueryVariables> {
+    document = FetchMyBulkPaymentsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchBulkPaymentOrderByIdDocument = gql`
+    query FetchBulkPaymentOrderById($id: String!) {
+  fetchBulkPaymentOrderById(id: $id) {
+    id
+    label
+    totalAmount
+    status
+    type
+    rejectedReason
+    currentApprovalLevel
+    createdAt
+    lastRelaunchAt
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
+    }
+    approvals {
+      level
+      approvedAt
+      approverId
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      wallet
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchBulkPaymentOrderByIdGQL extends Apollo.Query<FetchBulkPaymentOrderByIdQuery, FetchBulkPaymentOrderByIdQueryVariables> {
+    document = FetchBulkPaymentOrderByIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchMyBulkPaymentOrdersDocument = gql`
+    query FetchMyBulkPaymentOrders {
+  fetchMyBulkPaymentOrders {
+    id
+    label
+    totalAmount
+    totalFees
+    status
+    type
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMyBulkPaymentOrdersGQL extends Apollo.Query<FetchMyBulkPaymentOrdersQuery, FetchMyBulkPaymentOrdersQueryVariables> {
+    document = FetchMyBulkPaymentOrdersDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -3727,7 +4279,7 @@ export const FetchOrganisationServiceDocument = gql`
         wizallAccountNumber
         bankAccountNumber
         totalDemandeAmount
-        role
+        roles
         blocked
         birthDate
         favoriteWallet
@@ -3935,7 +4487,7 @@ export const FetchCurrentAdminDocument = gql`
     email
     phoneNumber
     address
-    role
+    roles
     position
     enableEmailNotification
     organization {
@@ -3949,6 +4501,9 @@ export const FetchCurrentAdminDocument = gql`
       organisationService {
         id
         serviceId
+      }
+      subscriptions {
+        code
       }
     }
   }

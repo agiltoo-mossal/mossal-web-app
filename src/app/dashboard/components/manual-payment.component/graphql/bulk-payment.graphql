@@ -1,0 +1,25 @@
+mutation CreateBulkPaymentOrder(
+  $inputs: [BulkPaymentInput!]!
+  $label: String!
+  $isDraft: Boolean
+  $type: String
+  $approversByLevel: [ApprovalLevelInput!]
+) {
+  createBulkPaymentOrder(
+    inputs: $inputs
+    label: $label
+    isDraft: $isDraft
+    type: $type
+    approversByLevel: $approversByLevel
+  ) {
+    id
+    label
+    totalAmount
+    status
+    createdAt
+  }
+}
+
+# SubmitBulkPaymentOrder et FetchBulkPaymentOrderById sont définis manuellement dans generated.ts
+# car ces mutations n'existent pas encore sur le backend preprod.
+# À décommenter ici et supprimer de generated.ts une fois déployé sur preprod.

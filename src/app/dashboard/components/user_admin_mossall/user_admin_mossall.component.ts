@@ -103,7 +103,7 @@ export class UserAdminMossallComponent {
         (result) => {
           this.isLoading = false;
           if (result.data.updateMyAdminPassword) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'Mot de passe modifié avec succès'
             );
             this.authService.logout();
@@ -152,7 +152,7 @@ export class UserAdminMossallComponent {
     this.updateMyAdminProfileGQL.mutate({ userInput: value }).subscribe(
       (result) => {
         if (result.data.updateMyAdminProfile) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'Profil modifié avec succès'
           );
         } else {
@@ -176,7 +176,7 @@ export class UserAdminMossallComponent {
         .subscribe(
           (result) => {
             if (result.data.enableEmailNotification) {
-              this.snackBarService.showSuccessSnackBar(
+              this.snackBarService.showSuccessSnackBar(3000,
                 'Notifications par email activées avec succés!'
               );
             } else {
@@ -193,7 +193,7 @@ export class UserAdminMossallComponent {
         .subscribe(
           (result) => {
             if (result.data.disableEmailNotification) {
-              this.snackBarService.showSuccessSnackBar(
+              this.snackBarService.showSuccessSnackBar(3000,
                 'Notifications par email désactivées avec succés!'
               );
             } else {

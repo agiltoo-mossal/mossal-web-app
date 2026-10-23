@@ -1,3 +1,5 @@
+import { ResetApprovalFlowDialogComponent } from './components/flux-approbation.component/reset-approval-flow-dialog/reset-approval-flow-dialog.component';
+import { MatSelectModule } from '@angular/material/select';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
@@ -52,13 +54,28 @@ import { RequestEventComponent } from './components/request-event/request-event.
 import { RequestSalaryComponent } from './components/request-salary/request-salary.component';
 import { RequestMonthlyRepayableAdvanceComponent } from './components/request-monthly-repayable-advance/request-monthly-repayable-advance.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule } from '@angular/material/core';
 import { RequestDetailsComponent } from './components/request-details/request-details.component';
 import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 import { UserAdminMossallComponent } from './components/user_admin_mossall/user_admin_mossall.component';
 import { ConfirmationDialogComponent } from './components/organization-setting-general/confirmation-dialog.component';
 import { OrganizationBalanceModule } from './components/society/components/organization-balance/organization-balance.module';
+import { OverviewComponent as PaymentsOverviewComponent } from './components/payments/overview/overview.component';
+import { AvancesComponent } from './components/avancesComponent/avances.component';
+import { ImportFichierComponent } from './components/import-fichier-component/import-fichier.component';
+import { ManualPaymentComponent } from './components/manual-payment.component/manual-payment.component';
+import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
+import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
+import { HistoryComponent } from './components/historyComponent/history.component';
+import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
+import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
+import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
+import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
+import { ApproveConfirmationDialogComponent } from './components/approve-confirmation-dialog/approve-confirmation-dialog.component';
+import { ApproverRemovalWarningDialogComponent } from './components/flux-approbation.component/approver-removal-warning-dialog/approver-removal-warning-dialog.component';
+
 
 @NgModule({
   declarations: [
@@ -83,7 +100,22 @@ import { OrganizationBalanceModule } from './components/society/components/organ
     RequestMonthlyRepayableAdvanceComponent,
     RequestDetailsComponent,
     DashboardAdminComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    PaymentsOverviewComponent,
+    AvancesComponent,
+    ImportFichierComponent,
+    ManualPaymentComponent,
+    FluxApprobationComponent,
+    PaymentDetailsComponent,
+    HistoryComponent,
+    TrackingApprovalsComponent,
+    TrackingApprovalsDetailsComponent,
+    RejectPaymentDialogComponent,
+    ApproverOrderViewComponent,
+    ApproveConfirmationDialogComponent,
+    ResetApprovalFlowDialogComponent,
+    ApproverOrderViewComponent,
+    ApproverRemovalWarningDialogComponent
   ],
   imports: [
     CreateEventModule,
@@ -127,7 +159,11 @@ import { OrganizationBalanceModule } from './components/society/components/organ
     MatNativeDateModule, // Fournit la gestion des dates natives
     MatIconModule,
     MatDialogModule,
-    OrganizationBalanceModule
+    OrganizationBalanceModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatNativeDateModule ,
+    MatDatepickerModule ,
   ],
   providers: [NotificationsService],
 })

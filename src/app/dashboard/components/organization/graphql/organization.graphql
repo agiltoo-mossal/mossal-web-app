@@ -408,7 +408,7 @@ query FetchOrganization($organizationId: ID!) {
     user {
       firstName
       lastName
-      role
+      roles
       phoneNumber
     }
     financialOrganization {
@@ -422,7 +422,33 @@ query FetchOrganization($organizationId: ID!) {
     blocked
     balance
     maxDemandeAmount
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
+    }
+    subscriptions {
+      id
+      name
+      description
+      code
+    }
 	}
+}
+
+query FetchSubscriptions {
+  fetchSubscriptions {
+    id
+    name
+    description
+    code
+  }
 }
 
 query FetchPaginatedFinancialOrganization($queryConfig: QueryDataConfigInput!) {
@@ -447,5 +473,40 @@ mutation SuspendOrganization(
   suspendOrganization(
     organizationId: $organizationId
   )
+}
+
+query FetchOrganizationApprovers {
+  fetchOrganizationApprovers {
+    id
+    firstName
+    lastName
+    position
+  }
+}
+
+mutation SaveApprovalFlow(
+  $approvalLevelsCount: Float!
+  $approvalFlow: [ApprovalLevelInput!]!
+) {
+  saveApprovalFlow(
+    approvalLevelsCount: $approvalLevelsCount
+    approvalFlow: $approvalFlow
+  )
+}
+
+query FetchApprovalFlow {
+  fetchApprovalFlow {
+    approvalLevelsCount
+    approvalFlow {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+        position
+      }
+    }
+  }
 }
 

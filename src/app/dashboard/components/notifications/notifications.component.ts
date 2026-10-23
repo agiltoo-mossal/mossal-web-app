@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, merge, startWith, Subscription, switchMap } from 'rxjs';
 import {
   FetchOrganizationNotificationsGQL,
@@ -9,6 +10,8 @@ import { NotificationsService } from './notifications.service';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 
+type NotifTab = 'toutes' | 'non-lues' | 'lues';
+
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
@@ -18,6 +21,7 @@ export class NotificationsComponent implements OnDestroy, OnInit {
   notfis = [];
   subscriptions: Subscription[] = [];
   resultsLength: number = 0;
+  activeTab: NotifTab = 'toutes';
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
@@ -25,8 +29,25 @@ export class NotificationsComponent implements OnDestroy, OnInit {
     private fetchOrganizationNotificationsGQL: FetchOrganizationNotificationsGQL,
     private viewOrganizationNotificationsGQL: ViewOrganizationNotificationsGQL,
     private fetchPaginatedNotificationsGQL: FetchPaginatedNotificationsGQL,
-    private paginatedNofif: FetchPaginatedNotificationsGQL
+    private paginatedNofif: FetchPaginatedNotificationsGQL,
+    private router: Router,
   ) { }
+
+  get filteredNotifs(): any[] {
+    if (this.activeTab === 'non-lues') return this.notfis.filter((n: any) => !n.viewedByMe);
+    if (this.activeTab === 'lues') return this.notfis.filter((n: any) => n.viewedByMe);
+    return this.notfis;
+  }
+
+  setActiveTab(tab: NotifTab): void {
+    this.activeTab = tab;
+  }
+
+  onNotifClick(notif: any): void {
+    this.notificationsService.resolveNotifLink(notif).subscribe((link) => {
+      this.router.navigate(link);
+    });
+  }
 
   getNotifications() {
     const subscription = this.fetchPaginatedNotificationsGQL.fetch().subscribe({

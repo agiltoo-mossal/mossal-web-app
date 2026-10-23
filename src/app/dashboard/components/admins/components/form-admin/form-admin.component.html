@@ -124,13 +124,42 @@
 
 
 
-    <!-- Ligne: Adresse -->
-    <div class="form-row" style="width: 49%">
+    <!-- Ligne: Adresse , Ajouter le champ  Role-->
+    <!-- <div class="form-row" style="width: 49%">
       <div class="form-group">
         <label for="address">Adresse</label>
         <input type="text" id="address" formControlName="address" placeholder="Adresse" />
       </div>
+    </div> -->
+
+
+    <!-- Ligne: Adresse , Rôle -->
+<div class="form-row">
+  <div class="form-group">
+    <label for="address">Adresse</label>
+    <input type="text" id="address" formControlName="address" placeholder="Adresse" />
+  </div>
+
+  <div class="form-group">
+    <label for="role">Rôle <span class="color-danger">*</span></label>
+    <div class="custom-select-wrapper">
+      <div class="custom-select-trigger" (click)="toggleRoleDropdown()">
+        <span *ngIf="selectedRoles.length === 0" class="placeholder">Sélectionnez le ou les rôles de cet admin</span>
+        <span *ngIf="selectedRoles.length > 0">{{ getSelectedRolesLabel() }}</span>
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </div>
+      <div class="custom-select-dropdown" *ngIf="isRoleDropdownOpen">
+        <div class="custom-select-option" *ngFor="let role of availableRoles" (click)="toggleRole(role.value)">
+          <div class="custom-checkbox" [class.checked]="isRoleSelected(role.value)"></div>
+          <span>{{ role.label }}</span>
+        </div>
+      </div>
     </div>
+    <div *ngIf="collaboratorForm.get('roles')?.invalid && collaboratorForm.get('roles')?.touched" class="error-message">
+      <span>Le rôle est obligatoire.</span>
+    </div>
+  </div>
+</div>
 
     <!-- Boutons -->
     <div class="form-row">

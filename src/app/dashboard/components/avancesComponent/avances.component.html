@@ -1,0 +1,38 @@
+<div fxLayout="column" class="page-wrapper form-container form-container-card">
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    <mat-tab *ngFor="let service of listServices" [label]="service.title">
+      <div [ngSwitch]="service.title">
+        <div class="container_tab">
+          <app-organization-setting-general
+            *ngSwitchCase="'général'"
+          ></app-organization-setting-general>
+          <app-organization-setting-emergency
+            (serviceActivationChange)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Dépannage d’urgence'"
+          ></app-organization-setting-emergency>
+          <app-organization-setting-event
+            (activeService)="onServiceActivationChange($event)"
+
+            [service]="service"
+            *ngSwitchCase="'Avance sur évenement'"
+          ></app-organization-setting-event>
+          <app-organization-setting-salary
+            (activeService)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Avance salariale'"
+          ></app-organization-setting-salary>
+          <app-organization-setting-salary-refund
+            (activeService)="onServiceActivationChange($event)"
+            [service]="service"
+            *ngSwitchCase="'Avance sur plusieurs mois'"
+          ></app-organization-setting-salary-refund>
+          <div *ngSwitchDefault>Component not found</div>
+        </div>
+      </div>
+    </mat-tab>
+   
+  </mat-tab-group>
+
+  
+</div>

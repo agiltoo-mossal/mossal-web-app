@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
+  FetchCurrentAdminGQL,
   FetchOrganizationCollaboratorGQL,
   InviteAdminGQL,
   LockUserGQL,
@@ -23,6 +24,7 @@ export class FormAdminComponent {
   formText: string = '';
   collaboratorForm: FormGroup;
   collaborator: User;
+  initialRoles: string[] = [];
   @Input() collaboratorId: string;
   isLoading: boolean = false;
 
@@ -30,6 +32,17 @@ export class FormAdminComponent {
   bankAccountNumberExists: boolean = false;
   uniqueIdentifierExists: boolean = false;
   emailExists: boolean = false;
+
+  isRoleDropdownOpen: boolean = false;
+  selectedRoles: string[] = [];
+  // Catalogue complet (utilisé pour les libellés). Le dropdown n'affiche que `availableRoles`,
+  // filtré selon les souscriptions de l'organisation.
+  private readonly allRoles = [
+    { value: 'ADMIN', label: 'Administrateur' },
+    { value: 'PAYMENT_MANAGER', label: 'Gestionnaire des paiements' },
+    { value: 'APPROVER', label: 'Approbateur' },
+  ];
+  availableRoles = [...this.allRoles];
 
   constructor(
     private fb: FormBuilder,
@@ -41,7 +54,8 @@ export class FormAdminComponent {
 
     private searchService: SearchService,
     private lockUserGQL: LockUserGQL,
-    private unlockUserGQL: UnlockUserGQL
+    private unlockUserGQL: UnlockUserGQL,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
   ) {
     this.collaboratorForm = this.fb.group({
       email: ['', Validators.required],
@@ -61,8 +75,13 @@ export class FormAdminComponent {
       salary: [0, Validators.required],
       //wizallAccountNumber: [''],
       // bankAccountNumber: [''],
+      roles: [[], Validators.required],
+
     });
   }
+
+
+  
 
   ngOnInit(): void {
     this.formText =
@@ -70,7 +89,25 @@ export class FormAdminComponent {
         ? "Modifier les infos de l'admin "
         : 'Création compte admin';
 
+    this.loadAllowedRoles();
     this.initSearch();
+  }
+
+  // Filtre le dropdown Rôle selon les souscriptions de l'organisation :
+  // SALARY_ADVANCE -> ADMIN ; BULK_PAYMENT -> PAYMENT_MANAGER + APPROVER.
+  private loadAllowedRoles(): void {
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe((result) => {
+      const codes: string[] = (result.data?.fetchCurrentAdmin?.organization?.subscriptions ?? [])
+        .map((s: any) => s?.code)
+        .filter(Boolean);
+      const allowed = new Set<string>();
+      if (codes.includes('SALARY_ADVANCE')) allowed.add('ADMIN');
+      if (codes.includes('BULK_PAYMENT')) {
+        allowed.add('PAYMENT_MANAGER');
+        allowed.add('APPROVER');
+      }
+      this.availableRoles = this.allRoles.filter((r) => allowed.has(r.value));
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -98,7 +135,7 @@ export class FormAdminComponent {
           this.isLoading = false;
           if (result.data) {
             this.router.navigate(['/dashboard/admins']);
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               "Invitation envoyé à l'admin"
             );
           }
@@ -110,37 +147,74 @@ export class FormAdminComponent {
       );
   }
 
-  edit() {
-    console.log(this.collaboratorForm.invalid, this.isLoading);
-    console.log(this.collaboratorForm.getRawValue());
+  // edit() {
+  //   console.log(this.collaboratorForm.invalid, this.isLoading);
+  //   console.log(this.collaboratorForm.getRawValue());
 
-    /* if (this.collaboratorForm.invalid || this.isLoading) {
-      this.collaboratorForm.markAllAsTouched();
-      return;
-    } */
-    this.isLoading = true;
-    const value = {
-      ...this.collaboratorForm.value,
-      salary: Number(this.collaboratorForm.value.salary || 0),
-    };
-    delete value.email;
-    this.updateCollaboratorGQL
-      .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
-      .subscribe(
-        (result) => {
-          this.isLoading = false;
-          if (result.data) {
-            this.router.navigate(['/dashboard/admins']);
-            this.snackBarService.showSuccessSnackBar(
-              'Admin modifié avec succés'
-            );
-          }
-        },
-        (error) => {
-          this.isLoading = false;
+  //   /* if (this.collaboratorForm.invalid || this.isLoading) {
+  //     this.collaboratorForm.markAllAsTouched();
+  //     return;
+  //   } */
+  //   this.isLoading = true;
+  //   const value = {
+  //     ...this.collaboratorForm.value,
+  //     salary: Number(this.collaboratorForm.value.salary || 0),
+  //   };
+  //   delete value.email;
+  //   this.updateCollaboratorGQL
+  //     .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+  //     .subscribe(
+  //       (result) => {
+  //         this.isLoading = false;
+  //         if (result.data) {
+  //           this.router.navigate(['/dashboard/admins']);
+  //           this.snackBarService.showSuccessSnackBar(3000,
+  //             'Admin modifié avec succés'
+  //           );
+  //         }
+  //       },
+  //       (error) => {
+  //         this.isLoading = false;
+  //       }
+  //     );
+  // }
+
+  edit() {
+  this.isLoading = true;
+
+  const rolesChanged = this.haveRolesChanged();
+
+  const value = {
+    ...this.collaboratorForm.value,
+    salary: Number(this.collaboratorForm.value.salary || 0),
+  };
+  delete value.email;
+
+  this.updateCollaboratorGQL
+    .mutate({ collaboratorInput: value, collaboratorId: this.collaboratorId })
+    .subscribe(
+      (result) => {
+        this.isLoading = false;
+        if (result.data) {
+          this.router.navigate(['/dashboard/admins']);
+          const message = rolesChanged
+            ? "Les rôles de l'utilisateur ont été mis à jour avec succès"
+            : 'Admin modifié avec succès';
+          this.snackBarService.showSuccessSnackBar(3000, message);
         }
-      );
-  }
+      },
+      (error) => {
+        this.isLoading = false;
+      }
+    );
+}
+
+private haveRolesChanged(): boolean {
+  if (this.initialRoles.length !== this.selectedRoles.length) return true;
+  const sortedInitial = [...this.initialRoles].sort();
+  const sortedSelected = [...this.selectedRoles].sort();
+  return !sortedInitial.every((role, i) => role === sortedSelected[i]);
+}
 
   getCollab() {
     if (this.collaboratorId) {
@@ -152,6 +226,10 @@ export class FormAdminComponent {
         .subscribe((result) => {
           this.collaborator = result.data.fetchOrganizationCollaborator as User;
           this.collaboratorForm.patchValue(this.collaborator);
+          this.selectedRoles = [...(this.collaborator.roles ?? [])];
+          this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+          this.initialRoles = [...this.selectedRoles]; // ← ajout
+
         });
     }
   }
@@ -263,7 +341,7 @@ export class FormAdminComponent {
   lockUser = (userId: string) => {
     this.lockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.lockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur bloqué avec succès!'
         );
         this.getCollab();
@@ -276,7 +354,7 @@ export class FormAdminComponent {
   unlockUser = (userId: string) => {
     this.unlockUserGQL.mutate({ userId }).subscribe((result) => {
       if (result.data.unlockUser) {
-        this.snackBarService.showSuccessSnackBar(
+        this.snackBarService.showSuccessSnackBar(3000,
           'Utilisateur débloqué avec succès!'
         );
         this.getCollab();
@@ -285,4 +363,66 @@ export class FormAdminComponent {
       }
     });
   };
+
+  toggleRoleDropdown() {
+      this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
+  }
+
+  // toggleRole(value: string) {
+  //   const index = this.selectedRoles.indexOf(value);
+  //   if (index > -1) {
+  //     this.selectedRoles.splice(index, 1);
+  //   } else {
+  //     this.selectedRoles.push(value);
+  //   }
+  //   this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+  // }
+
+  toggleRole(value: string) {
+  const isRemoving = this.selectedRoles.includes(value);
+
+  // Empêcher de retirer le dernier rôle restant
+  if (isRemoving && this.selectedRoles.length === 1) {
+    this.snackBarService.showErrorSnackBar(3000, 'Veuillez sélectionner au moins un rôle');
+    return;
+  }
+
+  // Avertissement si on retire "Approbateur" alors qu'il est actif dans un flux
+ if (isRemoving && value === 'APPROVER' && this.isApproverInActiveFlow()) {
+  const flowInfo = (this.collaborator as any)?.approvalFlowLevel;
+  const levelText = flowInfo ? ` (Niveau ${flowInfo})` : '';
+  const confirmed = window.confirm(
+    `Cet utilisateur est affecté au flux d'approbation${levelText}.\n` +
+    `Retirer ce rôle le retirera également du flux. Confirmer ?`
+  );
+
+    if (!confirmed) {
+      return; // on annule, la case reste cochée
+    }
+  }
+
+  const index = this.selectedRoles.indexOf(value);
+  if (index > -1) {
+    this.selectedRoles.splice(index, 1);
+  } else {
+    this.selectedRoles.push(value);
+  }
+  this.collaboratorForm.get('roles').setValue(this.selectedRoles);
+}
+
+private isApproverInActiveFlow(): boolean {
+  // ⚠️ À adapter selon le champ réellement exposé par le backend/GraphQL
+  // (ex: this.collaborator?.isAssignedToApprovalFlow)
+  return !!(this.collaborator as any)?.isAssignedToApprovalFlow;
+}
+
+  isRoleSelected(value: string): boolean {
+    return this.selectedRoles.includes(value);
+  }
+
+  getSelectedRolesLabel(): string {
+    return this.selectedRoles
+      .map(v => this.allRoles.find(r => r.value === v)?.label ?? v)
+      .join(', ');
+  }
 }

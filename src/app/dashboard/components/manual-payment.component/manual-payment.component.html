@@ -1,0 +1,528 @@
+<div class="manual-payment-container" [class.no-bg]="currentStep === 2">
+
+  <!-- STEPPER HEADER -->
+  <div class="stepper-header">
+    <button class="back-btn" (click)="backToHome()">
+      <mat-icon>arrow_back</mat-icon> Retour à l'accueil
+    </button>
+    <div class="steps">
+      <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
+        <span class="step-label">Saisie des bénéficiaires</span>
+      </div>
+      <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">
+        <span class="step-label">Récapitulatif</span>
+      </div>
+      <div class="step" [class.active]="currentStep === 3">
+        <span class="step-label">Validation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state when fetching an existing draft -->
+  <div class="loading-order-state" *ngIf="isLoadingOrder">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Chargement en cours...</p>
+  </div>
+
+  <!-- STEP 1 : Saisie des bénéficiaires -->
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 1">
+
+    <!-- Solde de l'organisation -->
+    <div class="balance-summary-card" *ngIf="organization">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+        <mat-icon>error_outline</mat-icon>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
+          organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
+    </div>
+    <div class="two-col-layout">
+
+      <!-- LEFT: Label + Formulaire -->
+      <div class="form-col">
+
+        <!-- Libellé (carte grise) -->
+        <div class="label-section">
+          <label class="label-title">Libellé du paiement en masse <span class="color-danger">*</span></label>
+          <input #labelInput type="text" class="label-input" [(ngModel)]="label" name="orderLabel"
+            placeholder="Ex : Paiement des primes de Juin 2026" maxlength="100" />
+          <p class="label-hint">Ce libellé regroupera toutes les transactions ajoutées à la liste</p>
+        </div>
+
+        <!-- Formulaire bénéficiaire -->
+        <div class="form-panel">
+          <h2 class="form-title">Ajouter un bénéficiaire</h2>
+          <p class="form-subtitle">Renseignez les informations de la transaction</p>
+
+          <form #beneficiaryForm="ngForm" (ngSubmit)="addBeneficiary(beneficiaryForm)">
+
+            <div class="form-group">
+              <label>Prénom <span class="color-danger">*</span></label>
+              <input type="text" [(ngModel)]="form.firstName" name="firstName" #firstName="ngModel" required />
+              <div *ngIf="firstName.invalid && firstName.touched" class="error-message">
+                <span *ngIf="firstName.errors?.['required']">Le champ Prénom est obligatoire.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Nom <span class="color-danger">*</span></label>
+              <input type="text" [(ngModel)]="form.lastName" name="lastName" #lastName="ngModel" required />
+              <div *ngIf="lastName.invalid && lastName.touched" class="error-message">
+                <span *ngIf="lastName.errors?.['required']">Le champ Nom est obligatoire.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Téléphone <span class="color-danger">*</span></label>
+              <input type="text" [(ngModel)]="form.phoneNumber" name="phoneNumber" #phoneNumber="ngModel" required
+                pattern="^(70|75|76|77|78) \d{3} \d{2} \d{2}$" maxlength="12" (input)="formatPhone($event)"
+                placeholder="7X XXX XX XX" />
+              <div *ngIf="phoneNumber.invalid && phoneNumber.touched" class="error-message">
+                <span *ngIf="phoneNumber.errors?.['required']">Le numéro de téléphone est obligatoire.</span>
+                <span *ngIf="phoneNumber.errors?.['pattern']">Le numéro doit commencer par 70, 75, 76, 77 ou 78 et
+                  contenir 9 chiffres.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Montant de la transaction <span class="color-danger">*</span></label>
+              <div class="input-suffix">
+                <input type="text" [(ngModel)]="form.amount" name="amount" #amount="ngModel" required
+                  (input)="formatAmount($event)" placeholder="0" />
+                <span class="suffix">XOF</span>
+              </div>
+              <div *ngIf="amount.invalid && amount.touched" class="error-message">
+                <span *ngIf="amount.errors?.['required']">Le montant est obligatoire.</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Opérateur <span class="color-danger">*</span></label>
+              <div class="select-wrapper">
+                <select [(ngModel)]="form.wallet" name="wallet" #wallet="ngModel" required>
+                  <option value="">Sélectionner un opérateur</option>
+                  <option *ngFor="let opt of walletOptions" [value]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <mat-icon>keyboard_arrow_down</mat-icon>
+              </div>
+              <div *ngIf="wallet.invalid && wallet.touched" class="error-message">
+                <span *ngIf="wallet.errors?.['required']">L'opérateur est obligatoire.</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-ajouter" [disabled]="beneficiaryForm.invalid">
+              <mat-icon>{{ editingIndex !== null ? 'edit' : 'add' }}</mat-icon>
+              {{ editingIndex !== null ? 'Mettre à jour' : 'Ajouter à la liste' }}
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: Liste des bénéficiaires -->
+      <div class="list-col">
+
+        <div class="list-header">
+          <h2>
+            Liste des bénéficiaires
+            <span class="count-badge">{{ beneficiaries.length }} bénéficiaire{{ beneficiaries.length > 1 ? 's' : ''
+              }}</span>
+          </h2>
+          <button class="btn-vider" (click)="clearList()" *ngIf="beneficiaries.length > 0 && !editOrderId">
+            <mat-icon>delete</mat-icon> Vider la liste
+          </button>
+        </div>
+        <!-- Label display -->
+        <div class="label-display" *ngIf="label">
+          <span>
+            <strong>Libellé du paiement en masse :</strong>
+            <span class="label-value">{{ label }}</span>
+          </span>
+          <a class="btn-modifier" (click)="focusLabel()">
+            <mat-icon>edit</mat-icon> Modifier
+          </a>
+        </div>
+
+        <div class="table-wrapper" *ngIf="beneficiaries.length > 0; else emptyState">
+          <table>
+            <thead>
+              <tr>
+                <th>NOM</th>
+                <th>PRÉNOM</th>
+                <th>TÉLÉPHONE</th>
+                <th>MONTANT</th>
+                <th>OPÉRATEUR</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of beneficiaries; let i = index">
+                <td>{{ b.lastName }}</td>
+                <td>{{ b.firstName }}</td>
+                <td>{{ b.phoneNumber }}</td>
+                <td>{{ b.amount }} XOF</td>
+                <td>{{ b.wallet }}</td>
+                <td class="actions">
+                  <button class="btn-edit" type="button" (click)="editBeneficiary(i)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    class="btn-delete"
+                    type="button"
+                    *ngIf="editOrderId"
+                    requiresConfirmation
+                    [message]="deleteConfirmMessage(i)"
+                    [confirmCallback]="attemptDeleteBeneficiary"
+                    [confirmCallbackParam]="i"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                  <button class="btn-delete" type="button" *ngIf="!editOrderId" (click)="deleteBeneficiary(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="total-row" *ngIf="beneficiaries.length > 0">
+          <span>Total</span>
+          <span class="total-amount">{{ totalAmount | number:'1.0-0':'fr' }} XOF</span>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <mat-icon>group_add</mat-icon>
+            <p>Aucun bénéficiaire ajouté pour le moment</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="bottom-actions" *ngIf="!editOrderId">
+      <button class="btn-secondary" (click)="back()">Annuler la saisie</button>
+      <button class="btn-primary" (click)="goToRecap()"
+        [disabled]="beneficiaries.length === 0 || !label.trim() || isSavingDraft">
+        <span *ngIf="!isSavingDraft" style="display:inline-flex;align-items:center;gap:4px;">Suivant
+          <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="isSavingDraft">Enregistrement...</span>
+      </button>
+    </div>
+
+    <!-- Bottom actions : édition d'un ordre déjà soumis (pas de ré-approbation à sélectionner) -->
+    <div class="bottom-actions" *ngIf="editOrderId">
+      <button
+        class="btn-secondary"
+        requiresConfirmation
+        [message]="'Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.'"
+        [confirmLabel]="'Quitter sans enregistrer'"
+        [cancelLabel]="'Continuer la modification'"
+        [confirmCallback]="cancelEdit"
+      >
+        Annuler
+      </button>
+      <button class="btn-primary" (click)="saveEditedOrder()"
+        [disabled]="beneficiaries.length === 0 || !label.trim() || isSubmitting">
+        <span *ngIf="!isSubmitting">Enregistrer les modifications</span>
+        <span *ngIf="isSubmitting">Enregistrement...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2 : Récapitulatif -->
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
+
+    <!-- Solde de l'organisation -->
+    <!-- <div class="balance-summary-card" *ngIf="organization">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
+        <mat-icon>error_outline</mat-icon>
+        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
+          organization.balance | number:'1.0-0':'fr' }} XOF</span>
+      </div>
+    </div> -->
+
+    <div class="balance-summary-card" *ngIf="organization" [ngClass]="'state-' + balanceState">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Total Frais Opérateur</p>
+          <p class="balance-value">{{ totalFees | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+
+      <div class="balance-message" *ngIf="balanceState !== 'ok'">
+        <mat-icon>{{ balanceState === 'insufficient' ? 'error_outline' : 'warning_amber' }}</mat-icon>
+        <span *ngIf="balanceState === 'insufficient'">
+          Le montant de cet ordre dépasse le solde disponible. Veuillez contacter votre administrateur
+        </span>
+        <span *ngIf="balanceState === 'low'">
+          Après exécution de cet ordre votre solde sera de {{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF. Pensez à recharger votre compte.
+        </span>
+      </div>
+    </div>
+
+    <div class="recap-header">
+      <p class="recap-label">Récapitulatif</p>
+      <h2 class="recap-title">{{ label }}</h2>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <p class="kpi-label">Bénéficiaires</p>
+        <p class="kpi-value">{{ beneficiaries.length }}</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Montant total</p>
+        <p class="kpi-value kpi-green">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Opérateurs</p>
+        <p class="kpi-value">{{ recapRepartition.length }}</p>
+      </div>
+    </div>
+
+    <div class="repartition-card">
+      <h3 class="section-title">Répartition par opérateur</h3>
+      <div class="operateurs-grid">
+        <div class="operateur-card" *ngFor="let op of recapRepartition"
+          [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}">
+          <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
+          <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaire{{ op.beneficiaires > 1 ? 's' : '' }}</p>
+          <!-- <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p> -->
+          <div class="op-montant-row">
+            <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p>
+            <span class="op-frais">Frais : {{ op.frais | number:'1.0-0':'fr' }} XOF</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [ngStyle]="{'width': op.pourcentage + '%', 'background': op.couleur}"></div>
+          </div>
+          <p class="op-pct">{{ op.pourcentage }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sélection des approbateurs : flux non configuré -->
+    <div class="approvers-card" *ngIf="isApprovalFlowEmpty">
+      <div class="approvers-header">
+        <h3>Sélection des approbateurs</h3>
+      </div>
+      <div class="approvers-global-error">
+        ⚠️ Aucun flux de validation configuré.
+        Vous ne pouvez pas soumettre cet ordre.
+        Contactez votre Super Administrateur pour configurer le flux de validation.
+      </div>
+    </div>
+
+    <!-- Sélection des approbateurs -->
+    <div class="approvers-card" *ngIf="approvalLevels.length > 0">
+      <div class="approvers-header">
+        <h3>Sélection des approbateurs</h3>
+        <span class="badge-selected">{{ selectedApproversCount }}/{{ approvalLevels.length }} sélectionnés</span>
+      </div>
+      <p class="approvers-subtitle">
+        Choisissez l'approbateur qui traitera l'ordre à chaque niveau du flux configuré par le Super Admin.
+      </p>
+
+      <div class="approvers-global-error" *ngIf="approversSubmitAttempted && noApproverSelected">
+        Veuillez sélectionner un approbateur pour chaque niveau de validation.
+      </div>
+
+      <div class="approver-level" *ngFor="let level of approvalLevels; let i = index">
+        <label class="approver-level-label">Niveau {{ level.level }} - Validation <span class="color-danger">*</span></label>
+
+        <mat-form-field appearance="outline" class="approver-select"
+          [class.approver-invalid]="approversSubmitAttempted && level.approbateurs.length === 0">
+          <mat-select multiple [(ngModel)]="level.approbateurs" placeholder="-- Sélectionner un approbateur --"
+            [compareWith]="compareApprovers">
+            <mat-select-trigger>{{ selectedNames(level) }}</mat-select-trigger>
+            <mat-option *ngFor="let approver of getAvailableApprovers(i)" [value]="approver">
+              {{ approver.firstName }} {{ approver.lastName }}<ng-container *ngIf="approver.position"> ({{ approver.position }})</ng-container>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <p class="error-message"
+          *ngIf="approversSubmitAttempted && level.approbateurs.length === 0 && !noApproverSelected">
+          Veuillez sélectionner un approbateur pour le niveau {{ level.level }}.
+        </p>
+      </div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn-secondary" (click)="goBackFromRecap()" [disabled]="isSubmitting">
+        <mat-icon>arrow_back</mat-icon> Précédent
+      </button>
+      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting || isApprovalFlowEmpty">
+        <span *ngIf="!isSubmitting" class="btn-inner">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="isSubmitting">Envoi en cours...</span>
+      </button>
+    </div>
+
+    <div class="workflow-card" *ngIf="approvalFlowApprovers.length > 0">
+      <div class="workflow-header">
+        <h3>Workflow de validation</h3>
+        <span class="badge-selected">{{ approvalFlowApprovers.length }}/{{ approvalFlowApprovers.length }}
+          sélectionnés</span>
+      </div>
+      <div class="approbateur-row" *ngFor="let app of approvalFlowApprovers">
+        <div class="avatar">{{ app.avatar }}</div>
+        <div class="app-info">
+          <p class="app-nom">{{ app.nom }}</p>
+          <p class="app-role">{{ app.role }}</p>
+        </div>
+        <span class="badge-attente">{{ app.statut }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 : Suivi des validations -->
+  <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
+    
+    <h2 class="suivi-title">Suivi des validations pour</h2>
+
+    <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">
+      <mat-icon>notifications</mat-icon>
+      Notification envoyée à {{ firstStep.approbateurNom }} ({{ firstStep.approbateurRole }})
+    </div>
+
+    <div class="suivi-grid">
+      <!-- Détails de l'ordre -->
+      <div class="suivi-card">
+        <h3>Détails de l'ordre</h3>
+        <div class="detail-row">
+          <mat-icon>label</mat-icon>
+          <span>Libellé du paiement : <strong>{{ orderSummary?.libelle }}</strong></span>
+        </div>
+        <div class="detail-row">
+          <mat-icon>group</mat-icon>
+          <span>Nombre de bénéficiaires : <strong>{{ orderSummary?.nombreBeneficiaires }}</strong></span>
+        </div>
+        <div class="detail-row">
+          <mat-icon>payments</mat-icon>
+          <span>Montant total : <strong>{{ orderSummary?.montantTotal | number:'1.0-0':'fr' }} XOF</strong></span>
+        </div>
+        <div class="detail-row">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <span>Opérateurs : <strong>{{ orderSummary?.operateurs }}</strong></span>
+        </div>
+        <div class="detail-row">
+          <mat-icon>schedule</mat-icon>
+          <span>Date de soumission : <strong>{{ orderSummary?.dateSoumission }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Workflow de validation -->
+      <div class="suivi-card">
+        <h3>Workflow de validation</h3>
+        <div class="approval-step" *ngFor="let step of approvalSteps">
+          <div class="approval-step-header">
+            <span>Approbation - Niveau {{ step.niveau }}</span>
+            <span class="badge" [ngClass]="{
+            'badge-success': step.statut === 'valide',
+            'badge-pending': step.statut === 'en_attente',
+            'badge-danger': step.statut === 'rejete'
+          }">
+              {{ step.statut === 'valide' ? 'Validé' : step.statut === 'rejete' ? 'Rejeté' : 'En attente' }}
+            </span>
+          </div>
+          <div class="approval-step-body">
+            <div class="avatar">{{ step.approbateurNom.charAt(0) }}</div>
+            <div>
+              <p class="approbateur-nom">{{ step.approbateurNom }}</p>
+              <p class="approbateur-role">{{ step.approbateurRole }}</p>
+              <p class="approbateur-date" *ngIf="step.dateNotification">Notifié le {{ step.dateNotification }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" (click)="relancerApprobateurs()">
+      Relancer les approbateurs
+    </button>
+    <!-- Liste des bénéficiaires -->
+    <div class="beneficiaries-section" *ngIf="beneficiaries.length > 0">
+
+      <div class="beneficiaries-header">
+        <h2>
+          Liste des bénéficiaires
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </h2>
+
+        <button class="btn-download">
+          <mat-icon>download</mat-icon>
+          Télécharger
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>NOM</th>
+              <th>PRÉNOM</th>
+              <th>TÉLÉPHONE</th>
+              <th>MONTANT</th>
+              <th>OPÉRATEUR</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let b of beneficiaries">
+              <td>{{ b.lastName }}</td>
+              <td>{{ b.firstName }}</td>
+              <td>{{ b.phoneNumber }}</td>
+              <td>{{ b.amount }} XOF</td>
+              <td>{{ b.wallet }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>

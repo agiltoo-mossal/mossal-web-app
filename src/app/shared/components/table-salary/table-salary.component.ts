@@ -385,7 +385,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.cancelDemandeByAdmin) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande annulée avec succés!'
           );
           this.getDemandes(false);
@@ -408,7 +408,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
       .subscribe(
         (result) => {
           if (result.data.rejectDemandeByAdmin) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'demande rejetée avec succés!'
             );
             this.getDemandes(false);
@@ -431,7 +431,7 @@ export class TableSalaryComponent implements OnInit, AfterViewInit {
         if (result.data.validateDemande) {
           console.log("result.data.validateDemande ==========>>>>>>>>>> ", result.data);
 
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             `demande validée avec succés! (${result.data.validateDemande.paymentMean})`
           );
           this.getDemandes(false);

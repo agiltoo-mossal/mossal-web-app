@@ -139,6 +139,11 @@ mat-icon {
     font-size: 16px;
     transition: all .3s ease;
 }
+
+.nav-svg-icon {
+    width: 16px;
+    height: 16px;
+}
 .dropdown-container {
         background: #F1F7FF;
   .dropdown-toggle {
@@ -156,5 +161,11 @@ mat-icon {
         background: #f1f7ffa2;
       }
     }
+  }
+}
+
+.icon-active {
+  mat-icon {
+    color: #FFD700; 
   }
 }

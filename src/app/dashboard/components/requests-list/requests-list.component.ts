@@ -230,7 +230,7 @@ export class RequestsListComponent implements AfterViewInit, OnInit {
     this.cancelDemandeByAdminGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.cancelDemandeByAdmin) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande annulée avec succés!'
           );
           this.getDemandes(false);
@@ -253,7 +253,7 @@ export class RequestsListComponent implements AfterViewInit, OnInit {
       .subscribe(
         (result) => {
           if (result.data.rejectDemandeByAdmin) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'demande rejetée avec succés!'
             );
             this.getDemandes(false);
@@ -274,7 +274,7 @@ export class RequestsListComponent implements AfterViewInit, OnInit {
     this.validateDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.validateDemande) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande validée avec succés!'
           );
           this.getDemandes(false);
@@ -297,7 +297,7 @@ export class RequestsListComponent implements AfterViewInit, OnInit {
     this.payeDemandeGQL.mutate({ demandeId }).subscribe(
       (result) => {
         if (result.data.payeDemande) {
-          this.snackBarService.showSuccessSnackBar(
+          this.snackBarService.showSuccessSnackBar(3000,
             'demande payée avec succés!'
           );
           this.getDemandes(false);

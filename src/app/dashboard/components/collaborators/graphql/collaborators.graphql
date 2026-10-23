@@ -97,6 +97,7 @@ query FetchOrganizationCollaborator($collaboratorId: String!) {
     blocked
     balance
     totalDemandeAmount
+    roles
     organization {
       name
     }

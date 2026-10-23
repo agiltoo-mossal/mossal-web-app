@@ -112,7 +112,7 @@ export class OrganizationSettingGeneralComponent {
       .subscribe({
         next: (result) => {
           if (result.data.createCategorySociopro) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'NOUVELLE CATEGORIE AJOUTEE'
             );
             this.categories.push({
@@ -154,7 +154,7 @@ export class OrganizationSettingGeneralComponent {
             });
             this.itemsCardDate[this.dayLimite - 1].active = true;
             this.getCurrentorganization();
-            this.snackBarService.showSuccessSnackBar('Organisation modifiée avec succès.');
+            this.snackBarService.showSuccessSnackBar(3000,'Organisation modifiée avec succès.');
           } else {
             this.snackBarService.showErrorSnackBar();
           }
@@ -218,7 +218,7 @@ export class OrganizationSettingGeneralComponent {
       .subscribe({
         next: (result) => {
           if (result.data.updateCategorySociopro) {
-            this.snackBarService.showSuccessSnackBar('CATEGORIE MODIFIEE');
+            this.snackBarService.showSuccessSnackBar(3000,'CATEGORIE MODIFIEE');
           } else {
             this.snackBarService.showErrorSnackBar();
           }
@@ -282,7 +282,7 @@ export class OrganizationSettingGeneralComponent {
           .subscribe({
             next: (result) => {
               if (result.data.deleteCategorySociopro) {
-                this.snackBarService.showSuccessSnackBar('CATEGORIE SUPPRIMEE');
+                this.snackBarService.showSuccessSnackBar(3000,'CATEGORIE SUPPRIMEE');
                 this.categories.splice(index, 1);
               } else {
                 this.snackBarService.showSnackBar("Erreur lors de l'opération");
@@ -321,7 +321,7 @@ export class OrganizationSettingGeneralComponent {
       .subscribe({
         next: (result) => {
           if (result.data.updateOrganization) {
-            this.snackBarService.showSuccessSnackBar(
+            this.snackBarService.showSuccessSnackBar(3000,
               'DATE LIMITE DES DEMANDES EST MODIFIEE'
             );
             this.itemsCardDate.forEach((item) => {

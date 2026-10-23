@@ -226,7 +226,7 @@ query FetchOrganisationService($organisationServiceId: ID!) {
         wizallAccountNumber
         bankAccountNumber
         totalDemandeAmount
-        role
+        roles
         blocked
         birthDate
         favoriteWallet

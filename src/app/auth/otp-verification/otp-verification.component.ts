@@ -14,8 +14,13 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   invalidOtp = false;
   isVerifying = false;
   isResending = false;
-  timer = 60;
+  // Distinct du message générique "code incorrect/expiré" : après 3 échecs, le backend
+  // bloque la vérification ET le renvoi de code pendant 15 minutes (voir auth.service.ts).
+  isLockedOut = false;
+  lockoutMessage = '';
+  timer = 0;
   userEmail = '';
+  private otpExpiresAt: number | null = null;
   private timerSubscription?: Subscription;
 
   constructor(
@@ -33,6 +38,9 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       this.router.navigate(['/auth/login']);
       return;
     }
+
+    const storedExpiresAt = sessionStorage.getItem(AuthConstant.otpExpiresAtLocalName);
+    this.otpExpiresAt = storedExpiresAt ? new Date(storedExpiresAt).getTime() : null;
 
     this.initForm();
     this.startTimer();
@@ -65,7 +73,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   }
 
   verifyOtp(): void {
-    if (this.form.invalid || this.isVerifying) return;
+    if (this.form.invalid || this.isVerifying || this.isLockedOut) return;
 
     this.isVerifying = true;
     this.invalidOtp = false;
@@ -76,48 +84,79 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       .finally(() => {
         this.isVerifying = false;
       })
-      .catch(() => {
-        this.invalidOtp = true;
+      .catch((e: any) => {
         this.form.reset();
+        const message = e?.graphQLErrors?.[0]?.message ?? '';
+        if (message.includes('Trop de tentatives')) {
+          this.lockOut(message);
+        } else {
+          this.invalidOtp = true;
+        }
       });
   }
 
 
   resendOtp(): void {
+    if (this.isResending || this.isLockedOut) return;
     this.isResending = true;
     this.invalidOtp = false;
 
     this.authService.resendOtp(this.userEmail)
       .then(
-        (result) => {
+        (otpExpiresAt) => {
           this.isResending = false;
-          this.timer = 60;
+          this.otpExpiresAt = otpExpiresAt ? new Date(otpExpiresAt).getTime() : null;
           this.startTimer();
           this.form.reset();
         },
-        (error) => {
+        (e: any) => {
           this.isResending = false;
+          const message = e?.graphQLErrors?.[0]?.message ?? '';
+          if (message.includes('Trop de tentatives')) {
+            this.lockOut(message);
+          }
         }
       );
+  }
+
+  private lockOut(message: string): void {
+    this.isLockedOut = true;
+    this.invalidOtp = false;
+    this.lockoutMessage = message;
+    this.stopTimer();
+    this.form.disable();
   }
 
   cancel(): void {
     this.stopTimer();
     sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
     sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
+    sessionStorage.removeItem(AuthConstant.otpExpiresAtLocalName);
     sessionStorage.removeItem('tempSession');
     this.router.navigate(['/auth/login']);
   }
 
+  // Le compte à rebours est recalculé à chaque tick à partir de la date d'expiration
+  // réelle renvoyée par le backend (otpExpiresAt), plutôt que décrémenté depuis une
+  // valeur fixe : la durée de validité de l'OTP est configurable côté serveur.
   private startTimer(): void {
     this.stopTimer();
+    this.updateRemaining();
+    if (this.timer <= 0) return;
     this.timerSubscription = interval(1000).subscribe(() => {
-      if (this.timer > 0) {
-        this.timer--;
-      } else {
+      this.updateRemaining();
+      if (this.timer <= 0) {
         this.stopTimer();
       }
     });
+  }
+
+  private updateRemaining(): void {
+    if (!this.otpExpiresAt) {
+      this.timer = 0;
+      return;
+    }
+    this.timer = Math.max(0, Math.round((this.otpExpiresAt - Date.now()) / 1000));
   }
 
   private stopTimer(): void {

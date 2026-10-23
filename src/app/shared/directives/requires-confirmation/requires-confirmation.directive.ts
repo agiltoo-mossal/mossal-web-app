@@ -8,6 +8,8 @@ import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-
 export class RequiresConfirmationDirective {
   @Input() confirmCallbackParam: any;
   @Input() message: string;
+  @Input() confirmLabel: string;
+  @Input() cancelLabel: string;
   @Input() disabled: boolean = false;
   @Input() confirmCallback: Function = () => {
     // console.log('confirmed');
@@ -24,7 +26,12 @@ export class RequiresConfirmationDirective {
     }
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '446px',
-      data: { message: this.message, reasonRequired: this.reasonRequired },
+      data: {
+        message: this.message,
+        reasonRequired: this.reasonRequired,
+        confirmLabel: this.confirmLabel,
+        cancelLabel: this.cancelLabel,
+      },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

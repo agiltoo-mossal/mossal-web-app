@@ -22,13 +22,14 @@ export enum AuthConstant {
   sessionLocalName = 'userSession',
   otpEmailLocalName = 'otpEmail',
   pendingAuthLocalName = 'pendingAuth',
+  otpExpiresAtLocalName = 'otpExpiresAt',
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  role: string = '';
+  roles: string[] = [];
   currentUser: User;
   private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -137,6 +138,9 @@ export class AuthService {
       if (session.otpRequired) {
         sessionStorage.setItem(AuthConstant.otpEmailLocalName, credentials.email);
         sessionStorage.setItem(AuthConstant.pendingAuthLocalName, 'true');
+        if (session.otpExpiresAt) {
+          sessionStorage.setItem(AuthConstant.otpExpiresAtLocalName, session.otpExpiresAt);
+        }
 
         this.snackBarService.showSnackBar(
           'Un code OTP a été envoyé à votre adresse email.',
@@ -162,12 +166,17 @@ export class AuthService {
 
   async resendOtp(email: string) {
     try {
-      await lastValueFrom(
+      const res = await lastValueFrom(
         this.resendOtpGQL.mutate(
           { email },
           { fetchPolicy: 'no-cache' }
         )
       );
+
+      const otpExpiresAt = res.data?.resendOtp;
+      if (otpExpiresAt) {
+        sessionStorage.setItem(AuthConstant.otpExpiresAtLocalName, otpExpiresAt);
+      }
 
       this.snackBarService.showSnackBar(
         'Un nouveau code OTP a été envoyé à votre email.',
@@ -175,13 +184,10 @@ export class AuthService {
         { duration: 3000 }
       );
 
-      return true;
-    } catch (e) {
-      this.snackBarService.showSnackBar(
-        "Erreur lors de l'envoi du code OTP.",
-        '',
-        { duration: 3000 }
-      );
+      return otpExpiresAt;
+    } catch (e: any) {
+      const message = e?.graphQLErrors?.[0]?.message ?? "Erreur lors de l'envoi du code OTP.";
+      this.snackBarService.showSnackBar(message, '', { duration: 4000 });
       throw e;
     }
   }
@@ -205,9 +211,20 @@ export class AuthService {
       this.router.navigate(['/auth/reset']);
     } else {
       this.scheduleAutoLogout();
-      session.role === 'SUPER_ADMIN' ?
-        this.router.navigate(['/dashboard/society']) :
+      const roles = session.roles ?? [];
+      const isPaymentManagerOnly = roles.length === 1 && roles[0] === 'PAYMENT_MANAGER';
+      if (roles.includes('SUPER_ADMIN')) {
+        this.router.navigate(['/dashboard/society']);
+      } else if (isPaymentManagerOnly) {
+        this.router.navigate(['/dashboard/organization/payments']);
+      } else if (roles.includes('SUPER_ADMIN_ORG') || roles.includes('ADMIN')) {
         this.router.navigate(['/dashboard']);
+      } else if (roles.includes('APPROVER')){
+          this.router.navigate(['/dashboard/tracking-approvals']);
+      }
+      else {
+        this.router.navigate(['/dashboard']);
+      }
     }
   }
 
@@ -229,17 +246,15 @@ export class AuthService {
 
       sessionStorage.removeItem(AuthConstant.otpEmailLocalName);
       sessionStorage.removeItem(AuthConstant.pendingAuthLocalName);
+      sessionStorage.removeItem(AuthConstant.otpExpiresAtLocalName);
 
       this.completeLogin(session);
 
       return session;
 
-    } catch (e) {
-      this.snackBarService.showSnackBar(
-        'Code OTP incorrect ou expiré!',
-        '',
-        { duration: 4000 }
-      );
+    } catch (e: any) {
+      const message = e?.graphQLErrors?.[0]?.message ?? 'Code OTP incorrect ou expiré!';
+      this.snackBarService.showSnackBar(message, '', { duration: 4000 });
       throw e;
     }
   }

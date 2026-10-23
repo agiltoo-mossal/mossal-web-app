@@ -42,7 +42,11 @@
        padding: 30px;
        border-radius: 12px;
        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-       height: fit-content;
+   }
+
+   // Colonne gauche : la section s'étire pour que son bas s'aligne avec la colonne de droite.
+   .form > .form-section {
+       height: 100%;
    }
 
    .section-title {
@@ -152,9 +156,10 @@
    }
 
    .submit-button {
-       background-color: #6b7db3;
+       background-color: #001F60;
        color: white;
        padding: 12px 40px;
+       min-width: 320px;
        border: none;
        border-radius: 8px;
        font-size: 14px;
@@ -164,7 +169,7 @@
    }
 
    .submit-button:hover {
-       background-color: #5a6ca3;
+       background-color: #001749;
    }
 
    .suspend-button {
@@ -342,6 +347,80 @@
        border-radius: 50%;
        border-top-color: transparent;
        animation: spin 1s ease-in-out infinite;
+   }
+
+   // Colonne de droite : "Informations du super admin" puis "Services souscrits"
+   // directement en dessous (pas de push vers le bas).
+   // Colonne de droite : "Informations du super admin" puis "Services souscrits"
+   // juste en dessous (écart normal). "Services souscrits" grandit pour que son bas
+   // s'aligne avec celui de "Informations de la société".
+   .right-column {
+       display: flex;
+       flex-direction: column;
+       gap: 30px;
+   }
+
+   .subscriptions-section {
+       flex: 1;
+   }
+
+   .subscriptions-list {
+       display: flex;
+       flex-direction: column;
+       gap: 16px;
+   }
+
+   .subscription-card {
+       display: flex;
+       align-items: flex-start;
+       gap: 12px;
+       padding: 16px;
+       border: 1px solid #d1d5db;
+       border-radius: 10px;
+       cursor: pointer;
+       transition: border-color 0.15s ease, background-color 0.15s ease;
+
+       &.selected {
+           border-color: #001F60;
+           background-color: #f2f4fb;
+       }
+
+       input[type='checkbox'] {
+           width: 16px;
+           height: 16px;
+           margin-top: 2px;
+           cursor: pointer;
+           accent-color: #001F60;
+           flex-shrink: 0;
+       }
+   }
+
+   .subscription-body {
+       display: flex;
+       flex-direction: column;
+       gap: 4px;
+   }
+
+   .subscription-heading {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       color: #001F60;
+
+       .material-icons {
+           font-size: 18px;
+       }
+
+       .subscription-name {
+           font-weight: 700;
+           font-size: 15px;
+       }
+   }
+
+   .subscription-description {
+       margin: 0;
+       font-size: 13px;
+       color: #6b7280;
    }
 
    @keyframes spin {

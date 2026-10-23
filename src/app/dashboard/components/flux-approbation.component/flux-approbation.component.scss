@@ -1,0 +1,182 @@
+/* ===== Page ===== */
+.page-container {
+  padding: 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  font-family: Poppins, sans-serif;
+  background-color: #f4f6fa;
+  min-height: 100vh;
+}
+
+.title {
+  color: #061e5c;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: 0.16px;
+  margin: 0 0 24px;
+}
+
+/* ===== Alertes ===== */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.alert-success { background-color: #e6f7ec; color: #1e7e34; }
+.alert-error   { background-color: #fdecea; color: #c0392b; }
+
+/* ===== Cards ===== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e5e9f2;
+}
+.card-title { color: #061e5c; font-size: 0.95rem; font-weight: 600; margin: 0 0 6px; }
+.card-desc  { color: #061e5c; font-size: 0.85rem; margin: 0; }
+
+/* ===== Nombre de niveaux ===== */
+.levels-card {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+
+  > div:first-child { flex: 1 1 0; min-width: 0; }
+}
+
+.levels-field {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 300px;
+}
+
+.levels-select {
+  width: 100%;
+  ::ng-deep .mat-mdc-text-field-wrapper { border-radius: 8px; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 46px; padding-top: 12px; padding-bottom: 12px; }
+}
+
+/* ===== Etat vierge ===== */
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 40px 0 16px; text-align: center; }
+.empty-icon  { font-size: 40px; width: 40px; height: 40px; color: #061e5c; margin-bottom: 12px; }
+.empty-text  { color: #061e5c; font-weight: 600; margin: 0; }
+
+/* ===== Timeline des niveaux ===== */
+.niveaux-list { display: flex; flex-direction: column; margin-top: 24px; }
+
+.niveau-row {
+  display: grid;
+  grid-template-columns: 32px 200px 1fr;
+  column-gap: 16px;
+  padding-bottom: 32px;
+  &:last-child { padding-bottom: 0; }
+}
+
+.timeline { display: flex; flex-direction: column; align-items: center; }
+.timeline-line { flex: 1; width: 2px; background: #c7d0e0; margin-top: 4px; }
+
+.niveau-badge {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid #c7d0e0; background: #e8edf5;
+  color: #061e5c; font-weight: 700; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.niveau-titles   { padding-top: 4px; }
+.niveau-title    { font-weight: 700; color: #1a1a2e; margin: 0 0 2px; }
+.niveau-subtitle { color: #4b5563; font-size: 0.85rem; margin: 0; }
+
+/* ===== Champ approbateurs ===== */
+.approbateur-field { display: flex; flex-direction: column; min-width: 0; }
+.field-label { font-size: 0.85rem; color: #1a1a2e; margin-bottom: 6px; }
+.required { color: #e53935; }
+
+.add-select {
+  width: 240px;
+  ::ng-deep .mat-mdc-text-field-wrapper { border-radius: 999px; height: 36px; }
+  ::ng-deep .mat-mdc-form-field-flex { align-items: center; }
+  ::ng-deep .mat-mdc-form-field-infix { min-height: 36px; padding-top: 6px; padding-bottom: 6px; }
+  ::ng-deep .mat-mdc-form-field-icon-prefix {
+    display: flex;
+    align-items: center;
+    padding-right: 4px;
+
+    .mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.chips-box {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 10px; padding: 8px 12px; min-height: 48px;
+  border: 1px solid #d5dbe8; border-radius: 8px; background: #fff;
+  &.invalid { border-color: #e53935; box-shadow: 0 0 0 1px #e53935; }
+}
+
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #e8f0fb; border-radius: 999px; padding: 4px 8px 4px 4px;
+  font-size: 0.85rem; color: #1a1a2e;
+}
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #061e5c; color: #fff; font-size: 0.7rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.chip-remove {
+  border: 0; background: transparent; cursor: pointer; padding: 0;
+  display: flex; align-items: center; color: #1a1a2e;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+.field-error   { color: #c0392b; font-size: 0.8rem; margin: 6px 0 0; }
+.sequence-note { color: #6b7280; font-size: 0.85rem; margin: 20px 0 0; }
+
+/* ===== Actions ===== */
+.actions { display: flex; justify-content: flex-end; gap: 16px; margin-top: 32px; flex-wrap: wrap; }
+
+.btn-reset {
+  border: 1.5px solid #061e5c !important;
+  color: #061e5c !important;
+  border-radius: 8px !important;
+  padding: 0 28px !important;
+  height: 42px;
+  font-weight: 500;
+  background: transparent !important;
+  &:hover { background-color: #e8edf5 !important; }
+}
+
+.btn-save {
+  background-color: #061e5c !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 0 28px !important;
+  height: 42px;
+  font-weight: 500;
+  &:hover:not(:disabled) { background-color: #0a2d8a !important; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 720px) {
+  .page-container { padding: 16px; }
+
+  .levels-card { flex-direction: column; align-items: stretch; }
+  .levels-field { flex: none; width: 100%; }
+
+  .niveau-row { grid-template-columns: 32px 1fr; }
+  .approbateur-field { grid-column: 1 / -1; margin-top: 12px; }
+  .add-select { width: 100%; }
+}
