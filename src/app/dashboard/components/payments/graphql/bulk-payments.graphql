@@ -47,6 +47,7 @@ query FetchBulkPaymentOrderById($id: String!) {
       lastName
       phoneNumber
       amount
+      fees
       wallet
     }
   }

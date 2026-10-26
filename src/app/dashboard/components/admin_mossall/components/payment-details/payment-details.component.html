@@ -228,6 +228,8 @@
           <th>PRÉNOM</th>
           <th>TÉLÉPHONE</th>
           <th>MONTANT</th>
+          <th>TOTAL DES FRAIS</th>
+          <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
         </tr>
       </thead>
@@ -237,6 +239,8 @@
           <td>{{ b.firstName }}</td>
           <td>{{ b.phone }}</td>
           <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+          <td>{{ b.fees | number:'1.0-0':'fr' }} XOF</td>
+          <td>{{ beneficiaryTotal(b) | number:'1.0-0':'fr' }} XOF</td>
           <td>{{ b.operator }}</td>
         </tr>
       </tbody>
