@@ -48,6 +48,12 @@ export class NotificationsService {
   resolveNotifLink(notif: any): Observable<any[]> {
     const roles: string[] = this.authService.getSessionAsObject()?.roles ?? [];
 
+    // Notif de niveau organisation (pas liée à un ordre précis) : entityId ne désigne pas
+    // un ordre de paiement ici, donc on ne peut pas la router comme les autres notifs.
+    if (notif.type === 'APPROVAL_FLOW_RESET') {
+      return of(['/dashboard/organization/payments']);
+    }
+
     if (roles.includes('PAYMENT_MANAGER')) {
       return of(['/dashboard/payments/details', notif.entityId]);
     }

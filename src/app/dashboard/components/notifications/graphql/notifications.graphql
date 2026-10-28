@@ -1,6 +1,7 @@
 query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
     entityId
+    type
     title
     content
     author {
@@ -30,6 +31,7 @@ query FetchPaginatedNotifications
 		}
     results{
       entityId
+      type
     title
     content
     author {

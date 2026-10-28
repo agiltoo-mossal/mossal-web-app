@@ -846,6 +846,7 @@ export type Notification = {
   entityId?: Maybe<Scalars['String']['output']>;
   organization: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  type?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   viewedByMe: Scalars['Boolean']['output'];
 };
@@ -2032,7 +2033,7 @@ export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBu
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
+export type FetchOrganizationNotificationsQuery = { __typename?: 'Query', fetchOrganizationNotifications: Array<{ __typename?: 'Notification', entityId?: string | null, type?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> };
 
 export type ViewOrganizationNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -2045,7 +2046,7 @@ export type FetchPaginatedNotificationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedNotificationsQuery = { __typename?: 'Query', fetchPaginatedNotifications: { __typename?: 'PaginatedNotificationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Notification', entityId?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> } };
+export type FetchPaginatedNotificationsQuery = { __typename?: 'Query', fetchPaginatedNotifications: { __typename?: 'PaginatedNotificationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Notification', entityId?: string | null, type?: string | null, title: string, content: string, viewedByMe: boolean, organization: string, date: any, author: { __typename?: 'User', firstName: string, lastName: string } }> } };
 
 export type FetchOrganizationQueryVariables = Exact<{
   organizationId: Scalars['ID']['input'];
@@ -2102,7 +2103,7 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fees: number, wallet: Wallet }> | null } };
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet }> | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3548,6 +3549,7 @@ export const FetchOrganizationNotificationsDocument = gql`
     query FetchOrganizationNotifications {
   fetchOrganizationNotifications {
     entityId
+    type
     title
     content
     author {
@@ -3601,6 +3603,7 @@ export const FetchPaginatedNotificationsDocument = gql`
     }
     results {
       entityId
+      type
       title
       content
       author {
@@ -3885,6 +3888,7 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
       lastName
       phoneNumber
       amount
+      fee
       wallet
     }
   }
