@@ -365,6 +365,26 @@ export class ManualPaymentComponent implements OnInit {
     return Math.round(amount * (this.WALLET_FEE_RATES[wallet] ?? 0));
   }
 
+      /** Frais du bénéficiaire (ligne du tableau) */
+  getFee(b: BeneficiaryForm): number {
+    return this.computeFee(b.wallet as string, this.parseAmount(b.amount));
+  }
+
+  /** Coût total de la ligne = montant + frais */
+  getLineCost(b: BeneficiaryForm): number {
+    return this.parseAmount(b.amount) + this.getFee(b);
+  }
+
+  /** Frais affichés dans le formulaire (calculés en direct pendant la saisie) */
+  get formFee(): number {
+    return this.computeFee(this.form.wallet as string, this.parseAmount(this.form.amount));
+  }
+
+  /** Libellé lisible de l'opérateur (Wave / Orange Money) */
+  walletLabel(wallet: string): string {
+    return this.walletOptions.find((o) => o.value === wallet)?.label ?? wallet;
+  }
+
   get totalFees(): number {
     return this.beneficiaries.reduce(
       (sum, b) => sum + this.computeFee(b.wallet as string, this.parseAmount(b.amount)), 0);

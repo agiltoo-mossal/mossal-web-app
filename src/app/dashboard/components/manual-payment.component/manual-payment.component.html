@@ -126,6 +126,15 @@
               </div>
             </div>
 
+            <!-- Frais calculés automatiquement (lecture seule) -->
+            <div class="form-group">
+              <label>Frais <small class="fee-hint">(calculé automatiquement)</small></label>
+              <div class="input-suffix">
+                <input type="text" [value]="formFee | number:'1.0-0':'fr'" readonly tabindex="-1" />
+                <span class="suffix">XOF</span>
+              </div>
+            </div>
+
             <button type="submit" class="btn-ajouter" [disabled]="beneficiaryForm.invalid">
               <mat-icon>{{ editingIndex !== null ? 'edit' : 'add' }}</mat-icon>
               {{ editingIndex !== null ? 'Mettre à jour' : 'Ajouter à la liste' }}
@@ -167,6 +176,8 @@
                 <th>PRÉNOM</th>
                 <th>TÉLÉPHONE</th>
                 <th>MONTANT</th>
+                <th>FRAIS</th>
+                <th>COÛT TOTAL</th>
                 <th>OPÉRATEUR</th>
                 <th>ACTION</th>
               </tr>
@@ -177,7 +188,9 @@
                 <td>{{ b.firstName }}</td>
                 <td>{{ b.phoneNumber }}</td>
                 <td>{{ b.amount }} XOF</td>
-                <td>{{ b.wallet }}</td>
+                <td>{{ getFee(b) | number:'1.0-0':'fr' }} XOF</td>
+                <td>{{ getLineCost(b) | number:'1.0-0':'fr' }} XOF</td>
+                <td>{{ walletLabel(b.wallet) }}</td>
                 <td class="actions">
                   <button class="btn-edit" type="button" (click)="editBeneficiary(i)">
                     <mat-icon>edit</mat-icon>
@@ -201,11 +214,12 @@
             </tbody>
           </table>
         </div>
+
         <div class="total-row" *ngIf="beneficiaries.length > 0">
           <span>Total</span>
-          <span class="total-amount">{{ totalAmount | number:'1.0-0':'fr' }} XOF</span>
+          <span class="total-amount">{{ totalCost | number:'1.0-0':'fr' }} XOF</span>
         </div>
-
+        
         <ng-template #emptyState>
           <div class="empty-state">
             <mat-icon>group_add</mat-icon>
@@ -248,30 +262,6 @@
 
   <!-- STEP 2 : Récapitulatif -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 2">
-
-    <!-- Solde de l'organisation -->
-    <!-- <div class="balance-summary-card" *ngIf="organization">
-      <div class="balance-summary-row">
-        <div class="balance-summary-item">
-          <p class="balance-label">Solde actuel de l'organisation</p>
-          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-        <div class="balance-summary-item">
-          <p class="balance-label">Montant de l'ordre</p>
-          <p class="balance-value">{{ totalAmount | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-        <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
-          <p class="balance-label">Solde après exécution</p>
-          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
-        </div>
-      </div>
-
-      <div class="balance-warning-inline" *ngIf="isBalanceInsufficient">
-        <mat-icon>error_outline</mat-icon>
-        <span>Le montant de cet ordre dépasse le solde disponible de l'organisation. Solde actuel : {{
-          organization.balance | number:'1.0-0':'fr' }} XOF</span>
-      </div>
-    </div> -->
 
     <div class="balance-summary-card" *ngIf="organization" [ngClass]="'state-' + balanceState">
       <div class="balance-summary-row">
@@ -331,7 +321,6 @@
           [ngStyle]="{'border-color': op.couleur + '40', 'background': op.couleur + '0d'}">
           <p class="op-nom" [ngStyle]="{'color': op.couleur}">{{ op.nom }}</p>
           <p class="op-beneficiaires">{{ op.beneficiaires }} bénéficiaire{{ op.beneficiaires > 1 ? 's' : '' }}</p>
-          <!-- <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p> -->
           <div class="op-montant-row">
             <p class="op-montant">{{ op.montant | number:'1.0-0':'fr' }} XOF</p>
             <span class="op-frais">Frais : {{ op.frais | number:'1.0-0':'fr' }} XOF</span>
@@ -420,7 +409,7 @@
 
   <!-- STEP 3 : Suivi des validations -->
   <div class="step-content" *ngIf="!isLoadingOrder && currentStep === 3">
-    
+
     <h2 class="suivi-title">Suivi des validations pour</h2>
 
     <div class="notif-banner" *ngIf="approvalSteps[0] as firstStep">
@@ -506,6 +495,8 @@
               <th>PRÉNOM</th>
               <th>TÉLÉPHONE</th>
               <th>MONTANT</th>
+              <th>FRAIS</th>
+              <th>COÛT TOTAL</th>
               <th>OPÉRATEUR</th>
             </tr>
           </thead>
@@ -516,7 +507,9 @@
               <td>{{ b.firstName }}</td>
               <td>{{ b.phoneNumber }}</td>
               <td>{{ b.amount }} XOF</td>
-              <td>{{ b.wallet }}</td>
+              <td>{{ getFee(b) | number:'1.0-0':'fr' }} XOF</td>
+              <td>{{ getLineCost(b) | number:'1.0-0':'fr' }} XOF</td>
+              <td>{{ walletLabel(b.wallet) }}</td>
             </tr>
           </tbody>
         </table>
