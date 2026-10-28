@@ -355,14 +355,11 @@ export class ManualPaymentComponent implements OnInit {
   /** Seuil d'alerte : solde après exécution < X % du solde actuel */
   private readonly LOW_BALANCE_THRESHOLD = 0.10;
 
-  // TODO: remplacer par la vraie règle de frais (idéalement fournie par le backend)
-  private readonly WALLET_FEE_RATES: Record<string, number> = {
-    [Wallet.Wave]: 0.0165,
-    [Wallet.OrangeMoney]: 0.021,
-  };
-
+  // Même règle que le backend (#computePaymentFees) : activedWallets[].name = clé de l'enum Wallet, taux 0 si non configuré.
   private computeFee(wallet: string, amount: number): number {
-    return Math.round(amount * (this.WALLET_FEE_RATES[wallet] ?? 0));
+    const activedWallets = this.organization?.financialOrganization?.activedWallets ?? [];
+    const rate = activedWallets.find((w) => w.name === wallet)?.fees ?? 0;
+    return Math.round(amount * rate);
   }
 
       /** Frais du bénéficiaire (ligne du tableau) */

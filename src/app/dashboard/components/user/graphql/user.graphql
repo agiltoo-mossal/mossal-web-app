@@ -21,6 +21,14 @@ query FetchCurrentAdmin {
       fees
       demandeDeadlineDay
       balance
+      financialOrganization {
+        id
+        activedWallets {
+          name
+          value
+          fees
+        }
+      }
       organisationService{
         id
         serviceId
