@@ -2245,7 +2245,7 @@ export type UpdateMyAdminPasswordMutation = { __typename?: 'Mutation', updateMyA
 export type FetchCurrentAdminQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, roles?: Array<string> | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', code: SubscriptionCode }> | null } | null } };
+export type FetchCurrentAdminQuery = { __typename?: 'Query', fetchCurrentAdmin: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, phoneNumber?: string | null, address?: string | null, roles?: Array<string> | null, position?: string | null, enableEmailNotification?: boolean | null, organization?: { __typename?: 'Organization', id: string, name: string, maxDemandeAmount: number, amountPercent: number, fees: number, demandeDeadlineDay?: number | null, balance: number, financialOrganization?: { __typename?: 'FinancialOrganization', id: any, activedWallets: Array<{ __typename?: 'WalletInfo', name: string, value: string, fees: number }> } | null, organisationService?: Array<{ __typename?: 'OrganisationService', id: any, serviceId: string }> | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', code: SubscriptionCode }> | null } | null } };
 
 export type UpdateMyAdminProfileMutationVariables = Exact<{
   userInput: UpdateMyAdminProfileInput;
@@ -4502,6 +4502,14 @@ export const FetchCurrentAdminDocument = gql`
       fees
       demandeDeadlineDay
       balance
+      financialOrganization {
+        id
+        activedWallets {
+          name
+          value
+          fees
+        }
+      }
       organisationService {
         id
         serviceId
