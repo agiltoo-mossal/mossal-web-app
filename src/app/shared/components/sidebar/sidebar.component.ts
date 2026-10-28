@@ -227,15 +227,16 @@ export class SidebarComponent implements OnInit {
       );
     }
 
-    // La souscription BULK_PAYMENT s'ajoute à la condition de rôle existante.
-    if (showBulkPayment && roles.includes('PAYMENT_MANAGER')) {
+    // Le SUPER_ADMIN_ORG agit automatiquement comme gestionnaire de paiement/approbateur
+    // dès lors que l'organisation est souscrite au paiement en masse — pas besoin d'avoir
+    // littéralement PAYMENT_MANAGER/APPROVER dans son tableau de rôles (voir backend :
+    // fetchOrganizationApprovers / #assertApproversBelongToOrg appliquent la même règle).
+    if (showBulkPayment) {
       items.push({
         label: 'Paiement en masse',
         link: '/dashboard/organization/payments',
         icon: 'payments',
       });
-    }
-    if (showBulkPayment && roles.includes('APPROVER')) {
       items.push(this.getSuiviDesValidationsItem());
     }
 
