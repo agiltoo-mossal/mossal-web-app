@@ -74,9 +74,16 @@
         matSortDisableClear
         matSortDirection="desc" -->
         <!-- Number Column -->
-        <ng-container matColumnDef="message">
+        <!-- <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef class="title message-col">Message</th>
           <td class="title message-col" mat-cell *matCellDef="let row" [innerHTML]="formatMessage(row.message)"></td>
+          <div class="activity-message" [innerHTML]="formatMessage(row.message)"></div>.
+        </ng-container> -->
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef class="title message-col">Message</th>
+          <td class="title message-col" mat-cell *matCellDef="let row">
+            <div class="activity-message" [innerHTML]="formatMessage(row.message)"></div>
+          </td>
         </ng-container>
 
         <!-- Title Column -->

@@ -47,6 +47,7 @@ query FetchBulkPaymentOrderById($id: String!) {
       lastName
       phoneNumber
       amount
+      fees
       wallet
     }
   }
@@ -57,6 +58,7 @@ query FetchMyBulkPaymentOrders {
     id
     label
     totalAmount
+    totalFees
     status
     type
     approversByLevel {

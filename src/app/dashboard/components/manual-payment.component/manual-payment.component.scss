@@ -111,7 +111,7 @@ $radius-sm: 4px;
 
 .two-col-layout {
   display: grid;
-  grid-template-columns: minmax(300px, 420px) 1fr;
+  grid-template-columns: minmax(300px, 380px) 1fr;
   gap: 32px;
   align-items: start;
 
@@ -1499,4 +1499,47 @@ td{
   margin-bottom: 12px;
   .op-montant { margin: 0; }
   .op-frais { font-size: 11px; color: $muted; }
+}
+
+
+.fee-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: $muted;
+}
+
+// Champ frais en lecture seule
+.input-suffix input[readonly] {
+  background: #f8f9fc;
+  color: $muted;
+  cursor: default;
+}
+
+.fees-summary {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  background: $white;
+
+  .fees-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    color: $muted;
+
+    strong { color: $text; }
+
+    &.fees-strong {
+      border-top: 1px solid $border;
+      margin-top: 4px;
+      padding-top: 10px;
+      font-weight: 700;
+      color: $text;
+      strong { color: $primary; }
+    }
+
+    &.fees-negative strong { color: $danger; }
+  }
 }
