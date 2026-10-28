@@ -149,7 +149,7 @@ export class PaymentDetailsComponent implements OnInit {
               firstName: p.firstName,
               phone: p.phoneNumber,
               amount: p.amount,
-              fees: p.fees ?? 0,
+              fees: p.fee ?? 0,
               operator: walletLabel[p.wallet] ?? p.wallet,
             })),
           };
