@@ -14,10 +14,10 @@
       </div>
       <div class="balance-summary-item">
         <p class="balance-label">Montant de l'ordre</p>
-        <p class="balance-value">{{ formatMontant(paiement.montantTotal) }}</p>
+        <p class="balance-value">{{ formatMontant(paiement.montantTotal + paiement.fraisTotal) }}</p>
       </div>
       <div class="balance-summary-item">
-        <p class="balance-label">Total Frais opérateur</p>
+        <p class="balance-label">dont frais opérateur</p>
         <p class="balance-value">{{ formatMontant(paiement.fraisTotal) }}</p>
       </div>
       <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
@@ -146,7 +146,7 @@
         <div class="ordre-item">
           <mat-icon>percent</mat-icon>
           <div>
-            <span class="ordre-label">Total Frais opérateur</span>
+            <span class="ordre-label">dont frais opérateur</span>
             <span class="ordre-value">{{ formatMontant(paiement.fraisTotal) }}</span>
           </div>
         </div>

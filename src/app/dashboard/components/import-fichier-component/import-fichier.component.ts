@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, BulkPaymentInput, Wallet } from 'src/graphql/generated';
+import { CreateBulkPaymentOrderGQL, FetchApprovalFlowGQL, BulkPaymentInput, Wallet, Organization, FetchCurrentAdminGQL } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { BulkPaymentFileService } from 'src/app/shared/services/bulk-payment-file.service';
 
@@ -15,12 +15,24 @@ interface ValidationRow {
   errors?: string[];
 }
 
+interface BeneficiaryForm {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  amount: string;
+  wallet: Wallet | '';
+}
+
 @Component({
   selector: 'app-import-fichier',
   templateUrl: './import-fichier.component.html',
   styleUrls: ['./import-fichier.component.scss']
 })
 export class ImportFichierComponent implements OnInit {
+
+  beneficiaries: BeneficiaryForm[] = [];
+  organization: Organization | null = null;
+
 
   selectedFile: File | null = null;
   label = '';
@@ -41,6 +53,8 @@ export class ImportFichierComponent implements OnInit {
     montant_vide:    'Montant vide',
     montant_negatif: 'Montant invalide',
   };
+
+  private readonly LOW_BALANCE_THRESHOLD = 0.10;
 
   errorLabels(row: ValidationRow): string[] {
     return (row.errors ?? []).map(e => this.ERROR_LABELS[e] ?? e);
@@ -75,6 +89,8 @@ export class ImportFichierComponent implements OnInit {
     private fetchApprovalFlowGQL: FetchApprovalFlowGQL,
     private snackBar: SnackBarService,
     private bulkPaymentFileService: BulkPaymentFileService,
+    private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +106,8 @@ export class ImportFichierComponent implements OnInit {
       },
       error: () => { this.isApprovalFlowEmpty = false; },
     });
+    this.loadOrganizationBalance();
+
   }
 
   get errorCount(): number {
@@ -213,6 +231,11 @@ export class ImportFichierComponent implements OnInit {
     this.validationRows.splice(index, 1);
   }
 
+  get balanceState(): 'ok' | 'low' | 'insufficient' {
+    if (this.isBalanceInsufficient) return 'insufficient';
+    return this.isBalanceLow ? 'low' : 'ok';
+  }
+
   private revalidateRow(row: ValidationRow): ValidationRow {
     const errors: string[] = [];
     if (!row.nom?.trim())       errors.push('nom_vide');
@@ -284,6 +307,18 @@ export class ImportFichierComponent implements OnInit {
       }));
   }
 
+  private loadOrganizationBalance(): void {
+    this.fetchCurrentAdminGQL.fetch({}, { fetchPolicy: 'no-cache' }).subscribe({
+      next: (result) => {
+        if (result.data) {
+          this.organization = result.data.fetchCurrentAdmin.organization as Organization;
+        }
+      },
+      // Si l'appel échoue, on n'affiche pas l'avertissement plutôt que de bloquer le parcours.
+      error: () => { this.organization = null; },
+    });
+  }
+
   onEnregistrer(): void {
     const inputs = this.buildPaymentInputs();
     if (!inputs.length || this.isSaving || this.isApprovalFlowEmpty) return;
@@ -307,4 +342,55 @@ export class ImportFichierComponent implements OnInit {
       },
     });
   }
+
+ 
+  private get validRows(): ValidationRow[] {
+    return this.validationRows.filter(r => !r.errors?.length);
+  }
+
+  get totalAmount(): number {
+    return this.validRows.reduce((sum, r) => sum + this.parseMontant(r.montant), 0);
+  }
+
+  get totalFees(): number {
+    return this.validRows.reduce((sum, r) => sum + this.getRowFee(r), 0);
+  }
+
+  private computeFee(wallet: string, amount: number): number {
+    const activedWallets = this.organization?.financialOrganization?.activedWallets ?? [];
+    const rate = activedWallets.find((w) => w.name === wallet)?.fees ?? 0;
+    return Math.round(amount * rate);
+  }
+
+  get totalCost(): number {
+    return this.totalAmount + this.totalFees;
+  }
+
+    get balanceAfterExecution(): number {
+    return this.organization ? this.organization.balance - this.totalCost : 0;
+  }
+
+  get isBalanceInsufficient(): boolean {
+    return !!this.organization && this.organization.balance < this.totalCost;
+  }
+
+  get isBalanceLow(): boolean {
+    if (!this.organization || this.isBalanceInsufficient) return false;
+    return this.balanceAfterExecution < this.organization.balance * this.LOW_BALANCE_THRESHOLD;
+  }
+
+  hasValidAmount(row: ValidationRow): boolean {
+    return this.parseMontant(row.montant) > 0;
+  }
+
+  getRowFee(row: ValidationRow): number {
+    const wallet = this.WALLET_MAP[(row.operateur ?? '').trim()];
+    if (!wallet) return 0;
+    return this.computeFee(wallet as string, this.parseMontant(row.montant));
+  }
+
+  getRowTotal(row: ValidationRow): number {
+    return this.parseMontant(row.montant) + this.getRowFee(row);
+  }
+
 }

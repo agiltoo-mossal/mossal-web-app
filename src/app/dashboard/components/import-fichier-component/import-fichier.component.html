@@ -9,6 +9,27 @@
       <span class="step-item">Validation</span>
     </div>
 
+    <div class="balance-summary-card" *ngIf="organization" [ngClass]="'state-' + balanceState">
+      <div class="balance-summary-row">
+        <div class="balance-summary-item">
+          <p class="balance-label">Solde actuel de l'organisation</p>
+          <p class="balance-value">{{ organization.balance | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">Montant de l'ordre</p>
+          <p class="balance-value">{{ (totalAmount + totalFees) | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item">
+          <p class="balance-label">dont frais opérateur</p>
+          <p class="balance-value">{{ totalFees | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+        <div class="balance-summary-item balance-after">
+          <p class="balance-label">Solde après exécution</p>
+          <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
+        </div>
+      </div>
+    </div>
+
     <div class="alert alert-warning" *ngIf="isApprovalFlowEmpty">
       <mat-icon>warning</mat-icon>
       <span>
@@ -46,6 +67,8 @@
             <th>PRÉNOM</th>
             <th>TÉLÉPHONE</th>
             <th>MONTANT</th>
+            <th>FRAIS</th>
+            <th>MONTANT TOTAL</th>
             <th>OPÉRATEUR</th>
             <th>STATUT</th>
             <th>ACTION</th>
@@ -100,6 +123,22 @@
                   {{ row.montant || '————' }}
                 </span>
               </ng-template>
+            </td>
+
+            <!-- FRAIS -->
+            <td>
+              <ng-container *ngIf="hasValidAmount(row); else noFee">
+                {{ getRowFee(row) | number:'1.0-0':'fr' }} XOF
+              </ng-container>
+              <ng-template #noFee>————</ng-template>
+            </td>
+
+            <!-- MONTANT TOTAL -->
+            <td>
+              <ng-container *ngIf="hasValidAmount(row); else noTotal">
+                <strong>{{ getRowTotal(row) | number:'1.0-0':'fr' }} XOF</strong>
+              </ng-container>
+              <ng-template #noTotal>————</ng-template>
             </td>
 
             <!-- OPÉRATEUR -->
