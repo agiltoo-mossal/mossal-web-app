@@ -325,7 +325,7 @@ export class ActivitiesComponent implements OnInit {
         Message: this.stripHtml(row.message),
         'Fait par': row.user
           ? `${row.user.firstName ?? ''} ${row.user.lastName ?? ''}`.trim()
-          : 'Utilisateur supprimé',
+          : 'Système Mossall',
         Email: row.user?.email ?? '—',
         Scope: this.getScopeLabel(row.scope),
         Date: new Date(row.createdAt).toLocaleString('fr-FR'),

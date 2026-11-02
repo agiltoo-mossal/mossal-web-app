@@ -23,6 +23,7 @@ interface Beneficiaire {
   prenom: string;
   telephone: string;
   montant: number;
+  frais: number;
   operateur: string;
 }
 
@@ -135,6 +136,7 @@ export class ApproverOrderViewComponent implements OnInit {
             prenom: p.firstName,
             telephone: p.phoneNumber,
             montant: p.amount,
+            frais: p.fee ?? 0,
             operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
           }));
 
@@ -195,17 +197,41 @@ export class ApproverOrderViewComponent implements OnInit {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
 
-  telechargerListe(): void {
+  downloadBeneficiaryList(): void {
     if (!this.beneficiaires.length) return;
 
     const statutGlobal = this.isApproved ? 'Validé' : this.isRejected ? 'Rejeté' : 'En attente';
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
-      ...this.beneficiaires.map(b => [b.nom, b.prenom, b.telephone, b.montant, b.operateur, statutGlobal]),
+      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut'],
+      ...this.beneficiaires.map(b => [
+        b.nom, b.prenom, b.telephone, b.montant, b.frais, b.montant + b.frais, b.operateur, statutGlobal,
+      ]),
+    ];
+
+    const sumBy = (pick: (b: Beneficiaire) => number, filter: (b: Beneficiaire) => boolean = () => true) =>
+      this.beneficiaires.filter(filter).reduce((sum, b) => sum + (pick(b) ?? 0), 0);
+    // toLocaleString('fr-FR') sépare les milliers par une espace insécable fine : on la remplace par une espace simple.
+    const xof = (n: number) => `${n.toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+
+    const totalSent = sumBy(b => b.montant);
+    const totalFees = sumBy(b => b.frais);
+
+    const summaryRows = [
+      ['Indicateur', 'Valeur'],
+      ['Montant total envoyé', xof(totalSent)],
+      ['Frais Wave', xof(sumBy(b => b.frais, b => b.operateur === 'Wave'))],
+      ['Frais Orange Money', xof(sumBy(b => b.frais, b => b.operateur === 'Orange Money'))],
+      ['Total frais opérateurs', xof(totalFees)],
+      ['Coût total réel', xof(totalSent + totalFees)],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{ wch: 26 }, { wch: 20 }];
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Bénéficiaires': worksheet, 'Récapitulatif financier': summarySheet },
+      SheetNames: ['Bénéficiaires', 'Récapitulatif financier'],
+    };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',

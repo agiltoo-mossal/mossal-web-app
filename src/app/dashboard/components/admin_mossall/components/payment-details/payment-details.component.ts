@@ -299,7 +299,7 @@ export class PaymentDetailsComponent implements OnInit {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
 
-  telechargerListe(): void {
+  downloadBeneficiaryList(): void {
     if (!this.payment?.beneficiaries?.length) return;
 
     const STATUT_LABELS: Record<string, string> = {
@@ -321,8 +321,33 @@ export class PaymentDetailsComponent implements OnInit {
       ]),
     ];
 
+    const beneficiaries = this.payment.beneficiaries;
+    const sumBy = (pick: (b: Beneficiary) => number, filter: (b: Beneficiary) => boolean = () => true) =>
+      beneficiaries.filter(filter).reduce((sum, b) => sum + (pick(b) ?? 0), 0);
+    // toLocaleString('fr-FR') sépare les milliers par une espace insécable fine : on la remplace par une espace simple.
+    const xof = (n: number) => `${n.toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+
+    const totalSent = sumBy(b => b.amount);
+    const waveFees = sumBy(b => b.fees, b => b.operator === 'Wave');
+    const orangeFees = sumBy(b => b.fees, b => b.operator === 'Orange Money');
+    const totalFees = sumBy(b => b.fees);
+
+    const summaryRows = [
+      ['Indicateur', 'Valeur'],
+      ['Montant total envoyé', xof(totalSent)],
+      ['Frais Wave', xof(waveFees)],
+      ['Frais Orange Money', xof(orangeFees)],
+      ['Total frais opérateurs', xof(totalFees)],
+      ['Coût total réel', xof(totalSent + totalFees)],
+    ];
+
     const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{ wch: 26 }, { wch: 20 }];
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Bénéficiaires': worksheet, 'Récapitulatif financier': summarySheet },
+      SheetNames: ['Bénéficiaires', 'Récapitulatif financier'],
+    };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
