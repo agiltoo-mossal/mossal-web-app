@@ -27,6 +27,8 @@
         <p class="balance-label">Montant de l'ordre</p>
         <p class="balance-value">{{ payment.amount | number:'1.0-0':'fr' }} XOF</p>
       </div>
+
+     
       <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
         <p class="balance-label">Solde après exécution</p>
         <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
