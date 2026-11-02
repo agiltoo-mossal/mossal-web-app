@@ -488,3 +488,34 @@ $white: #ffffff;
     &:hover { background: #061E5C15; }
   }
 }
+
+
+.balance-summary-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.balance-summary-row {
+  display: flex;
+  gap: 24px;
+}
+
+.balance-summary-item {
+  flex: 1;
+
+  .balance-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 4px;
+  }
+
+  .balance-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }  
+}

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject, forkJoin, of, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
-import { BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL, Wallet } from 'src/graphql/generated';
+import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL, Wallet } from 'src/graphql/generated';
 import { FetchBulkPaymentOrderByIdGQL } from 'src/graphql/bulk-payment-extended';
 
 export type TxStatus = 'EN_ATTENTE' | 'EN_COURS' | 'SUCCES' | 'ECHEC' | 'EXPIRE' | 'REMBOURSE';
@@ -16,6 +16,7 @@ export interface BeneficiaryTx {
   phone: string;
   operator: 'Wave' | 'Orange Money';
   amount: number;
+  fees: number;
   status: TxStatus;
   mossalTxId?: string;
   partnerTxId?: string;
@@ -65,6 +66,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
   ) { }
 
   isLoading = true;
+
+    orders: BulkPaymentOrder[] = [];
+
+
   items: BeneficiaryTx[] = [];
   selected: BeneficiaryTx | null = null;
 
@@ -137,6 +142,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
       phone: this.formatPhone(p.phoneNumber),
       operator: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
       amount: p.amount ?? 0,
+      fees: p.fees ?? p.fee ?? 0,
       status: this.mapStatus(p.status, order.status),
       // Champs optionnels : à ajouter dans la requête FetchBulkPaymentOrderById (voir message)
       mossalTxId: p.reference ?? p.id,
@@ -267,5 +273,13 @@ export class HistoryComponent implements OnInit, OnDestroy {
   /** Conserve l'ancienne navigation vers le détail complet de l'ordre. */
   goToOrder(b: BeneficiaryTx): void {
     this.router.navigate(['/dashboard/payments/details', b.orderId]);
+  }
+
+  totalFees(b: BeneficiaryTx): number {
+     return b.fees ?? 0;
+  }
+
+  totalCost(b: BeneficiaryTx): number {
+    return (b.amount ?? 0) + this.totalFees(b);
   }
 }

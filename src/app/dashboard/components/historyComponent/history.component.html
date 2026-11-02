@@ -96,11 +96,12 @@
             <th>PRÉNOM</th>
             <th>TÉLÉPHONE</th>
             <th>MONTANT</th>
+            <th>Total des Frais</th>
+            <th>Coût total réel</th>
             <th>STATUT</th>
             <th>OPÉRATEUR</th>
-            <th>ID TRANSACTION</th>
-            <th>DATE D'EXÉCUTION</th>
-            <th>MOTIF ÉCHEC</th>
+            <th>Date</th>
+
           </tr>
         </thead>
         <tbody>
@@ -109,15 +110,15 @@
             <td>{{ b.firstName }}</td>
             <td>{{ b.phone }}</td>
             <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ totalFees(b) | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ totalCost(b) | number:'1.0-0':'fr' }} XOF</td>
             <td>
               <span class="badge" [ngClass]="statusBadge(b.status)">
                 <span class="dot"></span> {{ statusLabel(b.status) }}
               </span>
             </td>
             <td>{{ b.operator }}</td>
-            <td>{{ b.partnerTxId || '—' }}</td>
-            <td>{{ b.executedAt ? (b.executedAt | date:'dd/MM/yyyy HH:mm':'':'fr') : '—' }}</td>
-            <td class="reason">{{ b.status === 'ECHEC' ? b.failureReason : '' }}</td>
+            <td>{{ (b.executedAt || b.initiatedAt) ? ((b.executedAt || b.initiatedAt) | date:'dd/MM/yyyy HH:mm':'':'fr') : '—' }}</td>
           </tr>
         </tbody>
       </table>
