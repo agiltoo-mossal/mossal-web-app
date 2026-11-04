@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 export interface ApproveConfirmationDialogData {
   libelle: string;
   montantTotal: number;
+  fraisTotal: number;
   nombreBeneficiaires: number;
 }
 
