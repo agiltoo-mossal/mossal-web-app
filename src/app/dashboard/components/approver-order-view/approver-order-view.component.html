@@ -138,6 +138,8 @@
           <th>PRÉNOM</th>
           <th>TÉLÉPHONE</th>
           <th>MONTANT</th>
+          <th>TOTAL DES FRAIS</th>
+          <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
         </tr>
       </thead>
@@ -147,6 +149,8 @@
           <td>{{ b.prenom }}</td>
           <td>{{ b.telephone }}</td>
           <td>{{ formatMontant(b.montant) }}</td>
+          <td>{{ formatMontant(b.frais) }}</td>
+          <td>{{ formatMontant(b.montant + b.frais) }}</td>
           <td>{{ b.operateur }}</td>
         </tr>
       </tbody>

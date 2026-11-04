@@ -55,9 +55,7 @@
       </button>
       <button
         class="btn-danger-outline"
-        requiresConfirmation
-        [message]="'Êtes-vous sûr de vouloir annuler cet ordre de paiement ? Cette action est irréversible.'"
-        [confirmCallback]="annulerOrdre"
+        (click)="annulerOrdre()"
         [disabled]="isCancelling"
       >
         Annuler l'ordre de paiement
@@ -67,7 +65,7 @@
 
   <div class="info-banner" *ngIf="isPending && hasSomeoneApproved">
     <mat-icon>info</mat-icon>
-    <span>Cet ordre est en cours de validation et ne peut plus être modifié.</span>
+    <span>Cet ordre est en cours de validation. Toute modification annulera les validations déjà données et relancera le circuit au niveau 1.</span>
   </div>
 
   <!-- Card principal unique -->

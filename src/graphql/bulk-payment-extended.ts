@@ -296,6 +296,7 @@ export interface UpdateSubmittedBulkPaymentOrderMutationVariables {
   inputs: BulkPaymentInput[];
   label: string;
   approversByLevel?: ApprovalLevelSelectionInput[];
+  reason: string;
 }
 
 export interface UpdateSubmittedBulkPaymentOrderMutation {
@@ -312,8 +313,9 @@ const UpdateSubmittedBulkPaymentOrderDocument = gql`
     $inputs: [BulkPaymentInput!]!
     $label: String!
     $approversByLevel: [ApprovalLevelInput!]
+    $reason: String!
   ) {
-    updateSubmittedBulkPaymentOrder(id: $id, inputs: $inputs, label: $label, approversByLevel: $approversByLevel) {
+    updateSubmittedBulkPaymentOrder(id: $id, inputs: $inputs, label: $label, approversByLevel: $approversByLevel, reason: $reason) {
       id
       label
       status
@@ -334,6 +336,7 @@ export class UpdateSubmittedBulkPaymentOrderGQL extends Apollo.Mutation<
 
 export interface CancelBulkPaymentOrderMutationVariables {
   id: string;
+  reason: string;
 }
 
 export interface CancelBulkPaymentOrderMutation {
@@ -341,8 +344,8 @@ export interface CancelBulkPaymentOrderMutation {
 }
 
 const CancelBulkPaymentOrderDocument = gql`
-  mutation CancelBulkPaymentOrder($id: String!) {
-    cancelBulkPaymentOrder(id: $id) {
+  mutation CancelBulkPaymentOrder($id: String!, $reason: String!) {
+    cancelBulkPaymentOrder(id: $id, reason: $reason) {
       id
       status
     }
