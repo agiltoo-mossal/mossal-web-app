@@ -189,6 +189,8 @@ $radius-sm: 4px;
 .badge-pending { background: #FFF4E5; color: #FF9500;  .dot { background: #FF9500; } }
 .badge-success { background: #DEFFDB; color: #0EAF00;  .dot { background: #0EAF00; } }
 .badge-danger  { background: #FEE7E7; color: #F41414;  .dot { background: #F41414; } }
+.badge-info    { background: #E6EFFF; color: #1956F0;  .dot { background: #1956F0; } }
+.badge-neutral { background: #F1F1F3; color: #6B7280;  .dot { background: #6B7280; } }
 
 .approval-step-body {
   display: flex;

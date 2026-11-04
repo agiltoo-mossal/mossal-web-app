@@ -1,29 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageEvent } from '@angular/material/paginator';
 import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
-import { FetchOrdersForApproverGQL } from 'src/graphql/bulk-payment-extended';
+import {
+  ApproverOrdersQueryFilter,
+  FetchPaginatedOrdersForApproverGQL,
+  FetchPaginatedOrdersForApproverQuery,
+} from 'src/graphql/bulk-payment-extended';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
-export type ValidationStatut = 'pending' | 'approved' | 'rejected';
+export type ValidationStatus = 'pending' | 'approved' | 'rejected';
 
 export interface PaymentValidation {
   id: string;
-  titre: string;
-  soumisPar: string;
-  dateSoumission: string;
+  title: string;
+  submittedBy: string;
+  submittedAt: string;
   dateISO: string;
-  nombreBeneficiaires: number;
-  montantTotal: number;
-  statut: ValidationStatut;
-  niveauActuel: number;
-  niveauTotal: number;
-  dejaTraite: boolean;
-  estMonTour: boolean;
+  beneficiariesCount: number;
+  amount: number;
+  operatorFees: number;
+  status: ValidationStatus;
+  currentLevel: number;
+  totalLevels: number;
+  alreadyProcessed: boolean;
+  isMyTurn: boolean;
 }
+
+type ApproverOrderCounts = FetchPaginatedOrdersForApproverQuery['fetchPaginatedOrdersForApprover']['counts'];
+type ApproverOrder = FetchPaginatedOrdersForApproverQuery['fetchPaginatedOrdersForApprover']['results'][number];
 
 const BALANCE_POLL_INTERVAL_MS = 10000;
 
 
-const STATUS_MAP: Record<string, ValidationStatut> = {
+const STATUS_MAP: Record<string, ValidationStatus> = {
   PENDING: 'pending',
   APPROVED: 'approved',
   REJECTED: 'rejected',
@@ -34,77 +43,107 @@ const STATUS_MAP: Record<string, ValidationStatut> = {
   templateUrl: './tracking-approvals.component.html',
   styleUrls: ['./tracking-approvals.component.scss']
 })
-export class TrackingApprovalsComponent implements OnInit {
+export class TrackingApprovalsComponent implements OnInit, OnDestroy {
 
-  recherche = '';
-  dateDebut = '';
-  dateFin = '';
-  statutFiltre = 'tous';
+  search = '';
+  startDate = '';
+  endDate = '';
+  statusFilter = 'all';
 
-  statutOptions = [
-    { value: 'tous', label: 'Tous les statuts' },
+  statusOptions = [
+    { value: 'all', label: 'Tous les statuts' },
     { value: 'pending', label: 'En attente' },
     { value: 'approved', label: 'Approuvé' },
     { value: 'rejected', label: 'Rejeté' }
   ];
 
   isLoading = true;
-  paiements: PaymentValidation[] = [];
-  paiementsFiltres: PaymentValidation[] = [];
+  payments: PaymentValidation[] = [];
+
+  readonly pageSizeOptions = [10, 25, 50, 100];
+  pageIndex = 0;
+  pageSize = 10;
+  totalItems = 0;
+  counts: ApproverOrderCounts = { pending: 0, approved: 0, rejected: 0 };
+
+  // Filtres réellement envoyés au backend : les champs du formulaire ne comptent qu'au clic sur « Appliquer ».
+  private appliedFilters: Omit<ApproverOrdersQueryFilter, 'page' | 'limit'> = {};
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private fetchOrdersForApproverGQL: FetchOrdersForApproverGQL,
+    private fetchPaginatedOrdersForApproverGQL: FetchPaginatedOrdersForApproverGQL,
         private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
-    
+
   ) {}
 
   private destroy$ = new Subject<void>();
+  private loadOrders$ = new Subject<void>();
 
   isLoadingBalance = true;
     organization: Organization | null = null;
 
   ngOnInit(): void {
-    this.fetchOrdersForApproverGQL.fetch({}, { fetchPolicy: 'network-only' }).subscribe({
-      next: (res) => {
-        const orders = res.data?.fetchOrdersForApprover ?? [];
-          console.log('orders bruts:', orders); // vérifie ici si createdByUser existe
-        this.paiements = orders.map((o) => {
-          const createdAt = new Date(o.createdAt);
-          const globalStatut = STATUS_MAP[o.status] ?? 'pending';
+    // switchMap : une nouvelle page/un nouveau filtre annule la requête précédente encore en cours.
+    this.loadOrders$
+      .pipe(
+        switchMap(() => {
+          this.isLoading = true;
+          return this.fetchPaginatedOrdersForApproverGQL.fetch(
+            { queryFilter: { ...this.appliedFilters, page: this.pageIndex + 1, limit: this.pageSize } },
+            { fetchPolicy: 'network-only' },
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (res) => {
+          const data = res.data?.fetchPaginatedOrdersForApprover;
+          this.payments = (data?.results ?? []).map((o) => this.toPaymentValidation(o));
+          this.totalItems = data?.pagination?.totalItems ?? 0;
+          this.counts = data?.counts ?? { pending: 0, approved: 0, rejected: 0 };
+          this.isLoading = false;
+        },
+        error: () => { this.isLoading = false; },
+      });
 
-          const isApprovedByCurrentUser = o.isApprovedByCurrentUser ?? false;
-          const dejaTraite = isApprovedByCurrentUser || globalStatut === 'approved' || globalStatut === 'rejected';
-          const estMonTour = !dejaTraite && globalStatut === 'pending';
+    this.loadOrders$.next();
+    this.startBalancePolling();
+  }
 
-          return {
-            id: o.id,
-            titre: o.label,
-            soumisPar: o.createdByUser
-              ? `${o.createdByUser.firstName} ${o.createdByUser.lastName}`
-              : '—',
-            dateSoumission: new Intl.DateTimeFormat('fr-FR', {
-              day: 'numeric', month: 'long', year: 'numeric',
-              hour: '2-digit', minute: '2-digit',
-            }).format(createdAt),
-            dateISO: createdAt.toISOString().substring(0, 10),
-            nombreBeneficiaires: o.paymentsCount ?? 0,
-            montantTotal: o.totalAmount,
-            statut: globalStatut,
-            niveauActuel: o.currentApprovalLevel ?? 1,
-            niveauTotal: o.approversByLevel?.length ?? 1,
-            dejaTraite,
-            estMonTour,
-          };
-        });
-        this.appliquerFiltres();
-        this.isLoading = false;
-      },
-      error: () => { this.isLoading = false; },
-    });
-        this.startBalancePolling();
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
+  private toPaymentValidation(o: ApproverOrder): PaymentValidation {
+    const createdAt = new Date(o.createdAt);
+    const globalStatus = STATUS_MAP[o.status] ?? 'pending';
+
+    const isApprovedByCurrentUser = o.isApprovedByCurrentUser ?? false;
+    const alreadyProcessed = isApprovedByCurrentUser || globalStatus === 'approved' || globalStatus === 'rejected';
+    const isMyTurn = !alreadyProcessed && globalStatus === 'pending';
+
+    return {
+      id: o.id,
+      title: o.label,
+      submittedBy: o.createdByUser
+        ? `${o.createdByUser.firstName} ${o.createdByUser.lastName}`
+        : '—',
+      submittedAt: new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      }).format(createdAt),
+      dateISO: createdAt.toISOString().substring(0, 10),
+      beneficiariesCount: o.paymentsCount ?? 0,
+      amount: o.totalAmount,
+      operatorFees: o.totalFees ?? 0,
+      status: globalStatus,
+      currentLevel: o.currentApprovalLevel ?? 1,
+      totalLevels: o.approversByLevel?.length ?? 1,
+      alreadyProcessed,
+      isMyTurn,
+    };
   }
 
   private startBalancePolling(): void {
@@ -127,63 +166,65 @@ export class TrackingApprovalsComponent implements OnInit {
     }
 
   getBadgeLabel(p: PaymentValidation): string {
-    if (p.statut === 'rejected') return 'Rejeté';
-    if (p.dejaTraite) return 'Approuvé';
-    if (p.estMonTour) return 'En attente de votre approbation';
+    if (p.status === 'rejected') return 'Rejeté';
+    if (p.alreadyProcessed) return 'Approuvé';
+    if (p.isMyTurn) return 'En attente de votre approbation';
     return 'En attente';
   }
 
   getBadgeClass(p: PaymentValidation): string {
-    if (p.statut === 'rejected') return 'badge-rejected';
-    if (p.dejaTraite) return 'badge-approved';
+    if (p.status === 'rejected') return 'badge-rejected';
+    if (p.alreadyProcessed) return 'badge-approved';
     return 'badge-pending';
   }
 
-  get nombreEnAttente(): number {
-    return this.paiements.filter(p => p.estMonTour).length;
+  // Compteurs calculés côté backend sur tous les ordres visibles (hors filtres et pagination).
+  get pendingCount(): number {
+    return this.counts.pending;
   }
 
-  get nombreApprouves(): number {
-    return this.paiements.filter(p => p.dejaTraite && p.statut !== 'rejected').length;
+  get approvedCount(): number {
+    return this.counts.approved;
   }
 
-  get nombreRejetes(): number {
-    return this.paiements.filter(p => p.statut === 'rejected').length;
+  get rejectedCount(): number {
+    return this.counts.rejected;
   }
 
-  appliquerFiltres(): void {
-    this.paiementsFiltres = this.paiements.filter(p => {
-      const matchRecherche =
-        !this.recherche ||
-        p.titre.toLowerCase().includes(this.recherche.toLowerCase());
-
-      const matchStatut =
-        this.statutFiltre === 'tous' || p.statut === this.statutFiltre;
-
-      const matchDateDebut = !this.dateDebut || p.dateISO >= this.dateDebut;
-      const matchDateFin = !this.dateFin || p.dateISO <= this.dateFin;
-
-      return matchRecherche && matchStatut && matchDateDebut && matchDateFin;
-    });
+  applyFilters(): void {
+    this.appliedFilters = {
+      search: this.search.trim() || undefined,
+      status: this.statusFilter === 'all' ? undefined : this.statusFilter,
+      startDate: this.startDate || undefined,
+      endDate: this.endDate || undefined,
+    };
+    this.pageIndex = 0;
+    this.loadOrders$.next();
   }
 
-  reinitialiserFiltres(): void {
-    this.recherche = '';
-    this.dateDebut = '';
-    this.dateFin = '';
-    this.statutFiltre = 'tous';
-    this.appliquerFiltres();
+  resetFilters(): void {
+    this.search = '';
+    this.startDate = '';
+    this.endDate = '';
+    this.statusFilter = 'all';
+    this.applyFilters();
   }
 
-  formatMontant(montant: number): string {
-    return montant.toLocaleString('fr-FR') + ' XOF';
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadOrders$.next();
   }
 
-  voirDetail(paiement: PaymentValidation): void {
-    if (paiement.dejaTraite || paiement.statut !== 'pending') {
-      this.router.navigate([paiement.id, 'view'], { relativeTo: this.route });
+  formatAmount(amount: number): string {
+    return amount.toLocaleString('fr-FR') + ' XOF';
+  }
+
+  viewDetails(payment: PaymentValidation): void {
+    if (payment.alreadyProcessed || payment.status !== 'pending') {
+      this.router.navigate([payment.id, 'view'], { relativeTo: this.route });
     } else {
-      this.router.navigate([paiement.id], { relativeTo: this.route });
+      this.router.navigate([payment.id], { relativeTo: this.route });
     }
   }
 }
