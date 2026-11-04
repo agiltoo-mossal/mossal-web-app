@@ -1,0 +1,28 @@
+<div class="reason-dialog" [class.danger]="data.variant === 'danger'">
+
+  <div class="reason-dialog-header">
+    <mat-icon class="header-icon">{{ data.icon }}</mat-icon>
+    <h2>{{ data.title }}</h2>
+  </div>
+
+  <p class="reason-dialog-message">{{ data.message }}</p>
+
+  <label class="reason-label" for="reason-input">{{ data.reasonLabel }}*</label>
+  <textarea
+    id="reason-input"
+    class="reason-textarea"
+    [class.has-error]="showError"
+    rows="4"
+    [(ngModel)]="reason"
+    (ngModelChange)="onReasonChange()"
+  ></textarea>
+  <p class="reason-error" *ngIf="showError">{{ data.requiredMessage }}</p>
+
+  <p class="reason-warning" *ngIf="data.warning">{{ data.warning }}</p>
+
+  <div class="reason-dialog-actions">
+    <button class="btn-cancel" (click)="cancel()">Annuler</button>
+    <button class="btn-confirm" (click)="confirm()">{{ data.confirmLabel }}</button>
+  </div>
+
+</div>

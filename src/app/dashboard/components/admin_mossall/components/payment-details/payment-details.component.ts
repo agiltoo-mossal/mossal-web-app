@@ -4,6 +4,8 @@ import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
 import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ReasonDialogComponent, ReasonDialogData } from '../../../reason-dialog/reason-dialog.component';
 
 
 export interface Beneficiary {
@@ -66,6 +68,7 @@ export class PaymentDetailsComponent implements OnInit {
     private cancelBulkPaymentOrderGQL: CancelBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private dialog: MatDialog,
 
   ) { }
 
@@ -211,10 +214,10 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
-  // "Modifier" n'est proposé que tant qu'aucun approbateur n'a encore traité l'ordre :
-  // dès qu'un niveau a validé, le circuit est engagé et l'ordre ne peut plus être modifié.
+  // Modifier un ordre partiellement approuvé annule les validations déjà données (le backend les archive)
+  // et relance le circuit au niveau 1.
   get isModifiable(): boolean {
-    return this.isPending && !this.hasSomeoneApproved;
+    return this.isPending;
   }
 
   get isBalanceInsufficient(): boolean {
@@ -278,10 +281,31 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
-  annulerOrdre = (): void => {
+  annulerOrdre(): void {
     if (!this.orderId || !this.isPending || this.isCancelling) return;
+
+    const data: ReasonDialogData = {
+      title: "Annuler l'ordre de paiement",
+      icon: 'error_outline',
+      message: `Êtes-vous sûr de vouloir annuler l'ordre '${this.payment?.label ?? ''}' ?`,
+      reasonLabel: "Motif d'annulation",
+      requiredMessage: "Le motif d'annulation est obligatoire.",
+      warning: 'Cette action est irréversible.',
+      confirmLabel: "Confirmer l'annulation",
+      variant: 'danger',
+    };
+    this.dialog
+      .open(ReasonDialogComponent, { width: '720px', data })
+      .afterClosed()
+      .subscribe((reason?: string) => {
+        if (reason) this.cancelOrder(reason);
+      });
+  }
+
+  private cancelOrder(reason: string): void {
+    if (!this.orderId) return;
     this.isCancelling = true;
-    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId }).subscribe({
+    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId, reason }).subscribe({
       next: () => {
         this.isCancelling = false;
         this.snackBarService.showSuccessSnackBar(4000, 'Ordre de paiement annulé.');
@@ -293,13 +317,13 @@ export class PaymentDetailsComponent implements OnInit {
         this.snackBarService.showErrorSnackBar(4000, message);
       },
     });
-  };
+  }
 
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
 
-  telechargerListe(): void {
+  downloadBeneficiaryList(): void {
     if (!this.payment?.beneficiaries?.length) return;
 
     const STATUT_LABELS: Record<string, string> = {
@@ -321,8 +345,33 @@ export class PaymentDetailsComponent implements OnInit {
       ]),
     ];
 
+    const beneficiaries = this.payment.beneficiaries;
+    const sumBy = (pick: (b: Beneficiary) => number, filter: (b: Beneficiary) => boolean = () => true) =>
+      beneficiaries.filter(filter).reduce((sum, b) => sum + (pick(b) ?? 0), 0);
+    // toLocaleString('fr-FR') sépare les milliers par une espace insécable fine : on la remplace par une espace simple.
+    const xof = (n: number) => `${n.toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+
+    const totalSent = sumBy(b => b.amount);
+    const waveFees = sumBy(b => b.fees, b => b.operator === 'Wave');
+    const orangeFees = sumBy(b => b.fees, b => b.operator === 'Orange Money');
+    const totalFees = sumBy(b => b.fees);
+
+    const summaryRows = [
+      ['Indicateur', 'Valeur'],
+      ['Montant total envoyé', xof(totalSent)],
+      ['Frais Wave', xof(waveFees)],
+      ['Frais Orange Money', xof(orangeFees)],
+      ['Total frais opérateurs', xof(totalFees)],
+      ['Coût total réel', xof(totalSent + totalFees)],
+    ];
+
     const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{ wch: 26 }, { wch: 20 }];
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Bénéficiaires': worksheet, 'Récapitulatif financier': summarySheet },
+      SheetNames: ['Bénéficiaires', 'Récapitulatif financier'],
+    };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
