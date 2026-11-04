@@ -4,6 +4,8 @@ import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
 import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ReasonDialogComponent, ReasonDialogData } from '../../../reason-dialog/reason-dialog.component';
 
 
 export interface Beneficiary {
@@ -66,6 +68,7 @@ export class PaymentDetailsComponent implements OnInit {
     private cancelBulkPaymentOrderGQL: CancelBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private dialog: MatDialog,
 
   ) { }
 
@@ -211,10 +214,10 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
-  // "Modifier" n'est proposé que tant qu'aucun approbateur n'a encore traité l'ordre :
-  // dès qu'un niveau a validé, le circuit est engagé et l'ordre ne peut plus être modifié.
+  // Modifier un ordre partiellement approuvé annule les validations déjà données (le backend les archive)
+  // et relance le circuit au niveau 1.
   get isModifiable(): boolean {
-    return this.isPending && !this.hasSomeoneApproved;
+    return this.isPending;
   }
 
   get isBalanceInsufficient(): boolean {
@@ -278,10 +281,31 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
-  annulerOrdre = (): void => {
+  annulerOrdre(): void {
     if (!this.orderId || !this.isPending || this.isCancelling) return;
+
+    const data: ReasonDialogData = {
+      title: "Annuler l'ordre de paiement",
+      icon: 'error_outline',
+      message: `Êtes-vous sûr de vouloir annuler l'ordre '${this.payment?.label ?? ''}' ?`,
+      reasonLabel: "Motif d'annulation",
+      requiredMessage: "Le motif d'annulation est obligatoire.",
+      warning: 'Cette action est irréversible.',
+      confirmLabel: "Confirmer l'annulation",
+      variant: 'danger',
+    };
+    this.dialog
+      .open(ReasonDialogComponent, { width: '720px', data })
+      .afterClosed()
+      .subscribe((reason?: string) => {
+        if (reason) this.cancelOrder(reason);
+      });
+  }
+
+  private cancelOrder(reason: string): void {
+    if (!this.orderId) return;
     this.isCancelling = true;
-    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId }).subscribe({
+    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId, reason }).subscribe({
       next: () => {
         this.isCancelling = false;
         this.snackBarService.showSuccessSnackBar(4000, 'Ordre de paiement annulé.');
@@ -293,7 +317,7 @@ export class PaymentDetailsComponent implements OnInit {
         this.snackBarService.showErrorSnackBar(4000, message);
       },
     });
-  };
+  }
 
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;

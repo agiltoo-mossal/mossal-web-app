@@ -36,7 +36,7 @@ export type Activity = {
   scope: ActivityScope;
   status?: Maybe<ActivityStatus>;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
+  user?: Maybe<User>;
 };
 
 /** Possible activities */
@@ -529,6 +529,7 @@ export type MutationCancelBulkPaymentArgs = {
 
 export type MutationCancelBulkPaymentOrderArgs = {
   id: Scalars['String']['input'];
+  reason: Scalars['String']['input'];
 };
 
 
@@ -815,6 +816,7 @@ export type MutationUpdateSubmittedBulkPaymentOrderArgs = {
   id: Scalars['String']['input'];
   inputs: Array<BulkPaymentInput>;
   label: Scalars['String']['input'];
+  reason: Scalars['String']['input'];
 };
 
 
@@ -1760,7 +1762,7 @@ export type FetchPaginatedActivitiesQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, status?: ActivityStatus | null, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } }> } };
+export type FetchPaginatedActivitiesQuery = { __typename?: 'Query', fetchPaginatedActivities: { __typename?: 'PaginatedActivityResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Activity', id: string, message: string, scope: ActivityScope, status?: ActivityStatus | null, createdAt: any, updatedAt: any, user?: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string } | null }> } };
 
 export type FetchMossallAdminQueryVariables = Exact<{
   adminId: Scalars['String']['input'];

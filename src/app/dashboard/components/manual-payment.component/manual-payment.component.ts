@@ -9,6 +9,8 @@ import {
   Organization,
   Wallet,
 } from 'src/graphql/generated';
+import { MatDialog } from '@angular/material/dialog';
+import { ReasonDialogComponent, ReasonDialogData } from '../reason-dialog/reason-dialog.component';
 import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 
@@ -114,6 +116,7 @@ export class ManualPaymentComponent implements OnInit {
     private updateSubmittedBulkPaymentOrderGQL: UpdateSubmittedBulkPaymentOrderGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private snackBarService: SnackBarService,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -600,9 +603,28 @@ export class ManualPaymentComponent implements OnInit {
   saveEditedOrder(): void {
     if (!this.editOrderId || this.beneficiaries.length === 0 || !this.label.trim() || this.isSubmitting) return;
 
+    const data: ReasonDialogData = {
+      title: 'Enregistrer les modifications',
+      icon: 'edit_note',
+      message: 'Les validations déjà données seront annulées et le circuit de validation repartira du niveau 1.',
+      reasonLabel: 'Motif de la modification',
+      requiredMessage: 'Le motif de la modification est obligatoire.',
+      confirmLabel: 'Enregistrer les modifications',
+    };
+    this.dialog
+      .open(ReasonDialogComponent, { width: '720px', data })
+      .afterClosed()
+      .subscribe((reason?: string) => {
+        if (reason) this.submitEditedOrder(reason);
+      });
+  }
+
+  private submitEditedOrder(reason: string): void {
+    if (!this.editOrderId) return;
+
     this.isSubmitting = true;
     this.updateSubmittedBulkPaymentOrderGQL
-      .mutate({ id: this.editOrderId, inputs: this.buildInputs(), label: this.label })
+      .mutate({ id: this.editOrderId, inputs: this.buildInputs(), label: this.label, reason })
       .subscribe({
         next: () => {
           this.isSubmitting = false;
