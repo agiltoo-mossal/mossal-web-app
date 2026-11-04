@@ -281,6 +281,7 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
       data: {
         libelle: this.paiement.libellePaiement,
         montantTotal: this.paiement.montantTotal,
+        fraisTotal: this.paiement.fraisTotal,
         nombreBeneficiaires: this.paiement.nombreBeneficiaires,
       },
     });
