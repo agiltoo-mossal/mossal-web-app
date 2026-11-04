@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, forkJoin, of, timer } from 'rxjs';
+import { Observable, Subject, of, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
-import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL, Wallet } from 'src/graphql/generated';
-import { FetchBulkPaymentOrderByIdGQL } from 'src/graphql/bulk-payment-extended';
+import { BulkPaymentOrder, BulkPaymentOrderStatus, Wallet } from 'src/graphql/generated';
+import { FetchMyBulkPaymentHistoryGQL, FetchMyBulkPaymentHistoryQuery } from 'src/graphql/bulk-payment-extended';
 
 export type TxStatus = 'EN_ATTENTE' | 'EN_COURS' | 'SUCCES' | 'ECHEC' | 'EXPIRE' | 'REMBOURSE';
 
@@ -44,12 +44,13 @@ const STATUS_BADGE: Record<TxStatus, string> = {
 };
 
 const RAW_STATUS_MAP: Record<string, TxStatus> = {
-  PENDING: 'EN_ATTENTE', EN_ATTENTE: 'EN_ATTENTE',
-  PROCESSING: 'EN_COURS', IN_PROGRESS: 'EN_COURS', EN_COURS: 'EN_COURS',
-  SUCCESS: 'SUCCES', SUCCEEDED: 'SUCCES', COMPLETED: 'SUCCES', SUCCES: 'SUCCES',
-  FAILED: 'ECHEC', FAILURE: 'ECHEC', ECHEC: 'ECHEC',
-  EXPIRED: 'EXPIRE', EXPIRE: 'EXPIRE',
-  REFUNDED: 'REMBOURSE', REMBOURSE: 'REMBOURSE',
+  // Valeurs de BulkPaymentStatus côté backend
+  PENDING: 'EN_ATTENTE',
+  VALIDATED: 'EN_COURS',
+  IN_PROCESS: 'EN_COURS',
+  PAYED: 'SUCCES',
+  REJECTED: 'ECHEC',
+  CANCELLED: 'ECHEC',
 };
 
 @Component({
@@ -61,8 +62,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private fetchMyBulkPaymentOrdersGQL: FetchMyBulkPaymentOrdersGQL,
-    private fetchBulkPaymentOrderByIdGQL: FetchBulkPaymentOrderByIdGQL,
+    private fetchMyBulkPaymentHistoryGQL: FetchMyBulkPaymentHistoryGQL,
   ) { }
 
   isLoading = true;
@@ -112,28 +112,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
 
   private loadBeneficiaries(): Observable<BeneficiaryTx[]> {
-    return this.fetchMyBulkPaymentOrdersGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(
-      switchMap((res) => {
-        const orders = (res.data?.fetchMyBulkPaymentOrders ?? [])
-          .filter(o => o.status !== BulkPaymentOrderStatus.Draft);
-        if (orders.length === 0) return of([] as BeneficiaryTx[]);
-
-        return forkJoin(
-          orders.map(o =>
-            this.fetchBulkPaymentOrderByIdGQL.fetch({ id: o.id }, { fetchPolicy: 'network-only' }).pipe(
-              map(r => this.toBeneficiaries(r.data?.fetchBulkPaymentOrderById)),
-              catchError(() => of([] as BeneficiaryTx[])),
-            )
-          )
-        ).pipe(map(lists => ([] as BeneficiaryTx[]).concat(...lists)));
-      }),
+    return this.fetchMyBulkPaymentHistoryGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(
+      map((res) => ([] as BeneficiaryTx[]).concat(
+        ...(res.data?.fetchMyBulkPaymentHistory ?? []).map(o => this.toBeneficiaries(o)),
+      )),
       catchError(() => of(this.items)),
     );
   }
 
-  private toBeneficiaries(order: any): BeneficiaryTx[] {
-    if (!order) return [];
-    return (order.payments ?? []).map((p: any, i: number): BeneficiaryTx => ({
+  private toBeneficiaries(order: FetchMyBulkPaymentHistoryQuery['fetchMyBulkPaymentHistory'][number]): BeneficiaryTx[] {
+    return (order.payments ?? []).map((p, i): BeneficiaryTx => ({
       id: p.id ?? `${order.id}-${i}`,
       orderId: order.id,
       orderLabel: order.label,
@@ -142,21 +130,21 @@ export class HistoryComponent implements OnInit, OnDestroy {
       phone: this.formatPhone(p.phoneNumber),
       operator: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
       amount: p.amount ?? 0,
-      fees: p.fees ?? p.fee ?? 0,
+      fees: p.fee ?? 0,
       status: this.mapStatus(p.status, order.status),
-      // Champs optionnels : à ajouter dans la requête FetchBulkPaymentOrderById (voir message)
-      mossalTxId: p.reference ?? p.id,
-      partnerTxId: p.transactionId ?? p.partnerTransactionId ?? '',
+      mossalTxId: p.id,
+      partnerTxId: p.providerReference ?? '',
       initiatedAt: order.createdAt,
-      executedAt: p.executedAt ?? p.updatedAt ?? '',
-      failureReason: p.failureReason ?? p.errorMessage ?? '',
+      executedAt: p.paidAt ?? '',
+      failureReason: p.failureReason ?? '',
     }));
   }
 
   private mapStatus(raw: string | undefined, orderStatus: string): TxStatus {
-    const mapped = RAW_STATUS_MAP[(raw ?? '').toUpperCase()];
-    if (mapped) return mapped;
-    return orderStatus === BulkPaymentOrderStatus.Approved ? 'EN_COURS' : 'EN_ATTENTE';
+    // Un ordre rejeté ou annulé n'a jamais été exécuté : ses paiements restés PENDING sont en échec.
+    const orderClosed = orderStatus === BulkPaymentOrderStatus.Rejected || orderStatus === BulkPaymentOrderStatus.Cancelled;
+    if (orderClosed && (raw ?? 'PENDING') === 'PENDING') return 'ECHEC';
+    return RAW_STATUS_MAP[(raw ?? '').toUpperCase()] ?? 'EN_ATTENTE';
   }
 
   private formatPhone(phone: string): string {

@@ -194,6 +194,69 @@ export class SubmitBulkPaymentOrderGQL extends Apollo.Mutation<
   }
 }
 
+export interface FetchMyBulkPaymentHistoryQuery {
+  fetchMyBulkPaymentHistory: Array<{
+    id: string;
+    label: string;
+    status: BulkPaymentOrderStatus;
+    totalAmount: number;
+    totalFees?: number | null;
+    createdAt: string;
+    payments?: Array<{
+      id: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      amount: number;
+      fee?: number | null;
+      wallet: Wallet;
+      status: string;
+      providerReference?: string | null;
+      failureReason?: string | null;
+      paidAt?: string | null;
+      updatedAt?: string | null;
+    }> | null;
+  }>;
+}
+
+const FetchMyBulkPaymentHistoryDocument = gql`
+  query FetchMyBulkPaymentHistory {
+    fetchMyBulkPaymentHistory {
+      id
+      label
+      status
+      totalAmount
+      totalFees
+      createdAt
+      payments {
+        id
+        firstName
+        lastName
+        phoneNumber
+        amount
+        fee
+        wallet
+        status
+        providerReference
+        failureReason
+        paidAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class FetchMyBulkPaymentHistoryGQL extends Apollo.Query<
+  FetchMyBulkPaymentHistoryQuery,
+  {}
+> {
+  document = FetchMyBulkPaymentHistoryDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
 export interface FetchOrdersForApproverQuery {
   fetchOrdersForApprover: Array<{
     id: string;
