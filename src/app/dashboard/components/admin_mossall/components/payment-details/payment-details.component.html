@@ -231,6 +231,8 @@
           <th>TOTAL DES FRAIS</th>
           <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
+          <th>STATUT</th>
+
         </tr>
       </thead>
       <tbody>
@@ -242,6 +244,16 @@
           <td>{{ b.fees | number:'1.0-0':'fr' }} XOF</td>
           <td>{{ beneficiaryTotal(b) | number:'1.0-0':'fr' }} XOF</td>
           <td>{{ b.operator }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'badge-success': payment.status === 'APPROVED',
+              'badge-pending': payment.status === 'PENDING',
+              'badge-danger': payment.status === 'REJECTED' || payment.status === 'CANCELLED'
+            }">
+              <span class="dot"></span>
+              {{ statutLabel }}
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>

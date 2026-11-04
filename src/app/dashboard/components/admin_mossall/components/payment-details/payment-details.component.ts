@@ -183,6 +183,16 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
+  get statutLabel(): string {
+    const labels: Record<string, string> = {
+      APPROVED: 'Validé',
+      REJECTED: 'Rejeté',
+      PENDING: 'En attente',
+      CANCELLED: 'Annulé',
+    };
+    return labels[this.payment?.status ?? ''] ?? '';
+  }
+
 
   get isPending(): boolean {
     return this.payment?.status === 'PENDING';
@@ -331,8 +341,8 @@ export class PaymentDetailsComponent implements OnInit {
       REJECTED: 'Rejeté',
       PENDING: 'En attente',
     };
-    const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
-
+    // const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
+    const statutGlobal = this.statutLabel;
     // const rows = [
     //   ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
     //   ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
