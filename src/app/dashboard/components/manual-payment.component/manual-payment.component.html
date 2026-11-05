@@ -246,7 +246,7 @@
       </button>
     </div>
 
-    <!-- Bottom actions : édition d'un ordre déjà soumis (pas de ré-approbation à sélectionner) -->
+    <!-- Bottom actions : édition d'un ordre déjà soumis -->
     <div class="bottom-actions" *ngIf="editOrderId">
       <button
         class="btn-secondary"
@@ -258,10 +258,10 @@
       >
         Annuler
       </button>
-      <button class="btn-primary" (click)="saveEditedOrder()"
-        [disabled]="beneficiaries.length === 0 || !label.trim() || isSubmitting">
-        <span *ngIf="!isSubmitting">Enregistrer les modifications</span>
-        <span *ngIf="isSubmitting">Enregistrement...</span>
+      <button class="btn-primary" (click)="goToRecap()"
+        [disabled]="beneficiaries.length === 0 || !label.trim()">
+        <span style="display:inline-flex;align-items:center;gap:4px;">Suivant
+          <mat-icon>arrow_forward</mat-icon></span>
       </button>
     </div>
   </div>
@@ -390,9 +390,13 @@
       <button class="btn-secondary" (click)="goBackFromRecap()" [disabled]="isSubmitting">
         <mat-icon>arrow_back</mat-icon> Précédent
       </button>
-      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting || isApprovalFlowEmpty">
+      <button class="btn-primary" *ngIf="!editOrderId" (click)="submitOrder()" [disabled]="isSubmitting || isApprovalFlowEmpty">
         <span *ngIf="!isSubmitting" class="btn-inner">Soumettre l'ordre <mat-icon>arrow_forward</mat-icon></span>
         <span *ngIf="isSubmitting">Envoi en cours...</span>
+      </button>
+      <button class="btn-primary" *ngIf="editOrderId" (click)="saveEditedOrder()" [disabled]="isSubmitting || isApprovalFlowEmpty">
+        <span *ngIf="!isSubmitting">Enregistrer les modifications</span>
+        <span *ngIf="isSubmitting">Enregistrement...</span>
       </button>
     </div>
 

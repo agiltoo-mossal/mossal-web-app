@@ -80,6 +80,8 @@ export class ManualPaymentComponent implements OnInit {
   // restreinte aux approbateurs configurés pour ce niveau dans le flux)
   approvalLevels: ApprovalLevel[] = [];
   approversSubmitAttempted = false;
+  // Approbateurs actuels de l'ordre en cours de modification, à pré-sélectionner.
+  private editedOrderApprovers: { level: number; approverIds?: string[] | null }[] | null = null;
   // Distingue "en cours de chargement" de "confirmé vide", pour ne pas afficher
   // le message de blocage avant que la réponse du flux ne soit arrivée.
   approvalFlowLoaded = false;
@@ -150,6 +152,7 @@ export class ManualPaymentComponent implements OnInit {
             };
           });
         this.approvalFlowLoaded = true;
+        this.preselectEditedOrderApprovers();
       },
       error: () => {
         this.snackBarService.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs.');
@@ -181,6 +184,8 @@ export class ManualPaymentComponent implements OnInit {
             amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
             wallet: p.wallet as Wallet,
           }));
+          this.editedOrderApprovers = order.approversByLevel ?? [];
+          this.preselectEditedOrderApprovers();
           this.isLoadingOrder = false;
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
@@ -288,6 +293,22 @@ export class ManualPaymentComponent implements OnInit {
   }
 
   // ===== Sélection des approbateurs =====
+
+  /**
+   * Reprend les approbateurs de l'ordre modifié, une fois l'ordre et le flux chargés (ordre
+   * d'arrivée indifférent). Seuls ceux encore configurés dans le flux sont conservés : si le
+   * flux a changé, le niveau concerné reste à compléter.
+   */
+  private preselectEditedOrderApprovers(): void {
+    if (!this.editedOrderApprovers || !this.approvalFlowLoaded) return;
+
+    for (const level of this.approvalLevels) {
+      const orderLevel = this.editedOrderApprovers.find((l) => l.level === level.level);
+      const selectedIds = new Set((orderLevel?.approverIds ?? []).map(String));
+      const kept = level.candidats.filter((c) => selectedIds.has(String(c.id)));
+      if (kept.length > 0) level.approbateurs = kept;
+    }
+  }
 
   /** Nombre de niveaux ayant au moins un approbateur sélectionné */
   get selectedApproversCount(): number {
@@ -535,6 +556,14 @@ export class ManualPaymentComponent implements OnInit {
 
   goToRecap(): void {
     if (this.beneficiaries.length === 0) return;
+
+    // Ordre déjà soumis : tout est enregistré en une fois à la fin, pas de brouillon à créer.
+    if (this.editOrderId) {
+      this.currentStep = 2;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     this.isSavingDraft = true;
 
     const onSuccess = () => {
@@ -602,6 +631,9 @@ export class ManualPaymentComponent implements OnInit {
 
   saveEditedOrder(): void {
     if (!this.editOrderId || this.beneficiaries.length === 0 || !this.label.trim() || this.isSubmitting) return;
+    if (this.isApprovalFlowEmpty) return;
+    this.approversSubmitAttempted = true;
+    if (!this.allApproversSelected) return;
 
     const data: ReasonDialogData = {
       title: 'Enregistrer les modifications',
@@ -624,7 +656,13 @@ export class ManualPaymentComponent implements OnInit {
 
     this.isSubmitting = true;
     this.updateSubmittedBulkPaymentOrderGQL
-      .mutate({ id: this.editOrderId, inputs: this.buildInputs(), label: this.label, reason })
+      .mutate({
+        id: this.editOrderId,
+        inputs: this.buildInputs(),
+        label: this.label,
+        approversByLevel: this.selectedApproversPayload,
+        reason,
+      })
       .subscribe({
         next: () => {
           this.isSubmitting = false;
