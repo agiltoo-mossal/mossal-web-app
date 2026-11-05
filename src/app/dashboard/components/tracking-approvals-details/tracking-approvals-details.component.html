@@ -219,6 +219,7 @@
           <th>Frais</th>
           <th>Coût total</th>
           <th>Opérateur</th>
+          <th>Statut</th>
         </tr>
       </thead>
       <tbody>
@@ -230,6 +231,12 @@
           <td>{{ formatMontant(b.frais) }}</td>
           <td>{{ formatMontant(b.montant + b.frais) }}</td>
           <td>{{ b.operateur }}</td>
+          <td>
+            <span class="badge" [ngClass]="paymentStatutBadge(b.statut)">
+              <span class="dot"></span>
+              {{ paymentStatutLabel(b.statut) }}
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>
