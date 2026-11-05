@@ -77,6 +77,13 @@ export type ApprovalLevelInput = {
   level: Scalars['Int']['input'];
 };
 
+export type ApproverOrderCounts = {
+  __typename?: 'ApproverOrderCounts';
+  approved: Scalars['Int']['output'];
+  pending: Scalars['Int']['output'];
+  rejected: Scalars['Int']['output'];
+};
+
 export type BulkPayment = {
   __typename?: 'BulkPayment';
   amount: Scalars['Float']['output'];
@@ -1039,6 +1046,13 @@ export type PaginatedActivityResult = {
   results: Array<Activity>;
 };
 
+export type PaginatedApproverOrdersResult = {
+  __typename?: 'PaginatedApproverOrdersResult';
+  counts: ApproverOrderCounts;
+  pagination: PaginationInfo;
+  results: Array<BulkPaymentOrder>;
+};
+
 export type PaginatedCategorySocioproResult = {
   __typename?: 'PaginatedCategorySocioproResult';
   pagination: PaginationInfo;
@@ -1147,6 +1161,7 @@ export type Query = {
   fetchEvent: Event;
   fetchEvents: PaginatedEventResult;
   fetchMossallAdmin: User;
+  fetchMyBulkPaymentHistory: Array<BulkPaymentOrder>;
   fetchMyBulkPaymentOrders: Array<BulkPaymentOrder>;
   fetchMyBulkPayments: Array<BulkPayment>;
   fetchOperations: Array<OperationSummary>;
@@ -1169,6 +1184,7 @@ export type Query = {
   fetchPaginatedMossallAdmins: PaginatedUserResult;
   fetchPaginatedNotifications: PaginatedNotificationResult;
   fetchPaginatedOperations: PaginatedCreditResult;
+  fetchPaginatedOrdersForApprover: PaginatedApproverOrdersResult;
   fetchPaginatedOrganisationAdmins: PaginatedUserResult;
   fetchPaginatedOrganisationCol: PaginatedUserResult;
   fetchPaginatedOrganizationCollaborators: PaginatedUserResult;
@@ -1382,6 +1398,11 @@ export type QueryFetchPaginatedNotificationsArgs = {
 export type QueryFetchPaginatedOperationsArgs = {
   metricsInput?: InputMaybe<OperationsMetricsInput>;
   organizationId: Scalars['ID']['input'];
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedOrdersForApproverArgs = {
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 

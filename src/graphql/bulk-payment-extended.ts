@@ -27,6 +27,7 @@ export interface FetchOrderForApproverByIdQuery {
       amount: number;
       fee: number;
       wallet: Wallet;
+      status: string;
     }> | null;
     approversByLevel?: Array<{
       level: number;
@@ -60,6 +61,7 @@ const FetchOrderForApproverByIdDocument = gql`
         amount
         fee
         wallet
+        status
       }
       approversByLevel {
         level
@@ -262,6 +264,7 @@ export interface FetchOrdersForApproverQuery {
     id: string;
     label: string;
     totalAmount: number;
+    totalFees?: number | null;
     status: BulkPaymentOrderStatus;
     currentApprovalLevel: number;
     paymentsCount: number;
@@ -283,6 +286,7 @@ const FetchOrdersForApproverDocument = gql`
       id
       label
       totalAmount
+      totalFees
       status
       currentApprovalLevel
       paymentsCount
@@ -314,6 +318,86 @@ export class FetchOrdersForApproverGQL extends Apollo.Query<
   {}
 > {
   document = FetchOrdersForApproverDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
+export interface ApproverOrdersQueryFilter {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface FetchPaginatedOrdersForApproverQueryVariables {
+  queryFilter: ApproverOrdersQueryFilter;
+}
+
+export interface FetchPaginatedOrdersForApproverQuery {
+  fetchPaginatedOrdersForApprover: {
+    results: Array<{
+      id: string;
+      label: string;
+      totalAmount: number;
+      totalFees?: number | null;
+      status: BulkPaymentOrderStatus;
+      currentApprovalLevel: number;
+      paymentsCount: number;
+      createdAt: string;
+      createdByUser?: { firstName: string; lastName: string } | null;
+      approversByLevel?: Array<{ level: number }> | null;
+      isApprovedByCurrentUser?: boolean | null;
+    }>;
+    pagination: { totalItems: number; pageCount: number; currentPage: number; pageSize: number };
+    counts: { pending: number; approved: number; rejected: number };
+  };
+}
+
+const FetchPaginatedOrdersForApproverDocument = gql`
+  query FetchPaginatedOrdersForApprover($queryFilter: QueryDataConfigInput) {
+    fetchPaginatedOrdersForApprover(queryFilter: $queryFilter) {
+      results {
+        id
+        label
+        totalAmount
+        totalFees
+        status
+        currentApprovalLevel
+        paymentsCount
+        createdAt
+        createdByUser {
+          firstName
+          lastName
+        }
+        approversByLevel {
+          level
+        }
+        isApprovedByCurrentUser
+      }
+      pagination {
+        totalItems
+        pageCount
+        currentPage
+        pageSize
+      }
+      counts {
+        pending
+        approved
+        rejected
+      }
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class FetchPaginatedOrdersForApproverGQL extends Apollo.Query<
+  FetchPaginatedOrdersForApproverQuery,
+  FetchPaginatedOrdersForApproverQueryVariables
+> {
+  document = FetchPaginatedOrdersForApproverDocument;
   constructor(apollo: Apollo.Apollo) {
     super(apollo);
   }
