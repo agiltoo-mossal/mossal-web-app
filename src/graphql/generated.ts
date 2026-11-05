@@ -2127,7 +2127,7 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 }>;
 
 
-export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, cancelledByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet }> | null } };
+export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, cancelledByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet, status: BulkPaymentStatus, paidAt?: any | null }> | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3918,6 +3918,8 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
       amount
       fee
       wallet
+      status
+      paidAt
     }
   }
 }

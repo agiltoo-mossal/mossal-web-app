@@ -22,6 +22,7 @@ import { ManualPaymentComponent } from './components/manual-payment.component/ma
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
 import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
 import { HistoryComponent } from './components/historyComponent/history.component';
+import { PaymentExecutionDetailsComponent } from './components/payment-execution-details/payment-execution-details.component';
 import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
 import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
@@ -147,6 +148,10 @@ const routes: Routes = [
       {
         path: 'organization/payments/history',
         component: HistoryComponent,
+      },
+      {
+        path: 'organization/payments/history/:id',
+        component: PaymentExecutionDetailsComponent,
       },
       {
         path: 'tracking-approvals',

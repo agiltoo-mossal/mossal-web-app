@@ -209,6 +209,10 @@ export interface FetchMyBulkPaymentHistoryQuery {
     totalAmount: number;
     totalFees?: number | null;
     createdAt: string;
+    approversByLevel?: Array<{
+      level: number;
+      approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    }> | null;
     payments?: Array<{
       id: string;
       firstName: string;
@@ -235,6 +239,14 @@ const FetchMyBulkPaymentHistoryDocument = gql`
       totalAmount
       totalFees
       createdAt
+      approversByLevel {
+        level
+        approvers {
+          id
+          firstName
+          lastName
+        }
+      }
       payments {
         id
         firstName

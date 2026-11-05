@@ -409,9 +409,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   private loadBeneficiaries(): Observable<BeneficiaryTx[]> {
     return this.fetchMyBulkPaymentHistoryGQL.fetch({}, { fetchPolicy: 'network-only' }).pipe(
-      map((res) => ([] as BeneficiaryTx[]).concat(
-        ...(res.data?.fetchMyBulkPaymentHistory ?? []).map(o => this.toBeneficiaries(o)),
-      )),
+      map((res) => {
+        const orders = res.data?.fetchMyBulkPaymentHistory ?? [];
+        this.orders = orders as unknown as BulkPaymentOrder[]; // alimente le tableau
+        return ([] as BeneficiaryTx[]).concat(...orders.map(o => this.toBeneficiaries(o)));
+      }),
       catchError(() => of(this.items)),
     );
   }
@@ -539,10 +541,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   approversLabel(o: BulkPaymentOrder): string {
-    return (o.approversByLevel ?? [])
+    // Un même approbateur peut figurer sur plusieurs niveaux : on ne l'affiche qu'une fois.
+    const names = (o.approversByLevel ?? [])
       .flatMap(l => l.approvers ?? [])
-      .map(a => `${a.firstName} ${a.lastName}`)
-      .join(' / ');
+      .map(a => `${a.firstName} ${a.lastName}`);
+    return [...new Set(names)].join(' / ');
   }
 
   // ---------- Actions ----------
@@ -560,7 +563,17 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.onApply();
   }
 
+  retour(): void {
+    this.router.navigate(['/dashboard/organization/payments']);
+  }
+
+  // Un ordre validé (tous niveaux approuvés et virement sans échec) ouvre le détail d'exécution
+  // des paiements ; les autres gardent le suivi des validations.
   onVoirDetails(o: BulkPaymentOrder): void {
-    this.router.navigate(['/dashboard/payments/details', o.id]);
+    if (o.status === BulkPaymentOrderStatus.Approved) {
+      this.router.navigate(['/dashboard/organization/payments/history', o.id]);
+    } else {
+      this.router.navigate(['/dashboard/payments/details', o.id]);
+    }
   }
 }
