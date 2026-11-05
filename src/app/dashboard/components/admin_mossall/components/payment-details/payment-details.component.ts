@@ -39,6 +39,7 @@ export interface PaymentOrderDetails {
   beneficiaries: Beneficiary[];
   rejectedReason?: string;
   lastRelaunchAt?: Date;
+  cancelledByName?: string;
 }
 
 @Component({
@@ -147,6 +148,9 @@ export class PaymentDetailsComponent implements OnInit {
             approvals: approvalSteps,
             rejectedReason: order.rejectedReason ?? undefined,
             lastRelaunchAt,
+            cancelledByName: order.cancelledByUser
+              ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
+              : undefined,
             beneficiaries: payments.map(p => ({
               lastName: p.lastName,
               firstName: p.firstName,
@@ -204,6 +208,10 @@ export class PaymentDetailsComponent implements OnInit {
 
   get isRejected(): boolean {
     return this.payment?.status === 'REJECTED';
+  }
+
+  get isCancelled(): boolean {
+    return this.payment?.status === 'CANCELLED';
   }
 
   get lastApprovedApprover(): ApprovalStep | undefined {

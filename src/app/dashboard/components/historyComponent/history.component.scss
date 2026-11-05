@@ -6,6 +6,22 @@ $border: #e6e9f0;
   background: #eef4fd;
 }
 
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: $navy;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
 .history-title {
   font-size: 22px;
   font-weight: 700;
@@ -234,12 +250,13 @@ table {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 400;
 
-  .dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 }
 
 @mixin badge-color($bg, $fg) {
@@ -248,7 +265,7 @@ table {
   .dot { background-color: $fg; }
 }
 
-.badge-attente  { @include badge-color(#f1f1f3, #6b7280); }   // gris
+.badge-attente  { @include badge-color(#fff4e5, #ff9500); }   // orange, comme « Paiement en masse »
 .badge-cours    { @include badge-color(#e6efff, #1956f0); }   // bleu
 .badge-succes   { @include badge-color(#deffdb, #0eaf00); }   // vert
 .badge-echec    { @include badge-color(#fee7e7, #f41414); }   // rouge

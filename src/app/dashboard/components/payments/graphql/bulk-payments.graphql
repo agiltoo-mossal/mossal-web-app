@@ -26,6 +26,10 @@ query FetchBulkPaymentOrderById($id: String!) {
     currentApprovalLevel
     createdAt
     lastRelaunchAt
+    cancelledByUser {
+      firstName
+      lastName
+    }
     approversByLevel {
       level
       approverIds
@@ -49,6 +53,8 @@ query FetchBulkPaymentOrderById($id: String!) {
       amount
       fee
       wallet
+      status
+      paidAt
     }
   }
 }

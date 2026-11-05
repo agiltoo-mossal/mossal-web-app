@@ -19,6 +19,7 @@ export interface FetchOrderForApproverByIdQuery {
     rejectedReason?: string | null;
     createdAt: string;
     createdByUser?: { firstName: string; lastName: string } | null;
+    cancelledByUser?: { firstName: string; lastName: string } | null;
     payments?: Array<{
       id: string;
       firstName: string;
@@ -50,6 +51,10 @@ const FetchOrderForApproverByIdDocument = gql`
       rejectedReason
       createdAt
       createdByUser {
+        firstName
+        lastName
+      }
+      cancelledByUser {
         firstName
         lastName
       }
@@ -204,6 +209,10 @@ export interface FetchMyBulkPaymentHistoryQuery {
     totalAmount: number;
     totalFees?: number | null;
     createdAt: string;
+    approversByLevel?: Array<{
+      level: number;
+      approvers?: Array<{ id: string; firstName: string; lastName: string }> | null;
+    }> | null;
     payments?: Array<{
       id: string;
       firstName: string;
@@ -230,6 +239,14 @@ const FetchMyBulkPaymentHistoryDocument = gql`
       totalAmount
       totalFees
       createdAt
+      approversByLevel {
+        level
+        approvers {
+          id
+          firstName
+          lastName
+        }
+      }
       payments {
         id
         firstName
