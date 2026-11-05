@@ -358,3 +358,21 @@ table {
 
   &:hover { text-decoration: underline; }
 }
+
+
+.badge-valide    { @include badge-color(#deffdb, #0eaf00); }
+.badge-rejete    { @include badge-color(#fee7e7, #f41414); }
+.badge-brouillon { @include badge-color(#f4f5f5, #1d1e20); }
+
+.voir-details {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+.filters-row-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
