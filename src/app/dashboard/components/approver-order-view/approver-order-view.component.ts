@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
 import { Wallet } from 'src/graphql/generated';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
+import { mapPaymentStatut, PAYMENT_STATUT_BADGES, PAYMENT_STATUT_LABELS, PaymentStatut } from './payment-statut';
 
 
 interface ApprovalStep {
@@ -25,6 +26,7 @@ interface Beneficiaire {
   montant: number;
   frais: number;
   operateur: string;
+  statut: PaymentStatut;
 }
 
 interface OrderDetail {
@@ -88,7 +90,7 @@ export class ApproverOrderViewComponent implements OnInit {
           this.orderDetail = {
             libelle: order.label,
             nombreBeneficiaires: payments.length,
-            montantTotal: order.totalAmount,
+            montantTotal: order.totalAmount + (order.totalFees ?? 0),
             operateurs: uniqueWallets.size,
             dateSoumission: new Intl.DateTimeFormat('fr-FR', {
               day: 'numeric', month: 'long', year: 'numeric',
@@ -138,6 +140,7 @@ export class ApproverOrderViewComponent implements OnInit {
             montant: p.amount,
             frais: p.fee ?? 0,
             operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
+            statut: mapPaymentStatut(p.status, order.status as string),
           }));
 
           this.isLoading = false;
@@ -193,6 +196,14 @@ export class ApproverOrderViewComponent implements OnInit {
     return new Intl.NumberFormat('fr-FR').format(montant) + ' XOF';
   }
 
+  paymentStatutLabel(s: PaymentStatut): string {
+    return PAYMENT_STATUT_LABELS[s];
+  }
+
+  paymentStatutBadge(s: PaymentStatut): string {
+    return PAYMENT_STATUT_BADGES[s];
+  }
+
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
@@ -200,11 +211,11 @@ export class ApproverOrderViewComponent implements OnInit {
   downloadBeneficiaryList(): void {
     if (!this.beneficiaires.length) return;
 
-    const statutGlobal = this.isApproved ? 'Validé' : this.isRejected ? 'Rejeté' : 'En attente';
     const rows = [
       ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut'],
       ...this.beneficiaires.map(b => [
-        b.nom, b.prenom, b.telephone, b.montant, b.frais, b.montant + b.frais, b.operateur, statutGlobal,
+        b.nom, b.prenom, b.telephone, b.montant, b.frais, b.montant + b.frais, b.operateur,
+        this.paymentStatutLabel(b.statut),
       ]),
     ];
 

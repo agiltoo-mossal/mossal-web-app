@@ -27,6 +27,7 @@ export interface FetchOrderForApproverByIdQuery {
       amount: number;
       fee: number;
       wallet: Wallet;
+      status: string;
     }> | null;
     approversByLevel?: Array<{
       level: number;
@@ -60,6 +61,7 @@ const FetchOrderForApproverByIdDocument = gql`
         amount
         fee
         wallet
+        status
       }
       approversByLevel {
         level
@@ -194,11 +196,75 @@ export class SubmitBulkPaymentOrderGQL extends Apollo.Mutation<
   }
 }
 
+export interface FetchMyBulkPaymentHistoryQuery {
+  fetchMyBulkPaymentHistory: Array<{
+    id: string;
+    label: string;
+    status: BulkPaymentOrderStatus;
+    totalAmount: number;
+    totalFees?: number | null;
+    createdAt: string;
+    payments?: Array<{
+      id: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      amount: number;
+      fee?: number | null;
+      wallet: Wallet;
+      status: string;
+      providerReference?: string | null;
+      failureReason?: string | null;
+      paidAt?: string | null;
+      updatedAt?: string | null;
+    }> | null;
+  }>;
+}
+
+const FetchMyBulkPaymentHistoryDocument = gql`
+  query FetchMyBulkPaymentHistory {
+    fetchMyBulkPaymentHistory {
+      id
+      label
+      status
+      totalAmount
+      totalFees
+      createdAt
+      payments {
+        id
+        firstName
+        lastName
+        phoneNumber
+        amount
+        fee
+        wallet
+        status
+        providerReference
+        failureReason
+        paidAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class FetchMyBulkPaymentHistoryGQL extends Apollo.Query<
+  FetchMyBulkPaymentHistoryQuery,
+  {}
+> {
+  document = FetchMyBulkPaymentHistoryDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
 export interface FetchOrdersForApproverQuery {
   fetchOrdersForApprover: Array<{
     id: string;
     label: string;
     totalAmount: number;
+    totalFees?: number | null;
     status: BulkPaymentOrderStatus;
     currentApprovalLevel: number;
     paymentsCount: number;
@@ -220,6 +286,7 @@ const FetchOrdersForApproverDocument = gql`
       id
       label
       totalAmount
+      totalFees
       status
       currentApprovalLevel
       paymentsCount
@@ -251,6 +318,86 @@ export class FetchOrdersForApproverGQL extends Apollo.Query<
   {}
 > {
   document = FetchOrdersForApproverDocument;
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
+}
+
+export interface ApproverOrdersQueryFilter {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface FetchPaginatedOrdersForApproverQueryVariables {
+  queryFilter: ApproverOrdersQueryFilter;
+}
+
+export interface FetchPaginatedOrdersForApproverQuery {
+  fetchPaginatedOrdersForApprover: {
+    results: Array<{
+      id: string;
+      label: string;
+      totalAmount: number;
+      totalFees?: number | null;
+      status: BulkPaymentOrderStatus;
+      currentApprovalLevel: number;
+      paymentsCount: number;
+      createdAt: string;
+      createdByUser?: { firstName: string; lastName: string } | null;
+      approversByLevel?: Array<{ level: number }> | null;
+      isApprovedByCurrentUser?: boolean | null;
+    }>;
+    pagination: { totalItems: number; pageCount: number; currentPage: number; pageSize: number };
+    counts: { pending: number; approved: number; rejected: number };
+  };
+}
+
+const FetchPaginatedOrdersForApproverDocument = gql`
+  query FetchPaginatedOrdersForApprover($queryFilter: QueryDataConfigInput) {
+    fetchPaginatedOrdersForApprover(queryFilter: $queryFilter) {
+      results {
+        id
+        label
+        totalAmount
+        totalFees
+        status
+        currentApprovalLevel
+        paymentsCount
+        createdAt
+        createdByUser {
+          firstName
+          lastName
+        }
+        approversByLevel {
+          level
+        }
+        isApprovedByCurrentUser
+      }
+      pagination {
+        totalItems
+        pageCount
+        currentPage
+        pageSize
+      }
+      counts {
+        pending
+        approved
+        rejected
+      }
+    }
+  }
+`;
+
+@Injectable({ providedIn: 'root' })
+export class FetchPaginatedOrdersForApproverGQL extends Apollo.Query<
+  FetchPaginatedOrdersForApproverQuery,
+  FetchPaginatedOrdersForApproverQueryVariables
+> {
+  document = FetchPaginatedOrdersForApproverDocument;
   constructor(apollo: Apollo.Apollo) {
     super(apollo);
   }

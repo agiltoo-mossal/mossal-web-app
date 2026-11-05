@@ -12,6 +12,12 @@ import {
 } from 'src/graphql/bulk-payment-extended';
 import { Wallet, FetchCurrentAdminGQL, Organization } from 'src/graphql/generated';
 import { SnackBarService, SnackBarClassByResult } from 'src/app/shared/services/snackbar.service';
+import {
+  mapPaymentStatut,
+  PAYMENT_STATUT_BADGES,
+  PAYMENT_STATUT_LABELS,
+  PaymentStatut,
+} from '../approver-order-view/payment-statut';
 
 export type StatutPaiement = 'pending' | 'approved' | 'rejected';
 export type StatutApprobation = 'approved' | 'rejected' | 'pending';
@@ -23,6 +29,7 @@ export interface Beneficiaire {
   montant: number;
   frais: number;
   operateur: string;
+  statut: PaymentStatut;
 }
 
 export interface RepartitionOperateur {
@@ -176,6 +183,7 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
               montant: p.amount,
               frais: p.fee ?? 0,
               operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
+              statut: mapPaymentStatut(p.status, order.status as string),
             })),
             repartitionOperateurs: [
               { nom: 'Wave', nombreBeneficiaires: wavePayments.length, montant: waveAmt, frais: waveFees, pourcentage: Math.round(waveAmt / totalAmt * 100) },
@@ -222,6 +230,14 @@ export class TrackingApprovalsDetailsComponent implements OnInit {
 
   formatMontant(montant: number): string {
     return montant.toLocaleString('fr-FR') + ' XOF';
+  }
+
+  paymentStatutLabel(s: PaymentStatut): string {
+    return PAYMENT_STATUT_LABELS[s];
+  }
+
+  paymentStatutBadge(s: PaymentStatut): string {
+    return PAYMENT_STATUT_BADGES[s];
   }
 
   retour(): void {

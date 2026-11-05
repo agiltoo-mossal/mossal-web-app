@@ -232,8 +232,9 @@
           <td>{{ formatMontant(b.montant + b.frais) }}</td>
           <td>{{ b.operateur }}</td>
           <td>
-            <span class="badge-small" [ngClass]="'badge-' + paiement.statut">
-              {{ badgeLabel }}
+            <span class="badge" [ngClass]="paymentStatutBadge(b.statut)">
+              <span class="dot"></span>
+              {{ paymentStatutLabel(b.statut) }}
             </span>
           </td>
         </tr>
