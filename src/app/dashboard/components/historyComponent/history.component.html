@@ -19,7 +19,7 @@
   </div>
 
   <!-- Cartes stats -->
-  <div class="stats-cards">
+  <!-- <div class="stats-cards">
     <div class="stat-card">
       <span class="stat-title">Bénéficiaires</span>
       <span class="stat-value">{{ summary.total }}</span>
@@ -36,7 +36,7 @@
       <span class="stat-title">En attente/En cours</span>
       <span class="stat-value pending">{{ summary.pendingCount }} soit {{ summary.pendingPct }}%</span>
     </div>
-  </div>
+  </div> -->
 
   <!-- Filtres -->
   <div class="filters-card">
@@ -65,10 +65,10 @@
     </div>
 
     <div class="filters-row-bottom">
-      <div class="filter-field">
+      <!-- <div class="filter-field">
         <label>Id Transaction</label>
         <input type="text" placeholder="Rechercher par id transaction" [(ngModel)]="pendingTxId" />
-      </div>
+      </div> -->
 
       <div class="filters-actions">
         <button class="btn-reinitialiser" (click)="onReset()">
@@ -89,7 +89,7 @@
     </div>
 
     <ng-container *ngIf="!isLoading">
-      <table *ngIf="filteredItems.length > 0; else emptyState">
+      <!-- <table *ngIf="filteredItems.length > 0; else emptyState">
         <thead>
           <tr>
             <th>NOM</th>
@@ -133,7 +133,57 @@
       <div class="custom-pagination" *ngIf="filteredItems.length > 0">
         <span class="pagination-summary">
           Affichage de {{ displayRangeStart }} à {{ displayRangeEnd }} sur {{ filteredItems.length }} opérations
-        </span>
+        </span> -->
+
+
+        <table *ngIf="filteredOrders.length > 0; else emptyState">
+          <thead>
+            <tr>
+              <th>Libellé</th>
+              <th>Date</th>
+              <th>Montant</th>
+              <th>Total des frais</th>
+              <th>Montant total</th>
+              <th>Statut</th>
+              <th>Approbateur(s)</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of paginatedOrders">
+              <td class="bold">{{ o.label }}</td>
+              <td>{{ o.createdAt | date:'dd MMM yyyy':'':'fr' }}</td>
+              <td>{{ o.totalAmount | number:'1.0-0':'fr' }} XOF</td>
+              <td>{{ totalFees(o) | number:'1.0-0':'fr' }} XOF</td>
+              <td>{{ totalCost(o) | number:'1.0-0':'fr' }} XOF</td>
+              <td>
+                <span class="badge" [ngClass]="statusBadge(o.status)">
+                  <span class="dot"></span> {{ statusLabel(o.status) }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="approversLabel(o); else noApprover">{{ approversLabel(o) }}</span>
+                <ng-template #noApprover>—</ng-template>
+              </td>
+              <td><a class="voir-details" (click)="onVoirDetails(o)">Voir les détails</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>Aucun ordre de paiement trouvé</p>
+          </div>
+        </ng-template>
+
+        <!-- pagination : remplacer filteredItems par filteredOrders -->
+        <div class="custom-pagination" *ngIf="filteredOrders.length > 0">
+          <span class="pagination-summary">
+            Affichage de {{ displayRangeStart }} à {{ displayRangeEnd }} sur {{ filteredOrders.length }} ordres
+          </span>
+  
+
         <div class="pagination-controls">
           <button class="page-arrow" (click)="prevPage()" [disabled]="pageIndex === 0">
             <mat-icon>chevron_left</mat-icon>
@@ -152,7 +202,7 @@
   </div>
 
   <!-- Modale détail transaction -->
-  <div class="modal-backdrop" *ngIf="selected" (click)="closeDetails()">
+  <!-- <div class="modal-backdrop" *ngIf="selected" (click)="closeDetails()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Détail de la transaction</h3>
@@ -182,6 +232,6 @@
         </ng-container>
       </dl>
     </div>
-  </div>
+  </div> -->
 
 </div>
