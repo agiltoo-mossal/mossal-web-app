@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
 import { Wallet } from 'src/graphql/generated';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
+import { mapPaymentStatut, PAYMENT_STATUT_BADGES, PAYMENT_STATUT_LABELS, PaymentStatut } from './payment-statut';
 
 
 interface ApprovalStep {
@@ -27,38 +28,6 @@ interface Beneficiaire {
   operateur: string;
   statut: PaymentStatut;
 }
-
-type PaymentStatut = 'EN_ATTENTE' | 'APPROUVE' | 'EN_COURS' | 'PAYE' | 'ECHEC' | 'REJETE' | 'ANNULE';
-
-// Statut backend du paiement (BulkPaymentStatus) -> statut affiché.
-const PAYMENT_STATUT_MAP: Record<string, PaymentStatut> = {
-  PENDING: 'EN_ATTENTE',
-  VALIDATED: 'APPROUVE',
-  IN_PROCESS: 'EN_COURS',
-  PAYED: 'PAYE',
-  REJECTED: 'ECHEC',
-  CANCELLED: 'ANNULE',
-};
-
-const PAYMENT_STATUT_LABELS: Record<PaymentStatut, string> = {
-  EN_ATTENTE: 'En attente',
-  APPROUVE: 'Approuvé',
-  EN_COURS: 'En cours',
-  PAYE: 'Payé',
-  ECHEC: 'Échec',
-  REJETE: 'Rejeté',
-  ANNULE: 'Annulé',
-};
-
-const PAYMENT_STATUT_BADGES: Record<PaymentStatut, string> = {
-  EN_ATTENTE: 'badge-pending',
-  APPROUVE: 'badge-info',
-  EN_COURS: 'badge-info',
-  PAYE: 'badge-success',
-  ECHEC: 'badge-danger',
-  REJETE: 'badge-danger',
-  ANNULE: 'badge-neutral',
-};
 
 interface OrderDetail {
   libelle: string;
@@ -171,7 +140,7 @@ export class ApproverOrderViewComponent implements OnInit {
             montant: p.amount,
             frais: p.fee ?? 0,
             operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
-            statut: this.mapPaymentStatut(p.status, order.status as string),
+            statut: mapPaymentStatut(p.status, order.status as string),
           }));
 
           this.isLoading = false;
@@ -225,16 +194,6 @@ export class ApproverOrderViewComponent implements OnInit {
 
   formatMontant(montant: number): string {
     return new Intl.NumberFormat('fr-FR').format(montant) + ' XOF';
-  }
-
-  // Le statut d'un paiement n'est pas mis à jour au rejet/annulation de l'ordre :
-  // un paiement resté PENDING prend alors le statut de l'ordre.
-  private mapPaymentStatut(raw: string | undefined, orderStatus: string): PaymentStatut {
-    if (!raw || raw === 'PENDING') {
-      if (orderStatus === 'REJECTED') return 'REJETE';
-      if (orderStatus === 'CANCELLED') return 'ANNULE';
-    }
-    return PAYMENT_STATUT_MAP[raw ?? ''] ?? 'EN_ATTENTE';
   }
 
   paymentStatutLabel(s: PaymentStatut): string {
