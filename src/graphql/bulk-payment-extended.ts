@@ -19,6 +19,7 @@ export interface FetchOrderForApproverByIdQuery {
     rejectedReason?: string | null;
     createdAt: string;
     createdByUser?: { firstName: string; lastName: string } | null;
+    cancelledByUser?: { firstName: string; lastName: string } | null;
     payments?: Array<{
       id: string;
       firstName: string;
@@ -50,6 +51,10 @@ const FetchOrderForApproverByIdDocument = gql`
       rejectedReason
       createdAt
       createdByUser {
+        firstName
+        lastName
+      }
+      cancelledByUser {
         firstName
         lastName
       }

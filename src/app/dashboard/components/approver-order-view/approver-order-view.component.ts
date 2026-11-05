@@ -52,6 +52,8 @@ export class ApproverOrderViewComponent implements OnInit {
   isRejected = false;
   isApproved = false;
   isPending = false;
+  isCancelled = false;
+  cancelledByName?: string;
   isBeneficiairesOpen = true;
 
   constructor(
@@ -86,6 +88,10 @@ export class ApproverOrderViewComponent implements OnInit {
           this.isRejected = (order.status as string) === 'REJECTED';
           this.isApproved = (order.status as string) === 'APPROVED';
           this.isPending = (order.status as string) === 'PENDING';
+          this.isCancelled = (order.status as string) === 'CANCELLED';
+          this.cancelledByName = order.cancelledByUser
+            ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
+            : undefined;
 
           this.orderDetail = {
             libelle: order.label,

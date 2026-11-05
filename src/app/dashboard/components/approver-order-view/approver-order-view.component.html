@@ -19,9 +19,9 @@
     <div class="notif-banner" [ngClass]="{
       'banner-pending': isPending,
       'banner-success': isApproved,
-      'banner-error':   isRejected
+      'banner-error':   isRejected || isCancelled
     }">
-      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+      <mat-icon>{{ isRejected || isCancelled ? 'notifications_off' : 'notifications' }}</mat-icon>
 
       <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
         Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
@@ -44,6 +44,10 @@
 
       <span *ngIf="isRejected && rejectedApprover">
         Ordre rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement ne sera effectué.
+      </span>
+
+      <span *ngIf="isCancelled">
+        Paiement annulé<ng-container *ngIf="cancelledByName"> par {{ cancelledByName }}</ng-container>. Aucun paiement effectué
       </span>
     </div>
 
