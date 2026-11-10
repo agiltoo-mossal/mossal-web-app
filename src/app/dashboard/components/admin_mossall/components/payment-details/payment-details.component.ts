@@ -6,6 +6,8 @@ import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bul
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReasonDialogComponent, ReasonDialogData } from '../../../reason-dialog/reason-dialog.component';
+import { formatDate } from '@angular/common';
+import { orderExecutionDate } from '../../../approver-order-view/payment-statut';
 
 
 export interface Beneficiary {
@@ -40,6 +42,8 @@ export interface PaymentOrderDetails {
   rejectedReason?: string;
   lastRelaunchAt?: Date;
   cancelledByName?: string;
+  // Renseignée uniquement pour un ordre validé.
+  executionDate?: Date;
 }
 
 @Component({
@@ -151,6 +155,7 @@ export class PaymentDetailsComponent implements OnInit {
             cancelledByName: order.cancelledByUser
               ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
               : undefined,
+            executionDate: orderExecutionDate(order.status, approvals),
             beneficiaries: payments.map(p => ({
               lastName: p.lastName,
               firstName: p.firstName,
@@ -356,10 +361,17 @@ export class PaymentDetailsComponent implements OnInit {
     //   ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
     // ];
 
+    const executionDate = this.payment.executionDate
+      ? formatDate(this.payment.executionDate, 'dd/MM/yyyy', 'fr')
+      : undefined;
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut'],
+      [
+        'Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut',
+        ...(executionDate ? ["Date d'exécution"] : []),
+      ],
       ...this.payment.beneficiaries.map(b => [
         b.lastName, b.firstName, b.phone, b.amount, b.fees, this.beneficiaryTotal(b), b.operator, statutGlobal,
+        ...(executionDate ? [executionDate] : []),
       ]),
     ];
 

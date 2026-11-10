@@ -146,6 +146,7 @@
           <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
           <th>STATUT</th>
+          <th *ngIf="executionDate">DATE D'EXÉCUTION</th>
         </tr>
       </thead>
       <tbody>
@@ -163,6 +164,7 @@
               {{ paymentStatutLabel(b.statut) }}
             </span>
           </td>
+          <td *ngIf="executionDate">{{ executionDate | date:'dd/MM/yyyy':'':'fr' }}</td>
         </tr>
       </tbody>
     </table>

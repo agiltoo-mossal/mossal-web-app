@@ -5,6 +5,7 @@ import { PageEvent } from '@angular/material/paginator';
 import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, FetchBulkPaymentOrderByIdGQL, Wallet } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { orderExecutionDate } from '../approver-order-view/payment-statut';
 
 type TxStatus = 'EN_ATTENTE' | 'EN_COURS' | 'SUCCES' | 'ECHEC';
 
@@ -16,7 +17,7 @@ interface ExecutedPayment {
   fees: number;
   status: TxStatus;
   operator: string;
-  paidAt?: string | null;
+  executedAt?: Date;
 }
 
 // Statut backend du paiement (BulkPaymentStatus) -> statut affiché.
@@ -90,6 +91,8 @@ export class PaymentExecutionDetailsComponent implements OnInit {
         }
 
         this.orderLabel = order?.label ?? '';
+        // Date d'approbation du dernier approbateur (positionnement des fonds), commune à tout l'ordre.
+        const executedAt = order ? orderExecutionDate(order.status, order.approvals) : undefined;
         this.payments = (order?.payments ?? []).map((p) => ({
           lastName: p.lastName,
           firstName: p.firstName,
@@ -98,7 +101,7 @@ export class PaymentExecutionDetailsComponent implements OnInit {
           fees: p.fee ?? 0,
           status: STATUS_MAP[p.status] ?? 'EN_ATTENTE',
           operator: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
-          paidAt: p.paidAt,
+          executedAt,
         }));
         this.applyFilters();
         this.isLoading = false;
@@ -157,7 +160,7 @@ export class PaymentExecutionDetailsComponent implements OnInit {
         (!!searchDigits && p.phone.replace(/\s/g, '').includes(searchDigits));
       const matchStatus = !this.statusFilter || p.status === this.statusFilter;
       const matchDate =
-        !this.executionDate || (!!p.paidAt && formatDate(p.paidAt, 'yyyy-MM-dd', 'fr') === this.executionDate);
+        !this.executionDate || (!!p.executedAt && formatDate(p.executedAt, 'yyyy-MM-dd', 'fr') === this.executionDate);
       return matchSearch && matchStatus && matchDate;
     });
     this.pageIndex = 0;
@@ -198,7 +201,7 @@ export class PaymentExecutionDetailsComponent implements OnInit {
         p.amount + p.fees,
         this.statusLabel(p.status),
         p.operator,
-        p.paidAt ? formatDate(p.paidAt, 'dd/MM/yyyy', 'fr') : '',
+        p.executedAt ? formatDate(p.executedAt, 'dd/MM/yyyy', 'fr') : '',
       ]),
     ];
 
