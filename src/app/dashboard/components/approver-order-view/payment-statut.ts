@@ -30,6 +30,20 @@ export const PAYMENT_STATUT_BADGES: Record<PaymentStatut, string> = {
   ANNULE: 'badge-neutral',
 };
 
+// Date d'exécution d'un ordre validé : date d'approbation du dernier approbateur
+// (positionnement des fonds). On prend la plus récente, car une nouvelle tentative
+// après un échec de virement ajoute une approbation au dernier niveau.
+export function orderExecutionDate(
+  orderStatus: string,
+  approvals: ReadonlyArray<{ approvedAt?: string | null }> | null | undefined,
+): Date | undefined {
+  if (orderStatus !== 'APPROVED') return undefined;
+  const times = (approvals ?? [])
+    .map((a) => (a.approvedAt ? new Date(a.approvedAt).getTime() : NaN))
+    .filter((t) => !isNaN(t));
+  return times.length ? new Date(Math.max(...times)) : undefined;
+}
+
 // Le statut d'un paiement n'est pas mis à jour au rejet/annulation de l'ordre :
 // un paiement resté PENDING prend alors le statut de l'ordre.
 export function mapPaymentStatut(raw: string | undefined, orderStatus: string): PaymentStatut {
