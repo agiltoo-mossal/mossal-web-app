@@ -91,17 +91,35 @@
 
                 <mat-icon class="dropdown-icon" fxLayoutAlign="center center">keyboard_arrow_down</mat-icon>
               </span>
-              <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
-                style="min-width: 150px; white-space: nowrap;">
+              <!-- <div class="dropdown-content dropdown-content-filter" id="dropdown-action"
+                style="min-width: 150px; white-space: nowrap;"> -->
+              <div class="dropdown-content dropdown-content-filter" id="dropdown-action">
+                <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
+                  routerLink="">
+                  <!-- <span><mat-icon>list</mat-icon></span> -->
+                  <span><img src="assets/img/list.png" alt="" class="option-icon"></span>
+
+                  <span>Liste des demandes</span>
+                </div>
+                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
+                  routerLink="">
+                  <span><img src="assets/img/list.png" alt="" class="option-icon"></span>
+                  <span>Liste des paiements</span>
+                </div>
                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
                   routerLink="/dashboard/society/add-credit/{{ row.id ?? row?._id }}">
-                  <span><mat-icon>account_balance_wallet</mat-icon></span>
+                  <span><img src="assets/img/credit.png" alt="" class="option-icon"></span>
                   <span>Ajouter crédit</span>
+                </div>
+                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="6px"
+                  routerLink="">
+                  <span><img src="assets/img/list.png" alt="" class="option-icon"></span>
+                  <span>Historique des crédits</span>
                 </div>
                 <div class="dropdown-option" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="12px"
                   routerLink="/dashboard/society/{{ row.id ?? row?._id }}">
                   <span><mat-icon>edit</mat-icon></span>
-                  <span>Editer</span>
+                  <span>Modifier</span>
                 </div>
                 <div *ngIf="!row.blocked" class="dropdown-option color-danger" fxLayout="row"
                   fxLayoutAlign="start center" fxLayoutGap="6px" requiresConfirmation
