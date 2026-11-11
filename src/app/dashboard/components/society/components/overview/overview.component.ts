@@ -21,6 +21,7 @@ import {
   FetchOrganizationGQL,
   FetchPaginatedOrganizationsGQL,
   Organization,
+  SubscriptionCode,
   SuspendOrganizationGQL,
 } from 'src/graphql/generated';
 
@@ -71,6 +72,16 @@ export class OverviewComponent implements AfterViewInit {
     this.initSearchForm();
     // this.disableCache = Boolean(this.activatedRoute.snapshot.queryParams['e']);
   }
+
+  // Option du menu « Action » visible seulement si la société a souscrit au service concerné
+  // (« Liste des demandes » : Avance sur salaire ; « Liste des paiements » : Paiement en masse).
+  // Une société sans aucune souscription renseignée (données anciennes) garde les deux options.
+  hasSubscription(row: Organization, code: SubscriptionCode): boolean {
+    const codes = (row?.subscriptions ?? []).map((s) => s.code);
+    return codes.length === 0 || codes.includes(code);
+  }
+
+  readonly SubscriptionCode = SubscriptionCode;
 
   fetchOrganizations() {
     this.fetchPaginatedOrganizationsGQL

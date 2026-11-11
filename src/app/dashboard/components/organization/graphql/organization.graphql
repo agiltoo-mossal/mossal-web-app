@@ -382,6 +382,9 @@ query FetchPaginatedOrganizations($queryFilter: QueryDataConfigInput) {
         data
       }
       blocked
+      subscriptions {
+        code
+      }
 		}
 	}
 }
