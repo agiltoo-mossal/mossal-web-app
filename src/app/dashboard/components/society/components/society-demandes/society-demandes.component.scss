@@ -1,5 +1,11 @@
 // Mise en page commune (filtres, tableau, pagination) : historyComponent/history.component.scss.
 
+// Pas de fond coloré et mêmes marges que la liste des sociétés (overview : padding 5px, marges 10px).
+.history-container {
+  background: transparent;
+  padding: 5px 15px;
+}
+
 .export-row {
   display: flex;
   justify-content: flex-end;

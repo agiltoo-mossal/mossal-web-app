@@ -2002,7 +2002,7 @@ export type FetchPaginatedOrganizationsQueryVariables = Exact<{
 }>;
 
 
-export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null, logo?: { __typename?: 'OrganizationLogo', data?: string | null } | null }> } };
+export type FetchPaginatedOrganizationsQuery = { __typename?: 'Query', fetchPaginatedOrganizations: { __typename?: 'PaginatedOrganizationResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Organization', id: string, name: string, rootEmail: string, postalAddress: string, phone?: string | null, blocked?: boolean | null, user?: { __typename?: 'User', firstName: string, lastName: string } | null, logo?: { __typename?: 'OrganizationLogo', data?: string | null } | null, subscriptions?: Array<{ __typename?: 'SubscriptionPlan', code: SubscriptionCode }> | null }> } };
 
 export type CreateOrganizationMutationVariables = Exact<{
   organizationInput: OrganizationInput;
@@ -3404,6 +3404,9 @@ export const FetchPaginatedOrganizationsDocument = gql`
         data
       }
       blocked
+      subscriptions {
+        code
+      }
     }
   }
 }
