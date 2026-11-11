@@ -1,0 +1,119 @@
+<div class="history-container">
+
+  <button class="back-btn" (click)="retour()">
+    <mat-icon>arrow_back</mat-icon> Retour
+  </button>
+
+  <h2 class="history-title">Liste des demandes</h2>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+    <div class="filters-grid-top">
+      <div class="filter-field">
+        <label>Recherche</label>
+        <input type="text" placeholder="Rechercher (Matricule...)" [(ngModel)]="pendingSearch" (keyup.enter)="onApply()" />
+      </div>
+
+      <div class="filter-field periode">
+        <label>Période</label>
+        <div class="periode-inputs">
+          <input type="date" [(ngModel)]="pendingStartDate" />
+          <span class="arrow-separator">→</span>
+          <input type="date" [(ngModel)]="pendingEndDate" />
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label>Statut</label>
+        <select [(ngModel)]="pendingStatus">
+          <option value="">Tous les statuts</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filters-row-bottom">
+      <div class="filters-actions">
+        <button class="btn-reinitialiser" (click)="onReset()">
+          <mat-icon>tune</mat-icon> Réinitialiser
+        </button>
+        <button class="btn-appliquer" (click)="onApply()">Appliquer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="export-row">
+    <button class="btn-export" (click)="exportList()" [disabled]="!totalItems || isExporting">
+      <mat-icon>file_download</mat-icon>
+      {{ isExporting ? 'Téléchargement...' : 'Télécharger la liste des demandes' }}
+    </button>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-wrapper">
+    <div class="loading-state" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement en cours...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <table *ngIf="demandes.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Matricule</th>
+            <th>Collaborateur</th>
+            <th>Date</th>
+            <th>N° de la demande</th>
+            <th>Montant</th>
+            <th>Frais</th>
+            <th>Coût total</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of demandes">
+            <td>{{ d.collaborator?.uniqueIdentifier || '—' }}</td>
+            <td>{{ collaboratorName(d) }}</td>
+            <td>{{ d.createdAt | date:'dd/MM/yyyy':'':'fr' }}</td>
+            <td>{{ d.number }}</td>
+            <td>{{ d.amount | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ d.fees | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ totalCost(d) | number:'1.0-0':'fr' }} XOF</td>
+            <td>
+              <span class="badge" [ngClass]="statusBadge(d.status)">
+                <span class="dot"></span> {{ statusLabel(d.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucune demande trouvée</p>
+        </div>
+      </ng-template>
+
+      <div class="custom-pagination" *ngIf="demandes.length > 0">
+        <span class="pagination-summary">
+          Affichage de {{ displayRangeStart }} à {{ displayRangeEnd }} sur {{ totalItems }} opérations
+        </span>
+
+        <div class="pagination-controls">
+          <button class="page-arrow" (click)="prevPage()" [disabled]="pageIndex === 0">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <ng-container *ngFor="let p of pageNumbers">
+            <span *ngIf="p === '...'" class="page-ellipsis">...</span>
+            <button *ngIf="p !== '...'" class="page-number"
+                    [class.active]="p === pageIndex + 1" (click)="goToPage(p)">{{ p }}</button>
+          </ng-container>
+          <button class="page-arrow" (click)="nextPage()" [disabled]="pageIndex >= totalPages - 1">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

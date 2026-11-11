@@ -2328,6 +2328,15 @@ export type FetchOperationsQueryVariables = Exact<{
 
 export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', matricule?: string | null, collaborator?: string | null, date: string, operation: string, numeroOperation?: string | null, montant: number }> };
 
+export type FetchPaginatedDemandesByOrganizationQueryVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedDemandesByOrganizationQuery = { __typename?: 'Query', fetchPaginatedDemandesByOrganization: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, number: number, amount: number, fees: number, status: DemandeStatus, createdAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, uniqueIdentifier?: string | null } }> } };
+
 export type FetchOrdersForApproverQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4743,6 +4752,47 @@ export const FetchOperationsDocument = gql`
   })
   export class FetchOperationsGQL extends Apollo.Query<FetchOperationsQuery, FetchOperationsQueryVariables> {
     document = FetchOperationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedDemandesByOrganizationDocument = gql`
+    query FetchPaginatedDemandesByOrganization($organizationId: ID!, $metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedDemandesByOrganization(
+    organizationId: $organizationId
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      number
+      amount
+      fees
+      status
+      createdAt
+      collaborator {
+        id
+        firstName
+        lastName
+        uniqueIdentifier
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedDemandesByOrganizationGQL extends Apollo.Query<FetchPaginatedDemandesByOrganizationQuery, FetchPaginatedDemandesByOrganizationQueryVariables> {
+    document = FetchPaginatedDemandesByOrganizationDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
