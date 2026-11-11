@@ -1,0 +1,142 @@
+<div class="history-container">
+
+  <a class="back-link" (click)="retour()">
+    <mat-icon>arrow_back</mat-icon> Retour à l'historique
+  </a>
+
+  <h2 class="history-title">Détails d'un paiement</h2>
+  <p class="order-label" *ngIf="orderLabel">{{ orderLabel }}</p>
+
+  <!-- Récapitulatif montants -->
+  <div class="summary-amounts">
+    <div class="amount-item">
+      <span class="amount-label">Montant total envoyé</span>
+      <span class="amount-value">{{ summary.totalSent | number:'1.0-0':'fr' }} XOF</span>
+    </div>
+    <div class="amount-item">
+      <span class="amount-label">Montant total échoué</span>
+      <span class="amount-value">{{ summary.totalFailed | number:'1.0-0':'fr' }} XOF</span>
+    </div>
+    <div class="amount-item">
+      <span class="amount-label">Montant total en attente</span>
+      <span class="amount-value">{{ summary.totalPending | number:'1.0-0':'fr' }} XOF</span>
+    </div>
+  </div>
+
+  <!-- Cartes stats -->
+  <div class="stats-cards">
+    <div class="stat-card">
+      <span class="stat-title">Bénéficiaires</span>
+      <span class="stat-value">{{ summary.total }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-title">Succès</span>
+      <span class="stat-value success">{{ summary.successCount }} soit {{ summary.successPct }}%</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-title">Echec</span>
+      <span class="stat-value failure">{{ summary.failureCount }} soit {{ summary.failurePct }}%</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-title">En attente/En cours</span>
+      <span class="stat-value pending">{{ summary.pendingCount }} soit {{ summary.pendingPct }}%</span>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+    <div class="filters-grid-top">
+      <div class="filter-field">
+        <label>Recherche</label>
+        <input type="text" placeholder="Rechercher (nom, prénom, téléphone...)" [(ngModel)]="search" />
+      </div>
+
+      <div class="filter-field">
+        <label>Date d'exécution</label>
+        <input type="date" [(ngModel)]="executionDate" />
+      </div>
+
+      <div class="filter-field">
+        <label>Statut</label>
+        <select [(ngModel)]="statusFilter">
+          <option value="">Tous les statuts</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filters-actions">
+      <button class="btn-reinitialiser" (click)="resetFilters()">
+        <mat-icon>tune</mat-icon> Réinitialiser
+      </button>
+      <button class="btn-appliquer" (click)="applyFilters()">Appliquer</button>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div class="list-header">
+    <h3 class="list-title">Liste des bénéficiaires</h3>
+    <button class="btn-export" (click)="exportList()" [disabled]="filteredPayments.length === 0">
+      <mat-icon>file_download</mat-icon> Exporter
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="loading-state" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement en cours...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <table *ngIf="filteredPayments.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>NOM</th>
+            <th>PRÉNOM</th>
+            <th>TÉLÉPHONE</th>
+            <th>MONTANT</th>
+            <th>FRAIS</th>
+            <th>COÛT TOTAL</th>
+            <th>STATUT</th>
+            <th>OPÉRATEUR</th>
+            <th>DATE D'EXÉCUTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of paginatedPayments">
+            <td class="bold">{{ p.lastName }}</td>
+            <td>{{ p.firstName }}</td>
+            <td>{{ p.phone }}</td>
+            <td>{{ p.amount | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ p.fees | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ p.amount + p.fees | number:'1.0-0':'fr' }} XOF</td>
+            <td>
+              <span class="badge" [ngClass]="statusBadge(p.status)">
+                <span class="dot"></span> {{ statusLabel(p.status) }}
+              </span>
+            </td>
+            <td>{{ p.operator }}</td>
+            <td>{{ p.executedAt ? (p.executedAt | date:'dd/MM/yyyy':'':'fr') : '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucun bénéficiaire trouvé</p>
+        </div>
+      </ng-template>
+
+      <mat-paginator
+        [hidden]="filteredPayments.length === 0"
+        [length]="filteredPayments.length"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        aria-label="Pagination des bénéficiaires"
+      ></mat-paginator>
+    </ng-container>
+  </div>
+</div>

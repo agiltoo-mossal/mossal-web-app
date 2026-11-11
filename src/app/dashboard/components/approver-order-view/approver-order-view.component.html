@@ -19,9 +19,9 @@
     <div class="notif-banner" [ngClass]="{
       'banner-pending': isPending,
       'banner-success': isApproved,
-      'banner-error':   isRejected
+      'banner-error':   isRejected || isCancelled
     }">
-      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+      <mat-icon>{{ isRejected || isCancelled ? 'notifications_off' : 'notifications' }}</mat-icon>
 
       <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
         Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
@@ -44,6 +44,10 @@
 
       <span *ngIf="isRejected && rejectedApprover">
         Ordre rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement ne sera effectué.
+      </span>
+
+      <span *ngIf="isCancelled">
+        Paiement annulé<ng-container *ngIf="cancelledByName"> par {{ cancelledByName }}</ng-container>. Aucun paiement effectué
       </span>
     </div>
 
@@ -142,6 +146,7 @@
           <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
           <th>STATUT</th>
+          <th *ngIf="executionDate">DATE D'EXÉCUTION</th>
         </tr>
       </thead>
       <tbody>
@@ -159,6 +164,7 @@
               {{ paymentStatutLabel(b.statut) }}
             </span>
           </td>
+          <td *ngIf="executionDate">{{ executionDate | date:'dd/MM/yyyy':'':'fr' }}</td>
         </tr>
       </tbody>
     </table>

@@ -7,7 +7,8 @@ import * as XLSX from 'xlsx';
 import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
 import { Wallet } from 'src/graphql/generated';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
-import { mapPaymentStatut, PAYMENT_STATUT_BADGES, PAYMENT_STATUT_LABELS, PaymentStatut } from './payment-statut';
+import { formatDate } from '@angular/common';
+import { mapPaymentStatut, orderExecutionDate, PAYMENT_STATUT_BADGES, PAYMENT_STATUT_LABELS, PaymentStatut } from './payment-statut';
 
 
 interface ApprovalStep {
@@ -52,6 +53,10 @@ export class ApproverOrderViewComponent implements OnInit {
   isRejected = false;
   isApproved = false;
   isPending = false;
+  isCancelled = false;
+  cancelledByName?: string;
+  // Renseignée uniquement pour un ordre validé.
+  executionDate?: Date;
   isBeneficiairesOpen = true;
 
   constructor(
@@ -86,6 +91,11 @@ export class ApproverOrderViewComponent implements OnInit {
           this.isRejected = (order.status as string) === 'REJECTED';
           this.isApproved = (order.status as string) === 'APPROVED';
           this.isPending = (order.status as string) === 'PENDING';
+          this.isCancelled = (order.status as string) === 'CANCELLED';
+          this.cancelledByName = order.cancelledByUser
+            ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
+            : undefined;
+          this.executionDate = orderExecutionDate(order.status as string, approvals);
 
           this.orderDetail = {
             libelle: order.label,
@@ -211,11 +221,16 @@ export class ApproverOrderViewComponent implements OnInit {
   downloadBeneficiaryList(): void {
     if (!this.beneficiaires.length) return;
 
+    const executionDate = this.executionDate ? formatDate(this.executionDate, 'dd/MM/yyyy', 'fr') : undefined;
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut'],
+      [
+        'Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut',
+        ...(executionDate ? ["Date d'exécution"] : []),
+      ],
       ...this.beneficiaires.map(b => [
         b.nom, b.prenom, b.telephone, b.montant, b.frais, b.montant + b.frais, b.operateur,
         this.paymentStatutLabel(b.statut),
+        ...(executionDate ? [executionDate] : []),
       ]),
     ];
 
