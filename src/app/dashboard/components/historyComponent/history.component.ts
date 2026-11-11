@@ -3,7 +3,7 @@
 // import { Observable, Subject, forkJoin, of, timer } from 'rxjs';
 // import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 // import { BulkPaymentOrder, BulkPaymentOrderStatus, FetchMyBulkPaymentOrdersGQL, Wallet } from 'src/graphql/generated';
-// import { FetchBulkPaymentOrderByIdGQL } from 'src/graphql/bulk-payment-extended';
+// import { FetchBulkPaymentOrderByIdGQL } from 'src/graphql/generated';
 
 // export type TxStatus = 'EN_ATTENTE' | 'EN_COURS' | 'SUCCES' | 'ECHEC' | 'EXPIRE' | 'REMBOURSE';
 
@@ -289,7 +289,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject, of, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 import { BulkPaymentOrder, BulkPaymentOrderStatus, Wallet } from 'src/graphql/generated';
-import { FetchMyBulkPaymentHistoryGQL, FetchMyBulkPaymentHistoryQuery } from 'src/graphql/bulk-payment-extended';
+import { FetchMyBulkPaymentHistoryGQL, FetchMyBulkPaymentHistoryQuery } from 'src/graphql/generated';
 
 export type TxStatus = 'EN_ATTENTE' | 'EN_COURS' | 'SUCCES' | 'ECHEC' | 'EXPIRE' | 'REMBOURSE';
 

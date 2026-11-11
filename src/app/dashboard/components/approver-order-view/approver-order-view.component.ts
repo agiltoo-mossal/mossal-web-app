@@ -4,7 +4,7 @@ import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
-import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchOrderForApproverByIdGQL } from 'src/graphql/generated';
 import { Wallet } from 'src/graphql/generated';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
 import { formatDate } from '@angular/common';

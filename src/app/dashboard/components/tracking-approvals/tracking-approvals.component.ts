@@ -3,11 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
 import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import {
-  ApproverOrdersQueryFilter,
+  FetchCurrentAdminGQL,
   FetchPaginatedOrdersForApproverGQL,
   FetchPaginatedOrdersForApproverQuery,
-} from 'src/graphql/bulk-payment-extended';
-import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
+  Organization,
+  QueryDataConfigInput,
+} from 'src/graphql/generated';
 export type ValidationStatus = 'pending' | 'approved' | 'rejected';
 
 export interface PaymentValidation {
@@ -67,7 +68,7 @@ export class TrackingApprovalsComponent implements OnInit, OnDestroy {
   counts: ApproverOrderCounts = { pending: 0, approved: 0, rejected: 0 };
 
   // Filtres réellement envoyés au backend : les champs du formulaire ne comptent qu'au clic sur « Appliquer ».
-  private appliedFilters: Omit<ApproverOrdersQueryFilter, 'page' | 'limit'> = {};
+  private appliedFilters: Omit<QueryDataConfigInput, 'page' | 'limit'> = {};
 
   constructor(
     private router: Router,

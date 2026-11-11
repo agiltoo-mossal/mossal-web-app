@@ -9,7 +9,7 @@ import {
   ApproveBulkPaymentOrderGQL,
   FetchOrderForApproverByIdGQL,
   RejectBulkPaymentOrderGQL,
-} from 'src/graphql/bulk-payment-extended';
+} from 'src/graphql/generated';
 import { Wallet, FetchCurrentAdminGQL, Organization } from 'src/graphql/generated';
 import { SnackBarService, SnackBarClassByResult } from 'src/app/shared/services/snackbar.service';
 import {

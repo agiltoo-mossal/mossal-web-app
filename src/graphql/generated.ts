@@ -1054,6 +1054,12 @@ export type PaginatedApproverOrdersResult = {
   results: Array<BulkPaymentOrder>;
 };
 
+export type PaginatedBulkPaymentOrdersResult = {
+  __typename?: 'PaginatedBulkPaymentOrdersResult';
+  pagination: PaginationInfo;
+  results: Array<BulkPaymentOrder>;
+};
+
 export type PaginatedCategorySocioproResult = {
   __typename?: 'PaginatedCategorySocioproResult';
   pagination: PaginationInfo;
@@ -1181,6 +1187,8 @@ export type Query = {
   fetchOrganizationNotifications: Array<Notification>;
   fetchOrganizations: Array<Organization>;
   fetchPaginatedActivities: PaginatedActivityResult;
+  fetchPaginatedBulkPaymentOrdersByOrganization: PaginatedBulkPaymentOrdersResult;
+  fetchPaginatedDemandesByOrganization: PaginatedDemandeResult;
   fetchPaginatedFinancialOrganization: PaginatedFinancialOrganizationResult;
   fetchPaginatedMossallAdmins: PaginatedUserResult;
   fetchPaginatedNotifications: PaginatedNotificationResult;
@@ -1376,6 +1384,20 @@ export type QueryFetchOrganizationDemandesArgs = {
 
 
 export type QueryFetchPaginatedActivitiesArgs = {
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedBulkPaymentOrdersByOrganizationArgs = {
+  approverName?: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['ID']['input'];
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+};
+
+
+export type QueryFetchPaginatedDemandesByOrganizationArgs = {
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  organizationId: Scalars['ID']['input'];
   queryFilter?: InputMaybe<QueryDataConfigInput>;
 };
 
@@ -2043,6 +2065,11 @@ export type UpdateCollaboratorMutationVariables = Exact<{
 
 export type UpdateCollaboratorMutation = { __typename?: 'Mutation', updateCollaborator: boolean };
 
+export type FetchMyBulkPaymentHistoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchMyBulkPaymentHistoryQuery = { __typename?: 'Query', fetchMyBulkPaymentHistory: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, status: BulkPaymentOrderStatus, totalAmount: number, totalFees?: number | null, createdAt: any, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet, status: BulkPaymentStatus, providerReference?: string | null, failureReason?: string | null, paidAt?: any | null, updatedAt: any }> | null }> };
+
 export type CreateBulkPaymentOrderMutationVariables = Exact<{
   inputs: Array<BulkPaymentInput> | BulkPaymentInput;
   label: Scalars['String']['input'];
@@ -2053,6 +2080,34 @@ export type CreateBulkPaymentOrderMutationVariables = Exact<{
 
 
 export type CreateBulkPaymentOrderMutation = { __typename?: 'Mutation', createBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, createdAt: any } };
+
+export type SubmitBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput> | ApprovalLevelInput>;
+}>;
+
+
+export type SubmitBulkPaymentOrderMutation = { __typename?: 'Mutation', submitBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, status: BulkPaymentOrderStatus } };
+
+export type UpdateBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput> | BulkPaymentInput;
+  label: Scalars['String']['input'];
+}>;
+
+
+export type UpdateBulkPaymentOrderMutation = { __typename?: 'Mutation', updateBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, status: BulkPaymentOrderStatus } };
+
+export type UpdateSubmittedBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  inputs: Array<BulkPaymentInput> | BulkPaymentInput;
+  label: Scalars['String']['input'];
+  approversByLevel?: InputMaybe<Array<ApprovalLevelInput> | ApprovalLevelInput>;
+  reason: Scalars['String']['input'];
+}>;
+
+
+export type UpdateSubmittedBulkPaymentOrderMutation = { __typename?: 'Mutation', updateSubmittedBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, label: string, status: BulkPaymentOrderStatus } };
 
 export type FetchOrganizationNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2128,6 +2183,21 @@ export type FetchBulkPaymentOrderByIdQueryVariables = Exact<{
 
 
 export type FetchBulkPaymentOrderByIdQuery = { __typename?: 'Query', fetchBulkPaymentOrderById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, status: BulkPaymentOrderStatus, type?: BulkPaymentOrderType | null, rejectedReason?: string | null, currentApprovalLevel?: number | null, createdAt: any, lastRelaunchAt?: any | null, cancelledByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string, position?: string | null }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approvedAt?: any | null, approverId?: string | null }> | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet, status: BulkPaymentStatus, paidAt?: any | null }> | null } };
+
+export type CancelBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  reason: Scalars['String']['input'];
+}>;
+
+
+export type CancelBulkPaymentOrderMutation = { __typename?: 'Mutation', cancelBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, status: BulkPaymentOrderStatus } };
+
+export type RelaunchApproversMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type RelaunchApproversMutation = { __typename?: 'Mutation', relaunchApprovers: { __typename?: 'BulkPaymentOrder', id: string, lastRelaunchAt?: any | null } };
 
 export type FetchMyBulkPaymentOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2257,6 +2327,49 @@ export type FetchOperationsQueryVariables = Exact<{
 
 
 export type FetchOperationsQuery = { __typename?: 'Query', fetchOperations: Array<{ __typename?: 'OperationSummary', matricule?: string | null, collaborator?: string | null, date: string, operation: string, numeroOperation?: string | null, montant: number }> };
+
+export type FetchPaginatedDemandesByOrganizationQueryVariables = Exact<{
+  organizationId: Scalars['ID']['input'];
+  metricsInput?: InputMaybe<DemandesMetricsInput>;
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedDemandesByOrganizationQuery = { __typename?: 'Query', fetchPaginatedDemandesByOrganization: { __typename?: 'PaginatedDemandeResult', pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, results: Array<{ __typename?: 'Demande', id: string, number: number, amount: number, fees: number, status: DemandeStatus, createdAt: any, collaborator: { __typename?: 'User', id: string, firstName: string, lastName: string, uniqueIdentifier?: string | null } }> } };
+
+export type FetchOrdersForApproverQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchOrdersForApproverQuery = { __typename?: 'Query', fetchOrdersForApprover: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, totalFees?: number | null, status: BulkPaymentOrderStatus, currentApprovalLevel?: number | null, paymentsCount?: number | null, createdAt: any, isApprovedByCurrentUser?: boolean | null, createdByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', approverId?: string | null }> | null }> };
+
+export type FetchPaginatedOrdersForApproverQueryVariables = Exact<{
+  queryFilter?: InputMaybe<QueryDataConfigInput>;
+}>;
+
+
+export type FetchPaginatedOrdersForApproverQuery = { __typename?: 'Query', fetchPaginatedOrdersForApprover: { __typename?: 'PaginatedApproverOrdersResult', results: Array<{ __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, totalFees?: number | null, status: BulkPaymentOrderStatus, currentApprovalLevel?: number | null, paymentsCount?: number | null, createdAt: any, isApprovedByCurrentUser?: boolean | null, createdByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number }> | null }>, pagination: { __typename?: 'PaginationInfo', totalItems: number, pageCount: number, currentPage: number, pageSize: number }, counts: { __typename?: 'ApproverOrderCounts', pending: number, approved: number, rejected: number } } };
+
+export type FetchOrderForApproverByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type FetchOrderForApproverByIdQuery = { __typename?: 'Query', fetchOrderForApproverById: { __typename?: 'BulkPaymentOrder', id: string, label: string, totalAmount: number, totalFees?: number | null, status: BulkPaymentOrderStatus, currentApprovalLevel?: number | null, rejectedReason?: string | null, createdAt: any, createdByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, cancelledByUser?: { __typename?: 'User', firstName: string, lastName: string } | null, payments?: Array<{ __typename?: 'BulkPayment', id: string, firstName: string, lastName: string, phoneNumber: string, amount: number, fee?: number | null, wallet: Wallet, status: BulkPaymentStatus }> | null, approversByLevel?: Array<{ __typename?: 'ApprovalLevel', level: number, approverIds?: Array<string> | null, approvers?: Array<{ __typename?: 'User', id: string, firstName: string, lastName: string }> | null }> | null, approvals?: Array<{ __typename?: 'BulkPaymentApproval', level: number, approverId?: string | null, approvedAt?: any | null }> | null } };
+
+export type ApproveBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ApproveBulkPaymentOrderMutation = { __typename?: 'Mutation', approveBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, status: BulkPaymentOrderStatus } };
+
+export type RejectBulkPaymentOrderMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type RejectBulkPaymentOrderMutation = { __typename?: 'Mutation', rejectBulkPaymentOrder: { __typename?: 'BulkPaymentOrder', id: string, status: BulkPaymentOrderStatus } };
 
 export type UpdateMyAdminPasswordMutationVariables = Exact<{
   oldPassword: Scalars['String']['input'];
@@ -3541,6 +3654,51 @@ export const UpdateCollaboratorDocument = gql`
       super(apollo);
     }
   }
+export const FetchMyBulkPaymentHistoryDocument = gql`
+    query FetchMyBulkPaymentHistory {
+  fetchMyBulkPaymentHistory {
+    id
+    label
+    status
+    totalAmount
+    totalFees
+    createdAt
+    approversByLevel {
+      level
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      fee
+      wallet
+      status
+      providerReference
+      failureReason
+      paidAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchMyBulkPaymentHistoryGQL extends Apollo.Query<FetchMyBulkPaymentHistoryQuery, FetchMyBulkPaymentHistoryQueryVariables> {
+    document = FetchMyBulkPaymentHistoryDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const CreateBulkPaymentOrderDocument = gql`
     mutation CreateBulkPaymentOrder($inputs: [BulkPaymentInput!]!, $label: String!, $isDraft: Boolean, $type: String, $approversByLevel: [ApprovalLevelInput!]) {
   createBulkPaymentOrder(
@@ -3564,6 +3722,71 @@ export const CreateBulkPaymentOrderDocument = gql`
   })
   export class CreateBulkPaymentOrderGQL extends Apollo.Mutation<CreateBulkPaymentOrderMutation, CreateBulkPaymentOrderMutationVariables> {
     document = CreateBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SubmitBulkPaymentOrderDocument = gql`
+    mutation SubmitBulkPaymentOrder($id: String!, $approversByLevel: [ApprovalLevelInput!]) {
+  submitBulkPaymentOrder(id: $id, approversByLevel: $approversByLevel) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SubmitBulkPaymentOrderGQL extends Apollo.Mutation<SubmitBulkPaymentOrderMutation, SubmitBulkPaymentOrderMutationVariables> {
+    document = SubmitBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateBulkPaymentOrderDocument = gql`
+    mutation UpdateBulkPaymentOrder($id: String!, $inputs: [BulkPaymentInput!]!, $label: String!) {
+  updateBulkPaymentOrder(id: $id, inputs: $inputs, label: $label) {
+    id
+    label
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateBulkPaymentOrderGQL extends Apollo.Mutation<UpdateBulkPaymentOrderMutation, UpdateBulkPaymentOrderMutationVariables> {
+    document = UpdateBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateSubmittedBulkPaymentOrderDocument = gql`
+    mutation UpdateSubmittedBulkPaymentOrder($id: String!, $inputs: [BulkPaymentInput!]!, $label: String!, $approversByLevel: [ApprovalLevelInput!], $reason: String!) {
+  updateSubmittedBulkPaymentOrder(
+    id: $id
+    inputs: $inputs
+    label: $label
+    approversByLevel: $approversByLevel
+    reason: $reason
+  ) {
+    id
+    label
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateSubmittedBulkPaymentOrderGQL extends Apollo.Mutation<UpdateSubmittedBulkPaymentOrderMutation, UpdateSubmittedBulkPaymentOrderMutationVariables> {
+    document = UpdateSubmittedBulkPaymentOrderDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -3930,6 +4153,44 @@ export const FetchBulkPaymentOrderByIdDocument = gql`
   })
   export class FetchBulkPaymentOrderByIdGQL extends Apollo.Query<FetchBulkPaymentOrderByIdQuery, FetchBulkPaymentOrderByIdQueryVariables> {
     document = FetchBulkPaymentOrderByIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CancelBulkPaymentOrderDocument = gql`
+    mutation CancelBulkPaymentOrder($id: String!, $reason: String!) {
+  cancelBulkPaymentOrder(id: $id, reason: $reason) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CancelBulkPaymentOrderGQL extends Apollo.Mutation<CancelBulkPaymentOrderMutation, CancelBulkPaymentOrderMutationVariables> {
+    document = CancelBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RelaunchApproversDocument = gql`
+    mutation RelaunchApprovers($id: String!) {
+  relaunchApprovers(id: $id) {
+    id
+    lastRelaunchAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RelaunchApproversGQL extends Apollo.Mutation<RelaunchApproversMutation, RelaunchApproversMutationVariables> {
+    document = RelaunchApproversDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -4491,6 +4752,230 @@ export const FetchOperationsDocument = gql`
   })
   export class FetchOperationsGQL extends Apollo.Query<FetchOperationsQuery, FetchOperationsQueryVariables> {
     document = FetchOperationsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedDemandesByOrganizationDocument = gql`
+    query FetchPaginatedDemandesByOrganization($organizationId: ID!, $metricsInput: DemandesMetricsInput, $queryFilter: QueryDataConfigInput) {
+  fetchPaginatedDemandesByOrganization(
+    organizationId: $organizationId
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      number
+      amount
+      fees
+      status
+      createdAt
+      collaborator {
+        id
+        firstName
+        lastName
+        uniqueIdentifier
+      }
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedDemandesByOrganizationGQL extends Apollo.Query<FetchPaginatedDemandesByOrganizationQuery, FetchPaginatedDemandesByOrganizationQueryVariables> {
+    document = FetchPaginatedDemandesByOrganizationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrdersForApproverDocument = gql`
+    query FetchOrdersForApprover {
+  fetchOrdersForApprover {
+    id
+    label
+    totalAmount
+    totalFees
+    status
+    currentApprovalLevel
+    paymentsCount
+    createdAt
+    createdByUser {
+      firstName
+      lastName
+    }
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    approvals {
+      approverId
+    }
+    isApprovedByCurrentUser
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrdersForApproverGQL extends Apollo.Query<FetchOrdersForApproverQuery, FetchOrdersForApproverQueryVariables> {
+    document = FetchOrdersForApproverDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchPaginatedOrdersForApproverDocument = gql`
+    query FetchPaginatedOrdersForApprover($queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrdersForApprover(queryFilter: $queryFilter) {
+    results {
+      id
+      label
+      totalAmount
+      totalFees
+      status
+      currentApprovalLevel
+      paymentsCount
+      createdAt
+      createdByUser {
+        firstName
+        lastName
+      }
+      approversByLevel {
+        level
+      }
+      isApprovedByCurrentUser
+    }
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    counts {
+      pending
+      approved
+      rejected
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchPaginatedOrdersForApproverGQL extends Apollo.Query<FetchPaginatedOrdersForApproverQuery, FetchPaginatedOrdersForApproverQueryVariables> {
+    document = FetchPaginatedOrdersForApproverDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const FetchOrderForApproverByIdDocument = gql`
+    query FetchOrderForApproverById($id: String!) {
+  fetchOrderForApproverById(id: $id) {
+    id
+    label
+    totalAmount
+    totalFees
+    status
+    currentApprovalLevel
+    rejectedReason
+    createdAt
+    createdByUser {
+      firstName
+      lastName
+    }
+    cancelledByUser {
+      firstName
+      lastName
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      fee
+      wallet
+      status
+    }
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    approvals {
+      level
+      approverId
+      approvedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class FetchOrderForApproverByIdGQL extends Apollo.Query<FetchOrderForApproverByIdQuery, FetchOrderForApproverByIdQueryVariables> {
+    document = FetchOrderForApproverByIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const ApproveBulkPaymentOrderDocument = gql`
+    mutation ApproveBulkPaymentOrder($id: String!) {
+  approveBulkPaymentOrder(id: $id) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class ApproveBulkPaymentOrderGQL extends Apollo.Mutation<ApproveBulkPaymentOrderMutation, ApproveBulkPaymentOrderMutationVariables> {
+    document = ApproveBulkPaymentOrderDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RejectBulkPaymentOrderDocument = gql`
+    mutation RejectBulkPaymentOrder($id: String!, $reason: String) {
+  rejectBulkPaymentOrder(id: $id, reason: $reason) {
+    id
+    status
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RejectBulkPaymentOrderGQL extends Apollo.Mutation<RejectBulkPaymentOrderMutation, RejectBulkPaymentOrderMutationVariables> {
+    document = RejectBulkPaymentOrderDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
