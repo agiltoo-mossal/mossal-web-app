@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { FetchCurrentAdminGQL } from 'src/graphql/generated';
 import { BulkPaymentOrderStatus } from 'src/graphql/generated';
-import { FetchOrdersForApproverGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchOrdersForApproverGQL } from 'src/graphql/generated';
 import { AuthService } from 'src/app/auth/auth.service';
 
 @Injectable({

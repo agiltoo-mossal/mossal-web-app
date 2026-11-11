@@ -11,8 +11,9 @@ import {
 } from 'src/graphql/generated';
 import { MatDialog } from '@angular/material/dialog';
 import { ReasonDialogComponent, ReasonDialogData } from '../reason-dialog/reason-dialog.component';
-import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { isPaymentSent } from '../approver-order-view/payment-statut';
 
 interface WorkflowApprobateur {
   nom: string;
@@ -173,6 +174,16 @@ export class ManualPaymentComponent implements OnInit {
           if (!order) {
             this.isLoadingOrder = false;
             this.snackBarService.showErrorSnackBar(4000, 'Impossible de charger l\'ordre à modifier.');
+            this.router.navigate(['/dashboard/payments/details', editOrderId]);
+            return;
+          }
+          // Accès direct par URL : un ordre dont des paiements sont déjà partis n'est plus modifiable.
+          if ((order.payments ?? []).some((p) => isPaymentSent(p.status))) {
+            this.isLoadingOrder = false;
+            this.snackBarService.showErrorSnackBar(
+              4000,
+              'Des paiements de cet ordre ont déjà été envoyés : il ne peut plus être modifié.',
+            );
             this.router.navigate(['/dashboard/payments/details', editOrderId]);
             return;
           }

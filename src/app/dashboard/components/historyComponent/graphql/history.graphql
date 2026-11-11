@@ -1,0 +1,32 @@
+query FetchMyBulkPaymentHistory {
+  fetchMyBulkPaymentHistory {
+    id
+    label
+    status
+    totalAmount
+    totalFees
+    createdAt
+    approversByLevel {
+      level
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      fee
+      wallet
+      status
+      providerReference
+      failureReason
+      paidAt
+      updatedAt
+    }
+  }
+}

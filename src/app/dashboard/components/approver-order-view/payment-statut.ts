@@ -30,6 +30,12 @@ export const PAYMENT_STATUT_BADGES: Record<PaymentStatut, string> = {
   ANNULE: 'badge-neutral',
 };
 
+// Paiement déjà parti chez le prestataire (en cours ou payé) : bloque la modification
+// et l'annulation de l'ordre (même règle que le backend).
+export function isPaymentSent(raw: string | undefined | null): boolean {
+  return raw === 'IN_PROCESS' || raw === 'PAYED';
+}
+
 // Date d'exécution d'un ordre validé : date d'approbation du dernier approbateur
 // (positionnement des fonds). On prend la plus récente, car une nouvelle tentative
 // après un échec de virement ajoute une approbation au dernier niveau.

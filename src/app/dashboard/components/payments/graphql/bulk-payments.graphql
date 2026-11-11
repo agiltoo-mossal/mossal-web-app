@@ -59,6 +59,20 @@ query FetchBulkPaymentOrderById($id: String!) {
   }
 }
 
+mutation CancelBulkPaymentOrder($id: String!, $reason: String!) {
+  cancelBulkPaymentOrder(id: $id, reason: $reason) {
+    id
+    status
+  }
+}
+
+mutation RelaunchApprovers($id: String!) {
+  relaunchApprovers(id: $id) {
+    id
+    lastRelaunchAt
+  }
+}
+
 query FetchMyBulkPaymentOrders {
   fetchMyBulkPaymentOrders {
     id

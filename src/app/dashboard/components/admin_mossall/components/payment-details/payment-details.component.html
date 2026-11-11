@@ -45,7 +45,7 @@
   <div class="suivi-title-row">
     <h2 class="suivi-title">Suivi des validations</h2>
 
-    <div class="suivi-title-actions" *ngIf="isPending">
+    <div class="suivi-title-actions" *ngIf="isModifiable || isCancellable">
       <button
         class="btn-outline"
         *ngIf="isModifiable"
@@ -55,6 +55,7 @@
       </button>
       <button
         class="btn-danger-outline"
+        *ngIf="isCancellable"
         (click)="annulerOrdre()"
         [disabled]="isCancelling"
       >
@@ -63,7 +64,12 @@
     </div>
   </div>
 
-  <div class="info-banner" *ngIf="isPending && hasSomeoneApproved">
+  <div class="info-banner" *ngIf="isPending && hasSentPayments">
+    <mat-icon>info</mat-icon>
+    <span>{{ payment.sentPaymentsCount }} paiement(s) de cet ordre ont déjà été envoyé(s) : il ne peut plus être modifié ni annulé.</span>
+  </div>
+
+  <div class="info-banner" *ngIf="isPending && hasSomeoneApproved && !hasSentPayments">
     <mat-icon>info</mat-icon>
     <span>Cet ordre est en cours de validation. Toute modification annulera les validations déjà données et relancera le circuit au niveau 1.</span>
   </div>

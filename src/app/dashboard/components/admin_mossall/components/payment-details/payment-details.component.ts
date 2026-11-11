@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
-import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
+import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ReasonDialogComponent, ReasonDialogData } from '../../../reason-dialog/reason-dialog.component';
 import { formatDate } from '@angular/common';
-import { orderExecutionDate } from '../../../approver-order-view/payment-statut';
+import { isPaymentSent, orderExecutionDate } from '../../../approver-order-view/payment-statut';
 
 
 export interface Beneficiary {
@@ -42,6 +42,8 @@ export interface PaymentOrderDetails {
   rejectedReason?: string;
   lastRelaunchAt?: Date;
   cancelledByName?: string;
+  // Nombre de paiements déjà partis chez le prestataire (en cours ou payés).
+  sentPaymentsCount: number;
   // Renseignée uniquement pour un ordre validé.
   executionDate?: Date;
 }
@@ -156,6 +158,7 @@ export class PaymentDetailsComponent implements OnInit {
               ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
               : undefined,
             executionDate: orderExecutionDate(order.status, approvals),
+            sentPaymentsCount: payments.filter(p => isPaymentSent(p.status)).length,
             beneficiaries: payments.map(p => ({
               lastName: p.lastName,
               firstName: p.firstName,
@@ -240,7 +243,17 @@ export class PaymentDetailsComponent implements OnInit {
   // Modifier un ordre partiellement approuvé annule les validations déjà données (le backend les archive)
   // et relance le circuit au niveau 1.
   get isModifiable(): boolean {
-    return this.isPending;
+    return this.isPending && !this.hasSentPayments;
+  }
+
+  // Dès qu'un paiement est parti, l'ordre ne peut plus être ni modifié (il serait renvoyé)
+  // ni annulé (des fonds ont déjà été versés). Le backend applique la même règle.
+  get hasSentPayments(): boolean {
+    return (this.payment?.sentPaymentsCount ?? 0) > 0;
+  }
+
+  get isCancellable(): boolean {
+    return this.isPending && !this.hasSentPayments;
   }
 
   get isBalanceInsufficient(): boolean {
@@ -305,7 +318,7 @@ export class PaymentDetailsComponent implements OnInit {
   }
 
   annulerOrdre(): void {
-    if (!this.orderId || !this.isPending || this.isCancelling) return;
+    if (!this.orderId || !this.isCancellable || this.isCancelling) return;
 
     const data: ReasonDialogData = {
       title: "Annuler l'ordre de paiement",
