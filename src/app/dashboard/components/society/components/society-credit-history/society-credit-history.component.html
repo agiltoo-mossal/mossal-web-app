@@ -1,0 +1,111 @@
+<div class="history-container">
+
+  <button class="back-btn" (click)="retour()">
+    <mat-icon>arrow_back</mat-icon> Retour
+  </button>
+
+  <h2 class="history-title">Historique des crédits</h2>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+    <div class="filters-grid-top">
+      <div class="filter-field">
+        <label>Recherche</label>
+        <input type="text" placeholder="Rechercher (libellé...)" [(ngModel)]="pendingSearch" (keyup.enter)="onApply()" />
+      </div>
+
+      <div class="filter-field periode">
+        <label>Période</label>
+        <div class="periode-inputs">
+          <input type="date" [(ngModel)]="pendingStartDate" />
+          <span class="arrow-separator">→</span>
+          <input type="date" [(ngModel)]="pendingEndDate" />
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label>Initiateur</label>
+        <select [(ngModel)]="pendingInitiator">
+          <option value="">Tous les initiateurs</option>
+          <option *ngFor="let i of initiatorOptions" [value]="i.value">{{ i.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filters-row-bottom">
+      <div class="filters-actions">
+        <button class="btn-reinitialiser" (click)="onReset()">
+          <mat-icon>tune</mat-icon> Réinitialiser
+        </button>
+        <button class="btn-appliquer" (click)="onApply()">Appliquer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="export-row">
+    <button class="btn-export" (click)="exportList()" [disabled]="!totalItems || isExporting">
+      <mat-icon>file_download</mat-icon>
+      {{ isExporting ? 'Téléchargement...' : 'Exporter la liste' }}
+    </button>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-wrapper">
+    <div class="loading-state" *ngIf="isLoading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement en cours...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <table *ngIf="rows.length > 0; else emptyState">
+        <thead>
+          <tr>
+            <th>Libellé / opération</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Initiateur</th>
+            <th>Adresse mail</th>
+            <th>Numéro de téléphone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of rows">
+            <td>{{ r.label }}</td>
+            <td>{{ r.date | date:'dd MMMM yyyy':'':'fr' }}</td>
+            <td>{{ r.amount | number:'1.0-0':'fr' }} XOF</td>
+            <td>{{ r.initiatorName }}</td>
+            <td>{{ r.email }}</td>
+            <td>{{ r.phone }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucune opération trouvée</p>
+        </div>
+      </ng-template>
+
+      <div class="custom-pagination" *ngIf="rows.length > 0">
+        <span class="pagination-summary">
+          Affichage de {{ displayRangeStart }} à {{ displayRangeEnd }} sur {{ totalItems }} opérations
+        </span>
+
+        <div class="pagination-controls">
+          <button class="page-arrow" (click)="prevPage()" [disabled]="pageIndex === 0">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <ng-container *ngFor="let p of pageNumbers">
+            <span *ngIf="p === '...'" class="page-ellipsis">...</span>
+            <button *ngIf="p !== '...'" class="page-number"
+                    [class.active]="p === pageIndex + 1" (click)="goToPage(p)">{{ p }}</button>
+          </ng-container>
+          <button class="page-arrow" (click)="nextPage()" [disabled]="pageIndex >= totalPages - 1">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
