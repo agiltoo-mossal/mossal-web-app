@@ -25,7 +25,7 @@ export class RequiresConfirmationDirective {
       return;
     }
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '446px',
+      width: '480px',
       data: {
         message: this.message,
         reasonRequired: this.reasonRequired,

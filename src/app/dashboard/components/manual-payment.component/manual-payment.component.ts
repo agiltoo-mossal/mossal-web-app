@@ -9,8 +9,11 @@ import {
   Organization,
   Wallet,
 } from 'src/graphql/generated';
-import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/bulk-payment-extended';
+import { MatDialog } from '@angular/material/dialog';
+import { ReasonDialogComponent, ReasonDialogData } from '../reason-dialog/reason-dialog.component';
+import { FetchBulkPaymentOrderByIdGQL, SubmitBulkPaymentOrderGQL, UpdateBulkPaymentOrderGQL, UpdateSubmittedBulkPaymentOrderGQL } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { isPaymentSent } from '../approver-order-view/payment-statut';
 
 interface WorkflowApprobateur {
   nom: string;
@@ -78,6 +81,8 @@ export class ManualPaymentComponent implements OnInit {
   // restreinte aux approbateurs configurés pour ce niveau dans le flux)
   approvalLevels: ApprovalLevel[] = [];
   approversSubmitAttempted = false;
+  // Approbateurs actuels de l'ordre en cours de modification, à pré-sélectionner.
+  private editedOrderApprovers: { level: number; approverIds?: string[] | null }[] | null = null;
   // Distingue "en cours de chargement" de "confirmé vide", pour ne pas afficher
   // le message de blocage avant que la réponse du flux ne soit arrivée.
   approvalFlowLoaded = false;
@@ -114,6 +119,7 @@ export class ManualPaymentComponent implements OnInit {
     private updateSubmittedBulkPaymentOrderGQL: UpdateSubmittedBulkPaymentOrderGQL,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
     private snackBarService: SnackBarService,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -147,6 +153,7 @@ export class ManualPaymentComponent implements OnInit {
             };
           });
         this.approvalFlowLoaded = true;
+        this.preselectEditedOrderApprovers();
       },
       error: () => {
         this.snackBarService.showErrorSnackBar(4000, 'Erreur lors du chargement des approbateurs.');
@@ -170,6 +177,16 @@ export class ManualPaymentComponent implements OnInit {
             this.router.navigate(['/dashboard/payments/details', editOrderId]);
             return;
           }
+          // Accès direct par URL : un ordre dont des paiements sont déjà partis n'est plus modifiable.
+          if ((order.payments ?? []).some((p) => isPaymentSent(p.status))) {
+            this.isLoadingOrder = false;
+            this.snackBarService.showErrorSnackBar(
+              4000,
+              'Des paiements de cet ordre ont déjà été envoyés : il ne peut plus être modifié.',
+            );
+            this.router.navigate(['/dashboard/payments/details', editOrderId]);
+            return;
+          }
           this.label = order.label;
           this.beneficiaries = (order.payments ?? []).map((p) => ({
             firstName: p.firstName,
@@ -178,6 +195,8 @@ export class ManualPaymentComponent implements OnInit {
             amount: p.amount.toLocaleString('fr-FR').replace(/ /g, ' '),
             wallet: p.wallet as Wallet,
           }));
+          this.editedOrderApprovers = order.approversByLevel ?? [];
+          this.preselectEditedOrderApprovers();
           this.isLoadingOrder = false;
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
@@ -286,6 +305,22 @@ export class ManualPaymentComponent implements OnInit {
 
   // ===== Sélection des approbateurs =====
 
+  /**
+   * Reprend les approbateurs de l'ordre modifié, une fois l'ordre et le flux chargés (ordre
+   * d'arrivée indifférent). Seuls ceux encore configurés dans le flux sont conservés : si le
+   * flux a changé, le niveau concerné reste à compléter.
+   */
+  private preselectEditedOrderApprovers(): void {
+    if (!this.editedOrderApprovers || !this.approvalFlowLoaded) return;
+
+    for (const level of this.approvalLevels) {
+      const orderLevel = this.editedOrderApprovers.find((l) => l.level === level.level);
+      const selectedIds = new Set((orderLevel?.approverIds ?? []).map(String));
+      const kept = level.candidats.filter((c) => selectedIds.has(String(c.id)));
+      if (kept.length > 0) level.approbateurs = kept;
+    }
+  }
+
   /** Nombre de niveaux ayant au moins un approbateur sélectionné */
   get selectedApproversCount(): number {
     return this.approvalLevels.filter((l) => l.approbateurs.length > 0).length;
@@ -355,14 +390,31 @@ export class ManualPaymentComponent implements OnInit {
   /** Seuil d'alerte : solde après exécution < X % du solde actuel */
   private readonly LOW_BALANCE_THRESHOLD = 0.10;
 
-  // TODO: remplacer par la vraie règle de frais (idéalement fournie par le backend)
-  private readonly WALLET_FEE_RATES: Record<string, number> = {
-    [Wallet.Wave]: 0.0165,
-    [Wallet.OrangeMoney]: 0.021,
-  };
-
+  // Même règle que le backend (#computePaymentFees) : activedWallets[].name = clé de l'enum Wallet, taux 0 si non configuré.
   private computeFee(wallet: string, amount: number): number {
-    return Math.round(amount * (this.WALLET_FEE_RATES[wallet] ?? 0));
+    const activedWallets = this.organization?.financialOrganization?.activedWallets ?? [];
+    const rate = activedWallets.find((w) => w.name === wallet)?.fees ?? 0;
+    return Math.round(amount * rate);
+  }
+
+      /** Frais du bénéficiaire (ligne du tableau) */
+  getFee(b: BeneficiaryForm): number {
+    return this.computeFee(b.wallet as string, this.parseAmount(b.amount));
+  }
+
+  /** Coût total de la ligne = montant + frais */
+  getLineCost(b: BeneficiaryForm): number {
+    return this.parseAmount(b.amount) + this.getFee(b);
+  }
+
+  /** Frais affichés dans le formulaire (calculés en direct pendant la saisie) */
+  get formFee(): number {
+    return this.computeFee(this.form.wallet as string, this.parseAmount(this.form.amount));
+  }
+
+  /** Libellé lisible de l'opérateur (Wave / Orange Money) */
+  walletLabel(wallet: string): string {
+    return this.walletOptions.find((o) => o.value === wallet)?.label ?? wallet;
   }
 
   get totalFees(): number {
@@ -515,6 +567,14 @@ export class ManualPaymentComponent implements OnInit {
 
   goToRecap(): void {
     if (this.beneficiaries.length === 0) return;
+
+    // Ordre déjà soumis : tout est enregistré en une fois à la fin, pas de brouillon à créer.
+    if (this.editOrderId) {
+      this.currentStep = 2;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     this.isSavingDraft = true;
 
     const onSuccess = () => {
@@ -582,10 +642,38 @@ export class ManualPaymentComponent implements OnInit {
 
   saveEditedOrder(): void {
     if (!this.editOrderId || this.beneficiaries.length === 0 || !this.label.trim() || this.isSubmitting) return;
+    if (this.isApprovalFlowEmpty) return;
+    this.approversSubmitAttempted = true;
+    if (!this.allApproversSelected) return;
+
+    const data: ReasonDialogData = {
+      title: 'Enregistrer les modifications',
+      icon: 'edit_note',
+      message: 'Les validations déjà données seront annulées et le circuit de validation repartira du niveau 1.',
+      reasonLabel: 'Motif de la modification',
+      requiredMessage: 'Le motif de la modification est obligatoire.',
+      confirmLabel: 'Enregistrer les modifications',
+    };
+    this.dialog
+      .open(ReasonDialogComponent, { width: '720px', data })
+      .afterClosed()
+      .subscribe((reason?: string) => {
+        if (reason) this.submitEditedOrder(reason);
+      });
+  }
+
+  private submitEditedOrder(reason: string): void {
+    if (!this.editOrderId) return;
 
     this.isSubmitting = true;
     this.updateSubmittedBulkPaymentOrderGQL
-      .mutate({ id: this.editOrderId, inputs: this.buildInputs(), label: this.label })
+      .mutate({
+        id: this.editOrderId,
+        inputs: this.buildInputs(),
+        label: this.label,
+        approversByLevel: this.selectedApproversPayload,
+        reason,
+      })
       .subscribe({
         next: () => {
           this.isSubmitting = false;

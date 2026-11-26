@@ -245,6 +245,9 @@
 
         <!-- Boutons -->
         <div class="form-buttons">
+            <button type="button" class="cancel-button" (click)="annuler()" [disabled]="isLoading">
+                Annuler
+            </button>
             <button type="submit" class="submit-button" [disabled]="isLoading">
                 <span *ngIf="isLoading" class="loading-spinner"></span>
                 {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}

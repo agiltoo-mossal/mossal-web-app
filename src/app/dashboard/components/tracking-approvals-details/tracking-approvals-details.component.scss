@@ -263,6 +263,29 @@ $color-white: #ffffff;
     border-top: 1px solid $color-border;
     color: $color-text-primary;
   }
+
+  // Badges de statut de paiement : mêmes couleurs que approver-order-view.
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 400;
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  }
+
+  .badge-pending { background: #FFF4E5; color: #FF9500; .dot { background: #FF9500; } }
+  .badge-success { background: #DEFFDB; color: #0EAF00; .dot { background: #0EAF00; } }
+  .badge-danger  { background: #FEE7E7; color: #F41414; .dot { background: #F41414; } }
+  .badge-info    { background: #E6EFFF; color: #1956F0; .dot { background: #1956F0; } }
+  .badge-neutral { background: #F1F1F3; color: #6B7280; .dot { background: #6B7280; } }
 }
 
 // --- Actions (vue "en attente") ---

@@ -4,9 +4,11 @@ import { interval, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
-import { FetchOrderForApproverByIdGQL } from 'src/graphql/bulk-payment-extended';
+import { FetchOrderForApproverByIdGQL } from 'src/graphql/generated';
 import { Wallet } from 'src/graphql/generated';
 import {FetchCurrentAdminGQL, Organization} from 'src/graphql/generated';
+import { formatDate } from '@angular/common';
+import { mapPaymentStatut, orderExecutionDate, PAYMENT_STATUT_BADGES, PAYMENT_STATUT_LABELS, PaymentStatut } from './payment-statut';
 
 
 interface ApprovalStep {
@@ -23,7 +25,9 @@ interface Beneficiaire {
   prenom: string;
   telephone: string;
   montant: number;
+  frais: number;
   operateur: string;
+  statut: PaymentStatut;
 }
 
 interface OrderDetail {
@@ -49,6 +53,10 @@ export class ApproverOrderViewComponent implements OnInit {
   isRejected = false;
   isApproved = false;
   isPending = false;
+  isCancelled = false;
+  cancelledByName?: string;
+  // Renseignée uniquement pour un ordre validé.
+  executionDate?: Date;
   isBeneficiairesOpen = true;
 
   constructor(
@@ -83,11 +91,16 @@ export class ApproverOrderViewComponent implements OnInit {
           this.isRejected = (order.status as string) === 'REJECTED';
           this.isApproved = (order.status as string) === 'APPROVED';
           this.isPending = (order.status as string) === 'PENDING';
+          this.isCancelled = (order.status as string) === 'CANCELLED';
+          this.cancelledByName = order.cancelledByUser
+            ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
+            : undefined;
+          this.executionDate = orderExecutionDate(order.status as string, approvals);
 
           this.orderDetail = {
             libelle: order.label,
             nombreBeneficiaires: payments.length,
-            montantTotal: order.totalAmount,
+            montantTotal: order.totalAmount + (order.totalFees ?? 0),
             operateurs: uniqueWallets.size,
             dateSoumission: new Intl.DateTimeFormat('fr-FR', {
               day: 'numeric', month: 'long', year: 'numeric',
@@ -135,7 +148,9 @@ export class ApproverOrderViewComponent implements OnInit {
             prenom: p.firstName,
             telephone: p.phoneNumber,
             montant: p.amount,
+            frais: p.fee ?? 0,
             operateur: p.wallet === Wallet.Wave ? 'Wave' : 'Orange Money',
+            statut: mapPaymentStatut(p.status, order.status as string),
           }));
 
           this.isLoading = false;
@@ -191,21 +206,58 @@ export class ApproverOrderViewComponent implements OnInit {
     return new Intl.NumberFormat('fr-FR').format(montant) + ' XOF';
   }
 
+  paymentStatutLabel(s: PaymentStatut): string {
+    return PAYMENT_STATUT_LABELS[s];
+  }
+
+  paymentStatutBadge(s: PaymentStatut): string {
+    return PAYMENT_STATUT_BADGES[s];
+  }
+
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
 
-  telechargerListe(): void {
+  downloadBeneficiaryList(): void {
     if (!this.beneficiaires.length) return;
 
-    const statutGlobal = this.isApproved ? 'Validé' : this.isRejected ? 'Rejeté' : 'En attente';
+    const executionDate = this.executionDate ? formatDate(this.executionDate, 'dd/MM/yyyy', 'fr') : undefined;
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
-      ...this.beneficiaires.map(b => [b.nom, b.prenom, b.telephone, b.montant, b.operateur, statutGlobal]),
+      [
+        'Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut',
+        ...(executionDate ? ["Date d'exécution"] : []),
+      ],
+      ...this.beneficiaires.map(b => [
+        b.nom, b.prenom, b.telephone, b.montant, b.frais, b.montant + b.frais, b.operateur,
+        this.paymentStatutLabel(b.statut),
+        ...(executionDate ? [executionDate] : []),
+      ]),
+    ];
+
+    const sumBy = (pick: (b: Beneficiaire) => number, filter: (b: Beneficiaire) => boolean = () => true) =>
+      this.beneficiaires.filter(filter).reduce((sum, b) => sum + (pick(b) ?? 0), 0);
+    // toLocaleString('fr-FR') sépare les milliers par une espace insécable fine : on la remplace par une espace simple.
+    const xof = (n: number) => `${n.toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+
+    const totalSent = sumBy(b => b.montant);
+    const totalFees = sumBy(b => b.frais);
+
+    const summaryRows = [
+      ['Indicateur', 'Valeur'],
+      ['Montant total envoyé', xof(totalSent)],
+      ['Frais Wave', xof(sumBy(b => b.frais, b => b.operateur === 'Wave'))],
+      ['Frais Orange Money', xof(sumBy(b => b.frais, b => b.operateur === 'Orange Money'))],
+      ['Total frais opérateurs', xof(totalFees)],
+      ['Coût total réel', xof(totalSent + totalFees)],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{ wch: 26 }, { wch: 20 }];
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Bénéficiaires': worksheet, 'Récapitulatif financier': summarySheet },
+      SheetNames: ['Bénéficiaires', 'Récapitulatif financier'],
+    };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',

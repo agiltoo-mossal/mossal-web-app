@@ -1,7 +1,7 @@
 .confirm-dialog {
   color: #000;
   box-sizing: border-box !important;
-  width: 446px !important;
+  width: 480px !important;
   background: #ffffff;
   padding-bottom: 0px !important;
 
@@ -54,32 +54,36 @@
     border-top: 1px solid #dee0e3;
 
     .cancel {
-      width: 92px;
+      min-width: 92px;
       height: 40px;
+      padding: 0 16px;
+      white-space: nowrap;
       background: #ffffff;
       border: 1px solid #001f60;
       border-radius: 4px;
       font-weight: 500;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 16px;
       text-align: center;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      text-transform: none;
       color: #001f60;
       cursor: pointer;
     }
 
     .confirm {
-      width: 101px;
+      min-width: 92px;
       height: 40px;
+      padding: 0 16px;
+      white-space: nowrap;
       background: #001f60;
       border-radius: 4px;
       font-weight: 500;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 16px;
       text-align: center;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      text-transform: none;
       border: none;
       color: #fff;
       cursor: pointer;

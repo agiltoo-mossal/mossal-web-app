@@ -69,9 +69,11 @@ import { ManualPaymentComponent } from './components/manual-payment.component/ma
 import { FluxApprobationComponent } from './components/flux-approbation.component/flux-approbation.component';
 import { PaymentDetailsComponent } from './components/admin_mossall/components/payment-details/payment-details.component';
 import { HistoryComponent } from './components/historyComponent/history.component';
+import { PaymentExecutionDetailsComponent } from './components/payment-execution-details/payment-execution-details.component';
 import { TrackingApprovalsComponent } from './components/tracking-approvals/tracking-approvals.component';
 import { TrackingApprovalsDetailsComponent } from './components/tracking-approvals-details/tracking-approvals-details.component';
 import { RejectPaymentDialogComponent } from './components/reject-payment-dialog/reject-payment-dialog.component';
+import { ReasonDialogComponent } from './components/reason-dialog/reason-dialog.component';
 import { ApproverOrderViewComponent } from './components/approver-order-view/approver-order-view.component';
 import { ApproveConfirmationDialogComponent } from './components/approve-confirmation-dialog/approve-confirmation-dialog.component';
 import { ApproverRemovalWarningDialogComponent } from './components/flux-approbation.component/approver-removal-warning-dialog/approver-removal-warning-dialog.component';
@@ -108,9 +110,11 @@ import { ApproverRemovalWarningDialogComponent } from './components/flux-approba
     FluxApprobationComponent,
     PaymentDetailsComponent,
     HistoryComponent,
+    PaymentExecutionDetailsComponent,
     TrackingApprovalsComponent,
     TrackingApprovalsDetailsComponent,
     RejectPaymentDialogComponent,
+    ReasonDialogComponent,
     ApproverOrderViewComponent,
     ApproveConfirmationDialogComponent,
     ResetApprovalFlowDialogComponent,

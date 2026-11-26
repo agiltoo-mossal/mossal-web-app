@@ -27,6 +27,8 @@
         <p class="balance-label">Montant de l'ordre</p>
         <p class="balance-value">{{ payment.amount | number:'1.0-0':'fr' }} XOF</p>
       </div>
+
+     
       <div class="balance-summary-item balance-after" [class.balance-negative]="isBalanceInsufficient">
         <p class="balance-label">Solde après exécution</p>
         <p class="balance-value">{{ balanceAfterExecution | number:'1.0-0':'fr' }} XOF</p>
@@ -43,7 +45,7 @@
   <div class="suivi-title-row">
     <h2 class="suivi-title">Suivi des validations</h2>
 
-    <div class="suivi-title-actions" *ngIf="isPending">
+    <div class="suivi-title-actions" *ngIf="isModifiable || isCancellable">
       <button
         class="btn-outline"
         *ngIf="isModifiable"
@@ -53,9 +55,8 @@
       </button>
       <button
         class="btn-danger-outline"
-        requiresConfirmation
-        [message]="'Êtes-vous sûr de vouloir annuler cet ordre de paiement ? Cette action est irréversible.'"
-        [confirmCallback]="annulerOrdre"
+        *ngIf="isCancellable"
+        (click)="annulerOrdre()"
         [disabled]="isCancelling"
       >
         Annuler l'ordre de paiement
@@ -63,9 +64,14 @@
     </div>
   </div>
 
-  <div class="info-banner" *ngIf="isPending && hasSomeoneApproved">
+  <div class="info-banner" *ngIf="isPending && hasSentPayments">
     <mat-icon>info</mat-icon>
-    <span>Cet ordre est en cours de validation et ne peut plus être modifié.</span>
+    <span>{{ payment.sentPaymentsCount }} paiement(s) de cet ordre ont déjà été envoyé(s) : il ne peut plus être modifié ni annulé.</span>
+  </div>
+
+  <div class="info-banner" *ngIf="isPending && hasSomeoneApproved && !hasSentPayments">
+    <mat-icon>info</mat-icon>
+    <span>Cet ordre est en cours de validation. Toute modification annulera les validations déjà données et relancera le circuit au niveau 1.</span>
   </div>
 
   <!-- Card principal unique -->
@@ -75,9 +81,9 @@
     <div class="notif-banner" [ngClass]="{
       'banner-pending': isPending,
       'banner-success': isApproved,
-      'banner-error': isRejected
+      'banner-error': isRejected || isCancelled
     }">
-      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+      <mat-icon>{{ isRejected || isCancelled ? 'notifications_off' : 'notifications' }}</mat-icon>
 
       <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
         Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
@@ -96,6 +102,10 @@
 
       <span *ngIf="isRejected && rejectedApprover">
         Paiement rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement effectué
+      </span>
+
+      <span *ngIf="isCancelled">
+        Paiement annulé<ng-container *ngIf="payment.cancelledByName"> par {{ payment.cancelledByName }}</ng-container>. Aucun paiement effectué
       </span>
     </div>
 
@@ -214,7 +224,7 @@
       <span>Liste des bénéficiaires</span>
       <mat-icon class="chevron" [class.rotated]="isBeneficiairesOpen">expand_more</mat-icon>
     </button>
-    <button class="btn-download" (click)="telechargerListe()">
+    <button class="btn-download" (click)="downloadBeneficiaryList()">
       <mat-icon>file_download</mat-icon> Télécharger
     </button>
   </div>
@@ -228,7 +238,11 @@
           <th>PRÉNOM</th>
           <th>TÉLÉPHONE</th>
           <th>MONTANT</th>
+          <th>TOTAL DES FRAIS</th>
+          <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
+          <th>STATUT</th>
+          <th *ngIf="payment.executionDate">DATE D'EXÉCUTION</th>
         </tr>
       </thead>
       <tbody>
@@ -237,7 +251,20 @@
           <td>{{ b.firstName }}</td>
           <td>{{ b.phone }}</td>
           <td>{{ b.amount | number:'1.0-0':'fr' }} XOF</td>
+          <td>{{ b.fees | number:'1.0-0':'fr' }} XOF</td>
+          <td>{{ beneficiaryTotal(b) | number:'1.0-0':'fr' }} XOF</td>
           <td>{{ b.operator }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'badge-success': payment.status === 'APPROVED',
+              'badge-pending': payment.status === 'PENDING',
+              'badge-danger': payment.status === 'REJECTED' || payment.status === 'CANCELLED'
+            }">
+              <span class="dot"></span>
+              {{ statutLabel }}
+            </span>
+          </td>
+          <td *ngIf="payment.executionDate">{{ payment.executionDate | date:'dd/MM/yyyy':'':'fr' }}</td>
         </tr>
       </tbody>
     </table>

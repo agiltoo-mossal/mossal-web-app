@@ -19,9 +19,9 @@
     <div class="notif-banner" [ngClass]="{
       'banner-pending': isPending,
       'banner-success': isApproved,
-      'banner-error':   isRejected
+      'banner-error':   isRejected || isCancelled
     }">
-      <mat-icon>{{ isRejected ? 'notifications_off' : 'notifications' }}</mat-icon>
+      <mat-icon>{{ isRejected || isCancelled ? 'notifications_off' : 'notifications' }}</mat-icon>
 
       <span *ngIf="isPending && currentApproverWaiting && !hasSomeoneApproved">
         Notification envoyée à {{ currentApproverWaiting.approbateurNom }}
@@ -44,6 +44,10 @@
 
       <span *ngIf="isRejected && rejectedApprover">
         Ordre rejeté par {{ rejectedApprover.approbateurNom }}. Aucun paiement ne sera effectué.
+      </span>
+
+      <span *ngIf="isCancelled">
+        Paiement annulé<ng-container *ngIf="cancelledByName"> par {{ cancelledByName }}</ng-container>. Aucun paiement effectué
       </span>
     </div>
 
@@ -124,7 +128,7 @@
       <span>Liste des bénéficiaires</span>
       <mat-icon class="chevron" [class.rotated]="isBeneficiairesOpen">expand_more</mat-icon>
     </button>
-    <button class="btn-download" (click)="telechargerListe()">
+    <button class="btn-download" (click)="downloadBeneficiaryList()">
       <mat-icon>file_download</mat-icon> Télécharger
     </button>
   </div>
@@ -138,7 +142,11 @@
           <th>PRÉNOM</th>
           <th>TÉLÉPHONE</th>
           <th>MONTANT</th>
+          <th>TOTAL DES FRAIS</th>
+          <th>MONTANT TOTAL</th>
           <th>OPÉRATEUR</th>
+          <th>STATUT</th>
+          <th *ngIf="executionDate">DATE D'EXÉCUTION</th>
         </tr>
       </thead>
       <tbody>
@@ -147,7 +155,16 @@
           <td>{{ b.prenom }}</td>
           <td>{{ b.telephone }}</td>
           <td>{{ formatMontant(b.montant) }}</td>
+          <td>{{ formatMontant(b.frais) }}</td>
+          <td>{{ formatMontant(b.montant + b.frais) }}</td>
           <td>{{ b.operateur }}</td>
+          <td>
+            <span class="badge" [ngClass]="paymentStatutBadge(b.statut)">
+              <span class="dot"></span>
+              {{ paymentStatutLabel(b.statut) }}
+            </span>
+          </td>
+          <td *ngIf="executionDate">{{ executionDate | date:'dd/MM/yyyy':'':'fr' }}</td>
         </tr>
       </tbody>
     </table>

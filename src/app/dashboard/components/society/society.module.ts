@@ -29,6 +29,8 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { OperationChartsComponent } from './components/operation-charts/operation-charts.component';
 import { FrenchDatePipe } from 'src/app/shared/pipes/french-date/french-date.pipe';
 import { OrganizationBalanceModule } from './components/organization-balance/organization-balance.module';
+import { SocietyDemandesComponent } from './components/society-demandes/society-demandes.component';
+import { SocietyCreditHistoryComponent } from './components/society-credit-history/society-credit-history.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,8 @@ import { OrganizationBalanceModule } from './components/organization-balance/org
     DetailSocietyComponent,
     AddCreditComponent,
     OperationChartsComponent,
+    SocietyDemandesComponent,
+    SocietyCreditHistoryComponent,
   ],
   imports: [
     CommonModule,

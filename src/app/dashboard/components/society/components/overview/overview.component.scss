@@ -118,3 +118,33 @@ table .mat-mdc-header-cell {
   transform: scale(1.1);
   transition: transform 0.2s ease;
 }
+
+.mdc-data-table__cell {
+  #dropdown-action,
+  .dropdown-content-filter {
+    min-width: 230px;   // assez large pour "Historique des crédits"
+    width: max-content; // s'adapte au plus long libellé
+    max-width: 280px;
+    right: 0;           // aligné sur le bord droit du bouton, évite de sortir de l'écran
+    left: auto;
+    box-sizing: border-box;
+  }
+
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    white-space: normal; // autorise le retour à la ligne si besoin
+    word-break: break-word;
+
+    > span:last-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    mat-icon {
+      flex-shrink: 0;   // l'icône garde sa taille
+    }
+  }
+}

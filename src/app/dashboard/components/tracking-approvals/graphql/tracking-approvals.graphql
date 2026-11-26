@@ -1,0 +1,122 @@
+query FetchOrdersForApprover {
+  fetchOrdersForApprover {
+    id
+    label
+    totalAmount
+    totalFees
+    status
+    currentApprovalLevel
+    paymentsCount
+    createdAt
+    createdByUser {
+      firstName
+      lastName
+    }
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    approvals {
+      approverId
+    }
+    isApprovedByCurrentUser
+  }
+}
+
+query FetchPaginatedOrdersForApprover($queryFilter: QueryDataConfigInput) {
+  fetchPaginatedOrdersForApprover(queryFilter: $queryFilter) {
+    results {
+      id
+      label
+      totalAmount
+      totalFees
+      status
+      currentApprovalLevel
+      paymentsCount
+      createdAt
+      createdByUser {
+        firstName
+        lastName
+      }
+      approversByLevel {
+        level
+      }
+      isApprovedByCurrentUser
+    }
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    counts {
+      pending
+      approved
+      rejected
+    }
+  }
+}
+
+query FetchOrderForApproverById($id: String!) {
+  fetchOrderForApproverById(id: $id) {
+    id
+    label
+    totalAmount
+    totalFees
+    status
+    currentApprovalLevel
+    rejectedReason
+    createdAt
+    createdByUser {
+      firstName
+      lastName
+    }
+    cancelledByUser {
+      firstName
+      lastName
+    }
+    payments {
+      id
+      firstName
+      lastName
+      phoneNumber
+      amount
+      fee
+      wallet
+      status
+    }
+    approversByLevel {
+      level
+      approverIds
+      approvers {
+        id
+        firstName
+        lastName
+      }
+    }
+    approvals {
+      level
+      approverId
+      approvedAt
+    }
+  }
+}
+
+mutation ApproveBulkPaymentOrder($id: String!) {
+  approveBulkPaymentOrder(id: $id) {
+    id
+    status
+  }
+}
+
+mutation RejectBulkPaymentOrder($id: String!, $reason: String) {
+  rejectBulkPaymentOrder(id: $id, reason: $reason) {
+    id
+    status
+  }
+}

@@ -1,0 +1,61 @@
+// Mise en page commune (cartes, filtres, tableau) : voir history.component.scss.
+$navy: #1a2b5c;
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: $navy;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.history-title { margin-bottom: 4px; }
+
+.order-label {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: #4a4a4a;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .list-title { margin-bottom: 0; }
+}
+
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 40px;
+  background: #fff;
+  border: 1px solid $navy;
+  border-radius: 999px;
+  color: $navy;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover:not(:disabled) { background-color: #f2f4fa; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// Couleurs de statut de la maquette « Détails d'un paiement ».
+@mixin tx-color($bg, $fg) {
+  background-color: $bg;
+  color: $fg;
+  .dot { background-color: $fg; }
+}
+
+.tx-succes  { @include tx-color(#deffdb, #0eaf00); }
+.tx-echec   { @include tx-color(#fee7e7, #f41414); }
+.tx-cours   { @include tx-color(#fff4e5, #ff9500); }
+.tx-attente { @include tx-color(#fff4e5, #a16207); }

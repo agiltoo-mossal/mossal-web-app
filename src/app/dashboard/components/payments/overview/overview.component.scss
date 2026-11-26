@@ -110,6 +110,11 @@ $rejete-text: #F41414;
     vertical-align: middle;
     margin-right: 4px;
   }
+
+  &:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
 }
 
 .card-btn-dark {

@@ -26,6 +26,10 @@ query FetchBulkPaymentOrderById($id: String!) {
     currentApprovalLevel
     createdAt
     lastRelaunchAt
+    cancelledByUser {
+      firstName
+      lastName
+    }
     approversByLevel {
       level
       approverIds
@@ -47,8 +51,25 @@ query FetchBulkPaymentOrderById($id: String!) {
       lastName
       phoneNumber
       amount
+      fee
       wallet
+      status
+      paidAt
     }
+  }
+}
+
+mutation CancelBulkPaymentOrder($id: String!, $reason: String!) {
+  cancelBulkPaymentOrder(id: $id, reason: $reason) {
+    id
+    status
+  }
+}
+
+mutation RelaunchApprovers($id: String!) {
+  relaunchApprovers(id: $id) {
+    id
+    lastRelaunchAt
   }
 }
 

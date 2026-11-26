@@ -9,7 +9,9 @@ import {
 } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { ConfirmDialogComponent } from 'src/app/shared/components/confirm-dialog/confirm-dialog.component';
 import { SearchService } from 'src/app/shared/services/search/search.service';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
 import {
@@ -77,6 +79,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     private fetchOrganizationGQL: FetchOrganizationGQL,
     private updateOrganizationGQL: UpdateOrganizationGQL,
     private fetchSubscriptionsGQL: FetchSubscriptionsGQL,
+    private dialog: MatDialog,
   ) {
     this.societyForm = this.fb.group({
       // Section Informations de la société
@@ -140,6 +143,9 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     // Initialiser les validations
     if (this.formType !== 'edit') {
       this.initValidations();
+    } else {
+      // En modification aussi, le nom doit rester unique (la société elle-même est exclue).
+      this.checkCompanyName();
     }
   }
 
@@ -216,6 +222,46 @@ export class FormSocietyComponent implements OnInit, OnChanges {
     const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
     control?.setValue(next);
     control?.markAsTouched();
+    control?.markAsDirty();
+  }
+
+  // Modifications non enregistrées : champs du formulaire, logo ou NINEA.
+  get hasUnsavedChanges(): boolean {
+    return (
+      this.societyForm.dirty ||
+      !!this.selectedFiles.logo ||
+      !!this.selectedFiles.ninea ||
+      this.logoToDelete
+    );
+  }
+
+  annuler(): void {
+    if (this.isLoading) return;
+    if (!this.hasUnsavedChanges) {
+      this.router.navigate(['/dashboard/society']);
+      return;
+    }
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '480px',
+        data: {
+          message: 'Les modifications non enregistrées seront perdues. Voulez-vous vraiment annuler ?',
+          confirmLabel: 'Oui, annuler',
+          cancelLabel: 'Continuer la saisie',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed === true) {
+          this.router.navigate(['/dashboard/society']);
+        }
+      });
+  }
+
+  // Message d'erreur du backend (ex. nom déjà utilisé), sinon message générique.
+  private backendErrorMessage(error: any, fallback: string): string {
+    const message = error?.graphQLErrors?.[0]?.message ?? error?.message;
+    return message ? String(message).replace('GraphQL error: ', '') : fallback;
   }
 
   // Déclencher l'input file pour le logo
@@ -425,7 +471,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         console.error('Erreur lors de la création:', error);
         this.snackBarService.showErrorSnackBar(
           5000,
-          'Une erreur est survenue lors de la création'
+          this.backendErrorMessage(error, 'Une erreur est survenue lors de la création')
         );
         this.isLoading = false;
       }
@@ -433,7 +479,7 @@ export class FormSocietyComponent implements OnInit, OnChanges {
   }
 
   edit(): void {
-    if (this.societyForm.invalid || this.isLoading) {
+    if (this.societyForm.invalid || this.isLoading || this.hasErrors) {
       this.societyForm.markAllAsTouched();
       return;
     }
@@ -487,7 +533,10 @@ export class FormSocietyComponent implements OnInit, OnChanges {
         }
       },
       (error) => {
-        this.snackBarService.showErrorSnackBar();
+        this.snackBarService.showErrorSnackBar(
+          5000,
+          this.backendErrorMessage(error, 'Une erreur est survenue lors de la modification'),
+        );
         this.isLoading = false;
       }
     );

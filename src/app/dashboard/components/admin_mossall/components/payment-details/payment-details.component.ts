@@ -2,14 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { BulkPaymentOrderStatus, BulkPaymentOrderType, FetchBulkPaymentOrderByIdGQL, FetchCurrentAdminGQL, Organization, Wallet } from 'src/graphql/generated';
-import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/bulk-payment-extended';
+import { CancelBulkPaymentOrderGQL, RelaunchApproversGQL } from 'src/graphql/generated';
 import { SnackBarService } from 'src/app/shared/services/snackbar.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ReasonDialogComponent, ReasonDialogData } from '../../../reason-dialog/reason-dialog.component';
+import { formatDate } from '@angular/common';
+import { isPaymentSent, orderExecutionDate } from '../../../approver-order-view/payment-statut';
+
 
 export interface Beneficiary {
   lastName: string;
   firstName: string;
   phone: string;
   amount: number;
+  fees: number;
   operator: string;
 }
 
@@ -35,6 +41,11 @@ export interface PaymentOrderDetails {
   beneficiaries: Beneficiary[];
   rejectedReason?: string;
   lastRelaunchAt?: Date;
+  cancelledByName?: string;
+  // Nombre de paiements déjà partis chez le prestataire (en cours ou payés).
+  sentPaymentsCount: number;
+  // Renseignée uniquement pour un ordre validé.
+  executionDate?: Date;
 }
 
 @Component({
@@ -64,6 +75,7 @@ export class PaymentDetailsComponent implements OnInit {
     private cancelBulkPaymentOrderGQL: CancelBulkPaymentOrderGQL,
     private snackBarService: SnackBarService,
     private fetchCurrentAdminGQL: FetchCurrentAdminGQL,
+    private dialog: MatDialog,
 
   ) { }
 
@@ -142,11 +154,17 @@ export class PaymentDetailsComponent implements OnInit {
             approvals: approvalSteps,
             rejectedReason: order.rejectedReason ?? undefined,
             lastRelaunchAt,
+            cancelledByName: order.cancelledByUser
+              ? `${order.cancelledByUser.firstName} ${order.cancelledByUser.lastName}`
+              : undefined,
+            executionDate: orderExecutionDate(order.status, approvals),
+            sentPaymentsCount: payments.filter(p => isPaymentSent(p.status)).length,
             beneficiaries: payments.map(p => ({
               lastName: p.lastName,
               firstName: p.firstName,
               phone: p.phoneNumber,
               amount: p.amount,
+              fees: p.fee ?? 0,
               operator: walletLabel[p.wallet] ?? p.wallet,
             })),
           };
@@ -157,7 +175,9 @@ export class PaymentDetailsComponent implements OnInit {
       });
   }
 
- 
+  beneficiaryTotal(b: Beneficiary): number {
+    return (b.amount ?? 0) + (b.fees ?? 0);
+  }
 
   goToHome(): void {
     this.router.navigate(['/dashboard/organization/payments']);
@@ -175,6 +195,16 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
+  get statutLabel(): string {
+    const labels: Record<string, string> = {
+      APPROVED: 'Validé',
+      REJECTED: 'Rejeté',
+      PENDING: 'En attente',
+      CANCELLED: 'Annulé',
+    };
+    return labels[this.payment?.status ?? ''] ?? '';
+  }
+
 
   get isPending(): boolean {
     return this.payment?.status === 'PENDING';
@@ -186,6 +216,10 @@ export class PaymentDetailsComponent implements OnInit {
 
   get isRejected(): boolean {
     return this.payment?.status === 'REJECTED';
+  }
+
+  get isCancelled(): boolean {
+    return this.payment?.status === 'CANCELLED';
   }
 
   get lastApprovedApprover(): ApprovalStep | undefined {
@@ -206,10 +240,20 @@ export class PaymentDetailsComponent implements OnInit {
     return !!this.lastApprovedApprover;
   }
 
-  // "Modifier" n'est proposé que tant qu'aucun approbateur n'a encore traité l'ordre :
-  // dès qu'un niveau a validé, le circuit est engagé et l'ordre ne peut plus être modifié.
+  // Modifier un ordre partiellement approuvé annule les validations déjà données (le backend les archive)
+  // et relance le circuit au niveau 1.
   get isModifiable(): boolean {
-    return this.isPending && !this.hasSomeoneApproved;
+    return this.isPending && !this.hasSentPayments;
+  }
+
+  // Dès qu'un paiement est parti, l'ordre ne peut plus être ni modifié (il serait renvoyé)
+  // ni annulé (des fonds ont déjà été versés). Le backend applique la même règle.
+  get hasSentPayments(): boolean {
+    return (this.payment?.sentPaymentsCount ?? 0) > 0;
+  }
+
+  get isCancellable(): boolean {
+    return this.isPending && !this.hasSentPayments;
   }
 
   get isBalanceInsufficient(): boolean {
@@ -273,10 +317,31 @@ export class PaymentDetailsComponent implements OnInit {
     });
   }
 
-  annulerOrdre = (): void => {
-    if (!this.orderId || !this.isPending || this.isCancelling) return;
+  annulerOrdre(): void {
+    if (!this.orderId || !this.isCancellable || this.isCancelling) return;
+
+    const data: ReasonDialogData = {
+      title: "Annuler l'ordre de paiement",
+      icon: 'error_outline',
+      message: `Êtes-vous sûr de vouloir annuler l'ordre '${this.payment?.label ?? ''}' ?`,
+      reasonLabel: "Motif d'annulation",
+      requiredMessage: "Le motif d'annulation est obligatoire.",
+      warning: 'Cette action est irréversible.',
+      confirmLabel: "Confirmer l'annulation",
+      variant: 'danger',
+    };
+    this.dialog
+      .open(ReasonDialogComponent, { width: '720px', data })
+      .afterClosed()
+      .subscribe((reason?: string) => {
+        if (reason) this.cancelOrder(reason);
+      });
+  }
+
+  private cancelOrder(reason: string): void {
+    if (!this.orderId) return;
     this.isCancelling = true;
-    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId }).subscribe({
+    this.cancelBulkPaymentOrderGQL.mutate({ id: this.orderId, reason }).subscribe({
       next: () => {
         this.isCancelling = false;
         this.snackBarService.showSuccessSnackBar(4000, 'Ordre de paiement annulé.');
@@ -288,13 +353,13 @@ export class PaymentDetailsComponent implements OnInit {
         this.snackBarService.showErrorSnackBar(4000, message);
       },
     });
-  };
+  }
 
   toggleBeneficiairesList(): void {
     this.isBeneficiairesOpen = !this.isBeneficiairesOpen;
   }
 
-  telechargerListe(): void {
+  downloadBeneficiaryList(): void {
     if (!this.payment?.beneficiaries?.length) return;
 
     const STATUT_LABELS: Record<string, string> = {
@@ -302,15 +367,54 @@ export class PaymentDetailsComponent implements OnInit {
       REJECTED: 'Rejeté',
       PENDING: 'En attente',
     };
-    const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
+    // const statutGlobal = STATUT_LABELS[this.payment.status] ?? this.payment.status;
+    const statutGlobal = this.statutLabel;
+    // const rows = [
+    //   ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
+    //   ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
+    // ];
 
+    const executionDate = this.payment.executionDate
+      ? formatDate(this.payment.executionDate, 'dd/MM/yyyy', 'fr')
+      : undefined;
     const rows = [
-      ['Nom', 'Prénom', 'Téléphone', 'Montant', 'Opérateur', 'Statut'],
-      ...this.payment.beneficiaries.map(b => [b.lastName, b.firstName, b.phone, b.amount, b.operator, statutGlobal]),
+      [
+        'Nom', 'Prénom', 'Téléphone', 'Montant', 'Total des frais', 'Montant total', 'Opérateur', 'Statut',
+        ...(executionDate ? ["Date d'exécution"] : []),
+      ],
+      ...this.payment.beneficiaries.map(b => [
+        b.lastName, b.firstName, b.phone, b.amount, b.fees, this.beneficiaryTotal(b), b.operator, statutGlobal,
+        ...(executionDate ? [executionDate] : []),
+      ]),
+    ];
+
+    const beneficiaries = this.payment.beneficiaries;
+    const sumBy = (pick: (b: Beneficiary) => number, filter: (b: Beneficiary) => boolean = () => true) =>
+      beneficiaries.filter(filter).reduce((sum, b) => sum + (pick(b) ?? 0), 0);
+    // toLocaleString('fr-FR') sépare les milliers par une espace insécable fine : on la remplace par une espace simple.
+    const xof = (n: number) => `${n.toLocaleString('fr-FR').replace(/\s/g, ' ')} XOF`;
+
+    const totalSent = sumBy(b => b.amount);
+    const waveFees = sumBy(b => b.fees, b => b.operator === 'Wave');
+    const orangeFees = sumBy(b => b.fees, b => b.operator === 'Orange Money');
+    const totalFees = sumBy(b => b.fees);
+
+    const summaryRows = [
+      ['Indicateur', 'Valeur'],
+      ['Montant total envoyé', xof(totalSent)],
+      ['Frais Wave', xof(waveFees)],
+      ['Frais Orange Money', xof(orangeFees)],
+      ['Total frais opérateurs', xof(totalFees)],
+      ['Coût total réel', xof(totalSent + totalFees)],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Bénéficiaires': worksheet }, SheetNames: ['Bénéficiaires'] };
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{ wch: 26 }, { wch: 20 }];
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Bénéficiaires': worksheet, 'Récapitulatif financier': summarySheet },
+      SheetNames: ['Bénéficiaires', 'Récapitulatif financier'],
+    };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',

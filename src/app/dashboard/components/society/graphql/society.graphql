@@ -36,3 +36,36 @@ query FetchOperations($organizationId: ID!) {
     montant
   }
 }
+# Super admin Mossall : demandes d'une organisation (page « Liste des demandes »).
+query FetchPaginatedDemandesByOrganization(
+  $organizationId: ID!
+  $metricsInput: DemandesMetricsInput
+  $queryFilter: QueryDataConfigInput
+) {
+  fetchPaginatedDemandesByOrganization(
+    organizationId: $organizationId
+    metricsInput: $metricsInput
+    queryFilter: $queryFilter
+  ) {
+    pagination {
+      totalItems
+      pageCount
+      currentPage
+      pageSize
+    }
+    results {
+      id
+      number
+      amount
+      fees
+      status
+      createdAt
+      collaborator {
+        id
+        firstName
+        lastName
+        uniqueIdentifier
+      }
+    }
+  }
+}

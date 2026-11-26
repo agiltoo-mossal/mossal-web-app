@@ -16,11 +16,11 @@
     </div>
     <div class="summary-row">
       <span class="summary-label">Montant total</span>
-      <span class="summary-value summary-amount">{{ formatMontant(data.montantTotal) }}</span>
+      <span class="summary-value summary-amount">{{ formatMontant(data.montantTotal + data.fraisTotal) }}</span>
     </div>
   </div>
 
-  <div class="confirm-actions">
+  <div class="confirm-actions"> 
     <button class="btn-secondary" (click)="annuler()">Annuler</button>
     <button class="btn-primary" (click)="confirmer()">Confirmer l'approbation</button>
   </div>
